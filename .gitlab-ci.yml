@@ -71,7 +71,7 @@ deploy:
     KANIKO_BUILD_CONTEXT: $CI_PROJECT_DIR/TraineeTracker
     IMAGE_TAG_NAME: kaniko-docker
   script:
-    - export IMAGE_TAG=${CI_REGISTRY_IMAGE}/TraineeTracker:${IMAGE_TAG_NAME}
+    - export IMAGE_TAG=${CI_REGISTRY_IMAGE}/traineetracker:${IMAGE_TAG_NAME}
     - echo $IMAGE_TAG
     - mkdir -p /kaniko/.docker
     - echo "{\"auths\":{\"$CI_REGISTRY\":{\"auth\":\"$(echo -n ${CI_REGISTRY_USER}:${CI_REGISTRY_PASSWORD} | base64 | tr -d '\n')\"}}}" > /kaniko/.docker/config.json
