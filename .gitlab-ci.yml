@@ -12,4 +12,37 @@ stages:
     - dotnet build              # Baue das Projekt
 
 
+# Unit Test Stage:
+unit-tests:
+  stage: unit-tests
+  script:
+    - cd TraineeTracker.UnitTests
+    - dotnet test
+  needs:
+    - build
+
+# E2E Test Stage:
+e2e-tests:
+  stage: e2e-tests
+  image: mcr.microsoft.com/dotnet/sdk:8.0   # Empfohlenes offizielles .NET 8 Image
+  script:
+    # Starte das Hauptprojekt als Server im Hintergrund
+    - cd TraineeTracker
+    - dotnet run --environment Development &
+    - sleep 5  # Gib dem Server Zeit, um zu starten
+
+    # Chrome installieren (Selenium braucht echten Browser!)
+    - apt update -q -y
+    - apt --yes install libnss3 xvfb libx11-6 libgconf-2-4 unzip gnupg
+    - wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
+    - apt install ./google-chrome-stable_current_amd64.deb -y
+
+    # Wechsel ins E2E-Testprojekt
+    - cd TraineeTracker.E2ETests
+
+    # E2E-Tests ausführen
+    - dotnet test
+  needs:
+    - build
+
   
