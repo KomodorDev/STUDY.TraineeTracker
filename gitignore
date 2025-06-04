@@ -1,0 +1,5 @@
+/TraineeTracker/bin/
+/TraineeTracker/obj/
+.vscode/
+.DS_Store
+/TraineeTracker/persistence/
