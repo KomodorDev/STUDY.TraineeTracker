@@ -1,7 +1,9 @@
 /TraineeTracker/bin/
 /TraineeTracker/obj/
-/bin/
-/obj/
 .vscode/
 .DS_Store
 /TraineeTracker/persistence/
+
+
+/TraineeTracker.UnitTests/bin/
+/TraineeTracker.UnitTests/obj/
