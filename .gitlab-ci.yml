@@ -87,6 +87,8 @@ deploy:
 portainer:
   stage: portainer
   image: curlimages/curl:latest
+  variables:
+    CONTAINER_WEB_HOOK: https://portainer.isse.de/api/webhooks/b3d798f1-7808-4c40-8937-608eb2fc6ad9
   tags:
     - sopro
   script:
