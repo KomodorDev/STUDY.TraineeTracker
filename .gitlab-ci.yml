@@ -5,8 +5,9 @@ stages:
   - deploy
 
 # Build Stage
-  build:
+build:
   stage: build
+  image: mcr.microsoft.com/dotnet/sdk:8.0   # Empfohlenes offizielles .NET 8 Image
   script:
     - cd TraineeTracker         # Gehe in dein Hauptprojekt
     - dotnet build              # Baue das Projekt
@@ -15,6 +16,7 @@ stages:
 # Unit Test Stage:
 unit-tests:
   stage: unit-tests
+  image: mcr.microsoft.com/dotnet/sdk:8.0   # Empfohlenes offizielles .NET 8 Image
   script:
     - cd TraineeTracker.UnitTests
     - dotnet test
