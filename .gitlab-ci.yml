@@ -4,29 +4,39 @@ stages:
   - e2e-tests
   - deploy
 
+
+# ---------------------------------------------
 # Build Stage
 build:
   stage: build
   image: mcr.microsoft.com/dotnet/sdk:8.0   # Empfohlenes offizielles .NET 8 Image
+  tags:
+    - sopro
   script:
     - cd TraineeTracker         # Gehe in dein Hauptprojekt
     - dotnet build              # Baue das Projekt
 
 
+# ---------------------------------------------
 # Unit Test Stage:
 unit-tests:
   stage: unit-tests
   image: mcr.microsoft.com/dotnet/sdk:8.0   # Empfohlenes offizielles .NET 8 Image
+  tags:
+    - sopro
   script:
     - cd TraineeTracker.UnitTests
     - dotnet test
   needs:
     - build
 
+# ---------------------------------------------
 # E2E Test Stage:
 e2e-tests:
   stage: e2e-tests
   image: mcr.microsoft.com/dotnet/sdk:8.0   # Empfohlenes offizielles .NET 8 Image
+  tags:
+    - sopro
   script:
     # Starte das Hauptprojekt als Server im Hintergrund
     - cd TraineeTracker
