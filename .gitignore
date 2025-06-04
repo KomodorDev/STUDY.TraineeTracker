@@ -7,3 +7,6 @@
 
 /TraineeTracker.UnitTests/bin/
 /TraineeTracker.UnitTests/obj/
+
+/TraineeTracker.E2ETests/bin/
+/TraineeTracker.E2ETests/obj/
