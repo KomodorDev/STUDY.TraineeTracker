@@ -81,7 +81,9 @@ deploy:
   needs:
     - unit-tests
     - e2e-tests
-
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "main"'
+    
 # ---------------------------------------------
 # Portainer:
 portainer:
@@ -96,5 +98,6 @@ portainer:
     - curl -X POST $CONTAINER_WEB_HOOK # Wir sagen Portainer: Hier ist ein neues Image. Update mal
   needs:
     - deploy
-
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "main"'
 # ---------------------------------------------
