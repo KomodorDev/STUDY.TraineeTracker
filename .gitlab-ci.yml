@@ -50,11 +50,33 @@ e2e-tests:
     - apt install ./google-chrome-stable_current_amd64.deb -y
 
     # Wechsel ins E2E-Testprojekt
-    - cd TraineeTracker.E2ETests
+    - cd ../TraineeTracker.E2ETests
 
     # E2E-Tests ausführen
     - dotnet test
   needs:
     - build
 
-  
+# ---------------------------------------------
+# Deploy:
+deploy:
+  stage: deploy
+  image:
+    name: gcr.io/kaniko-project/executor:debug
+    entrypoint: [""]
+  tags:
+    - sopro
+  variables:
+    KANIKO_ARGS: "--single-snapshot"
+    KANIKO_BUILD_CONTEXT: $CI_PROJECT_DIR/TraineeTracker
+    IMAGE_TAG_NAME: kaniko-docker
+  script:
+    - export IMAGE_TAG=${CI_REGISTRY_IMAGE}/TraineeTracker:${IMAGE_TAG_NAME}
+    - echo $IMAGE_TAG
+    - mkdir -p /kaniko/.docker
+    - echo "{\"auths\":{\"$CI_REGISTRY\":{\"auth\":\"$(echo -n ${CI_REGISTRY_USER}:${CI_REGISTRY_PASSWORD} | base64 | tr -d '\n')\"}}}" > /kaniko/.docker/config.json
+    - DOCKERFILE_PATH=${DOCKERFILE_PATH:-"$KANIKO_BUILD_CONTEXT/Dockerfile"}
+    - /kaniko/executor --context $KANIKO_BUILD_CONTEXT --dockerfile $DOCKERFILE_PATH --destination $IMAGE_TAG $KANIKO_ARGS
+  needs:
+    - unit-tests
+    - e2e-tests
