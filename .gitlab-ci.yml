@@ -1,0 +1,15 @@
+stages:
+  - build
+  - unit-tests
+  - e2e-tests
+  - deploy
+
+# Build Stage
+  build:
+  stage: build
+  script:
+    - cd TraineeTracker         # Gehe in dein Hauptprojekt
+    - dotnet build              # Baue das Projekt
+
+
+  
