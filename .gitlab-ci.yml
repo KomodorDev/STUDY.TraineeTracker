@@ -80,3 +80,18 @@ deploy:
   needs:
     - unit-tests
     - e2e-tests
+
+# ---------------------------------------------
+# Portainer:
+portainer:
+  stage: portainer
+  image: curlimages/curl:latest
+  tags:
+    - sopro
+  script:
+    - sleep 10    # Warte, bis das Dockerimage vollständig erstellt ist
+    - curl -X POST $CONTAINER_WEB_HOOK
+  needs:
+    - deploy
+
+# ---------------------------------------------
