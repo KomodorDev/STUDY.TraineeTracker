@@ -93,7 +93,7 @@ portainer:
     - sopro
   script:
     - sleep 10    # Warte, bis das Dockerimage vollständig erstellt ist
-    - curl -X POST $CONTAINER_WEB_HOOK
+    - curl -X POST $CONTAINER_WEB_HOOK # Wir sagen Portainer: Hier ist ein neues Image. Update mal
   needs:
     - deploy
 
