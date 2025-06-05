@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "fJXF78o+DPM=",
+  "dgSpecHash": "cxOyGh9GXj4=",
   "success": true,
   "projectFilePath": "/Users/simonhinterreiter/Library/CloudStorage/Dropbox/06 - Coding/01 - Local GH Repo/02 - Mac/SoPro2025 - Makandra/team-07/TraineeTracker/TraineeTracker.csproj",
   "expectedPackageFiles": [
@@ -21,6 +21,7 @@
     "/Users/simonhinterreiter/.nuget/packages/microsoft.entityframeworkcore.abstractions/8.0.15/microsoft.entityframeworkcore.abstractions.8.0.15.nupkg.sha512",
     "/Users/simonhinterreiter/.nuget/packages/microsoft.entityframeworkcore.analyzers/8.0.15/microsoft.entityframeworkcore.analyzers.8.0.15.nupkg.sha512",
     "/Users/simonhinterreiter/.nuget/packages/microsoft.entityframeworkcore.design/8.0.15/microsoft.entityframeworkcore.design.8.0.15.nupkg.sha512",
+    "/Users/simonhinterreiter/.nuget/packages/microsoft.entityframeworkcore.inmemory/8.0.0/microsoft.entityframeworkcore.inmemory.8.0.0.nupkg.sha512",
     "/Users/simonhinterreiter/.nuget/packages/microsoft.entityframeworkcore.relational/8.0.15/microsoft.entityframeworkcore.relational.8.0.15.nupkg.sha512",
     "/Users/simonhinterreiter/.nuget/packages/microsoft.entityframeworkcore.sqlite/8.0.15/microsoft.entityframeworkcore.sqlite.8.0.15.nupkg.sha512",
     "/Users/simonhinterreiter/.nuget/packages/microsoft.entityframeworkcore.sqlite.core/8.0.15/microsoft.entityframeworkcore.sqlite.core.8.0.15.nupkg.sha512",
