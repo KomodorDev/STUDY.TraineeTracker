@@ -1,0 +1,103 @@
+image: mcr.microsoft.com/dotnet/sdk:8.0
+
+stages:
+  - build
+  - unit-tests
+  - e2e-tests
+  - deploy
+  - portainer
+
+variables:
+  DOTNET_CLI_TELEMETRY_OPTOUT: "1"
+  DOTNET_SKIP_FIRST_TIME_EXPERIENCE: "1"
+  MAIN_PROJECT_PATH: traineeTracker
+  UNIT_TEST_PATH: traineeTracker.UnitTests
+  E2E_TEST_PATH: traineeTracker.E2ETests
+
+build:
+  stage: build
+  tags:
+    - sopro
+  script:
+    - cd $MAIN_PROJECT_PATH
+    - dotnet restore
+    - dotnet build --configuration Release
+    - dotnet publish --configuration Release --output publish
+  artifacts:
+    paths:
+      - $MAIN_PROJECT_PATH/publish
+    expire_in: 1 hour
+
+
+unit-tests:
+  tags:
+    - sopro
+  stage: unit-tests
+  script:
+    - cd $UNIT_TEST_PATH
+    - dotnet restore
+    - dotnet test --configuration Release
+  needs: ["build"]
+
+
+e2e-tests:
+  stage: e2e-tests
+  tags:
+    - sopro
+  dependencies:
+    - build
+  script:
+    - apt update -q -y
+    - apt --yes install libnss3 xvfb libxi6 libgconf-2-4 unzip gnupg curl
+    - curl -O https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
+    - apt install ./google-chrome-stable_current_amd64.deb -y
+    - cd $MAIN_PROJECT_PATH/publish
+    - ASPNETCORE_ENVIRONMENT=Testing ASPNETCORE_URLS=http://0.0.0.0:5234 dotnet traineeTracker.dll &
+    - |
+      until curl -s http://localhost:5234 > /dev/null; do
+        echo "Waiting for server..."
+        sleep 2
+      done
+    - cd ../../$E2E_TEST_PATH
+    - dotnet restore
+    - dotnet test --configuration Release
+  needs: ["build"]
+
+  
+
+kaniko-build:
+  stage: deploy
+  tags:
+    - sopro
+  variables:
+    KANIKO_ARGS: "--single-snapshot"
+    KANIKO_BUILD_CONTEXT: $CI_PROJECT_DIR/$MAIN_PROJECT_PATH
+    # Replace this with your rz username, i.e. kosakoli
+    IMAGE_TAG_NAME: latest
+  image:
+    name: gcr.io/kaniko-project/executor:debug
+    entrypoint: [""]
+  script:
+    - export IMAGE_TAG=${CI_REGISTRY_IMAGE}/team08:${IMAGE_TAG_NAME}
+    - echo $IMAGE_TAG
+    - mkdir -p /kaniko/.docker
+    - echo "{\"auths\":{\"$CI_REGISTRY\":{\"auth\":\"$(echo -n ${CI_REGISTRY_USER}:${CI_REGISTRY_PASSWORD} | base64 | tr -d '\n')\"}}}" > /kaniko/.docker/config.json
+    - DOCKERFILE_PATH=${DOCKERFILE_PATH:-"$KANIKO_BUILD_CONTEXT/Dockerfile"}
+    - /kaniko/executor --context $KANIKO_BUILD_CONTEXT --dockerfile $DOCKERFILE_PATH --destination $IMAGE_TAG $KANIKO_ARGS
+  rules:
+    - exists:
+        - $MAIN_PROJECT_PATH/Dockerfile
+  dependencies: ["unit-tests", "e2e-tests"]
+
+
+Portainer:
+  tags:
+    - sopro
+  stage: portainer
+  needs: ["kaniko-build"]
+  image: curlimages/curl:latest
+  script:
+    - sleep 10
+    - curl -X POST $CONTAINER WEBHOOK
+  only:
+    - main
