@@ -17,6 +17,7 @@ build:
     - cd TraineeTracker         # Gehe in dein Hauptprojekt
     - dotnet build              # Baue das Projekt
   rules:
+    - if: '$CI_COMMIT_BRANCH == "main"'
     - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
     - if: '$CI_COMMIT_BRANCH =~ /^[a-zA-Z]+_[0-9][0-9]$/'
 
@@ -34,6 +35,7 @@ unit-tests:
   needs:
     - build
   rules:
+    - if: '$CI_COMMIT_BRANCH == "main"'
     - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
     - if: '$CI_COMMIT_BRANCH =~ /^[a-zA-Z]+_[0-9][0-9]$/'
 
@@ -64,6 +66,7 @@ e2e-tests:
   needs:
     - build
   rules:
+    - if: '$CI_COMMIT_BRANCH == "main"'
     - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
     - if: '$CI_COMMIT_BRANCH =~ /^[a-zA-Z]+_[0-9][0-9]$/'
 
