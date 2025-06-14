@@ -57,6 +57,7 @@ nunit-*.xml
 
 # -------------------------------
 # 🗄️ SQLite / Datenbank-Dateien
+[Pp]ersistence/
 Persistence/app.db
 Persistence/app.db-wal
 Persistence/app.db-shm
