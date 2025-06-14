@@ -54,3 +54,9 @@ CodeCoverage/
 *.VisualState.xml
 TestResult.xml
 nunit-*.xml
+
+# -------------------------------
+# 🗄️ SQLite / Datenbank-Dateien
+Persistence/app.db
+Persistence/app.db-wal
+Persistence/app.db-shm
