@@ -6,6 +6,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 var environment = builder.Environment;  // NEU: Environment auslesen
+Console.WriteLine($"🌍 Environment: {environment.EnvironmentName}");
 
 if (environment.IsDevelopment())
 {
