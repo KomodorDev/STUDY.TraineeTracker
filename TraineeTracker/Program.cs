@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using TraineeTracker.Data;
 using TraineeTracker.Models.Domain;
+using TraineeTracker.Services.Seeders;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -22,11 +23,19 @@ if (environment.IsDevelopment()) {
 
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
+// Identity konfigurieren
 builder.Services.AddDefaultIdentity<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = true)
+    .AddRoles<IdentityRole>()
     .AddEntityFrameworkStores<ApplicationDbContext>();
 builder.Services.AddControllersWithViews();
 
 var app = builder.Build();
+
+// Rollen erstellen, falls noch nicht in der Datenbank
+using (var scope = app.Services.CreateScope()) {
+    var serviceProvider = scope.ServiceProvider;
+    await IdentitySeeder.SeedRolesAsync(serviceProvider);
+}
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment()) {
