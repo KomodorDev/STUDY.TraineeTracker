@@ -23,16 +23,19 @@ namespace TraineeTracker.Data.TraineeStatistics {
         public bool Create(TraineeStatisticsSnapshot snapshot) {
             _context.TraineeStatisticsSnapshots.Add(snapshot);
             _context.SaveChanges();
+            return true;
         }
 
         public bool Update(TraineeStatisticsSnapshot snapshot) {
             _context.TraineeStatisticsSnapshots.Update(snapshot);
             _context.SaveChanges();
+            return true;
         }
 
         public bool Delete(TraineeStatisticsSnapshot snapshot) {
             _context.TraineeStatisticsSnapshots.Remove(snapshot);
             _context.SaveChanges();
+            return true;
         }
 
         public IEnumerable<TraineeStatisticsSnapshot> GetAllTraineeStatisticsSnapshots(string traineeId) {
