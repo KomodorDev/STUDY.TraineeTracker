@@ -1,6 +1,6 @@
 using System;
 
-namespace TraineeTracker.Models {
+namespace TraineeTracker.Models.Domain {
     public class TraineeStatisticsSnapshot {
         public string userId { get; set; }
 
