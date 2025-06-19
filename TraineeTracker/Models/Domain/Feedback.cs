@@ -41,7 +41,7 @@ namespace TraineeTracker.Models.Domain {
             get; set;
         }
 
-        public required ICollection<ApplicationUser> UnreadByUsers {
+        public required ICollection<ApplicationUser> ReadByUsers {
             get; set;
         }
     }
