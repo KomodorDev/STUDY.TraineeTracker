@@ -40,12 +40,21 @@ namespace TraineeTracker.Data.Feedbacks {
         }
 
         // -------------------------------------------
-        public IEnumerable<Feedback> GetAllFeedbacksUnreadByUser(ApplicationUser user) {
+        public IEnumerable<Feedback> GetAllFeedbacksReadByUser(ApplicationUser user) {
             return _context.Feedbacks
-                .Where(f => f.UnreadByUsers.Any(u => u.Id == user.Id))
+                .Where(f => f.ReadByUsers.Any(u => u.Id == user.Id))
                 .ToList();
         }
-        
         // -------------------------------------------
+        public IEnumerable<Feedback> GetAllFeedbacksUnreadByUser(ApplicationUser user) {
+            return _context.Feedbacks
+                .Where(f => !f.ReadByUsers.Any(u => u.Id == user.Id))
+                .ToList();
+        }
+        // -------------------------------------------
+        
+
+
+
     }
 }
