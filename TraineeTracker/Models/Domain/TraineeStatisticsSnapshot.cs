@@ -5,6 +5,7 @@ namespace TraineeTracker.Models.Domain {
         public int Id { get; set; }
 
         public string userId { get; set; } = string.Empty;
+        public ApplicationUser Trainee { get; set; } = null!;
 
         // das Datum von dem Snapshot zu den einzelnen Kennzahlen
         public DateTime SnapshotDate { get; set; }
