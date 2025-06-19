@@ -20,22 +20,19 @@ namespace TraineeTracker.Data.TraineeStatistics {
                 s.SnapshotDate == snapshot.SnapshotDate);
         }
 
-        public bool Create(TraineeStatisticsSnapshot snapshot) {
+        public void Create(TraineeStatisticsSnapshot snapshot) {
             _context.TraineeStatisticsSnapshots.Add(snapshot);
             _context.SaveChanges();
-            return true;
         }
 
-        public bool Update(TraineeStatisticsSnapshot snapshot) {
+        public void Update(TraineeStatisticsSnapshot snapshot) {
             _context.TraineeStatisticsSnapshots.Update(snapshot);
             _context.SaveChanges();
-            return true;
         }
 
-        public bool Delete(TraineeStatisticsSnapshot snapshot) {
+        public void Delete(TraineeStatisticsSnapshot snapshot) {
             _context.TraineeStatisticsSnapshots.Remove(snapshot);
             _context.SaveChanges();
-            return true;
         }
 
         public IEnumerable<TraineeStatisticsSnapshot> GetAllTraineeStatisticsSnapshots(string traineeId) {
