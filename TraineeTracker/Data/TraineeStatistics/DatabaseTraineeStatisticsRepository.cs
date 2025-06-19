@@ -35,11 +35,15 @@ namespace TraineeTracker.Data.TraineeStatistics {
             _context.SaveChanges();
         }
 
-        public IEnumerable<TraineeStatisticsSnapshot> GetAllTraineeStatisticsSnapshots(string traineeId) {
-            return _context.TraineeStatisticsSnapshots
-                .Where(s => s.userId == traineeId)
-                .OrderByDescending(s => s.SnapshotDate)
-                .ToList();
+        public TraineeStatisticsSnapshot GetTraineeStatisticsSnapshot(string traineeId) {
+            var snapshot = _context.TraineeStatisticsSnapshots
+            .FirstOrDefault(s => s.TraineeId == traineeId);
+
+            if (snapshot == null) {
+            throw new InvalidOperationException($"No snapshot for trainee with ID '{traineeId}' found.");
+            }
+
+            return snapshot;
         }
     }
 }
