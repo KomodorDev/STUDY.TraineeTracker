@@ -9,6 +9,7 @@ namespace TraineeTracker.Data.Feedbacks {
 
         IEnumerable<Feedback> GetAllFeedbacksForLesson(Lesson lesson);
         IEnumerable<Feedback> GetAllFeedbacksWrittenByUser(ApplicationUser user);
+        IEnumerable<Feedback> GetAllFeedbacksReadByUser(ApplicationUser user);
         IEnumerable<Feedback> GetAllFeedbacksUnreadByUser(ApplicationUser user);
     }
 }
