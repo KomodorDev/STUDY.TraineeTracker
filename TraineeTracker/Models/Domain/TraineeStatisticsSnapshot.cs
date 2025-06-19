@@ -1,9 +1,7 @@
 using System;
 
-namespace TraineeTracker.Models
-{
-    public class TraineeStatisticsSnapshot
-    {
+namespace TraineeTracker.Models {
+    public class TraineeStatisticsSnapshot {
         public string userId { get; set; }
 
         // das Datum von dem Snapshot zu den einzelnen Kennzahlen
