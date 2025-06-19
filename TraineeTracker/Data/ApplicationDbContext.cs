@@ -6,7 +6,7 @@ namespace TraineeTracker.Data;
 
 public class ApplicationDbContext : IdentityDbContext {
 
-    public DbSet<EmailNotificationSettings> EmailNotificationSettings {
+    public DbSet<EmailNotificationSetting> EmailNotificationSettings {
         get; set;
     }
 

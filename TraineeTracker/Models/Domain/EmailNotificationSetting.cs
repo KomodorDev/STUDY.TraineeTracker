@@ -2,7 +2,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace TraineeTracker.Models.Domain
 {
-    public class EmailNotificationSettings
+    public class EmailNotificationSetting
     {
         [Key]
         public int EmailNotificationSettingsId { get; set; }
