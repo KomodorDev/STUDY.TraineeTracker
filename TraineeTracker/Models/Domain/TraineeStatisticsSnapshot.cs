@@ -2,7 +2,9 @@ using System;
 
 namespace TraineeTracker.Models.Domain {
     public class TraineeStatisticsSnapshot {
-        public string userId { get; set; }
+        public int Id { get; set; }
+
+        public string userId { get; set; } = string.Empty;
 
         // das Datum von dem Snapshot zu den einzelnen Kennzahlen
         public DateTime SnapshotDate { get; set; }
