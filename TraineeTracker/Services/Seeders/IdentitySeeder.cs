@@ -31,7 +31,11 @@ namespace TraineeTracker.Services.Seeders {
             foreach (var entry in userData) {
                 var user = await userManager.FindByEmailAsync(entry.Email);
                 if (user == null) {
-                    user = new ApplicationUser { Email = entry.Email };
+                    user = new ApplicationUser {
+                        UserName = entry.Email,
+                        Email = entry.Email,
+                        EmailConfirmed = true
+                    };
                     await userManager.CreateAsync(user, password);
                 }
                 if (!await userManager.IsInRoleAsync(user, entry.Role)) {
