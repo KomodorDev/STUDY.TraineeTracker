@@ -8,10 +8,9 @@ namespace TraineeTracker.Models.Domain
 
         public required DateTime LastUpdated { get; set; }
 
-        public required List<Lesson> Lessons { get; set; }
+        public required ICollection<Lesson> Lessons { get; set; } = new List<Lesson>();
 
-        public List<ApplicationUser> AffectedUsers { get; set; } = new();
+        public ICollection<ApplicationUser> AffectedUsers { get; set; } = new List<ApplicationUser>();
 
-        public TeachingPlan() {}
     }
 }
