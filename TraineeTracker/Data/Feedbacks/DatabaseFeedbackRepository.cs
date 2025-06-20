@@ -27,6 +27,20 @@ namespace TraineeTracker.Data.Feedbacks {
         }
 
         // -------------------------------------------
+        public void Delete(Feedback feedback) {
+            _context.Feedbacks.Remove(feedback);
+            _context.SaveChanges();
+        }
+
+        // -------------------------------------------
+        public void Delete(int feedbackId) {
+            var feedback = _context.Feedbacks.Find(feedbackId);
+            if (feedback != null) {
+                _context.Feedbacks.Remove(feedback);
+                _context.SaveChanges();
+            }
+        }
+        // -------------------------------------------
         public IEnumerable<Feedback> GetAllFeedbacksForLesson(Lesson lesson) {
             return _context.Feedbacks
                 .Include(f => f.Lesson)

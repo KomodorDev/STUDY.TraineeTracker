@@ -7,6 +7,9 @@ namespace TraineeTracker.Data.Feedbacks {
 
         void Create(Feedback feedback);
 
+        void Delete(Feedback feedback);
+        void Delete(int feedbackId);
+
         IEnumerable<Feedback> GetAllFeedbacksForLesson(Lesson lesson);
         IEnumerable<Feedback> GetAllFeedbacksWrittenByUser(ApplicationUser user);
         IEnumerable<Feedback> GetAllFeedbacksReadByUser(ApplicationUser user);
