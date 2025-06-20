@@ -1,5 +1,4 @@
 using TraineeTracker.Models.Domain;
-using System.Collections.Generic;
 
 namespace TraineeTracker.Data.TraineeStatistics {
     public interface ITraineeStatisticsRepository {

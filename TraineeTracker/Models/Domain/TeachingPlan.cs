@@ -1,6 +1,3 @@
-using System;
-using System.Collections.Generic;
-
 namespace TraineeTracker.Models.Domain
 {
     public class TeachingPlan
@@ -13,7 +10,7 @@ namespace TraineeTracker.Models.Domain
 
         public required List<Lesson> Lessons { get; set; }
 
-        public List<ApplicationUser> affectedUsers { get; set; } = new();
+        public List<ApplicationUser> AffectedUsers { get; set; } = new();
 
         public TeachingPlan() {}
     }
