@@ -20,19 +20,26 @@ namespace TraineeTracker.Models.Domain
         public DateTime LastUpdated { get; set; }
 
         [Required]
-        public List<Lesson> Lessons { get; set; }
+        private List<Lesson> Lessons;
+
+        [Required]
+        private List<ApplicationUser> affectedUsers;
 
         public TeachingPlan() {}
 
-        public TeachingPlan(int id, string name, DateTime updated, List<Lesson> lessons)
+        public TeachingPlan(int id, string name, DateTime updated, List<Lesson> lessons, List<ApplicationUser> affectedUsers)
         {
             if (lessons == null || lessons.Count == 0)
                 throw new ArgumentException("TeachingPlan braucht eine Lesson min!");
+
+            if(affectedUsers == null)
+                throw new ArgumentException("Null Exception");
 
             TeachingPlanId = id;
             Name = name;
             LastUpdated = updated;
             Lessons = lessons;
+            AffectedUsers = affectedUsers;
         }
     }
 }
