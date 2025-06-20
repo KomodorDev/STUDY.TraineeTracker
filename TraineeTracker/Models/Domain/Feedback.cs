@@ -1,12 +1,9 @@
 using System.ComponentModel.DataAnnotations;
 
-
 namespace TraineeTracker.Models.Domain {
 
     public class Feedback {
-        public int FeedbackId {
-            get; set;
-        }
+        public int FeedbackId { get; set; }
 
         [Range(1, 10)]
         public int Difficulty { get; set; }
