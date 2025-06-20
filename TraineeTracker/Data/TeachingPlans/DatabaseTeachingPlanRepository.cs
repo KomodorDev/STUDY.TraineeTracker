@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using TraineeTracker.Models.Domain;
+using Microsoft.EntityFrameworkCore;
 
 namespace TraineeTracker.Data.TeachingPlans
 {
@@ -46,13 +47,18 @@ namespace TraineeTracker.Data.TeachingPlans
         public Lesson GetLessonById(int id)
         {
             return _context.TeachingPlans
+            .Include(tp => tp.AffectedUsers)
+            .Include(tp => tp.Lessons)
             .SelectMany(tp => tp.Lessons)
             .FirstOrDefault(l => l.LessonId == id);
         }
 
         public IEnumerable<TeachingPlan> GetAllTeachingPlans()
         {
-            return _context.TeachingPlans.ToList();
+            return _context.TeachingPlans
+            .Include(tp => tp.Lessons)
+            .Include(tp => tp.AffectedUsers)
+            .ToList();
         }
     }
 }
