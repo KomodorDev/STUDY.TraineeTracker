@@ -7,9 +7,9 @@ namespace TraineeTracker.Data.ProcessingPauses
 {
     public class DatabaseProcessingPauseRepository : IProcessingPauseRepository
     {
-        private readonly AppDbContext _context;
+        private readonly ApplicationDbContext _context;
 
-        public DatabaseProcessingPauseRepository(AppDbContext context)
+        public DatabaseProcessingPauseRepository(ApplicationDbContext context)
         {
             _context = context;
         }
