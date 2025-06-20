@@ -2,7 +2,7 @@ namespace TraineeTracker.Models.Domain
 {
     public class TraineeLesson {
 
-        // Id or {ClassName}Id => treated as primary key, not nullable, auto-incremented
+        // Id or {ClassName}Id -> treated as primary key, not nullable, auto-incremented
         public int TraineeLessonId { get; set; }
 
         public required string UserId { get; set; }
