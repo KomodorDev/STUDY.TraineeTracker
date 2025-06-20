@@ -8,8 +8,6 @@ namespace TraineeTracker.Models.Domain
 {
     public class Lesson
     {
-        public required int TeachingPlanId { get; set; }
-
         public required int LessonId { get; set; }
 
         public required string Title { get; set; }
