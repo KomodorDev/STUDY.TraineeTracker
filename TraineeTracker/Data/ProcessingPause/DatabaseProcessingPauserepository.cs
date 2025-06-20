@@ -1,9 +1,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
-using TraineeTracker.Models;
+using TraineeTracker.Models.Domain;
 
-namespace YourNamespace.Data.ProcessingPause
+namespace TraineeTracker.Data.ProcessingPause
 {
     public class DatabaseProcessingPauseRepository : IProcessingPauseRepository
     {
