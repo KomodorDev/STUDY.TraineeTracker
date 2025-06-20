@@ -16,7 +16,7 @@ namespace TraineeTracker.Data.TeachingPlans
 
         void Delete(TeachingPlan teachingPlan);
 
-        Lesson GetLessonById(int id);
+        Lesson GetTeachingPlanById(int id);
 
         IEnumerable<TeachingPlan> GetAllTeachingPlans();
     }

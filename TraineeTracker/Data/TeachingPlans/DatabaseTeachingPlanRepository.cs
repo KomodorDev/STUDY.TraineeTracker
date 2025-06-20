@@ -44,7 +44,7 @@ namespace TraineeTracker.Data.TeachingPlans
             _context.SaveChanges();
         }
 
-        public Lesson GetLessonById(int id)
+        public Lesson GetTeachingPlanById(int id)
         {
             return _context.TeachingPlans
             .Include(tp => tp.AffectedUsers)
