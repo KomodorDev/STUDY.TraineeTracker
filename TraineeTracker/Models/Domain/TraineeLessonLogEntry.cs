@@ -1,6 +1,6 @@
 namespace TraineeTracker.Models.Domain {
     public class TraineeLessonLogEntry {
-        public int Id { get; set; } // Primary key for EF
+        public int TraineeLessonLogEntryId { get; set; } // Primary key for EF
 
         // Lesson:
         public required int TraineeLessonId {
