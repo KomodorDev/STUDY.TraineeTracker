@@ -12,6 +12,5 @@ namespace TraineeTracker.Models.Domain
 
         public ICollection<ApplicationUser> AffectedUsers { get; set; } = new List<ApplicationUser>();
 
-        public TeachingPlan() {}
     }
 }
