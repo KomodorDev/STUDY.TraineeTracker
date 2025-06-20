@@ -1,7 +1,8 @@
 using System;
-using System.ComponentModel.DataAnnotations;
+using System.Collections.Generic;
+using System.Text.Json;
 using System.Text.Json.Serialization;
-using Microsoft.AspNetCore.Mvc;
+using System.IO;
 
 namespace TraineeTracker.Models.Domain
 {
@@ -9,13 +10,12 @@ namespace TraineeTracker.Models.Domain
     {
         public int TeachingPlanId { get; set; }
 
-        public string Name { get; set; }
+        public required string Name { get; set; }
 
-        public DateTime LastUpdated { get; set; }
+        public required DateTime LastUpdated { get; set; }
 
-        public List<Lesson> Lessons { get; set; } = new();
+        public required List<Lesson> Lessons { get; set; };
 
-        [JsonIgnore]
         public List<ApplicationUser> affectedUsers { get; set; } = new();
 
         public TeachingPlan() {}

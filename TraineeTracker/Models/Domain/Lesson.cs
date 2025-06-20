@@ -8,15 +8,17 @@ namespace TraineeTracker.Models.Domain
 {
     public class Lesson
     {
-        public int LessonId { get; set; }
+        public required int TeachingPlanId { get; set; }
 
-        public string Title { get; set; }
+        public required int LessonId { get; set; }
 
-        public double EstimatedEffort { get; set; }
+        public required string Title { get; set; }
+
+        public required double EstimatedEffort { get; set; }
 
         public string LinkUrl { get; set; }
 
-        public bool IsDeprecated { get; set; }
+        public bool IsInactive { get; set; }
 
         public List<Feedback> Feedbacks { get; set; } = new();
 
