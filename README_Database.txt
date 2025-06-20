@@ -10,7 +10,7 @@ testuser:
 simon.hinterreiter@uni-a.de 
 "
 " 
-SoPro.2025 
+Sopro.2025 
 "
 
 
@@ -18,3 +18,10 @@ Program darf erst mit "Kill Terminal" beendet werden wenn "
 sqlite3 Persistence/app.db "PRAGMA wal_checkpoint(FULL);
 "
 " gemacht wurde
+
+
+
+ASPNETCORE_ENVIRONMENT=Production dotnet ef migrations add InitalCreate
+
+
+ASPNETCORE_ENVIRONMENT=Production dotnet ef database update
