@@ -2,8 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using TraineeTracker.Models.Domain;
 
-namespace TraineeTracker.Data.TraineeLesson {
+namespace TraineeTracker.Data.TraineeLessons {
     public interface ITraineeLessonRepository {
         public bool Exists(int traineeLessonId);
         public bool Exists(TraineeLesson traineeLesson);
