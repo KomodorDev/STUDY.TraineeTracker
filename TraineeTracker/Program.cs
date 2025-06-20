@@ -1,6 +1,8 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Identity.UI.Services;
 using TraineeTracker.Data;
+using TraineeTracker.Data.TraineeStatistics;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -27,6 +29,18 @@ builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
     .AddEntityFrameworkStores<ApplicationDbContext>();
 builder.Services.AddControllersWithViews();
+
+
+
+// ----------------------------------------
+// Register Email Service
+builder.Services.Configure<EmailSettings>(builder.Configuration.GetSection("EmailSettings"));
+
+builder.Services.AddTransient<IEmailSender, GmailEmailSender>();
+
+// ----------------------------------------
+
+
 
 var app = builder.Build();
 

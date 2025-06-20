@@ -1,15 +1,13 @@
 ﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using TraineeTracker.Models.Domain;
 
 namespace TraineeTracker.Data;
 
-public class ApplicationDbContext : IdentityDbContext {
+public class ApplicationDbContext : IdentityDbContext
+{
 
-
-    // Lists
-    /*
-    public DbSet<TraineeLesson> TraineeLessons { get; set; }
-    */
+    public DbSet<TraineeStatisticsSnapshot> TraineeStatisticsSnapshots { get; set; }
 
     public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
         : base(options) {
