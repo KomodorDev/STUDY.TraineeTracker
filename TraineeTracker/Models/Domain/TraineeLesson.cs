@@ -1,18 +1,13 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
 namespace TraineeTracker.Models.Domain
 {
     public class TraineeLesson {
 
         // Key
-        public int TraineeLessonId { get; }
+        public int TraineeLessonId { get; set; }
 
-        public string UserId { get; }
+        public required string UserId { get; set; }
 
-        public TraineeLessonState State { get; set; }
+        public required TraineeLessonState State { get; set; }
 
         // only required if state is rejected
         public string? RejectionReason { get; set; }
@@ -21,16 +16,9 @@ namespace TraineeTracker.Models.Domain
 
         public DateOnly? DayFinished { get; set; }
         
-        public int LessonId { get; }
- 
-        // ---------- Constructors
-        public TraineeLesson() { }
+        public required int LessonId { get; set; }
 
-        public TraineeLesson(int lessonId, int traineeLessonId, string userId) {
-            LessonId = lessonId;
-            TraineeLessonId = traineeLessonId;
-            UserId = userId;
-            State = TraineeLessonState.Open;
+        public required Lesson Lesson { get; set; }
+
         }
-    }
 }

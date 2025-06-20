@@ -1,4 +1,3 @@
-using System.Runtime.CompilerServices;
 using Microsoft.AspNetCore.Identity;
 
 namespace TraineeTracker.Models.Domain {
