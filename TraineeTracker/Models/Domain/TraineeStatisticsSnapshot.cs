@@ -1,5 +1,3 @@
-using System;
-
 namespace TraineeTracker.Models.Domain {
     public class TraineeStatisticsSnapshot {
         public int TraineeStatisticsSnapshotId { get; set; }
