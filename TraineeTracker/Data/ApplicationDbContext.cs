@@ -1,16 +1,13 @@
 ﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
-using TraineeTracker.Models.Domain;
 
 namespace TraineeTracker.Data;
 
-public class ApplicationDbContext : IdentityDbContext {
-
-    public DbSet<EmailNotificationSetting> EmailNotificationSettings {
-        get; set;
-    }
-
+public class ApplicationDbContext : IdentityDbContext
+{
     public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
-        : base(options) {
+        : base(options)
+    {
     }
 }
+
