@@ -1,3 +1,4 @@
+using Microsoft.EntityFrameworkCore;
 
 using TraineeTracker.Models.Domain;
 
@@ -28,6 +29,9 @@ namespace TraineeTracker.Data.Feedbacks {
         // -------------------------------------------
         public IEnumerable<Feedback> GetAllFeedbacksForLesson(Lesson lesson) {
             return _context.Feedbacks
+                .Include(f => f.Lesson)
+                .Include(f => f.Author)
+                .Include(f => f.ReadByUsers)
                 .Where(f => f.LessonId == lesson.LessonId)
                 .ToList();
         }
@@ -35,6 +39,9 @@ namespace TraineeTracker.Data.Feedbacks {
         // -------------------------------------------
         public IEnumerable<Feedback> GetAllFeedbacksWrittenByUser(ApplicationUser user) {
             return _context.Feedbacks
+                .Include(f => f.Lesson)
+                .Include(f => f.Author)
+                .Include(f => f.ReadByUsers)
                 .Where(f => f.AuthorId == user.Id)
                 .ToList();
         }
@@ -42,12 +49,18 @@ namespace TraineeTracker.Data.Feedbacks {
         // -------------------------------------------
         public IEnumerable<Feedback> GetAllFeedbacksReadByUser(ApplicationUser user) {
             return _context.Feedbacks
+                .Include(f => f.Lesson)
+                .Include(f => f.Author)
+                .Include(f => f.ReadByUsers)
                 .Where(f => f.ReadByUsers.Any(u => u.Id == user.Id))
                 .ToList();
         }
         // -------------------------------------------
         public IEnumerable<Feedback> GetAllFeedbacksUnreadByUser(ApplicationUser user) {
             return _context.Feedbacks
+                .Include(f => f.Lesson)
+                .Include(f => f.Author)
+                .Include(f => f.ReadByUsers)
                 .Where(f => !f.ReadByUsers.Any(u => u.Id == user.Id))
                 .ToList();
         }
