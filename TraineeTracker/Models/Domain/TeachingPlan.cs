@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Tutorial_Project.Models
+namespace TraineeTracker.Models.Domain
 {
     public class TeachingPlan
     {
