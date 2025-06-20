@@ -8,6 +8,6 @@ namespace TraineeTracker.Data.TraineeStatistics {
         void Create(TraineeStatisticsSnapshot snapshot);
         void Update(TraineeStatisticsSnapshot snapshot);
         void Delete(TraineeStatisticsSnapshot snapshot);
-        IEnumerable<TraineeStatisticsSnapshot> GetAllTraineeStatisticsSnapshots(string traineeId);
+        TraineeStatisticsSnapshot GetTraineeStatisticsSnapshot(string traineeId);
     }
 }
