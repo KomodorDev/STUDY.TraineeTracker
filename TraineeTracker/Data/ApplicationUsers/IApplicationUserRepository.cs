@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using TraineeTracker.Models.Domain;
 
-namespace TraineeTracker.Data.ApplicationUser
+namespace TraineeTracker.Data.ApplicationUsers
 {
     public interface IApplicationUserRepository
     {

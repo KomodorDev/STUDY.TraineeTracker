@@ -3,7 +3,7 @@ using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using TraineeTracker.Models.Domain;
 
-namespace TraineeTracker.Data.ApplicationUser
+namespace TraineeTracker.Data.ApplicationUsers
 {
     public class DatabaseApplicationUserRepository : IApplicationUserRepository
     {

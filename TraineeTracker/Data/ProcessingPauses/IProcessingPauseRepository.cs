@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using TraineeTracker.Models.Domain;
 
-namespace TraineeTracker.Repositories
+namespace TraineeTracker.Data.ProcessingPauses
 {
     public interface IProcessingPauseRepository
     {
