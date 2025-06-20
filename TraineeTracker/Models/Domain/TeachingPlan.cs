@@ -19,13 +19,20 @@ namespace TraineeTracker.Models.Domain
         [JsonPropertyName("LastUpdated")]
         public DateTime LastUpdated { get; set; }
 
+        [Required]
+        public List<Lesson> Lessons { get; set; }
+
         public TeachingPlan() {}
 
-        public TeachingPlan(int id, string name, DateTime updated)
+        public TeachingPlan(int id, string name, DateTime updated, List<Lesson> lessons)
         {
+            if (lessons == null || lessons.Count == 0)
+                throw new ArgumentException("TeachingPlan braucht eine Lesson min!");
+
             TeachingPlanId = id;
             Name = name;
             LastUpdated = updated;
+            Lessons = lessons;
         }
     }
 }
