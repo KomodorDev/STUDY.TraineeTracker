@@ -25,6 +25,12 @@ namespace TraineeTracker.Data.Feedbacks {
             _context.Feedbacks.Add(feedback);
             _context.SaveChanges();
         }
+        // -------------------------------------------
+        public void Update(Feedback feedback)
+        {
+            _context.Feedbacks.Update(feedback);
+            _context.SaveChanges();
+        }
 
         // -------------------------------------------
         public void Delete(Feedback feedback) {
