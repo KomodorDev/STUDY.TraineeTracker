@@ -15,9 +15,9 @@ namespace TraineeTracker.Models.Domain
         public bool ReceiveRatedNotifications { get; set; }
 
         // Foreign key
-        public string UserId { get; set; } = null!;
+        public required string UserId { get; set; }
 
         // Navigation property
-        public ApplicationUser User { get; set; } = null!;
+        public required ApplicationUser User { get; set; }
     }
 }
