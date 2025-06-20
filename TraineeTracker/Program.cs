@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Identity.UI.Services;
 using TraineeTracker.Data;
 using TraineeTracker.Data.TraineeStatistics;
 
@@ -29,7 +30,17 @@ builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.Requ
     .AddEntityFrameworkStores<ApplicationDbContext>();
 builder.Services.AddControllersWithViews();
 
-builder.Services.AddScoped<ITraineeStatisticsRepository, DatabaseTraineeStatisticsRepository>();
+
+
+// ----------------------------------------
+// Register Email Service
+builder.Services.Configure<EmailSettings>(builder.Configuration.GetSection("EmailSettings"));
+
+builder.Services.AddTransient<IEmailSender, GmailEmailSender>();
+
+// ----------------------------------------
+
+
 
 var app = builder.Build();
 
