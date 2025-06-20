@@ -38,6 +38,60 @@ using (var scope = app.Services.CreateScope()) {
     await IdentitySeeder.SeedTestUsersAsync(serviceProvider);
 }
 
+// ---------------------------------------------
+using (var scope = app.Services.CreateScope())
+{
+    var userManager = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
+    var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+
+    var usersToSeed = new[]
+    {
+        new { Email = "simon.hinterreiter@uni-a.de", Role = "Admin" },
+        new { Email = "paul.schweizer@uni-a.de", Role = "Mentor" },
+        new { Email = "alexander.schlemmer@uni-a.de", Role = "Mentor" },
+        new { Email = "alexandros.blask@uni-a.de", Role = "Trainee" },
+        new { Email = "nikita.stefan@uni-a.de", Role = "Trainee" }
+    };
+
+    string password = "SoPro.2025";
+
+    foreach (var entry in usersToSeed)
+    {
+        if (!await roleManager.RoleExistsAsync(entry.Role))
+        {
+            await roleManager.CreateAsync(new IdentityRole(entry.Role));
+        }
+
+        var user = await userManager.FindByEmailAsync(entry.Email);
+        if (user == null)
+        {
+            user = new ApplicationUser
+            {
+                UserName = entry.Email,
+                Email = entry.Email,
+                EmailConfirmed = true
+                // EmailNotificationSettings = new EmailNotificationSettings() // ← vorerst auskommentiert
+            };
+
+            var result = await userManager.CreateAsync(user, password);
+            if (!result.Succeeded)
+            {
+                Console.WriteLine($"Fehler beim Erstellen von {entry.Email}:");
+                foreach (var error in result.Errors)
+                    Console.WriteLine($"- {error.Description}");
+                continue;
+            }
+        }
+
+        if (!await userManager.IsInRoleAsync(user, entry.Role))
+        {
+            await userManager.AddToRoleAsync(user, entry.Role);
+        }
+    }
+}
+
+
+// ---------------------------------------------
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment()) {
     app.UseMigrationsEndPoint();
