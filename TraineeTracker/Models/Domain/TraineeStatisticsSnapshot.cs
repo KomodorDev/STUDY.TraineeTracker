@@ -2,7 +2,7 @@ using System;
 
 namespace TraineeTracker.Models.Domain {
     public class TraineeStatisticsSnapshot {
-        public int Id { get; set; }
+        public int TraineeStatisticsSnapshotId { get; set; }
 
         public required string TraineeId { get; set; }
         public required ApplicationUser Trainee { get; set; }
