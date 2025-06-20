@@ -1,8 +1,4 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
+using Microsoft.EntityFrameworkCore;
 using TraineeTracker.Models.Domain;
 
 namespace TraineeTracker.Data.TraineeLessons {
@@ -39,15 +35,23 @@ namespace TraineeTracker.Data.TraineeLessons {
         }
 
         public IEnumerable<TraineeLesson> GetAllTraineeLessonsOfLesson(int lessonId) {
-            return _context.TraineeLessons.Where(tl => tl.LessonId == lessonId).ToList();
+            return _context.TraineeLessons
+                .Include(t => t.Lesson)
+                .Where(tl => tl.LessonId == lessonId)
+                .ToList();
         }
 
         public IEnumerable<TraineeLesson> GetAllTraineeLessonsOfTrainee(string traineeId) {
-            return _context.TraineeLessons.Where(tl => tl.UserId == traineeId);
+            return _context.TraineeLessons
+                .Include(t => t.Lesson)
+                .Where(tl => tl.UserId == traineeId)
+                .ToList();
         }
 
         public TraineeLesson? GetTraineeLessonById(int traineeLessonId) {
-            return _context.TraineeLessons.FirstOrDefault(tl => tl.TraineeLessonId == traineeLessonId);
+            return _context.TraineeLessons
+                .Include(t => t.Lesson)
+                .FirstOrDefault(tl => tl.TraineeLessonId == traineeLessonId);
         }
     }
 }
