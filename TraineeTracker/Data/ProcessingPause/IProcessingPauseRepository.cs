@@ -1,6 +1,7 @@
 using System.Collections.Generic;
+using TraineeTracker.Models.Domain;
 
-namespace YourNamespace.Repositories
+namespace TraineeTracker.Repositories
 {
     public interface IProcessingPauseRepository
     {
