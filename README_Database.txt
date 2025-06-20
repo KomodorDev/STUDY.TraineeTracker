@@ -10,7 +10,7 @@ testuser:
 simon.hinterreiter@uni-a.de 
 "
 " 
-SoPro.2025 
+Sopro.2025 
 "
 
 
