@@ -7,17 +7,17 @@ namespace TraineeTracker.Models.Domain {
             private set;
         }
 
-        public int TraineeId {
+        public required int TraineeId {
             get;
             set;
         }
 
-        public DateTime StartDate {
+        public required DateTime StartDate {
             get;
             set;
         }
 
-        public DateTime EndDate {
+        public required DateTime EndDate {
             get;
             set;
         }
