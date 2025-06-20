@@ -7,7 +7,7 @@ namespace TraineeTracker.Models.Domain
 
         public required string UserId { get; set; }
 
-        public required TraineeLessonState State { get; set; }
+        public TraineeLessonState State { get; set; } = TraineeLessonState.Open;
 
         // only required if state is rejected
         public string? RejectionReason { get; set; }
