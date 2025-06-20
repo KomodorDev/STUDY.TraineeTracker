@@ -11,12 +11,11 @@ namespace TraineeTracker.Models.Domain
 
         public required double EstimatedEffort { get; set; }
 
-        public string LinkUrl { get; set; }
+        public required string LinkUrl { get; set; }
 
-        public bool IsInactive { get; set; }
+        public bool IsInactive { get; set; } = false;
 
         public List<Feedback> Feedbacks { get; set; } = new();
 
-        public Lesson() {}
     }
 }

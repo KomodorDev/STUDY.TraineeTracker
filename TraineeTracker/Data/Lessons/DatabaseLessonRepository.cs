@@ -45,7 +45,7 @@ namespace TraineeTracker.Data.Lessons
             _context.SaveChanges();
         }
 
-        public Lesson GetLessonById(int id)
+        public Lesson? GetLessonById(int id)
         {
             return _context.Lessons
             .Include(l => l.Feedbacks)

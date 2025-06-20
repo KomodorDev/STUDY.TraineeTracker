@@ -1,5 +1,4 @@
 using Microsoft.EntityFrameworkCore;
-
 using TraineeTracker.Models.Domain;
 
 namespace TraineeTracker.Data.Feedbacks {
