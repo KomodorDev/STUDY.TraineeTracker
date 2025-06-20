@@ -16,7 +16,8 @@ namespace TraineeTracker.Models.Domain {
             get;
             set;
         }
-        public List<ProcessingPause> ProcessingPauses;
-        public List<TraineeLesson> TraineeLessons;
+        public ICollection<ProcessingPause> ProcessingPauses { get; set; } = new List<ProcessingPause>();
+        public List<TraineeLesson> TraineeLessons { get; set; } = new List<TraineeLesson>();
+
     }
 }
