@@ -4,7 +4,7 @@ using TraineeTracker.Models.Domain;
 
 namespace TraineeTracker.Data;
 
-public class ApplicationDbContext : IdentityDbContext
+public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
 {
 
     public DbSet<TraineeStatisticsSnapshot> TraineeStatisticsSnapshots { get; set; }
