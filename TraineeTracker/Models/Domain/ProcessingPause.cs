@@ -1,16 +1,16 @@
-using Microsoft.AspNetCore.Identity;
-
 namespace TraineeTracker.Models.Domain {
     public class ProcessingPause {
-        public int Id {
+        public int ProcessingPauseId {
             get;
             private set;
         }
 
-        public required int TraineeId {
+        public required string TraineeId {
             get;
             set;
         }
+
+        public required ApplicationUser Trainee { get; set; }
 
         public required DateTime StartDate {
             get;
