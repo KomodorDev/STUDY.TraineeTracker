@@ -7,6 +7,8 @@ namespace TraineeTracker.Data.Feedbacks {
 
         void Create(Feedback feedback);
 
+        void Update(Feedback feedback);
+
         void Delete(Feedback feedback);
         void Delete(int feedbackId);
 
