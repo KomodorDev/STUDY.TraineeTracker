@@ -35,6 +35,7 @@ var app = builder.Build();
 using (var scope = app.Services.CreateScope()) {
     var serviceProvider = scope.ServiceProvider;
     await IdentitySeeder.SeedRolesAsync(serviceProvider);
+    await IdentitySeeder.SeedTestUsersAsync(serviceProvider);
 }
 
 // Configure the HTTP request pipeline.
