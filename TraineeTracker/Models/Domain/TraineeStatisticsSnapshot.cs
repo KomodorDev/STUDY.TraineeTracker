@@ -4,8 +4,8 @@ namespace TraineeTracker.Models.Domain {
     public class TraineeStatisticsSnapshot {
         public int Id { get; set; }
 
-        public string TraineeId { get; set; } = string.Empty;
-        public ApplicationUser Trainee { get; set; } = null!;
+        public required string TraineeId { get; set; } = string.Empty;
+        public required ApplicationUser Trainee { get; set; } = null!;
 
         // das Datum von dem Snapshot zu den einzelnen Kennzahlen
         public DateTime SnapshotDate { get; set; }
