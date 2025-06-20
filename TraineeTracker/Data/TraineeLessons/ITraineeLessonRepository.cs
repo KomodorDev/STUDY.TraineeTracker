@@ -11,7 +11,7 @@ namespace TraineeTracker.Data.TraineeLessons {
         public void Create(TraineeLesson traineeLesson);
         public void CreateRange(IEnumerable<TraineeLesson> traineeLessons);
         public void Update(TraineeLesson traineeLesson);
-        public TraineeLesson GetTraineeLessonById(int traineeLessonId);
+        public TraineeLesson? GetTraineeLessonById(int traineeLessonId);
         public IEnumerable<TraineeLesson> GetAllTraineeLessonsOfTrainee(string traineeId);
         public IEnumerable<TraineeLesson> GetAllTraineeLessonsOfLesson(int lessonId);
     }
