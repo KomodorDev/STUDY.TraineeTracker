@@ -9,9 +9,7 @@ namespace TraineeTracker.Models.Domain
         
         public required ApplicationUser Trainee { get; set; }
 
-        public required TraineeLessonState State {
-            get; set;
-        }
+        public required TraineeLessonState State { get; set; }
 
         // only required if state is rejected
         public string? RejectionReason { get; set; }
