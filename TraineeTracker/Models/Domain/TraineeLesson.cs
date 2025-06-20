@@ -30,6 +30,7 @@ namespace TraineeTracker.Models.Domain
             LessonId = lessonId;
             TraineeLessonId = traineeLessonId;
             UserId = userId;
+            State = TraineeLessonState.Open;
         }
     }
 }
