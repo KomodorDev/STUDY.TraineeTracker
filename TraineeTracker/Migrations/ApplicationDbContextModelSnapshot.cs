@@ -640,7 +640,7 @@ namespace TraineeTracker.Migrations
             modelBuilder.Entity("TraineeTracker.Models.Domain.TraineeLesson", b =>
                 {
                     b.HasOne("TraineeTracker.Models.Domain.Lesson", "Lesson")
-                        .WithMany()
+                        .WithMany("TraineeLessons")
                         .HasForeignKey("LessonId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -683,6 +683,8 @@ namespace TraineeTracker.Migrations
             modelBuilder.Entity("TraineeTracker.Models.Domain.Lesson", b =>
                 {
                     b.Navigation("Feedbacks");
+
+                    b.Navigation("TraineeLessons");
                 });
 
             modelBuilder.Entity("TraineeTracker.Models.Domain.TeachingPlan", b =>
