@@ -16,7 +16,7 @@ namespace TraineeTracker.Data.TraineeStatistics {
 
         public bool Exists(TraineeStatisticsSnapshot snapshot) {
             return _context.TraineeStatisticsSnapshots.Any(s =>
-                s.userId == snapshot.userId &&
+                s.TraineeId == snapshot.TraineeId &&
                 s.SnapshotDate == snapshot.SnapshotDate);
         }
 
