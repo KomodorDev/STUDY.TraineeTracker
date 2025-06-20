@@ -1,41 +1,25 @@
 using System;
-using System.ComponentModel.DataAnnotations;
+using System.Collections.Generic;
+using System.Text.Json;
 using System.Text.Json.Serialization;
-using Microsoft.AspNetCore.Mvc;
+using System.IO;
 
 namespace TraineeTracker.Models.Domain
 {
     public class Lesson
     {
-        [Required]
-        [JsonPropertyName("LessonId")]
         public int LessonId { get; set; }
 
-        [Required]
-        [JsonPropertyName("Title")]
         public string Title { get; set; }
 
-        [Required]
-        [JsonPropertyName("EstimatedEffort")]
         public double EstimatedEffort { get; set; }
 
-        [Required]
-        [Url]
-        [JsonPropertyName("LinkUrl")]
         public string LinkUrl { get; set; }
 
-        [Required]
-        [JsonPropertyName("IsDepracated")]
-        public bool IsDepracated { get; set; }
+        public bool IsDeprecated { get; set; }
+
+        public List<Feedback> Feedbacks { get; set; } = new();
 
         public Lesson() {}
-
-        public Lesson(int id, string title, string url, double time)
-        {
-            LessonId = id;
-            Title = title;
-            EstimatedEffort = time;
-            LinkUrl = url;
-        }
     }
 }
