@@ -2,45 +2,34 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using System.ComponentModel.DataAnnotations;  // for [Required]
 
 namespace TraineeTracker.Models.Domain
 {
-    public class TraineeLesson : IValidatableObject {
+    public class TraineeLesson {
 
-        [Required]
-        private int _traineeLessonId { get; }
+        // Key
+        public int TraineeLessonId { get; }
 
-        [Required]
-        private string _userId { get; }
+        public string UserId { get; }
 
-        [Required]
-        private TraineeLessonState _state { get; set; }
+        public TraineeLessonState State { get; set; }
 
-        private string? _rejectionReason { get; set; }
+        // only required if state is rejected
+        public string? RejectionReason { get; set; }
 
-        private DateOnly? _dayStarted { get; set; }
+        public DateOnly? DayStarted { get; set; }
 
-        private DateOnly? _dayFinished { get; set; }
+        public DateOnly? DayFinished { get; set; }
+        
+        public int LessonId { get; }
+ 
+        // ---------- Constructors
+        public TraineeLesson() { }
 
-        [Required]
-        private Lesson _lesson { get; } //set?
-
-        public TraineeLesson(int traineeLessonId, string userId, Lesson lesson) {
-            _traineeLessonId = traineeLessonId;
-            _userId = userId;
-            _state = /*openstate*/
-            _lesson = lesson;
-        }
-
-        // rejectionReason not null or empty when state is rejected
-        public IEnumerable<ValidationResult> Validate(ValidationContext validationContext) {
-            if (_state == /*HIERMUSSRejectedSTATEREIN*/ && String.IsNullOrEmpty(_rejectionReason)) {
-                yield return new ValidationResult(
-                    "rejectionReason is required when state is \"Rejected\"",
-                    new[] { nameof(_rejectionReason) }
-                );
-            }
+        public TraineeLesson(int lessonId, int traineeLessonId, string userId) {
+            LessonId = lessonId;
+            TraineeLessonId = traineeLessonId;
+            UserId = userId;
         }
     }
 }
