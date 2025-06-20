@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using TraineeTracker.Data;
+using TraineeTracker.Data.TraineeStatistics;
 
 var builder = WebApplication.CreateBuilder(args);
 
