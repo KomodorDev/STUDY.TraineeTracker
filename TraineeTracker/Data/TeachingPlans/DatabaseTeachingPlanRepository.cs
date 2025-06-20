@@ -44,13 +44,13 @@ namespace TraineeTracker.Data.TeachingPlans
             _context.SaveChanges();
         }
 
-        public Lesson GetTeachingPlanById(int id)
+        public TeachingPlan? GetTeachingPlanById(int id)
         {
             return _context.TeachingPlans
-            .Include(tp => tp.AffectedUsers)
-            .Include(tp => tp.Lessons)
-            .SelectMany(tp => tp.Lessons)
-            .FirstOrDefault(l => l.LessonId == id);
+                .Include(tp => tp.AffectedUsers)
+                .Include(tp => tp.Lessons)
+                .FirstOrDefault(tp => tp.TeachingPlanId == id);
+
         }
 
         public IEnumerable<TeachingPlan> GetAllTeachingPlans()
