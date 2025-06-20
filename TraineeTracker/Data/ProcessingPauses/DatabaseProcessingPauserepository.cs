@@ -3,7 +3,7 @@ using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using TraineeTracker.Models.Domain;
 
-namespace TraineeTracker.Data.ProcessingPause
+namespace TraineeTracker.Data.ProcessingPauses
 {
     public class DatabaseProcessingPauseRepository : IProcessingPauseRepository
     {
