@@ -12,6 +12,7 @@ namespace TraineeTracker.Services.TraineeLessonStates.States {
                 // Mentor/Admin can go to any state
                 transitions.Add(TraineeLessonState.Rejected);
                 transitions.Add(TraineeLessonState.Accepted);
+                transitions.Add(TraineeLessonState.Started);
             }
 
             if (user.IsInRole("Trainee")) {
