@@ -4,8 +4,6 @@ using TraineeTracker.Models.Domain;
 
 namespace TraineeTracker.Data;
 
-using TraineeTracker.Models.Domain; // for TraineeLesson
-
 public class ApplicationDbContext : IdentityDbContext
 {
 
