@@ -12,18 +12,20 @@ using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.WebUtilities;
-using TraineeTracker.Models.Domain;
 
-namespace TraineeTracker.Areas.Identity.Pages.Account.Manage {
-    public class EmailModel : PageModel {
-        private readonly UserManager<ApplicationUser> _userManager;
-        private readonly SignInManager<ApplicationUser> _signInManager;
+namespace TraineeTracker.Areas.Identity.Pages.Account.Manage
+{
+    public class EmailModel : PageModel
+    {
+        private readonly UserManager<IdentityUser> _userManager;
+        private readonly SignInManager<IdentityUser> _signInManager;
         private readonly IEmailSender _emailSender;
 
         public EmailModel(
-            UserManager<ApplicationUser> userManager,
-            SignInManager<ApplicationUser> signInManager,
-            IEmailSender emailSender) {
+            UserManager<IdentityUser> userManager,
+            SignInManager<IdentityUser> signInManager,
+            IEmailSender emailSender)
+        {
             _userManager = userManager;
             _signInManager = signInManager;
             _emailSender = emailSender;
@@ -33,41 +35,34 @@ namespace TraineeTracker.Areas.Identity.Pages.Account.Manage {
         ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
         ///     directly from your code. This API may change or be removed in future releases.
         /// </summary>
-        public string Email {
-            get; set;
-        }
+        public string Email { get; set; }
 
         /// <summary>
         ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
         ///     directly from your code. This API may change or be removed in future releases.
         /// </summary>
-        public bool IsEmailConfirmed {
-            get; set;
-        }
+        public bool IsEmailConfirmed { get; set; }
 
         /// <summary>
         ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
         ///     directly from your code. This API may change or be removed in future releases.
         /// </summary>
         [TempData]
-        public string StatusMessage {
-            get; set;
-        }
+        public string StatusMessage { get; set; }
 
         /// <summary>
         ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
         ///     directly from your code. This API may change or be removed in future releases.
         /// </summary>
         [BindProperty]
-        public InputModel Input {
-            get; set;
-        }
+        public InputModel Input { get; set; }
 
         /// <summary>
         ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
         ///     directly from your code. This API may change or be removed in future releases.
         /// </summary>
-        public class InputModel {
+        public class InputModel
+        {
             /// <summary>
             ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
             ///     directly from your code. This API may change or be removed in future releases.
@@ -75,25 +70,27 @@ namespace TraineeTracker.Areas.Identity.Pages.Account.Manage {
             [Required]
             [EmailAddress]
             [Display(Name = "New email")]
-            public string NewEmail {
-                get; set;
-            }
+            public string NewEmail { get; set; }
         }
 
-        private async Task LoadAsync(ApplicationUser user) {
+        private async Task LoadAsync(IdentityUser user)
+        {
             var email = await _userManager.GetEmailAsync(user);
             Email = email;
 
-            Input = new InputModel {
+            Input = new InputModel
+            {
                 NewEmail = email,
             };
 
             IsEmailConfirmed = await _userManager.IsEmailConfirmedAsync(user);
         }
 
-        public async Task<IActionResult> OnGetAsync() {
+        public async Task<IActionResult> OnGetAsync()
+        {
             var user = await _userManager.GetUserAsync(User);
-            if (user == null) {
+            if (user == null)
+            {
                 return NotFound($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
             }
 
@@ -101,31 +98,30 @@ namespace TraineeTracker.Areas.Identity.Pages.Account.Manage {
             return Page();
         }
 
-        public async Task<IActionResult> OnPostChangeEmailAsync() {
+        public async Task<IActionResult> OnPostChangeEmailAsync()
+        {
             var user = await _userManager.GetUserAsync(User);
-            if (user == null) {
+            if (user == null)
+            {
                 return NotFound($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
             }
 
-            if (!ModelState.IsValid) {
+            if (!ModelState.IsValid)
+            {
                 await LoadAsync(user);
                 return Page();
             }
 
             var email = await _userManager.GetEmailAsync(user);
-            if (Input.NewEmail != email) {
+            if (Input.NewEmail != email)
+            {
                 var userId = await _userManager.GetUserIdAsync(user);
                 var code = await _userManager.GenerateChangeEmailTokenAsync(user, Input.NewEmail);
                 code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
                 var callbackUrl = Url.Page(
                     "/Account/ConfirmEmailChange",
                     pageHandler: null,
-                    values: new {
-                        area = "Identity",
-                        userId = userId,
-                        email = Input.NewEmail,
-                        code = code
-                    },
+                    values: new { area = "Identity", userId = userId, email = Input.NewEmail, code = code },
                     protocol: Request.Scheme);
                 await _emailSender.SendEmailAsync(
                     Input.NewEmail,
@@ -140,13 +136,16 @@ namespace TraineeTracker.Areas.Identity.Pages.Account.Manage {
             return RedirectToPage();
         }
 
-        public async Task<IActionResult> OnPostSendVerificationEmailAsync() {
+        public async Task<IActionResult> OnPostSendVerificationEmailAsync()
+        {
             var user = await _userManager.GetUserAsync(User);
-            if (user == null) {
+            if (user == null)
+            {
                 return NotFound($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
             }
 
-            if (!ModelState.IsValid) {
+            if (!ModelState.IsValid)
+            {
                 await LoadAsync(user);
                 return Page();
             }
@@ -158,11 +157,7 @@ namespace TraineeTracker.Areas.Identity.Pages.Account.Manage {
             var callbackUrl = Url.Page(
                 "/Account/ConfirmEmail",
                 pageHandler: null,
-                values: new {
-                    area = "Identity",
-                    userId = userId,
-                    code = code
-                },
+                values: new { area = "Identity", userId = userId, code = code },
                 protocol: Request.Scheme);
             await _emailSender.SendEmailAsync(
                 email,
