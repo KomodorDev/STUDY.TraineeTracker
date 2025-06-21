@@ -5,14 +5,16 @@ namespace TraineeTracker.Data.ProcessingPauses
 {
     public interface IProcessingPauseRepository
     {
-        bool Exists(ProcessingPause processingPause);
+        public bool Exists(int processingPauseId);
 
-        void Create(ProcessingPause processingPause);
+        public bool Exists(ProcessingPause processingPause);
 
-        void Update(ProcessingPause processingPause);
+        public void Create(ProcessingPause processingPause);
 
-        void Delete(ProcessingPause processingPause);
+        public void Update(ProcessingPause processingPause);
 
-        IEnumerable<ProcessingPause> GetAllPauses();
+        public void Delete(ProcessingPause processingPause);
+
+        public IEnumerable<ProcessingPause> GetAllPauses();
     }
 }
