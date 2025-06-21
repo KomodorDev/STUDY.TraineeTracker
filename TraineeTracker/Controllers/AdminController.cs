@@ -63,6 +63,24 @@ namespace TraineeTracker.Controllers {
             return RedirectToAction("ManageUsers");
         }
 
+        [HttpGet]
+        public IActionResult CreateProcessingPause() {
+            return View();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> CreateProcessingPauseAsync(string userId, ProcessingPauseDto dto) {
+            if (!ModelState.IsValid) {
+                return View(dto);
+            }
+            var result = await _adminService.CreateProcessingPauseAsync(userId, dto);
+            if (!result.Succeeded) {
+                ModelState.AddModelError("", result.ErrorMessage);
+                return View(dto);
+            }
+            return RedirectToAction("ManageUsers");
+        }
+
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error() {
             return View("Error!");
