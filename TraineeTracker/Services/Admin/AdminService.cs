@@ -9,6 +9,17 @@ namespace TraineeTracker.Services.Admin {
         public AdminService(IApplicationUserRepository applicationUserRepository) {
             _applicationUserRepository = applicationUserRepository;
         }
+
+        public async Task<bool> CloseUserAsync(string userId) {
+            var user = await _applicationUserRepository.GetByIdAsync(userId);
+            if (user == null) {
+                return false;
+            }
+            user.IsClosed = true;
+            _applicationUserRepository.Update(user);
+            return true;
+        }
+
         public async Task<IdentityResult> CreateUserAsync(ApplicationUserDto dto) {
             var user = new ApplicationUser {
                 UserName = dto.Email,
