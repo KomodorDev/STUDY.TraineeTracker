@@ -45,6 +45,15 @@ namespace TraineeTracker.Controllers {
             return View(dto);
         }
 
+        [HttpPost]
+        public async Task<IActionResult> CloseUserAsync(string userId) {
+            var success = await _adminService.CloseUserAsync(userId);
+            if (!success) {
+                return NotFound();
+            }
+            return RedirectToAction("ManageUsers");
+        }
+
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error() {
             return View("Error!");
