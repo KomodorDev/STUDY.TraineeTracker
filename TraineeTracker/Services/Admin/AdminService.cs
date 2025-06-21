@@ -10,12 +10,12 @@ namespace TraineeTracker.Services.Admin {
             _applicationUserRepository = applicationUserRepository;
         }
 
-        public async Task<bool> CloseUserAsync(string userId) {
+        public async Task<bool> SetIsClosedAsync(string userId, bool isClosed) {
             var user = await _applicationUserRepository.GetByIdAsync(userId);
             if (user == null) {
                 return false;
             }
-            user.IsClosed = true;
+            user.IsClosed = isClosed;
             _applicationUserRepository.Update(user);
             return true;
         }
