@@ -4,14 +4,11 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
 using TraineeTracker.Models.Domain;
 
-namespace TraineeTracker.Data.ApplicationUsers
-{
-    public class DatabaseApplicationUserRepository : IApplicationUserRepository
-    {
+namespace TraineeTracker.Data.ApplicationUsers {
+    public class DatabaseApplicationUserRepository : IApplicationUserRepository {
         private readonly UserManager<ApplicationUser> _userManager;
 
-        public DatabaseApplicationUserRepository(UserManager<ApplicationUser> userManager)
-        {
+        public DatabaseApplicationUserRepository(UserManager<ApplicationUser> userManager) {
             _userManager = userManager;
         }
 
@@ -25,19 +22,8 @@ namespace TraineeTracker.Data.ApplicationUsers
             return user != null;
         }
 
-        public async Task<IEnumerable<ApplicationUser>> GetAllTraineesAsync()
-        {
-            return await _userManager.GetUsersInRoleAsync("Trainee");
-        }
-
-        public async Task<IEnumerable<ApplicationUser>> GetAllMentorsAsync()
-        {
-            return await _userManager.GetUsersInRoleAsync("Mentor");
-        }
-
-        public async Task<IEnumerable<ApplicationUser>> GetAllAdminsAsync()
-        {
-            return await _userManager.GetUsersInRoleAsync("Admin");
+        public async Task<IEnumerable<ApplicationUser>> GetUsersInRoleAsync(string roleName) {
+            return await _userManager.GetUsersInRoleAsync(roleName);
         }
     }
 }
