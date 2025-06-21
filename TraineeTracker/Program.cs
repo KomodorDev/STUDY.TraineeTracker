@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Identity.UI.Services;
 using TraineeTracker.Data;
 using TraineeTracker.Models.Domain;
 using TraineeTracker.Services.Seeders;
+using TraineeTracker.Services.Admin;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -30,7 +31,8 @@ builder.Services.AddDefaultIdentity<ApplicationUser>(options => options.SignIn.R
     .AddEntityFrameworkStores<ApplicationDbContext>();
 builder.Services.AddControllersWithViews();
 
-
+// Controller Services
+builder.Services.AddScoped<AdminService>();
 
 // ----------------------------------------
 // Register Email Service
