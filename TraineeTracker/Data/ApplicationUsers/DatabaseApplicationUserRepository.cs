@@ -12,6 +12,14 @@ namespace TraineeTracker.Data.ApplicationUsers {
             _userManager = userManager;
         }
 
+        public async Task AddToRoleAsync(ApplicationUser user, string role) {
+            await _userManager.AddToRoleAsync(user, role);
+        }
+
+        public async Task CreateAsync(ApplicationUser user, string password) {
+            await _userManager.CreateAsync(user, password);
+        }
+
         public async Task<bool> ExistsAsync(int applicationUserId) {
             var user = await _userManager.FindByIdAsync(applicationUserId.ToString());
             return user != null;
@@ -22,8 +30,16 @@ namespace TraineeTracker.Data.ApplicationUsers {
             return user != null;
         }
 
+        public async Task<ApplicationUser?> FindByEmailAsync(string email) {
+            return await _userManager.FindByEmailAsync(email);
+        }
+
         public async Task<IEnumerable<ApplicationUser>> GetUsersInRoleAsync(string roleName) {
             return await _userManager.GetUsersInRoleAsync(roleName);
+        }
+
+        public async Task<bool> IsInRoleAsync(ApplicationUser user, string role) {
+            return await _userManager.IsInRoleAsync(user, role);
         }
     }
 }
