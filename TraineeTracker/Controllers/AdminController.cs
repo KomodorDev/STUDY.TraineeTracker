@@ -47,7 +47,16 @@ namespace TraineeTracker.Controllers {
 
         [HttpPost]
         public async Task<IActionResult> CloseUserAsync(string userId) {
-            var success = await _adminService.CloseUserAsync(userId);
+            var success = await _adminService.SetIsClosedAsync(userId, true);
+            if (!success) {
+                return NotFound();
+            }
+            return RedirectToAction("ManageUsers");
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> OpenUserAsync(string userId) {
+            var success = await _adminService.SetIsClosedAsync(userId, false);
             if (!success) {
                 return NotFound();
             }
