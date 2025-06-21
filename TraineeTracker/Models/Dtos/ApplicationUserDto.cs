@@ -1,7 +1,11 @@
+using System.ComponentModel.DataAnnotations;
+
 namespace TraineeTracker.Models.Dtos {
     public class ApplicationUserDto {
-        public String Email { get; set; }
-        public String Password { get; set; }
-        public String Role { get; set; }
+        public required String Email { get; set; }
+
+        public required String Password { get; set; }
+        
+        public required String Role { get; set; }
     }
 }
