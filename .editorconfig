@@ -86,5 +86,6 @@ dotnet_naming_style.interface_prefix_style.required_prefix = I
 # Max. Zeilenlänge: 120
 max_line_length = 120
 
-# Statements umbrechen mit 4 Leerzeichen Einrückung
+# Argumente umbrechen mit 4 Leerzeichen Einrückung
 csharp_preserve_single_line_statements = false
+csharp_preserve_single_line_blocks = false
