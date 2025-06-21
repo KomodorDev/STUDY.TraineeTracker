@@ -15,24 +15,29 @@ namespace TraineeTracker.Data.ApplicationUsers
             _userManager = userManager;
         }
 
-        public bool Exists(ApplicationUser applicationUser)
-        {
-            return _userManager.Users.Any(u => u.Id == applicationUser.Id);
+        public async Task<bool> ExistsAsync(int applicationUserId) {
+            var user = await _userManager.FindByIdAsync(applicationUserId.ToString());
+            return user != null;
         }
 
-        public IEnumerable<ApplicationUser> GetAllTrainees()
-        {
-            return _userManager.GetUsersInRoleAsync("Trainee").Result;
+        public async Task<bool> ExistsAsync(ApplicationUser applicationUser) {
+            var user = await _userManager.FindByIdAsync(applicationUser.Id);
+            return user != null;
         }
 
-        public IEnumerable<ApplicationUser> GetAllMentors()
+        public async Task<IEnumerable<ApplicationUser>> GetAllTraineesAsync()
         {
-            return _userManager.GetUsersInRoleAsync("Mentor").Result;
+            return await _userManager.GetUsersInRoleAsync("Trainee");
         }
 
-        public IEnumerable<ApplicationUser> GetAllAdmins()
+        public async Task<IEnumerable<ApplicationUser>> GetAllMentorsAsync()
         {
-            return _userManager.GetUsersInRoleAsync("Admin").Result;
+            return await _userManager.GetUsersInRoleAsync("Mentor");
+        }
+
+        public async Task<IEnumerable<ApplicationUser>> GetAllAdminsAsync()
+        {
+            return await _userManager.GetUsersInRoleAsync("Admin");
         }
     }
 }
