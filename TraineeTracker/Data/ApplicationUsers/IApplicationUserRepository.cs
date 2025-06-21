@@ -5,12 +5,14 @@ namespace TraineeTracker.Data.ApplicationUsers
 {
     public interface IApplicationUserRepository
     {
-        bool Exists(ApplicationUser applicationUser);
+        public Task<bool> ExistsAsync(int applicationUserId);
 
-        IEnumerable<ApplicationUser> GetAllTrainees();
+        public Task<bool> ExistsAsync(ApplicationUser applicationUser);
 
-        IEnumerable<ApplicationUser> GetAllMentors();
+        public Task<IEnumerable<ApplicationUser>> GetAllTraineesAsync();
 
-        IEnumerable<ApplicationUser> GetAllAdmins();
+        public Task<IEnumerable<ApplicationUser>> GetAllMentorsAsync();
+
+        public Task<IEnumerable<ApplicationUser>> GetAllAdminsAsync();
     }
 }
