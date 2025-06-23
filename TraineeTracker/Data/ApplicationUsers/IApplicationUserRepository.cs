@@ -14,8 +14,12 @@ namespace TraineeTracker.Data.ApplicationUsers {
 
         public Task<ApplicationUser?> FindByEmailAsync(string email);
 
+        public Task<ApplicationUser?> FindByIdAsync(string userId);
+
         public Task<IEnumerable<ApplicationUser>> GetUsersInRoleAsync(string roleName);
 
         public Task<bool> IsInRoleAsync(ApplicationUser user, string role);
+
+        public Task UpdateAsync(ApplicationUser user);
     }
 }
