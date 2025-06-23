@@ -20,6 +20,6 @@ namespace TraineeTracker.Data.ApplicationUsers {
 
         public Task<bool> IsInRoleAsync(ApplicationUser user, string role);
 
-        public Task<IdentityResult>UpdateAsync(ApplicationUser user);
+        public Task<IdentityResult> UpdateAsync(ApplicationUser user);
     }
 }
