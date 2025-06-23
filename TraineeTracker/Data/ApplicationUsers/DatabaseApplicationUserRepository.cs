@@ -9,12 +9,12 @@ namespace TraineeTracker.Data.ApplicationUsers {
             _userManager = userManager;
         }
 
-        public async Task AddToRoleAsync(ApplicationUser user, string role) {
-            await _userManager.AddToRoleAsync(user, role);
+        public async Task<IdentityResult> AddToRoleAsync(ApplicationUser user, string role) {
+            return await _userManager.AddToRoleAsync(user, role);
         }
 
-        public async Task CreateAsync(ApplicationUser user, string password) {
-            await _userManager.CreateAsync(user, password);
+        public async Task<IdentityResult> CreateAsync(ApplicationUser user, string password) {
+            return await _userManager.CreateAsync(user, password);
         }
 
         public async Task<bool> ExistsAsync(int applicationUserId) {
@@ -43,8 +43,8 @@ namespace TraineeTracker.Data.ApplicationUsers {
             return await _userManager.IsInRoleAsync(user, role);
         }
 
-        public async Task UpdateAsync(ApplicationUser user) {
-            await _userManager.UpdateAsync(user);
+        public async Task<IdentityResult> UpdateAsync(ApplicationUser user) {
+            return await _userManager.UpdateAsync(user);
         }
     }
 }
