@@ -17,14 +17,14 @@ namespace TraineeTracker.Data.ApplicationUsers {
             return await _userManager.CreateAsync(user, password);
         }
 
-        public async Task<bool> ExistsAsync(int applicationUserId) {
-            var user = await _userManager.FindByIdAsync(applicationUserId.ToString());
+        public async Task<bool> ExistsAsync(string userId) {
+            var user = await _userManager.FindByIdAsync(userId);
             return user != null;
         }
 
-        public async Task<bool> ExistsAsync(ApplicationUser applicationUser) {
-            var user = await _userManager.FindByIdAsync(applicationUser.Id);
-            return user != null;
+        public async Task<bool> ExistsAsync(ApplicationUser user) {
+            var tmp = await _userManager.FindByIdAsync(user.Id);
+            return tmp != null;
         }
 
         public async Task<ApplicationUser?> FindByEmailAsync(string email) {

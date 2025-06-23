@@ -8,9 +8,9 @@ namespace TraineeTracker.Data.ApplicationUsers {
 
         public Task<IdentityResult> CreateAsync(ApplicationUser user, string password);
 
-        public Task<bool> ExistsAsync(int applicationUserId);
+        public Task<bool> ExistsAsync(string userId);
 
-        public Task<bool> ExistsAsync(ApplicationUser applicationUser);
+        public Task<bool> ExistsAsync(ApplicationUser user);
 
         public Task<ApplicationUser?> FindByEmailAsync(string email);
 
@@ -20,6 +20,6 @@ namespace TraineeTracker.Data.ApplicationUsers {
 
         public Task<bool> IsInRoleAsync(ApplicationUser user, string role);
 
-        public Task<IdentityResult> UpdateAsync(ApplicationUser user);
+        public Task<IdentityResult>UpdateAsync(ApplicationUser user);
     }
 }
