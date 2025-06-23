@@ -4,9 +4,9 @@ using TraineeTracker.Models.Domain;
 
 namespace TraineeTracker.Data.ApplicationUsers {
     public interface IApplicationUserRepository {
-        public Task AddToRoleAsync(ApplicationUser user, string role);
+        public Task<IdentityResult> AddToRoleAsync(ApplicationUser user, string role);
 
-        public Task CreateAsync(ApplicationUser user, string password);
+        public Task<IdentityResult> CreateAsync(ApplicationUser user, string password);
 
         public Task<bool> ExistsAsync(int applicationUserId);
 
@@ -20,6 +20,6 @@ namespace TraineeTracker.Data.ApplicationUsers {
 
         public Task<bool> IsInRoleAsync(ApplicationUser user, string role);
 
-        public Task UpdateAsync(ApplicationUser user);
+        public Task<IdentityResult> UpdateAsync(ApplicationUser user);
     }
 }
