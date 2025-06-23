@@ -1,6 +1,3 @@
-using System.Collections.Generic;
-using System.Linq;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
 using TraineeTracker.Models.Domain;
 
@@ -34,12 +31,20 @@ namespace TraineeTracker.Data.ApplicationUsers {
             return await _userManager.FindByEmailAsync(email);
         }
 
+        public async Task<ApplicationUser?> FindByIdAsync(string userId) {
+            return await _userManager.FindByIdAsync(userId);
+        }
+
         public async Task<IEnumerable<ApplicationUser>> GetUsersInRoleAsync(string roleName) {
             return await _userManager.GetUsersInRoleAsync(roleName);
         }
 
         public async Task<bool> IsInRoleAsync(ApplicationUser user, string role) {
             return await _userManager.IsInRoleAsync(user, role);
+        }
+
+        public async Task UpdateAsync(ApplicationUser user) {
+            await _userManager.UpdateAsync(user);
         }
     }
 }
