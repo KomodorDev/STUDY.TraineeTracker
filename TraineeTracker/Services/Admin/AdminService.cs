@@ -36,13 +36,13 @@ namespace TraineeTracker.Services.Admin {
             return true;
         }
 
-        public async Task<ServiceResult> CreateProcessingPauseAsync(string userId, ProcessingPauseDto dto) {
-            var user = await _applicationUserRepository.GetByIdAsync(userId);
+        public async Task<ServiceResult> CreateProcessingPauseAsync(ProcessingPauseDto dto) {
+            var user = await _applicationUserRepository.GetByIdAsync(dto.TraineeId);
             if (user == null) {
                 return ServiceResult.Failed("User not found.")
             }
             var processingPause = new ProcessingPause {
-                TraineeId = userId,
+                TraineeId = dto.TraineeId,
                 Trainee = user,
                 StartDate = dto.StartDate,
                 EndDate = dto.EndDate
