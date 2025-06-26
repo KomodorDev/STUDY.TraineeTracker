@@ -36,7 +36,7 @@ namespace TraineeTracker.Controllers {
             }
             var result = await _adminService.CreateUserAsync(dto);
             if (result.Succeeded) {
-                return RedirectToAction("ManageUsers");
+                return RedirectToAction("ShowAdminDashboardView");
             }
             foreach (var error in result.Errors) {
                 ModelState.AddModelError("", error.Description);
@@ -50,7 +50,7 @@ namespace TraineeTracker.Controllers {
             if (!success) {
                 return NotFound();
             }
-            return RedirectToAction("ManageUsers");
+            return RedirectToAction("ShowAdminDashboardView");
         }
 
         [HttpPost]
@@ -59,7 +59,7 @@ namespace TraineeTracker.Controllers {
             if (!success) {
                 return NotFound();
             }
-            return RedirectToAction("ManageUsers");
+            return RedirectToAction("ShowAdminDashboardView");
         }
 
         [HttpGet("/CreateProcessingPause")]
@@ -77,7 +77,7 @@ namespace TraineeTracker.Controllers {
                 ModelState.AddModelError("", result.ErrorMessage);
                 return View(dto);
             }
-            return RedirectToAction("ManageUsers");
+            return RedirectToAction("ShowAdminDashboardView");
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
