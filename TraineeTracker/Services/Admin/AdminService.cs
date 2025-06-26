@@ -1,4 +1,6 @@
 using Microsoft.AspNetCore.Identity;
+using TraineeTracker.Data.ApplicationUsers;
+using TraineeTracker.Data.ProcessingPauses;
 using TraineeTracker.Models.Domain;
 using TraineeTracker.Models.Dtos;
 
@@ -39,7 +41,7 @@ namespace TraineeTracker.Services.Admin {
         public async Task<ServiceResult> CreateProcessingPauseAsync(ProcessingPauseDto dto) {
             var user = await _applicationUserRepository.GetByIdAsync(dto.TraineeId);
             if (user == null) {
-                return ServiceResult.Failed("User not found.")
+                return ServiceResult.Failed("User not found.");
             }
             var processingPause = new ProcessingPause {
                 TraineeId = dto.TraineeId,
