@@ -32,7 +32,7 @@ namespace TraineeTracker.Data.ProcessingPauses {
         }
 
         public IEnumerable<ProcessingPause> GetAllPauses(string traineeId) {
-            return _context.ProcessingPauses.Where(p => p.TraineeId.ToString() == traineeId).ToList();
+            return _context.ProcessingPauses.Where(p => p.TraineeId == traineeId).ToList();
         }
     }
 }
