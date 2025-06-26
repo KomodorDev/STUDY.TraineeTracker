@@ -12,6 +12,7 @@ namespace TraineeTracker.Services.Admin {
             _processingPauseRepository = processingPauseRepository;
         }
 
+        // Hier fehlen die TraineeLessons und die NotificationSettings
         public async Task<IdentityResult> CreateUserAsync(ApplicationUserDto dto) {
             var user = new ApplicationUser {
                 UserName = dto.Email,
