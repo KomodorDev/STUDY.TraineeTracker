@@ -19,13 +19,13 @@ namespace TraineeTracker.Controllers {
             _logger = logger;
         }
 
-        [HttpGet]
-        public IActionResult ManageUsers() {
+        [HttpGet("/ManageUsers")]
+        public IActionResult ShowAdminDashboardView() {
             return View();
         }
 
-        [HttpGet]
-        public IActionResult CreateUser() {
+        [HttpGet("/CreateUser")]
+        public IActionResult ShowCreateUserView() {
             return View();
         }
 
@@ -62,8 +62,8 @@ namespace TraineeTracker.Controllers {
             return RedirectToAction("ManageUsers");
         }
 
-        [HttpGet]
-        public IActionResult CreateProcessingPause(string traineeId) {
+        [HttpGet("/CreateProcessingPause")]
+        public IActionResult ShowCreateProcessingPauseView(string traineeId) {
             return View();
         }
 
