@@ -15,6 +15,6 @@ namespace TraineeTracker.Data.ProcessingPauses
 
         public void Delete(ProcessingPause processingPause);
 
-        public IEnumerable<ProcessingPause> GetAllPauses();
+        public IEnumerable<ProcessingPause> GetAllPauses(string traineeId);
     }
 }
