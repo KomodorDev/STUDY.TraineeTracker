@@ -44,7 +44,7 @@ namespace TraineeTracker.Data.TraineeLessons {
         public IEnumerable<TraineeLesson> GetAllTraineeLessonsOfTrainee(string traineeId) {
             return _context.TraineeLessons
                 .Include(t => t.Lesson)     // eager loads the Lesson for easier access to properties of the fitting lesson
-                .Where(tl => tl.UserId == traineeId)
+                .Where(tl => tl.TraineeId == traineeId)
                 .ToList();                  // "give me all lessons now" -> loaded into memory; if lots of further sorting is required, remove.
         }
 

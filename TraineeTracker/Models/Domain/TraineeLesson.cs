@@ -5,7 +5,9 @@ namespace TraineeTracker.Models.Domain
         // Key
         public int TraineeLessonId { get; set; }
 
-        public required string UserId { get; set; }
+        public required string TraineeId { get; set; }
+        
+        public required ApplicationUser Trainee { get; set; }
 
         public required TraineeLessonState State { get; set; }
 

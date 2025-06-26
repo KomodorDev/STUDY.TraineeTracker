@@ -1,5 +1,3 @@
-using Microsoft.AspNetCore.Identity;
-
 namespace TraineeTracker.Models.Domain {
     public class ProcessingPause {
         public int Id { get; private set; }
