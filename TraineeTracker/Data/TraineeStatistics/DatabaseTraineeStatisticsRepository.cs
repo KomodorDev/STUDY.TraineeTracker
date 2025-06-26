@@ -9,7 +9,7 @@ namespace TraineeTracker.Data.TraineeStatistics {
         }
 
         public bool Exists(int id) {
-            return _context.TraineeStatisticsSnapshots.Any(s => s.Id == id);
+            return _context.TraineeStatisticsSnapshots.Any(s => s.TraineeStatisticsSnapshotId == id);
         }
 
         public bool Exists(TraineeStatisticsSnapshot snapshot) {
