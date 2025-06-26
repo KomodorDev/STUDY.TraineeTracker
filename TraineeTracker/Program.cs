@@ -5,6 +5,8 @@ using TraineeTracker.Data;
 using TraineeTracker.Models.Domain;
 using TraineeTracker.Services.Seeders;
 using TraineeTracker.Services.Admin;
+using TraineeTracker.Data.ApplicationUsers;
+using TraineeTracker.Data.ProcessingPauses;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -30,6 +32,10 @@ builder.Services.AddDefaultIdentity<ApplicationUser>(options => options.SignIn.R
     .AddRoles<IdentityRole>()
     .AddEntityFrameworkStores<ApplicationDbContext>();
 builder.Services.AddControllersWithViews();
+
+// Repositories
+builder.Services.AddScoped<IApplicationUserRepository, DatabaseApplicationUserRepository>();
+builder.Services.AddScoped<IProcessingPauseRepository, DatabaseProcessingPauseRepository>();
 
 // Controller Services
 builder.Services.AddScoped<AdminService>();
