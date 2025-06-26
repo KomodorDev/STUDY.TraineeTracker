@@ -1,6 +1,3 @@
-using System.Collections.Generic;
-using System.Linq;
-using Microsoft.EntityFrameworkCore;
 using TraineeTracker.Models.Domain;
 
 namespace TraineeTracker.Data.ProcessingPauses {
@@ -34,8 +31,8 @@ namespace TraineeTracker.Data.ProcessingPauses {
             _context.SaveChanges();
         }
 
-        public IEnumerable<ProcessingPause> GetAllPauses() {
-            return _context.ProcessingPauses.AsNoTracking().ToList();
+        public IEnumerable<ProcessingPause> GetAllPauses(string traineeId) {
+            return _context.ProcessingPauses.Where(p => p.TraineeId.ToString() == traineeId).ToList();
         }
     }
 }
