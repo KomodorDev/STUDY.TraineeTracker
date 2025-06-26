@@ -1,4 +1,6 @@
 using Microsoft.AspNetCore.Identity;
+using TraineeTracker.Data.ApplicationUsers;
+using TraineeTracker.Data.ProcessingPauses;
 using TraineeTracker.Models.Domain;
 using TraineeTracker.Models.Dtos;
 
@@ -27,19 +29,19 @@ namespace TraineeTracker.Services.Admin {
         }
 
         public async Task<bool> SetIsClosedAsync(string userId, bool isClosed) {
-            var user = await _applicationUserRepository.GetByIdAsync(userId);
+            var user = await _applicationUserRepository.FindByIdAsync(userId);
             if (user == null) {
                 return false;
             }
             user.IsClosed = isClosed;
-            _applicationUserRepository.Update(user);
+            await _applicationUserRepository.UpdateAsync(user);
             return true;
         }
 
         public async Task<ServiceResult> CreateProcessingPauseAsync(ProcessingPauseDto dto) {
-            var user = await _applicationUserRepository.GetByIdAsync(dto.TraineeId);
+            var user = await _applicationUserRepository.FindByIdAsync(dto.TraineeId);
             if (user == null) {
-                return ServiceResult.Failed("User not found.")
+                return ServiceResult.Failed("User not found.");
             }
             var processingPause = new ProcessingPause {
                 TraineeId = dto.TraineeId,
@@ -48,7 +50,7 @@ namespace TraineeTracker.Services.Admin {
                 EndDate = dto.EndDate
             };
             if (_processingPauseRepository.Exists(processingPause)) {
-                await _processingPauseRepository.CreateAsync(processingPause);
+                _processingPauseRepository.Create(processingPause);
                 return ServiceResult.Failed("A break already exists for this user for this period.");
             }
             return ServiceResult.Success();
