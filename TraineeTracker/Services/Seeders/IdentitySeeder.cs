@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Identity;
+using TraineeTracker.Data.ApplicationUsers;
 using TraineeTracker.Models.Domain;
 
 namespace TraineeTracker.Services.Seeders {
@@ -16,8 +17,7 @@ namespace TraineeTracker.Services.Seeders {
         }
 
         public static async Task SeedTestUsersAsync(IServiceProvider serviceProvider) {
-            var userManager = serviceProvider.GetRequiredService<UserManager<ApplicationUser>>();
-            var roleManager = serviceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+            var applicationUserRepository = serviceProvider.GetRequiredService<IApplicationUserRepository>();
 
             var userData = new[] {
                 new {Email = "simon.hinterreiter@uni-a.de", Role = "Admin"},
@@ -29,17 +29,17 @@ namespace TraineeTracker.Services.Seeders {
             string password = "Sopro.2025";
 
             foreach (var entry in userData) {
-                var user = await userManager.FindByEmailAsync(entry.Email);
+                var user = await applicationUserRepository.FindByEmailAsync(entry.Email);
                 if (user == null) {
                     user = new ApplicationUser {
                         UserName = entry.Email,
                         Email = entry.Email,
                         EmailConfirmed = true
                     };
-                    await userManager.CreateAsync(user, password);
+                    await applicationUserRepository.CreateAsync(user, password);
                 }
-                if (!await userManager.IsInRoleAsync(user, entry.Role)) {
-                    await userManager.AddToRoleAsync(user, entry.Role);
+                if (!await applicationUserRepository.IsInRoleAsync(user, entry.Role)) {
+                    await applicationUserRepository.AddToRoleAsync(user, entry.Role);
                 }
             }
         }
