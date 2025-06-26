@@ -4,7 +4,7 @@ namespace TraineeTracker.Models.Domain {
     public class ProcessingPause {
         public int Id { get; private set; }
 
-        public required int TraineeId { get; set; }
+        public required string TraineeId { get; set; }
         
         public required ApplicationUser Trainee { get; set; }
 
