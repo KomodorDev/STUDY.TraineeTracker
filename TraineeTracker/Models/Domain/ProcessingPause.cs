@@ -5,6 +5,8 @@ namespace TraineeTracker.Models.Domain {
         public int Id { get; private set; }
 
         public required int TraineeId { get; set; }
+        
+        public required ApplicationUser Trainee { get; set; }
 
         public required DateTime StartDate { get; set; }
 
