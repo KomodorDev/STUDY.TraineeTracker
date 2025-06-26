@@ -8,7 +8,6 @@ using TraineeTracker.Services.Admin;
 
 namespace TraineeTracker.Controllers {
     [Authorize(Roles = "Admin")]
-    [Route("[controller]")]
     public class AdminController : Controller {
         private readonly AdminService _adminService;
         private readonly IApplicationUserRepository _applicationUserRepository;
@@ -64,16 +63,16 @@ namespace TraineeTracker.Controllers {
         }
 
         [HttpGet]
-        public IActionResult CreateProcessingPause() {
+        public IActionResult CreateProcessingPause(string traineeId) {
             return View();
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreateProcessingPauseAsync(string userId, ProcessingPauseDto dto) {
+        public async Task<IActionResult> CreateProcessingPauseAsync(ProcessingPauseDto dto) {
             if (!ModelState.IsValid) {
                 return View(dto);
             }
-            var result = await _adminService.CreateProcessingPauseAsync(userId, dto);
+            var result = await _adminService.CreateProcessingPauseAsync(dto);
             if (!result.Succeeded) {
                 ModelState.AddModelError("", result.ErrorMessage);
                 return View(dto);
