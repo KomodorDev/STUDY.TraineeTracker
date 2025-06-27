@@ -9,6 +9,10 @@ namespace TraineeTracker.Exceptions {
 
         }
 
+        public LessonNotFoundException(int lessonId) : base($"The Lesson with ID {lessonId} could not be found.") {
+
+        }
+
         public LessonNotFoundException(string message)
             : base(message) {
 
