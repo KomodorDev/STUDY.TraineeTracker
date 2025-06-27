@@ -7,6 +7,7 @@ using System.Text.Json;
 using System.Threading.Tasks;              
 using TraineeTracker.Data.TraineeStatistics;
 using TraineeTracker.Models.ViewModels;
+using TraineeTracker.Models.Domain;
 
 namespace TraineeTracker.Services
 {
@@ -66,7 +67,7 @@ namespace TraineeTracker.Services
             double lessonDaysOpen = CalculateLessonDaysOpen();
             double lessonDaysBuffer = CalculateLessonDaysBuffer(daysPresent, lessonDaysCompleted);
             double speed = CalculateSpeed(daysPresent, lessonDaysCompleted);
-            double daysBufferPredicted = CalculateDaysBufferPrediction(daysPresent, lessonDaysCompleted, speed);
+            double daysBufferPredicted = CalculateDaysBufferPrediction(daysPresent, lessonDaysCompleted, speed, lessonDaysOpen);
 
             return new TraineeStatisticsSnapshot
             {
@@ -91,7 +92,7 @@ namespace TraineeTracker.Services
             var byteArray = System.Text.Encoding.ASCII.GetBytes("sopro:capybara");
             request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Basic", Convert.ToBase64String(byteArray));
 
-            var response = await _httpClient.Send(request);
+            var response = await _httpClient.SendAsync(request);
 
             if (!response.IsSuccessStatusCode)
             {
@@ -134,8 +135,10 @@ namespace TraineeTracker.Services
             return daysPresent > 0 ? lessonDaysCompleted / daysPresent : 0;
         }
 
-        public double CalculateDaysBufferPrediction(double daysPresent, double lessonDaysCompleted, double speed)
+        public double CalculateDaysBufferPrediction(double daysPresent, double lessonDaysCompleted, double speed, double lessonDaysOpen)
         {
+            double totalProgramDays = 100; ///bisher nur Beispiel für die Funktionsweise
+
             if (speed <= 0)
             {
                 return -1;
