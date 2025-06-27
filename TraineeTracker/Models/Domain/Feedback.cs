@@ -6,13 +6,19 @@ namespace TraineeTracker.Models.Domain {
         public int FeedbackId { get; set; }
 
         [Range(1, 10)]
-        public int Difficulty { get; set; }
+        public required int Difficulty {
+            get; set;
+        }
 
         public required string PreviousKnowledge { get; set; }
 
-        public float HoursOfEffort { get; set; }
+        public required float HoursOfEffort {
+            get; set;
+        }
 
-        public required string Comment { get; set; }
+        public string? Comment {
+            get; set;
+        }
 
         // --- Beziehungen ---
 

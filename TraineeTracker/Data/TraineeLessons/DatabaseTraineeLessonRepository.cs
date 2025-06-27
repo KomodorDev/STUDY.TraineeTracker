@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using TraineeTracker.Exceptions;
 using TraineeTracker.Models.Domain;
 
 namespace TraineeTracker.Data.TraineeLessons {
@@ -10,48 +11,56 @@ namespace TraineeTracker.Data.TraineeLessons {
             _context = context;
         }
 
-        public void Create(TraineeLesson traineeLesson) {
-            _context.TraineeLessons.Add(traineeLesson);
-            _context.SaveChanges();
+        public async Task CreateAsync(TraineeLesson traineeLesson) {
+            await _context.TraineeLessons.AddAsync(traineeLesson);
+            await _context.SaveChangesAsync();
         }
 
-        public void CreateRange(IEnumerable<TraineeLesson> traineeLessons) {
-            foreach (var traineeLesson in traineeLessons)
-                _context.TraineeLessons.Add(traineeLesson);
-            _context.SaveChanges();
+        public async Task CreateRangeAsync(IEnumerable<TraineeLesson> traineeLessons) {
+            await _context.TraineeLessons.AddRangeAsync(traineeLessons);
+            await _context.SaveChangesAsync();
         }
 
-        public bool Exists(int traineeLessonId) {
-            return _context.TraineeLessons.Any(tl => tl.TraineeLessonId == traineeLessonId);
+        public async Task<bool> ExistsAsync(int traineeLessonId) {
+            return await _context.TraineeLessons.AnyAsync(tl => tl.TraineeLessonId == traineeLessonId);
         }
 
-        public bool Exists(TraineeLesson traineeLesson) {
-            return _context.TraineeLessons.Any(tl => tl.TraineeLessonId == traineeLesson.TraineeLessonId);
+        public async Task<bool> ExistsAsync(TraineeLesson traineeLesson) {
+            return await _context.TraineeLessons.AnyAsync(tl => tl.TraineeLessonId == traineeLesson.TraineeLessonId);
         }
 
-        public void Update(TraineeLesson traineeLesson) {
-            _context.TraineeLessons.Update(traineeLesson);
-            _context.SaveChanges();
+        public async Task UpdateAsync(TraineeLesson traineeLesson) {
+            _context.TraineeLessons.Update(traineeLesson);      // Update is not async
+            await _context.SaveChangesAsync();
         }
 
-        public IEnumerable<TraineeLesson> GetAllTraineeLessonsOfLesson(int lessonId) {
-            return _context.TraineeLessons
+        public async Task<IEnumerable<TraineeLesson>> GetAllTraineeLessonsOfLessonWithLessonAsync(int lessonId) {
+            return await _context.TraineeLessons
                 .Include(t => t.Lesson)     // eager loads the Lesson for easier access to properties of the fitting lesson
                 .Where(tl => tl.LessonId == lessonId)
-                .ToList();                  // "give me all lessons now" -> loaded into memory; if lots of further sorting is required, remove.
+                .ToListAsync();                  // "give me all lessons now" -> loaded into memory; if lots of further sorting is required, remove.
         }
 
-        public IEnumerable<TraineeLesson> GetAllTraineeLessonsOfTrainee(string traineeId) {
-            return _context.TraineeLessons
+        public async Task<IEnumerable<TraineeLesson>> GetAllTraineeLessonsOfTraineeWithLessonAsync(string traineeId) {
+            return await _context.TraineeLessons
                 .Include(t => t.Lesson)     // eager loads the Lesson for easier access to properties of the fitting lesson
                 .Where(tl => tl.TraineeId == traineeId)
-                .ToList();                  // "give me all lessons now" -> loaded into memory; if lots of further sorting is required, remove.
+                .ToListAsync();                  // "give me all lessons now" -> loaded into memory; if lots of further sorting is required, remove.
         }
 
-        public TraineeLesson? GetTraineeLessonById(int traineeLessonId) {
-            return _context.TraineeLessons
+        public async Task<TraineeLesson?> GetTraineeLessonByIdWithLessonAsync(int traineeLessonId) {
+            return await _context.TraineeLessons
                 .Include(t => t.Lesson)     // eager loads the Lesson for easier access to properties of the fitting lesson
-                .FirstOrDefault(tl => tl.TraineeLessonId == traineeLessonId);
+                .FirstOrDefaultAsync(tl => tl.TraineeLessonId == traineeLessonId);
+        }
+
+        public async Task DeleteAsync(int traineeLessonId) {
+            var traineeLesson = await _context.TraineeLessons
+                                    .FirstOrDefaultAsync(l => l.TraineeLessonId == traineeLessonId)
+                                        ?? throw new TraineeLessonNotFoundException(traineeLessonId);
+
+            _context.TraineeLessons.Remove(traineeLesson);
+            await _context.SaveChangesAsync();
         }
     }
 }
