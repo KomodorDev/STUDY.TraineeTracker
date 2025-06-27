@@ -67,9 +67,27 @@ namespace TraineeTracker.Services {
             if (lessonsDto == null || lessonsDto.Count == 0)
                 throw new InvalidOperationException("Keine gültigen Lektionen im JSON gefunden.");
 
-            var teachingPlan = await _teachingPlanRepo.GetTeachingPlanById(teachingPlanId);
+            var teachingPlan = await _teachingPlanRepo.GetTeachingPlanByIdAsync(teachingPlanId);
             if (teachingPlan == null)
                 throw new InvalidOperationException("TeachingPlan nicht gefunden.");
+
+            var oldLessons = await _lessonRepo.GetAllLessonsAsync();
+
+            foreach (var oldLesson in oldLessons)
+            {
+                bool stillExists = lessonsDto.Any(dto => dto.Id == oldLesson.LessonId);
+
+                if (!stillExists)
+                {
+                    var traineeLesson = await _traineeLessonRepo.GetTraineeLessonByIdAsync(oldLesson.LessonId);
+
+                    if (traineeLesson != null && traineeLesson.TraineeLessonState == "open")
+                    {
+                        await _traineeLessonRepo.DeleteAsync(oldLesson.LessonId);
+                    }
+                    await _lessonRepo.DeleteAsync(oldLesson);
+                }
+            }
 
             foreach (var dto in lessonsDto)
             {
@@ -91,7 +109,7 @@ namespace TraineeTracker.Services {
                     {
                         if (traineeLesson != null && traineeLesson.TraineeLessonState == "open")
                         {
-                            await _traineeLessonRepo.Delete(dto.Id);
+                            await _traineeLessonRepo.DeleteAsync(lesson.LessonId);
                         }
 
                         await _lessonRepo.UpdateAsync(lesson);
@@ -100,9 +118,7 @@ namespace TraineeTracker.Services {
                     {
                         await _lessonRepo.UpdateAsync(lesson);
                     }
-                }
-                else
-                {
+                }else{
                     await _lessonRepo.CreateAsync(lesson);
                 }
             }
@@ -113,7 +129,7 @@ namespace TraineeTracker.Services {
 
         public async Task DeleteTeachingPlan(int id) {
 
-            TeachingPlan teachingPlan = await _teachingPlanRepo.GetTeachingPlanById(id);
+            TeachingPlan teachingPlan = await _teachingPlanRepo.GetTeachingPlanByIdAsync(id);
 
             if(teachingPlan == null)
                 throw new InvalidOperationException("TeachingPlan nicht gefunden.");

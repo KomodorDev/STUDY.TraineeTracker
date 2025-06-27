@@ -16,12 +16,12 @@ namespace TraineeTracker.Data.Lessons
 
         public async Task<bool> ExistsAsync(int id)
         {
-            return await _context.Lessons.Any(l => l.LessonId == id);
+            return await _context.Lessons.AnyAsync(l => l.LessonId == id);
         }
 
         public async Task<bool> ExistsAsync(Lesson lesson)
         {
-            return await _context.Lessons.Any(l =>
+            return await _context.Lessons.AnyAsync(l =>
             l.Title == lesson.Title &&
             l.LinkUrl == lesson.LinkUrl &&
             l.EstimatedEffort == lesson.EstimatedEffort);
