@@ -1,13 +1,11 @@
 using TraineeTracker.Models.Domain;
 
-namespace TraineeTracker.Data
-{
+namespace TraineeTracker.Data {
     public interface IEmailNotificationSettingRepository {
-        void Create(EmailNotificationSetting emailNotificationSetting);
-        void Update(EmailNotificationSetting emailNotificationSetting);
-        void Delete(EmailNotificationSetting emailNotificationSetting);
-        bool Exists(string userId);
-        EmailNotificationSetting? GetByUserId(string userId);
-
+        Task CreateAsync(EmailNotificationSetting emailNotificationSetting);
+        Task UpdateAsync(EmailNotificationSetting emailNotificationSetting);
+        Task DeleteAsync(EmailNotificationSetting emailNotificationSetting);
+        Task<bool> ExistsAsync(string userId);
+        Task<EmailNotificationSetting?> GetByUserIdAsync(string userId);
     }
 }
