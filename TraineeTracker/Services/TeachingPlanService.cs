@@ -52,6 +52,7 @@ namespace TraineeTracker.Services {
             await _teachingPlanRepo.CreateAsync(teachingPlan);
         }
 
+        // ----------------------------------------------
         public async Task UpdateTeachingPlan(IFormFile file, int teachingPlanId) {
             if (file == null || file.Length == 0)
                 throw new ArgumentException("Die Datei ist leer!");
@@ -74,9 +75,9 @@ namespace TraineeTracker.Services {
                 bool stillExists = lessonsDto.Any(dto => dto.Id == oldLesson.LessonId);
 
                 if (!stillExists) {
-                    var traineeLesson = await _traineeLessonRepo.GetTraineeLessonByIdAsync(oldLesson.LessonId);
+                    var traineeLesson = await _traineeLessonRepo.GetTraineeLessonByIdWithLessonAsync(oldLesson.LessonId);
 
-                    if (traineeLesson != null && traineeLesson.TraineeLessonState == "open") {
+                    if (traineeLesson != null && traineeLesson.State == TraineeLessonState.Open) {
                         await _traineeLessonRepo.DeleteAsync(oldLesson.LessonId);
                     }
                     await _lessonRepo.DeleteAsync(oldLesson);
@@ -92,12 +93,12 @@ namespace TraineeTracker.Services {
                     IsInactive = dto.Deprecated
                 };
 
-                var traineeLesson = await _traineeLessonRepo.GetTraineeLessonByIdAsync(lesson.LessonId);
+                var traineeLesson = await _traineeLessonRepo.GetTraineeLessonByIdWithLessonAsync(lesson.LessonId);
                 var existingLesson = await _lessonRepo.GetLessonByIdAsync(lesson.LessonId);
 
                 if (existingLesson != null) {
                     if (lesson.IsInactive) {
-                        if (traineeLesson != null && traineeLesson.TraineeLessonState == "open") {
+                        if (traineeLesson != null && traineeLesson.State == TraineeLessonState.Open) {
                             await _traineeLessonRepo.DeleteAsync(lesson.LessonId);
                         }
 
@@ -114,6 +115,7 @@ namespace TraineeTracker.Services {
             await _teachingPlanRepo.UpdateAsync(teachingPlan);
         }
 
+        // ----------------------------------------------
         public async Task DeleteTeachingPlan(int id) {
 
             TeachingPlan teachingPlan = await _teachingPlanRepo.GetTeachingPlanByIdAsync(id);
