@@ -3,7 +3,7 @@ using TraineeTracker.Data.TeachingPlans;
 using TraineeTracker.Data.Lessons;
 using TraineeTracker.Data.TraineeLessons;
 using TraineeTracker.Models.Domain;
-using TraineeTracker.Models.Dto;
+using TraineeTracker.Models.Dtos;
 
 namespace TraineeTracker.Services {
 
@@ -51,7 +51,7 @@ namespace TraineeTracker.Services {
                 Lessons = lessons
             };
 
-            await _teachingPlanRepo.Create(teachingPlan);
+            await _teachingPlanRepo.CreateAsync(teachingPlan);
         }
 
         public async Task UpdateTeachingPlan(IFormFile file, int teachingPlanId)
@@ -82,8 +82,8 @@ namespace TraineeTracker.Services {
                     IsInactive = dto.Deprecated
                 };
 
-                var traineeLesson = await _traineeLessonRepo.GetTraineeLessonById(lesson.LessonId);
-                var existingLesson = await _lessonRepo.GetLessonById(lesson.LessonId);
+                var traineeLesson = await _traineeLessonRepo.GetTraineeLessonByIdAsync(lesson.LessonId);
+                var existingLesson = await _lessonRepo.GetLessonByIdAsync(lesson.LessonId);
 
                 if (existingLesson != null)
                 {
@@ -94,21 +94,21 @@ namespace TraineeTracker.Services {
                             await _traineeLessonRepo.Delete(dto.Id);
                         }
 
-                        await _lessonRepo.Update(lesson);
+                        await _lessonRepo.UpdateAsync(lesson);
                     }
                     else
                     {
-                        await _lessonRepo.Update(lesson);
+                        await _lessonRepo.UpdateAsync(lesson);
                     }
                 }
                 else
                 {
-                    await _lessonRepo.Create(lesson);
+                    await _lessonRepo.CreateAsync(lesson);
                 }
             }
 
             teachingPlan.LastUpdated = DateTime.UtcNow;
-            await _teachingPlanRepo.Update(teachingPlan);
+            await _teachingPlanRepo.UpdateAsync(teachingPlan);
         }
 
         public async Task DeleteTeachingPlan(int id) {
@@ -121,20 +121,24 @@ namespace TraineeTracker.Services {
             if(teachingPlan.Trainees != null)
                 throw new InvalidOperationException("Dieser TeachingPlan wird noch verwendet!");
 
-            var lessons = _lessonRepo.GetAllLessonsAsync();
+            var lessons = await _lessonRepo.GetAllLessonsAsync();
 
             foreach (var lesson in lessons) {
                 if (lesson.TeachingPlans.Contains(teachingPlan)) {
                     if (lesson.TeachingPlans.Count == 1) {
-                        await _lessonRepo.Delete(lesson);
+                        await _lessonRepo.DeleteAsync(lesson);
                     } else {
                         lesson.TeachingPlans.Remove(teachingPlan);
-                        await _lessonRepo.Update(lesson);
+                        await _lessonRepo.UpdateAsync(lesson);
                     }
                 }
             }
 
-            await _teachingPlanRepo.Delete(teachingPlan);
+            await _teachingPlanRepo.DeleteAsync(teachingPlan);
+        }
+
+        public async Task<TeachingPlan> GetTeachingPlanByIdAsync(int id){
+            return await _teachingPlanRepo.GetTeachingPlanByIdAsync(id);
         }
     }
 }
