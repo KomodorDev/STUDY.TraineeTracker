@@ -5,6 +5,7 @@ namespace TraineeTracker.Models.Domain {
         [Key]
         public int EmailNotificationSettingsId { get; set; }
 
+        public bool ReceiveSkippedNotifications { get; set; } = false;
         public bool ReceiveOpenNotifications { get; set; } = false;
         public bool ReceiveStartedNotifications { get; set; } = false;
         public bool ReceiveFinishedNotifications { get; set; } = false;
