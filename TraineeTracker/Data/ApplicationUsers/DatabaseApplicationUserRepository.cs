@@ -10,7 +10,18 @@ namespace TraineeTracker.Data.ApplicationUsers {
         }
 
         public async Task<IdentityResult> AddToRoleAsync(ApplicationUser user, string role) {
-            return await _userManager.AddToRoleAsync(user, role);
+            var result = await _userManager.AddToRoleAsync(user, role);
+            if (!result.Succeeded) {
+                return result;
+            }
+            if (role == "Admin") {
+                var mentorResult = await _userManager.AddToRoleAsync(user, "Mentor");
+                if (!mentorResult.Succeeded) {
+                    var errors = result.Errors.Concat(mentorResult.Errors);
+                    return IdentityResult.Failed(errors.ToArray());
+                }
+            }
+            return result;
         }
 
         public async Task<IdentityResult> CreateAsync(ApplicationUser user, string password) {
