@@ -12,7 +12,7 @@ namespace TraineeTracker.Models.Domain {
         public bool ReceiveRejectedNotifications { get; set; } = false;
         public bool ReceiveAcceptedNotifications { get; set; } = false;
         public bool ReceiveRatedNotifications { get; set; } = false;
-
+        public bool ReceiveImportChangeNotifications { get; set; } = true;
         // Foreign key
         public string? UserId { get; set; }
 
