@@ -23,7 +23,7 @@ namespace TraineeTracker.Services.Admin {
                 UserName = dto.Email,
                 Email = dto.Email,
                 EmailConfirmed = true,
-                EmailNotificationSetting = _emailNotificationSettingService.CreateDefaultSettings(dto.Role)
+                EmailNotificationSetting = _emailNotificationSettingService.CreateDefaultEmailNotificationSetting(dto.Role)
             };
 
             if (dto.Role == "Trainee") {
