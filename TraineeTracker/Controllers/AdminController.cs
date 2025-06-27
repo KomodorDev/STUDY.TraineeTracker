@@ -38,8 +38,8 @@ namespace TraineeTracker.Controllers {
             if (result.Succeeded) {
                 return RedirectToAction("ShowAdminDashboardView");
             }
-            foreach (var error in result.Errors) {
-                ModelState.AddModelError("", error.Description);
+            foreach (var message in result.ErrorMessages) {
+                ModelState.AddModelError("", message);
             }
             return View(dto);
         }
@@ -74,7 +74,8 @@ namespace TraineeTracker.Controllers {
             }
             var result = await _adminService.CreateProcessingPauseAsync(dto);
             if (!result.Succeeded) {
-                ModelState.AddModelError("", result.ErrorMessage);
+                foreach (var message in result.ErrorMessages)
+                ModelState.AddModelError("", message);
                 return View(dto);
             }
             return RedirectToAction("ShowAdminDashboardView");
