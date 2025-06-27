@@ -55,7 +55,7 @@ namespace TraineeTracker.Data.TeachingPlans
 
         public TeachingPlan? GetTeachingPlanById(int id)
         {
-            return _context.TeachingPlan.FirstOrDefault(tp => tp.TeachingPlanId == id);
+            return _context.TeachingPlans.FirstOrDefault(tp => tp.TeachingPlanId == id);
         }
 
         public IEnumerable<TeachingPlan> GetAllTeachingPlans()
