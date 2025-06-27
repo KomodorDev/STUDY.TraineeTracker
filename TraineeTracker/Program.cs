@@ -3,6 +3,8 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity.UI.Services;
 
 using TraineeTracker.Models.Domain;
+
+using TraineeTracker.Services;
 using TraineeTracker.Services.Seeders;
 using TraineeTracker.Services.Admin;
 using TraineeTracker.Services.Email;
@@ -17,7 +19,6 @@ using TraineeTracker.Data.TeachingPlans;
 using TraineeTracker.Data.TraineeLessonLog;
 using TraineeTracker.Data.TraineeLessons;
 using TraineeTracker.Data.TraineeStatistics;
-using TraineeTracker.Services;
 
 
 var builder = WebApplication.CreateBuilder(args);
