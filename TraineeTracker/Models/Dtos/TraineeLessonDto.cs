@@ -1,6 +1,6 @@
 namespace TraineeTracker.Models.Dtos
 {
-    public class TraineeLessonUpdateDto {
+    public class TraineeLessonDto {
         public required int TraineeLessonId { get; set; }
         public string? TraineeId { get; set; }
         public int? LessonId { get; set; }
