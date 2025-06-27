@@ -590,7 +590,7 @@ namespace TraineeTracker.Migrations
             modelBuilder.Entity("TraineeTracker.Models.Domain.ApplicationUser", b =>
                 {
                     b.HasOne("TraineeTracker.Models.Domain.TeachingPlan", "TeachingPlan")
-                        .WithMany("AffectedUsers")
+                        .WithMany("Trainees")
                         .HasForeignKey("TeachingPlanId");
 
                     b.Navigation("TeachingPlan");
@@ -689,7 +689,7 @@ namespace TraineeTracker.Migrations
 
             modelBuilder.Entity("TraineeTracker.Models.Domain.TeachingPlan", b =>
                 {
-                    b.Navigation("AffectedUsers");
+                    b.Navigation("Trainees");
                 });
 #pragma warning restore 612, 618
         }

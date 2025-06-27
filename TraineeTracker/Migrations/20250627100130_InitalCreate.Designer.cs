@@ -11,7 +11,7 @@ using TraineeTracker.Data;
 namespace TraineeTracker.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250620215634_InitalCreate")]
+    [Migration("20250627100130_InitalCreate")]
     partial class InitalCreate
     {
         /// <inheritdoc />
@@ -593,7 +593,7 @@ namespace TraineeTracker.Migrations
             modelBuilder.Entity("TraineeTracker.Models.Domain.ApplicationUser", b =>
                 {
                     b.HasOne("TraineeTracker.Models.Domain.TeachingPlan", "TeachingPlan")
-                        .WithMany("AffectedUsers")
+                        .WithMany("Trainees")
                         .HasForeignKey("TeachingPlanId");
 
                     b.Navigation("TeachingPlan");
@@ -692,7 +692,7 @@ namespace TraineeTracker.Migrations
 
             modelBuilder.Entity("TraineeTracker.Models.Domain.TeachingPlan", b =>
                 {
-                    b.Navigation("AffectedUsers");
+                    b.Navigation("Trainees");
                 });
 #pragma warning restore 612, 618
         }
