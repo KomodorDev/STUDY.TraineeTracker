@@ -6,6 +6,6 @@ namespace TraineeTracker.Data {
         Task UpdateAsync(EmailNotificationSetting emailNotificationSetting);
         Task DeleteAsync(EmailNotificationSetting emailNotificationSetting);
         Task<bool> ExistsAsync(string userId);
-        Task<EmailNotificationSetting?> GetByUserIdAsync(string userId);
+        Task<EmailNotificationSetting> GetByUserIdAsync(string userId);
     }
 }
