@@ -35,8 +35,7 @@ namespace TraineeTracker.Services {
             if (lessonsDto == null || lessonsDto.Count == 0)
                 throw new InvalidOperationException("Keine gültigen Lektionen im JSON gefunden!");
 
-            var lessons = lessonsDto.Select(dto => new Lesson
-            {
+            var lessons = lessonsDto.Select(dto => new Lesson {
                 LessonId = dto.Id,
                 Title = dto.Title,
                 LinkUrl = dto.Url,
@@ -44,8 +43,7 @@ namespace TraineeTracker.Services {
                 IsInactive = dto.Deprecated
             }).ToList();
 
-            var teachingPlan = new TeachingPlan
-            {
+            var teachingPlan = new TeachingPlan {
                 Name = name,
                 LastUpdated = DateTime.UtcNow,
                 Lessons = lessons
@@ -54,8 +52,7 @@ namespace TraineeTracker.Services {
             await _teachingPlanRepo.CreateAsync(teachingPlan);
         }
 
-        public async Task UpdateTeachingPlan(IFormFile file, int teachingPlanId)
-        {
+        public async Task UpdateTeachingPlan(IFormFile file, int teachingPlanId) {
             if (file == null || file.Length == 0)
                 throw new ArgumentException("Die Datei ist leer!");
 
@@ -73,26 +70,21 @@ namespace TraineeTracker.Services {
 
             var oldLessons = await _lessonRepo.GetAllLessonsAsync();
 
-            foreach (var oldLesson in oldLessons)
-            {
+            foreach (var oldLesson in oldLessons) {
                 bool stillExists = lessonsDto.Any(dto => dto.Id == oldLesson.LessonId);
 
-                if (!stillExists)
-                {
+                if (!stillExists) {
                     var traineeLesson = await _traineeLessonRepo.GetTraineeLessonByIdAsync(oldLesson.LessonId);
 
-                    if (traineeLesson != null && traineeLesson.TraineeLessonState == "open")
-                    {
+                    if (traineeLesson != null && traineeLesson.TraineeLessonState == "open") {
                         await _traineeLessonRepo.DeleteAsync(oldLesson.LessonId);
                     }
                     await _lessonRepo.DeleteAsync(oldLesson);
                 }
             }
 
-            foreach (var dto in lessonsDto)
-            {
-                var lesson = new Lesson
-                {
+            foreach (var dto in lessonsDto) {
+                var lesson = new Lesson {
                     LessonId = dto.Id,
                     Title = dto.Title,
                     LinkUrl = dto.Url,
@@ -103,22 +95,17 @@ namespace TraineeTracker.Services {
                 var traineeLesson = await _traineeLessonRepo.GetTraineeLessonByIdAsync(lesson.LessonId);
                 var existingLesson = await _lessonRepo.GetLessonByIdAsync(lesson.LessonId);
 
-                if (existingLesson != null)
-                {
-                    if (lesson.IsInactive)
-                    {
-                        if (traineeLesson != null && traineeLesson.TraineeLessonState == "open")
-                        {
+                if (existingLesson != null) {
+                    if (lesson.IsInactive) {
+                        if (traineeLesson != null && traineeLesson.TraineeLessonState == "open") {
                             await _traineeLessonRepo.DeleteAsync(lesson.LessonId);
                         }
 
                         await _lessonRepo.UpdateAsync(lesson);
-                    }
-                    else
-                    {
+                    } else {
                         await _lessonRepo.UpdateAsync(lesson);
                     }
-                }else{
+                } else {
                     await _lessonRepo.CreateAsync(lesson);
                 }
             }
@@ -131,10 +118,10 @@ namespace TraineeTracker.Services {
 
             TeachingPlan teachingPlan = await _teachingPlanRepo.GetTeachingPlanByIdAsync(id);
 
-            if(teachingPlan == null)
+            if (teachingPlan == null)
                 throw new InvalidOperationException("TeachingPlan nicht gefunden.");
 
-            if(teachingPlan.Trainees != null)
+            if (teachingPlan.Trainees != null)
                 throw new InvalidOperationException("Dieser TeachingPlan wird noch verwendet!");
 
             var lessons = await _lessonRepo.GetAllLessonsAsync();
@@ -153,7 +140,7 @@ namespace TraineeTracker.Services {
             await _teachingPlanRepo.DeleteAsync(teachingPlan);
         }
 
-        public async Task<TeachingPlan> GetTeachingPlanByIdAsync(int id){
+        public async Task<TeachingPlan> GetTeachingPlanByIdAsync(int id) {
             return await _teachingPlanRepo.GetTeachingPlanByIdAsync(id);
         }
     }

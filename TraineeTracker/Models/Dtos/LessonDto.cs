@@ -1,6 +1,5 @@
-namespace TraineeTracker.Models.Dtos{
-    public class LessonDto
-    {
+namespace TraineeTracker.Models.Dtos {
+    public class LessonDto {
         public int Id { get; set; }
         public string Title { get; set; } = string.Empty;
         public string Url { get; set; } = string.Empty;
