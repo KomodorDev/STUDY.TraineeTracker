@@ -297,7 +297,7 @@ namespace TraineeTracker.Migrations
                 name: "ProcessingPauses",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "INTEGER", nullable: false)
+                    ProcessingPauseId = table.Column<int>(type: "INTEGER", nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
                     TraineeId = table.Column<string>(type: "TEXT", nullable: false),
                     StartDate = table.Column<DateTime>(type: "TEXT", nullable: false),
@@ -305,7 +305,7 @@ namespace TraineeTracker.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_ProcessingPauses", x => x.Id);
+                    table.PrimaryKey("PK_ProcessingPauses", x => x.ProcessingPauseId);
                     table.ForeignKey(
                         name: "FK_ProcessingPauses_AspNetUsers_TraineeId",
                         column: x => x.TraineeId,

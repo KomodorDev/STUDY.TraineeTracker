@@ -11,7 +11,7 @@ using TraineeTracker.Data;
 namespace TraineeTracker.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250627094512_InitalCreate")]
+    [Migration("20250627095413_InitalCreate")]
     partial class InitalCreate
     {
         /// <inheritdoc />
@@ -359,7 +359,7 @@ namespace TraineeTracker.Migrations
 
             modelBuilder.Entity("TraineeTracker.Models.Domain.ProcessingPause", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<int>("ProcessingPauseId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
@@ -373,7 +373,7 @@ namespace TraineeTracker.Migrations
                         .IsRequired()
                         .HasColumnType("TEXT");
 
-                    b.HasKey("Id");
+                    b.HasKey("ProcessingPauseId");
 
                     b.HasIndex("TraineeId");
 
