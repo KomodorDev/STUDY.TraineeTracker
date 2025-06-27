@@ -2,13 +2,13 @@ using TraineeTracker.Models.Domain;
 
 namespace TraineeTracker.Data.TraineeLessons {
     public interface ITraineeLessonRepository {
-        Task<bool> Exists(int traineeLessonId);
-        Task<bool> Exists(TraineeLesson traineeLesson);
-        Task Create(TraineeLesson traineeLesson);
-        Task CreateRange(IEnumerable<TraineeLesson> traineeLessons);
-        Task Update(TraineeLesson traineeLesson);
-        Task<TraineeLesson?> GetTraineeLessonById(int traineeLessonId);
-        Task<IEnumerable<TraineeLesson>> GetAllTraineeLessonsOfTrainee(string traineeId);
-        Task<IEnumerable<TraineeLesson>> GetAllTraineeLessonsOfLesson(int lessonId);
+        Task<bool> ExistsAsync(int traineeLessonId);
+        Task<bool> ExistsAsync(TraineeLesson traineeLesson);
+        Task CreateAsync(TraineeLesson traineeLesson);
+        Task CreateRangeAsync(IEnumerable<TraineeLesson> traineeLessons);
+        Task UpdateAsync(TraineeLesson traineeLesson);
+        Task<TraineeLesson?> GetTraineeLessonByIdAsync(int traineeLessonId);
+        Task<IEnumerable<TraineeLesson>> GetAllTraineeLessonsOfTraineeAsync(string traineeId);
+        Task<IEnumerable<TraineeLesson>> GetAllTraineeLessonsOfLessonAsync(int lessonId);
     }
 }
