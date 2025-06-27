@@ -1,7 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using TraineeTracker.Models.Domain;
 
-namespace TraineeTracker.Data {
+namespace TraineeTracker.Data.EmailNotificationSettings {
     public class DatabaseEmailNotificationSettingRepository : IEmailNotificationSettingRepository {
         private readonly ApplicationDbContext _context;
 

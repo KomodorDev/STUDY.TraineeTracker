@@ -2,9 +2,9 @@ using TraineeTracker.Models.Domain;
 using TraineeTracker.Data.ApplicationUsers;
 using TraineeTracker.Models.Dtos;
 using Microsoft.AspNetCore.Identity.UI.Services;
-using TraineeTracker.Data;
+using TraineeTracker.Data.EmailNotificationSettings;
 
-namespace TraineeTracker.Services {
+namespace TraineeTracker.Services.Email {
     public class EmailNotificationService {
         private readonly IApplicationUserRepository _databaseApplicationUserRepository;
         private readonly IEmailSender _emailSender;
