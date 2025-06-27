@@ -2,19 +2,16 @@ using Newtonsoft.Json;
 using TraineeTracker.Data.TeachingPlans;
 using TraineeTracker.Models.Domain;
 
-namespace TraineeTracker.Services{
+namespace TraineeTracker.Services {
 
-    public class TeachingPlanService
-    {
+    public class TeachingPlanService {
         private readonly ITeachingPlanRepository _teachingPlanRepo;
 
-        public TeachingPlanService(ITeachingPlanRepository teachingPlanRepo)
-        {
+        public TeachingPlanService(ITeachingPlanRepository teachingPlanRepo) {
             _teachingPlanRepo = teachingPlanRepo;
         }
 
-        public async Task ImportNewTeachingPlan(IFormFile file)
-        {
+        public async Task ImportNewTeachingPlan(IFormFile file) {
             if (file == null || file.Length == 0)
                 throw new ArgumentException("Die Datei ist leer!");
 
@@ -30,8 +27,7 @@ namespace TraineeTracker.Services{
             await _teachingPlanRepo.Create(teachingPlan);
         }
 
-        public async Task UpdateTeachingPlan(IFormFile file)
-        {
+        public async Task UpdateTeachingPlan(IFormFile file) {
             if (file == null || file.Length == 0)
                 throw new ArgumentException("Die Datei ist leer!");
 
@@ -47,8 +43,7 @@ namespace TraineeTracker.Services{
             await _teachingPlanRepo.Update(teachingPlan);
         }
 
-        public async Task DeleteTeachingPlan(int id)
-        {
+        public async Task DeleteTeachingPlan(int id) {
             TeachingPlan teachingPlan = await _teachingPlanRepo.GetTeachingPlanById(id);
 
             if (teachingPlan == null)

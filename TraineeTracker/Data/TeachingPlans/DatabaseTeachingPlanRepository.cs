@@ -3,56 +3,46 @@ using System.Linq;
 using TraineeTracker.Models.Domain;
 using Microsoft.EntityFrameworkCore;
 
-namespace TraineeTracker.Data.TeachingPlans
-{
-    public class DatabaseTeachingPlanRepository : ITeachingPlanRepository
-    {
+namespace TraineeTracker.Data.TeachingPlans {
+    public class DatabaseTeachingPlanRepository : ITeachingPlanRepository {
         private readonly ApplicationDbContext _context;
 
-        public DatabaseTeachingPlanRepository(ApplicationDbContext context)
-        {
+        public DatabaseTeachingPlanRepository(ApplicationDbContext context) {
             _context = context;
         }
 
-        public bool Exists(int id)
-        {
+        public bool Exists(int id) {
             return _context.TeachingPlans.Any(tp => tp.TeachingPlanId == id);
         }
 
-        public bool Exists(TeachingPlan teachingPlan)
-        {
+        public bool Exists(TeachingPlan teachingPlan) {
             return _context.TeachingPlans.Any(tp =>
             tp.Name == teachingPlan.Name &&
             tp.LastUpdated == teachingPlan.LastUpdated);
         }
 
-        public async Task Create(TeachingPlan teachingPlan)
-        {
+        public async Task Create(TeachingPlan teachingPlan) {
             await _context.TeachingPlans.AddAsync(teachingPlan);
             await _context.SaveChangesAsync();
         }
 
-        public async Task Update(TeachingPlan teachingPlan)
-        {
+        public async Task Update(TeachingPlan teachingPlan) {
             _context.TeachingPlans.Update(teachingPlan);
             await _context.SaveChangesAsync();
         }
 
-        public async Task Delete(TeachingPlan teachingPlan)
-        {
+        public async Task Delete(TeachingPlan teachingPlan) {
             _context.TeachingPlans.Remove(teachingPlan);
             await _context.SaveChangesAsync();
         }
 
-        public async Task<TeachingPlan?> GetTeachingPlanById(int id)
-        {
+        public async Task<TeachingPlan?> GetTeachingPlanById(int id) {
             return await _context.TeachingPlans
             .FirstOrDefaultAsync(tp => tp.TeachingPlanId == id);
 
         }
 
-        public TeachingPlan? GetTeachingPlanByIdWithLessonsAndTrainees(int id)
-        {
+        public TeachingPlan? GetTeachingPlanByIdWithLessonsAndTrainees(int id) {
             return _context.TeachingPlans
                 .Include(tp => tp.Trainees)
                 .Include(tp => tp.Lessons)
@@ -60,8 +50,7 @@ namespace TraineeTracker.Data.TeachingPlans
 
         }
 
-        public IEnumerable<TeachingPlan> GetAllTeachingPlans()
-        {
+        public IEnumerable<TeachingPlan> GetAllTeachingPlans() {
             return _context.TeachingPlans
             .Include(tp => tp.Lessons)
             .Include(tp => tp.Trainees)

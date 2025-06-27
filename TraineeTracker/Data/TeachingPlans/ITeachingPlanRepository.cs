@@ -2,10 +2,8 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using TraineeTracker.Models.Domain;
 
-namespace TraineeTracker.Data.TeachingPlans
-{
-    public interface ITeachingPlanRepository
-    {
+namespace TraineeTracker.Data.TeachingPlans {
+    public interface ITeachingPlanRepository {
         bool Exists(int id);
 
         bool Exists(TeachingPlan teachingPlan);
