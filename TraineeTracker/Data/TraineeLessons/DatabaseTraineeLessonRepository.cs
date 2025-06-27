@@ -16,8 +16,7 @@ namespace TraineeTracker.Data.TraineeLessons {
         }
 
         public void CreateRange(IEnumerable<TraineeLesson> traineeLessons) {
-            foreach (var traineeLesson in traineeLessons)
-                _context.TraineeLessons.Add(traineeLesson);
+            _context.AddRange(traineeLessons);
             _context.SaveChanges();
         }
 
