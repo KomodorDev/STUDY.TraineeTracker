@@ -26,22 +26,29 @@ namespace TraineeTracker.Data.TeachingPlans
             tp.LastUpdated == teachingPlan.LastUpdated);
         }
 
-        public void Create(TeachingPlan teachingPlan)
+        public async Task Create(TeachingPlan teachingPlan)
         {
-            _context.TeachingPlans.Add(teachingPlan);
-            _context.SaveChanges();
+            await _context.TeachingPlans.AddAsync(teachingPlan);
+            await _context.SaveChangesAsync();
         }
 
-        public void Update(TeachingPlan teachingPlan)
+        public async Task Update(TeachingPlan teachingPlan)
         {
             _context.TeachingPlans.Update(teachingPlan);
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
         }
 
-        public void Delete(TeachingPlan teachingPlan)
+        public async Task Delete(TeachingPlan teachingPlan)
         {
             _context.TeachingPlans.Remove(teachingPlan);
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task<TeachingPlan?> GetTeachingPlanById(int id)
+        {
+            return await _context.TeachingPlans
+            .FirstOrDefaultAsync(tp => tp.TeachingPlanId == id);
+
         }
 
         public TeachingPlan? GetTeachingPlanByIdWithLessonsAndTrainees(int id)
@@ -51,11 +58,6 @@ namespace TraineeTracker.Data.TeachingPlans
                 .Include(tp => tp.Lessons)
                 .FirstOrDefault(tp => tp.TeachingPlanId == id);
 
-        }
-
-        public TeachingPlan? GetTeachingPlanById(int id)
-        {
-            return _context.TeachingPlans.FirstOrDefault(tp => tp.TeachingPlanId == id);
         }
 
         public IEnumerable<TeachingPlan> GetAllTeachingPlans()
