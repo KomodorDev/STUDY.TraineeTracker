@@ -10,15 +10,15 @@ namespace TraineeTracker.Data.TeachingPlans
 
         bool Exists(TeachingPlan teachingPlan);
 
-        void Create(TeachingPlan teachingPlan);
+        Task Create(TeachingPlan teachingPlan);
 
-        void Update(TeachingPlan teachingPlan);
+        Task Update(TeachingPlan teachingPlan);
 
-        void Delete(TeachingPlan teachingPlan);
+        Task Delete(TeachingPlan teachingPlan);
+
+        Task<TeachingPlan?> GetTeachingPlanById(int id);
 
         TeachingPlan? GetTeachingPlanByIdWithLessonsAndTrainees(int id);
-
-        TeachingPlan? GetTeachingPlanById(int id);
 
         IEnumerable<TeachingPlan> GetAllTeachingPlans();
     }
