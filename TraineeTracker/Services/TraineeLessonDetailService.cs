@@ -60,7 +60,7 @@ namespace TraineeTracker.Services
             await CheckHasAccess(user, traineeLessonId);
 
             var tl = await _databaseTraineeLessonRepository.GetTraineeLessonByIdWithLessonAsync(traineeLessonId) ?? throw new TraineeLessonNotFoundException(traineeLessonId);
-            var l = _databaseLessonRepository.GetLessonById(tl.LessonId) ?? throw new LessonNotFoundException(tl.LessonId);
+            var l = await _databaseLessonRepository.GetLessonByIdAsync(tl.LessonId) ?? throw new LessonNotFoundException(tl.LessonId);
             var tll = _databaseTraineeLessonLogEntryRepository.GetAllLogsForTraineeLesson(traineeLessonId);
             var f = _databaseFeedbackrepository.GetAllFeedbacksForLesson(l);
 
@@ -101,7 +101,7 @@ namespace TraineeTracker.Services
             if (traineeLesson == null)
                 throw new TraineeLessonNotFoundException();
 
-            var lesson = _databaseLessonRepository.GetLessonById(traineeLesson.LessonId) ?? throw new LessonNotFoundException(traineeLesson.LessonId);
+            var lesson = await _databaseLessonRepository.GetLessonByIdAsync(traineeLesson.LessonId) ?? throw new LessonNotFoundException(traineeLesson.LessonId);
 
             _databaseTraineeLessonLogEntryRepository.Create(
                 new TraineeLessonLogEntry {
@@ -150,7 +150,7 @@ namespace TraineeTracker.Services
 
                     // relations
                     LessonId = correspondingTraineeLesson.LessonId,
-                    Lesson = _databaseLessonRepository.GetLessonById(correspondingTraineeLesson.LessonId) ?? throw new LessonNotFoundException(correspondingTraineeLesson.LessonId),
+                    Lesson = await _databaseLessonRepository.GetLessonByIdAsync(correspondingTraineeLesson.LessonId) ?? throw new LessonNotFoundException(correspondingTraineeLesson.LessonId),
                     AuthorId = authorId,
                     Author = await _databaseApplicationUserRepository.FindByIdAsync(authorId) ?? throw new UserNotFoundException($"User with id {authorId} not found."),
                     ReadByUsers = new List<ApplicationUser>()
@@ -163,7 +163,7 @@ namespace TraineeTracker.Services
             }, user);
         }
 
-        public async Task DeleteFeedback(ClaimsPrincipal user, int feedbackId) {
+        public void DeleteFeedback(ClaimsPrincipal user, int feedbackId) {
             if (user.IsInRole("Trainee"))
                 throw new UnauthorizedAccessException("Trainees cannot delete feedbacks.");
 
