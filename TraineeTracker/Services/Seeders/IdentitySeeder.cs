@@ -4,6 +4,8 @@ using TraineeTracker.Models.Domain;
 
 namespace TraineeTracker.Services.Seeders {
     public static class IdentitySeeder {
+
+
         public static async Task SeedRolesAsync(IServiceProvider serviceProvider) {
             var roleManager = serviceProvider.GetRequiredService<RoleManager<IdentityRole>>();
 
@@ -34,6 +36,18 @@ namespace TraineeTracker.Services.Seeders {
                     user = new ApplicationUser {
                         UserName = entry.Email,
                         Email = entry.Email,
+                        EmailNotificationSetting = new EmailNotificationSetting
+                        {
+                            ReceiveSkippedNotifications = true,
+                            ReceiveOpenNotifications = true,
+                            ReceiveStartedNotifications = true,
+                            ReceiveFinishedNotifications = true,
+                            ReceiveRejectedNotifications = true,
+                            ReceiveAcceptedNotifications = true,
+                            ReceiveRatedNotifications = true,
+                            ReceiveImportChangeNotifications = true,
+                            
+                        },
                         EmailConfirmed = true
                     };
                     await applicationUserRepository.CreateAsync(user, password);
