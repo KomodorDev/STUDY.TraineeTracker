@@ -2,10 +2,8 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using TraineeTracker.Models.Domain;
 
-namespace TraineeTracker.Data.Lessons
-{
-    public interface ILessonRepository
-    {
+namespace TraineeTracker.Data.Lessons {
+    public interface ILessonRepository {
         Task<bool> ExistsAsync(int id);
 
         Task<bool> ExistsAsync(Lesson lesson);
