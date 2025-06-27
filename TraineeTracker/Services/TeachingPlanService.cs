@@ -1,5 +1,6 @@
 using Newtonsoft.Json;
 using TraineeTracker.Data.TeachingPlans;
+using TraineeTracker.Data.Lessons;
 using TraineeTracker.Data.TraineeLessons;
 using TraineeTracker.Models.Domain;
 using TraineeTracker.Models.Dto;
