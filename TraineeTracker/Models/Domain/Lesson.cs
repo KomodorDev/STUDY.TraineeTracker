@@ -1,21 +1,12 @@
-namespace TraineeTracker.Models.Domain
-{
+namespace TraineeTracker.Models.Domain {
     public class Lesson {
-        public required int LessonId {
-            get; set;
-        }
+        public required int LessonId { get; set; }
 
-        public required string Title {
-            get; set;
-        }
+        public required string Title { get; set; }
 
-        public required double EstimatedEffort {
-            get; set;
-        }
+        public required double EstimatedEffort { get; set; }
 
-        public required string LinkUrl {
-            get; set;
-        }
+        public required string LinkUrl { get; set; }
 
         public bool IsInactive { get; set; } = false;
 
@@ -24,8 +15,6 @@ namespace TraineeTracker.Models.Domain
         public ICollection<TraineeLesson> TraineeLessons { get; set; } = new List<TraineeLesson>();
 
         public ICollection<TeachingPlan> TeachingPlans { get; set; } = new List<TeachingPlan>();
-        
-    
 
     }
 }
