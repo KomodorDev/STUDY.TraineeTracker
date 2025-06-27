@@ -22,7 +22,7 @@ namespace TraineeTracker.Services
             _httpClient = httpClient;
         }
 
-        public async Task<TraineeStatisticsViewModel> BuildTraineeStatisticsViewModel(string traineeId)
+        public TraineeStatisticsViewModel BuildTraineeStatisticsViewModel(string traineeId)
         {
             var snapshot = _traineeStatisticsRepository.GetTraineeStatisticsSnapshot(traineeId);
 
