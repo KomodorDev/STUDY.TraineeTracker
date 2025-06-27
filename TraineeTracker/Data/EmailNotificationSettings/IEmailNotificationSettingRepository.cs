@@ -1,6 +1,6 @@
 using TraineeTracker.Models.Domain;
 
-namespace TraineeTracker.Data {
+namespace TraineeTracker.Data.EmailNotificationSettings {
     public interface IEmailNotificationSettingRepository {
         Task CreateAsync(EmailNotificationSetting emailNotificationSetting);
         Task UpdateAsync(EmailNotificationSetting emailNotificationSetting);
