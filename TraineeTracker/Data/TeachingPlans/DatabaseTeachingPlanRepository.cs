@@ -14,11 +14,11 @@ namespace TraineeTracker.Data.TeachingPlans {
         }
 
         public async Task<bool> ExistsAsync(int id) {
-            return await _context.TeachingPlans.Any(tp => tp.TeachingPlanId == id);
+            return await _context.TeachingPlans.AnyAsync(tp => tp.TeachingPlanId == id);
         }
 
         public async Task<bool> ExistsAsync(TeachingPlan teachingPlan) {
-            return await _context.TeachingPlans.Any(tp =>
+            return await _context.TeachingPlans.AnyAsync(tp =>
             tp.Name == teachingPlan.Name &&
             tp.LastUpdated == teachingPlan.LastUpdated);
         }
