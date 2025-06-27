@@ -19,30 +19,30 @@ namespace TraineeTracker.Services
 {
     public class TraineeLessonDetailService {
 
-        private ILessonRepository _iLessonRepository;
-        private ITraineeLessonRepository _iTraineeLessonRepository;
-        private ITraineeLessonLogEntryRepository _iTraineeLessonLogEntryRepository;
-        private IFeedbackRepository _iFeedbackrepository;
+        private ILessonRepository _databaseLessonRepository;
+        private ITraineeLessonRepository _databaseTraineeLessonRepository;
+        private ITraineeLessonLogEntryRepository _databaseTraineeLessonLogEntryRepository;
+        private IFeedbackRepository _databaseFeedbackrepository;
         // this one is not included in the viewmodel, because i dont't think we need it there?
-        private IApplicationUserRepository _iApplicationUserRepository;
+        private IApplicationUserRepository _databaseApplicationUserRepository;
 
-        public TraineeLessonDetailService(ILessonRepository iLessonRepository,
-                                            ITraineeLessonRepository iTraineeLessonRepository,
-                                            ITraineeLessonLogEntryRepository iTraineeLessonLogEntryRepository,
-                                            IFeedbackRepository iFeedbackRepository,
-                                            IApplicationUserRepository iApplicationUserRepository) {
-            _iLessonRepository = iLessonRepository;
-            _iTraineeLessonLogEntryRepository = iTraineeLessonLogEntryRepository;
-            _iTraineeLessonRepository = iTraineeLessonRepository;
-            _iFeedbackrepository = iFeedbackRepository;
-            _iApplicationUserRepository = iApplicationUserRepository;
+        public TraineeLessonDetailService(ILessonRepository databaseLessonRepository,
+                                            ITraineeLessonRepository databaseTraineeLessonRepository,
+                                            ITraineeLessonLogEntryRepository databaseTraineeLessonLogEntryRepository,
+                                            IFeedbackRepository databaseFeedbackRepository,
+                                            IApplicationUserRepository databaseApplicationUserRepository) {
+            _databaseLessonRepository = databaseLessonRepository;
+            _databaseTraineeLessonLogEntryRepository = databaseTraineeLessonLogEntryRepository;
+            _databaseTraineeLessonRepository = databaseTraineeLessonRepository;
+            _databaseFeedbackrepository = databaseFeedbackRepository;
+            _databaseApplicationUserRepository = databaseApplicationUserRepository;
         }
 
         private async Task CheckHasAccess(ClaimsPrincipal user, int traineeLessonId) {
             if (user == null)
                 throw new UserNotFoundException();
 
-            var traineeLesson = await _iTraineeLessonRepository.GetTraineeLessonByIdWithLessonAsync(traineeLessonId) ?? throw new TraineeLessonNotFoundException(traineeLessonId);
+            var traineeLesson = await _databaseTraineeLessonRepository.GetTraineeLessonByIdWithLessonAsync(traineeLessonId) ?? throw new TraineeLessonNotFoundException(traineeLessonId);
 
             // looks through ClaimsPrincipal user for a claim with the type ClaimTypes.NameIdentifier, which should be the UserId
             var userId = (user.FindFirst(ClaimTypes.NameIdentifier)?.Value) ?? throw new Exception("ClaimTypes.NameIdentifier of user not found.");
@@ -59,10 +59,10 @@ namespace TraineeTracker.Services
         public async Task<TraineeLessonDetailViewModel> BuildTraineeLessonDetailViewModel(int traineeLessonId, ClaimsPrincipal user) {
             await CheckHasAccess(user, traineeLessonId);
 
-            var tl = await _iTraineeLessonRepository.GetTraineeLessonByIdWithLessonAsync(traineeLessonId) ?? throw new TraineeLessonNotFoundException(traineeLessonId);
-            var l = _iLessonRepository.GetLessonById(tl.LessonId) ?? throw new LessonNotFoundException(tl.LessonId);
-            var tll = _iTraineeLessonLogEntryRepository.GetAllLogsForTraineeLesson(traineeLessonId);
-            var f = _iFeedbackrepository.GetAllFeedbacksForLesson(l);
+            var tl = await _databaseTraineeLessonRepository.GetTraineeLessonByIdWithLessonAsync(traineeLessonId) ?? throw new TraineeLessonNotFoundException(traineeLessonId);
+            var l = _databaseLessonRepository.GetLessonById(tl.LessonId) ?? throw new LessonNotFoundException(tl.LessonId);
+            var tll = _databaseTraineeLessonLogEntryRepository.GetAllLogsForTraineeLesson(traineeLessonId);
+            var f = _databaseFeedbackrepository.GetAllFeedbacksForLesson(l);
 
             return new TraineeLessonDetailViewModel {
                 TraineeLesson = tl,
@@ -75,7 +75,7 @@ namespace TraineeTracker.Services
         public async Task SaveTraineeLessonStateChange(TraineeLessonDto traineeLessonUpdate, ClaimsPrincipal user) {
             await CheckHasAccess(user, traineeLessonUpdate.TraineeLessonId);
 
-            var oldTraineeLesson = await _iTraineeLessonRepository.GetTraineeLessonByIdWithLessonAsync(traineeLessonUpdate.TraineeLessonId) ?? throw new TraineeLessonNotFoundException(traineeLessonUpdate.TraineeLessonId);
+            var oldTraineeLesson = await _databaseTraineeLessonRepository.GetTraineeLessonByIdWithLessonAsync(traineeLessonUpdate.TraineeLessonId) ?? throw new TraineeLessonNotFoundException(traineeLessonUpdate.TraineeLessonId);
             var oldState = oldTraineeLesson.State;
 
             // returns true if TargetStateName could be parsed into targetState
@@ -92,7 +92,7 @@ namespace TraineeTracker.Services
 
             // adds rejection reason and updates db
             oldTraineeLesson.RejectionReason = traineeLessonUpdate.RejectionReason;
-            await _iTraineeLessonRepository.UpdateAsync(oldTraineeLesson);
+            await _databaseTraineeLessonRepository.UpdateAsync(oldTraineeLesson);
 
             await LogStatusChange(oldTraineeLesson, oldState, targetState, user);
         }
@@ -101,9 +101,9 @@ namespace TraineeTracker.Services
             if (traineeLesson == null)
                 throw new TraineeLessonNotFoundException();
 
-            var lesson = _iLessonRepository.GetLessonById(traineeLesson.LessonId) ?? throw new LessonNotFoundException(traineeLesson.LessonId);
+            var lesson = _databaseLessonRepository.GetLessonById(traineeLesson.LessonId) ?? throw new LessonNotFoundException(traineeLesson.LessonId);
 
-            _iTraineeLessonLogEntryRepository.Create(
+            _databaseTraineeLessonLogEntryRepository.Create(
                 new TraineeLessonLogEntry {
                     TraineeLessonId = traineeLesson.TraineeLessonId,
                     LessonName = lesson.Title,
@@ -121,8 +121,8 @@ namespace TraineeTracker.Services
             if (feedbackDto == null)
                 throw new Exception("FeedbackDto is null");
 
-            var correspondingTraineeLesson = await _iTraineeLessonRepository.GetTraineeLessonByIdWithLessonAsync(feedbackDto.TraineeLessonId) ?? throw new TraineeLessonNotFoundException(feedbackDto.TraineeLessonId);
-            var existingFeedback = _iFeedbackrepository.GetFeedbackOfTraineeLesson(correspondingTraineeLesson);
+            var correspondingTraineeLesson = await _databaseTraineeLessonRepository.GetTraineeLessonByIdWithLessonAsync(feedbackDto.TraineeLessonId) ?? throw new TraineeLessonNotFoundException(feedbackDto.TraineeLessonId);
+            var existingFeedback = _databaseFeedbackrepository.GetFeedbackOfTraineeLesson(correspondingTraineeLesson);
 
             if (existingFeedback != null) {
                 // feedback exists
@@ -130,7 +130,7 @@ namespace TraineeTracker.Services
                 existingFeedback.Difficulty = feedbackDto.Difficulty ?? existingFeedback.Difficulty;
                 existingFeedback.PreviousKnowledge = feedbackDto.PreviousKnowledge ?? existingFeedback.PreviousKnowledge;
                 existingFeedback.HoursOfEffort = feedbackDto.HoursOfEffort ?? existingFeedback.HoursOfEffort;
-                _iFeedbackrepository.Update(existingFeedback);
+                _databaseFeedbackrepository.Update(existingFeedback);
             } else {
                 // feedback doesn't exist
 
@@ -142,7 +142,7 @@ namespace TraineeTracker.Services
 
                 var authorId = user.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? throw new Exception("ClaimTypes.NameIdentifier of user not found.");
 
-                _iFeedbackrepository.Create(new Feedback {
+                _databaseFeedbackrepository.Create(new Feedback {
                     Difficulty = feedbackDto.Difficulty ?? throw new ArgumentNullException(nameof(feedbackDto), "Difficulty cannot be null."),
                     PreviousKnowledge = feedbackDto.PreviousKnowledge ?? throw new ArgumentNullException(nameof(feedbackDto), "PreviousKnowledge cannot be null."),
                     HoursOfEffort = feedbackDto.HoursOfEffort ?? throw new ArgumentNullException(nameof(feedbackDto), "HoursOfEffort cannot be null."),
@@ -150,9 +150,9 @@ namespace TraineeTracker.Services
 
                     // relations
                     LessonId = correspondingTraineeLesson.LessonId,
-                    Lesson = _iLessonRepository.GetLessonById(correspondingTraineeLesson.LessonId) ?? throw new LessonNotFoundException(correspondingTraineeLesson.LessonId),
+                    Lesson = _databaseLessonRepository.GetLessonById(correspondingTraineeLesson.LessonId) ?? throw new LessonNotFoundException(correspondingTraineeLesson.LessonId),
                     AuthorId = authorId,
-                    Author = await _iApplicationUserRepository.FindByIdAsync(authorId) ?? throw new UserNotFoundException($"User with id {authorId} not found."),
+                    Author = await _databaseApplicationUserRepository.FindByIdAsync(authorId) ?? throw new UserNotFoundException($"User with id {authorId} not found."),
                     ReadByUsers = new List<ApplicationUser>()
                 });
             }
@@ -167,7 +167,7 @@ namespace TraineeTracker.Services
             if (user.IsInRole("Trainee"))
                 throw new UnauthorizedAccessException("Trainees cannot delete feedbacks.");
 
-            _iFeedbackrepository.Delete(feedbackId);
+            _databaseFeedbackrepository.Delete(feedbackId);
         }
     }
 }
