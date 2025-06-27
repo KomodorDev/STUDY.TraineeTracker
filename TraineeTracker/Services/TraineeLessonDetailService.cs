@@ -6,6 +6,7 @@ using TraineeTracker.Data.Feedbacks;
 using TraineeTracker.Data.Lessons;
 using TraineeTracker.Data.TraineeLessons;
 using TraineeTracker.Data.TraineeLessonLog;
+using TraineeTracker.Data.
 
 using TraineeTracker.Models.Domain;
 using TraineeTracker.Models.Dtos;
@@ -25,7 +26,8 @@ namespace TraineeTracker.Services
         public TraineeLessonDetailService(ILessonRepository iLessonRepository,
                                             ITraineeLessonRepository iTraineeLessonRepository,
                                             ITraineeLessonLogEntryRepository iTraineeLessonLogEntryRepository,
-                                            IFeedbackRepository iFeedbackRepository) {
+                                            IFeedbackRepository iFeedbackRepository,
+                                            IApplicationUserRepository i) {
             _iLessonRepository = iLessonRepository;
             _iTraineeLessonLogEntryRepository = iTraineeLessonLogEntryRepository;
             _iTraineeLessonRepository = iTraineeLessonRepository;
@@ -73,9 +75,9 @@ namespace TraineeTracker.Services
             var oldState = traineeLesson.State;
             var targetState = TraineeLessonStateFactory.Create(traineeLessonUpdate.TargetStateName)
 
-            if (TraineeLessonStateFactory.Create(traineeLesson.State).GetAllowedLessonStateTransitions(user).Contains())
+            if (null == TraineeLessonStateFactory.Create(traineeLesson.State).GetAllowedLessonStateTransitions(user).Contains())
 
-                await LogStatusChange(traineeLesson, oldState, traineeLesson.State, user);
+            await LogStatusChange(traineeLesson, oldState, traineeLesson.State, user);
         }
 
         private async Task LogStatusChange(TraineeLesson traineeLesson, TraineeLessonState oldState, TraineeLessonState newState, ClaimsPrincipal user) {
@@ -102,7 +104,7 @@ namespace TraineeTracker.Services
             if (feedbackDto == null)
                 throw new Exception("FeedbackDto is null");
 
-            var correspondingTraineeLesson = await _iTraineeLessonRepository.GetTraineeLessonById(feedbackDto.TraineeLessonId) ?? throw new TraineeLessonNotFoundException(feedbackDto.TraineeLessonId);
+            var correspondingTraineeLesson = await _iTraineeLessonRepository.GetTraineeLessonByIdAsync(feedbackDto.TraineeLessonId) ?? throw new TraineeLessonNotFoundException(feedbackDto.TraineeLessonId);
             var existingFeedback = _iFeedbackrepository.GetFeedbackOfTraineeLesson(correspondingTraineeLesson);
 
             if (existingFeedback != null) {
@@ -118,6 +120,9 @@ namespace TraineeTracker.Services
                 if (!user.IsInRole("Trainee"))
                     throw new UnauthorizedAccessException("You cannot create a feedback as a Mentor or Admin");
 
+                if (correspondingTraineeLesson.State != TraineeLessonState.Accepted)
+                    throw new UnauthorizedAccessException("You can write a feedback once your TraineeLesson has been accepted.");
+
                 _iFeedbackrepository.Create(new Feedback {
                     Difficulty = feedbackDto.Difficulty ?? throw new ArgumentNullException(nameof(feedbackDto), "Difficulty cannot be null."),
                     PreviousKnowledge = feedbackDto.PreviousKnowledge ?? throw new ArgumentNullException(nameof(feedbackDto), "PreviousKnowledge cannot be null."),
@@ -128,12 +133,15 @@ namespace TraineeTracker.Services
                     LessonId = correspondingTraineeLesson.LessonId,
                     Lesson = _iLessonRepository.GetLessonById(correspondingTraineeLesson.LessonId) ?? throw new LessonNotFoundException(correspondingTraineeLesson.LessonId),
                     AuthorId = (user.FindFirst(ClaimTypes.NameIdentifier)?.Value) ?? throw new Exception("ClaimTypes.NameIdentifier of user not found."),
-                    Author =,//????
+                    Author = 
                     ReadByUsers = new List<ApplicationUser>()
                 });
             }
 
-            SaveTraineeLessonStateChange();
+            await SaveTraineeLessonStateChange(new TraineeLessonDto {
+                TraineeLessonId = feedbackDto.TraineeLessonId,
+                TargetStateName = TraineeLessonState.Rated.ToString()
+            }, user);
         }
 
         public async Task DeleteFeedback(ClaimsPrincipal user, int feedbackId) {
