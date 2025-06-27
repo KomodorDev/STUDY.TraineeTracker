@@ -12,9 +12,10 @@ namespace TraineeTracker.Services {
         private readonly ILessonRepository _lessonRepo;
         private readonly ITraineeLessonRepository _traineeLessonRepo;
 
-        public TeachingPlanService(ITeachingPlanRepository teachingPlanRepo, ILessonRepo lessonRepo) {
+        public TeachingPlanService(ITeachingPlanRepository teachingPlanRepo, ILessonRepository lessonRepo, ITraineeLessonRepository traineeLessonRepo) {
             _teachingPlanRepo = teachingPlanRepo;
             _lessonRepo = lessonRepo;
+            _traineeLessonRepo = traineeLessonRepo;
         }
 
         public async Task ImportNewTeachingPlan(IFormFile file, String name) {
@@ -119,7 +120,18 @@ namespace TraineeTracker.Services {
             if(teachingPlan.Trainees != null)
                 throw new InvalidOperationException("Dieser TeachingPlan wird noch verwendet!");
 
+            var lessons = _lessonRepo.GetAllLessonsAsync();
 
+            foreach (var lesson in lessons) {
+                if (lesson.TeachingPlans.Contains(teachingPlan)) {
+                    if (lesson.TeachingPlans.Count == 1) {
+                        await _lessonRepo.Delete(lesson);
+                    } else {
+                        lesson.TeachingPlans.Remove(teachingPlan);
+                        await _lessonRepo.Update(lesson);
+                    }
+                }
+            }
 
             await _teachingPlanRepo.Delete(teachingPlan);
         }
