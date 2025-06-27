@@ -1,4 +1,3 @@
-using Microsoft.AspNetCore.Identity;
 using TraineeTracker.Data.ApplicationUsers;
 using TraineeTracker.Data.ProcessingPauses;
 using TraineeTracker.Models.Domain;
@@ -9,23 +8,46 @@ namespace TraineeTracker.Services.Admin {
         private readonly IApplicationUserRepository _applicationUserRepository;
         private readonly IProcessingPauseRepository _processingPauseRepository;
 
-        public AdminService(IApplicationUserRepository applicationUserRepository, IProcessingPauseRepository processingPauseRepository) {
+        private readonly EmailNotificationSettingService _emailNotificationSettingService;
+        private readonly TeachingPlanService _teachingPlanService;
+
+        public AdminService(IApplicationUserRepository applicationUserRepository, IProcessingPauseRepository processingPauseRepository, IEmailNotificationSettingService emailNotificationSettingService, ITeachingPlanService teachingPlanService) {
             _applicationUserRepository = applicationUserRepository;
             _processingPauseRepository = processingPauseRepository;
+            _emailNotificationSettingService = emailNotificationSettingService;
+            _teachingPlanService = teachingPlanService;
         }
 
-        // Hier fehlen die TraineeLessons und die NotificationSettings
-        public async Task<IdentityResult> CreateUserAsync(ApplicationUserDto dto) {
+        public async Task<ServiceResult> CreateUserAsync(ApplicationUserDto dto) {
             var user = new ApplicationUser {
                 UserName = dto.Email,
                 Email = dto.Email,
-                EmailConfirmed = true
+                EmailConfirmed = true,
+                EmailNotificationSetting = _emailNotificationSettingService.CreateDefaultEmailNotificationSetting(dto.Role)
             };
-            var result = await _applicationUserRepository.CreateAsync(user, dto.Password);
-            if (result.Succeeded) {
-                await _applicationUserRepository.AddToRoleAsync(user, dto.Role);
+
+            if (dto.Role == "Trainee") {
+                if (dto.TeachingPlanId == null) {
+                    return ServiceResult.Failed("Trainee requires Teachingplan.");
+                }
+                var teachingPlanResult = await _teachingPlanService.AssignTeachingPlanToTraineeAsync(user, dto.TeachingPlanId);
+                if (!teachingPlanResult.Succeeded) {
+                    return teachingPlanResult;
+                }
             }
-            return result;
+
+            var result = await _applicationUserRepository.CreateAsync(user, dto.Password);
+            if (!result.Succeeded) {
+                return ServiceResult.Failed(result.Errors.Select(e => e.Description).ToArray());
+            }
+
+            var roleResult = await _applicationUserRepository.AddToRoleAsync(user, dto.Role);
+            if (!roleResult.Succeeded) {
+                var errors = result.Errors.Concat(roleResult.Errors);
+                return ServiceResult.Failed(errors.Select(e => e.Description).ToArray());
+            }
+
+            return ServiceResult.Success();
         }
 
         public async Task<bool> SetIsClosedAsync(string userId, bool isClosed) {
