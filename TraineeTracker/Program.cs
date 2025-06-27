@@ -1,12 +1,24 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity.UI.Services;
-using TraineeTracker.Data;
+
 using TraineeTracker.Models.Domain;
 using TraineeTracker.Services.Seeders;
 using TraineeTracker.Services.Admin;
+using TraineeTracker.Services.Email;
+
+using TraineeTracker.Data;
 using TraineeTracker.Data.ApplicationUsers;
+using TraineeTracker.Data.EmailNotificationSettings;
+using TraineeTracker.Data.Feedbacks;
+using TraineeTracker.Data.Lessons;
 using TraineeTracker.Data.ProcessingPauses;
+using TraineeTracker.Data.TeachingPlans;
+using TraineeTracker.Data.TraineeLessonLog;
+using TraineeTracker.Data.TraineeLessons;
+using TraineeTracker.Data.TraineeStatistics;
+using TraineeTracker.Services;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -33,12 +45,35 @@ builder.Services.AddDefaultIdentity<ApplicationUser>(options => options.SignIn.R
     .AddEntityFrameworkStores<ApplicationDbContext>();
 builder.Services.AddControllersWithViews();
 
+
+// -----------------------------------------
 // Repositories
 builder.Services.AddScoped<IApplicationUserRepository, DatabaseApplicationUserRepository>();
+builder.Services.AddScoped<IEmailNotificationSettingRepository, DatabaseEmailNotificationSettingRepository>();
+builder.Services.AddScoped<IFeedbackRepository, DatabaseFeedbackRepository>();
+builder.Services.AddScoped<ILessonRepository, DatabaseLessonRepository>();
 builder.Services.AddScoped<IProcessingPauseRepository, DatabaseProcessingPauseRepository>();
+builder.Services.AddScoped<ITeachingPlanRepository, DatabaseTeachingPlanRepository>();
+builder.Services.AddScoped<ITraineeLessonLogEntryRepository, DatabaseTraineeLessonLogEntryRepository>();
+builder.Services.AddScoped<ITraineeLessonRepository, DatabaseTraineeLessonRepository>();
+builder.Services.AddScoped<ITraineeStatisticsRepository, DatabaseTraineeStatisticsRepository>();
 
-// Controller Services
+// -----------------------------------------
+// HttpClient
+builder.Services.AddHttpClient(); 
+
+
+// -----------------------------------------
+// Services
+builder.Services.AddScoped<EmailNotificationService>();
 builder.Services.AddScoped<AdminService>();
+
+builder.Services.AddScoped<TeachingPlanService>();
+builder.Services.AddScoped<TraineeLessonDetailService>();
+builder.Services.AddScoped<TraineeStatisticsService>();
+// FeedbackService
+// TraineeLessonDashboardService
+
 
 // ----------------------------------------
 // Register Email Service
