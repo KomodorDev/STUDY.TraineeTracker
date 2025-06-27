@@ -18,11 +18,10 @@ namespace TraineeTracker.Services {
             using var stream = new StreamReader(file.OpenReadStream());
             var jsonContent = await stream.ReadToEndAsync();
 
-            TeachingPlan teachingPlan = JsonConvert.DeserializeObject<TeachingPlan>(jsonContent);
+            var lessonsDto = JsonConvert.DeserializeObject<List<LessonDto>>(jsonContent);
 
-            if (teachingPlan == null)
-                throw new InvalidOperationException("Ungültiges JSON: TeachingPlan konnte nicht deserialisiert werden.");
-
+            if (lessonsDto == null || lessonsDto.Count == 0)
+                throw new InvalidOperationException("Keine gültigen Lektionen im JSON gefunden.");
 
             await _teachingPlanRepo.Create(teachingPlan);
         }
@@ -34,10 +33,10 @@ namespace TraineeTracker.Services {
             using var stream = new StreamReader(file.OpenReadStream());
             var jsonContent = await stream.ReadToEndAsync();
 
-            TeachingPlan teachingPlan = JsonConvert.DeserializeObject<TeachingPlan>(jsonContent);
+            var lessonsDto = JsonConvert.DeserializeObject<List<LessonDto>>(jsonContent);
 
-            if (teachingPlan == null)
-                throw new InvalidOperationException("Ungültiges JSON: TeachingPlan konnte nicht deserialisiert werden.");
+            if (lessonsDto == null || lessonsDto.Count == 0)
+                throw new InvalidOperationException("Keine gültigen Lektionen im JSON gefunden.");
 
             await _teachingPlanRepo.Update(teachingPlan);
         }
@@ -47,6 +46,8 @@ namespace TraineeTracker.Services {
 
             if (teachingPlan == null)
                 throw new InvalidOperationException("TeachingPlan nicht gefunden.");
+
+            //Hier muss noch checkst für affected users gemacht werden
 
             await _teachingPlanRepo.Delete(teachingPlan);
         }
