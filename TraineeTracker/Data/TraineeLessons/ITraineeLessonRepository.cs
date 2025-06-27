@@ -7,8 +7,8 @@ namespace TraineeTracker.Data.TraineeLessons {
         Task CreateAsync(TraineeLesson traineeLesson);
         Task CreateRangeAsync(IEnumerable<TraineeLesson> traineeLessons);
         Task UpdateAsync(TraineeLesson traineeLesson);
-        Task<TraineeLesson?> GetTraineeLessonByIdAsync(int traineeLessonId);
-        Task<IEnumerable<TraineeLesson>> GetAllTraineeLessonsOfTraineeAsync(string traineeId);
-        Task<IEnumerable<TraineeLesson>> GetAllTraineeLessonsOfLessonAsync(int lessonId);
+        Task<TraineeLesson?> GetTraineeLessonByIdWithLessonAsync(int traineeLessonId);
+        Task<IEnumerable<TraineeLesson>> GetAllTraineeLessonsOfTraineeWithLessonAsync(string traineeId);
+        Task<IEnumerable<TraineeLesson>> GetAllTraineeLessonsOfLessonWithLessonAsync(int lessonId);
     }
 }

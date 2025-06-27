@@ -33,21 +33,21 @@ namespace TraineeTracker.Data.TraineeLessons {
             await _context.SaveChangesAsync();
         }
 
-        public async Task<IEnumerable<TraineeLesson>> GetAllTraineeLessonsOfLessonAsync(int lessonId) {
+        public async Task<IEnumerable<TraineeLesson>> GetAllTraineeLessonsOfLessonWithLessonAsync(int lessonId) {
             return await _context.TraineeLessons
                 .Include(t => t.Lesson)     // eager loads the Lesson for easier access to properties of the fitting lesson
                 .Where(tl => tl.LessonId == lessonId)
                 .ToListAsync();                  // "give me all lessons now" -> loaded into memory; if lots of further sorting is required, remove.
         }
 
-        public async Task<IEnumerable<TraineeLesson>> GetAllTraineeLessonsOfTraineeAsync(string traineeId) {
+        public async Task<IEnumerable<TraineeLesson>> GetAllTraineeLessonsOfTraineeWithLessonAsync(string traineeId) {
             return await _context.TraineeLessons
                 .Include(t => t.Lesson)     // eager loads the Lesson for easier access to properties of the fitting lesson
-                .Where(tl => tl.UserId == traineeId)
+                .Where(tl => tl.TraineeId == traineeId)
                 .ToListAsync();                  // "give me all lessons now" -> loaded into memory; if lots of further sorting is required, remove.
         }
 
-        public async Task<TraineeLesson?> GetTraineeLessonByIdAsync(int traineeLessonId) {
+        public async Task<TraineeLesson?> GetTraineeLessonByIdWithLessonAsync(int traineeLessonId) {
             return await _context.TraineeLessons
                 .Include(t => t.Lesson)     // eager loads the Lesson for easier access to properties of the fitting lesson
                 .FirstOrDefaultAsync(tl => tl.TraineeLessonId == traineeLessonId);
