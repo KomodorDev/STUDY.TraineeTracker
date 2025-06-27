@@ -14,49 +14,49 @@ namespace TraineeTracker.Data.Lessons
             _context = context;
         }
 
-        public bool Exists(int id)
+        public async Task<bool> ExistsAsync(int id)
         {
-            return _context.Lessons.Any(l => l.LessonId == id);
+            return await _context.Lessons.Any(l => l.LessonId == id);
         }
 
-        public bool Exists(Lesson lesson)
+        public async Task<bool> ExistsAsync(Lesson lesson)
         {
-            return _context.Lessons.Any(l =>
+            return await _context.Lessons.Any(l =>
             l.Title == lesson.Title &&
             l.LinkUrl == lesson.LinkUrl &&
             l.EstimatedEffort == lesson.EstimatedEffort);
         }
 
-        public void Create(Lesson lesson)
+        public async Task CreateAsync(Lesson lesson)
         {
-            _context.Lessons.Add(lesson);
-            _context.SaveChanges();
+            await _context.Lessons.AddAsync(lesson);
+            await _context.SaveChangesAsync();
         }
 
-        public void Update(Lesson lesson)
+        public async Task UpdateAsync(Lesson lesson)
         {
             _context.Lessons.Update(lesson);
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
         }
 
-        public void Delete(Lesson lesson)
+        public async Task DeleteAsync(Lesson lesson)
         {
             _context.Lessons.Remove(lesson);
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
         }
 
-        public Lesson? GetLessonById(int id)
+        public async Task<Lesson?> GetLessonByIdAsync(int id)
         {
-            return _context.Lessons
+            return await _context.Lessons
             .Include(l => l.Feedbacks)
-            .FirstOrDefault(l => l.LessonId == id);
+            .FirstOrDefaultAsync(l => l.LessonId == id);
         }
 
-        public IEnumerable<Lesson> GetAllLessons()
+        public async Task<IEnumerable<Lesson>> GetAllLessonsAsync()
         {
-            return _context.Lessons
+            return await _context.Lessons
             .Include(l => l.Feedbacks)
-            .ToList();
+            .ToListAsync();
         }
     }
 }
