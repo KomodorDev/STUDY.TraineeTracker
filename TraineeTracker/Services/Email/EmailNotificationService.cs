@@ -183,5 +183,41 @@ namespace TraineeTracker.Services {
         }
 
 
+        // ------------------------------------------------------
+        public EmailNotificationSetting CreateDefaultEmailNotificationSetting(string role) {
+            var setting = new EmailNotificationSetting();
+
+            switch (role) {
+                case "Trainee":
+                    setting.ReceiveSkippedNotifications = true;
+                    setting.ReceiveOpenNotifications = false;
+                    setting.ReceiveStartedNotifications = false;
+                    setting.ReceiveFinishedNotifications = false;
+                    setting.ReceiveRejectedNotifications = true;
+                    setting.ReceiveAcceptedNotifications = true;
+                    setting.ReceiveRatedNotifications = false;
+                    setting.ReceiveImportChangeNotifications = true;
+                    break;
+
+                case "Mentor":
+                case "Admin":
+                    setting.ReceiveSkippedNotifications = false;
+                    setting.ReceiveOpenNotifications = false;
+                    setting.ReceiveStartedNotifications = false;
+                    setting.ReceiveFinishedNotifications = true;
+                    setting.ReceiveRejectedNotifications = false;
+                    setting.ReceiveAcceptedNotifications = false;
+                    setting.ReceiveRatedNotifications = true;
+                    setting.ReceiveImportChangeNotifications = true;
+                    break;
+
+                default:
+                    throw new ArgumentException($"Unknown role '{role}' for default settings.");
+            }
+
+            return setting;
+        }
+        // ------------------------------------------------------
+
     }
 }
