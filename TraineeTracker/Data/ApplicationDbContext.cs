@@ -33,16 +33,35 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
         : base(options) {
     }
 
-    /*
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
+
+        // ApplicationUser and Feedback
+        modelBuilder.Entity<Feedback>()
+            .HasMany(f => f.ReadByUsers)
+            .WithMany(u => u.ReadFeedbacks)
+            .UsingEntity<Dictionary<string, object>>(
+                "FeedbackRead",
+                j => j.HasOne<ApplicationUser>().WithMany().HasForeignKey("ReaderId"),
+                j => j.HasOne<Feedback>().WithMany().HasForeignKey("FeedbackId"));
+
+
+        modelBuilder.Entity<Feedback>()
+            .HasOne(f => f.Author)
+            .WithMany(u => u.WrittenFeedbacks) // Stelle sicher, dass ApplicationUser diese Navigation hat
+            .HasForeignKey(f => f.AuthorId)
+            .IsRequired();
+
+        // ---------------------
+
+
 
         // Enum to String Mapping
         modelBuilder.Entity<TraineeLesson>()
             .Property(t => t.State)
             .HasConversion<string>();
     }
-    */
 
 }

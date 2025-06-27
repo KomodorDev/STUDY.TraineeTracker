@@ -5,7 +5,9 @@ namespace TraineeTracker.Models.Domain
         // Id or {ClassName}Id -> treated as primary key, not nullable, auto-incremented
         public int TraineeLessonId { get; set; }
 
-        public required string UserId { get; set; }
+        public required string TraineeId { get; set; }
+        
+        public required ApplicationUser Trainee { get; set; }
 
         public TraineeLessonState State { get; set; } = TraineeLessonState.Open;
 
