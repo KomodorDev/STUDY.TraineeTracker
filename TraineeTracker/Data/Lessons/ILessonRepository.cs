@@ -18,6 +18,8 @@ namespace TraineeTracker.Data.Lessons
 
         Task<Lesson?> GetLessonByIdAsync(int id);
 
+        Task<Lesson?> GetLessonByTitleAsync(string title);
+
         Task<IEnumerable<Lesson>> GetAllLessonsAsync();
     }
 }

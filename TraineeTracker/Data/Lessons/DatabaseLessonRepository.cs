@@ -52,6 +52,12 @@ namespace TraineeTracker.Data.Lessons
             .FirstOrDefaultAsync(l => l.LessonId == id);
         }
 
+        public async Task<Lesson?> GetLessonByTitleAsync(string title)
+        {
+            return await _context.Lessons
+            .FirstOrDefaultAsync(l => l.Title == title);
+        }
+
         public async Task<IEnumerable<Lesson>> GetAllLessonsAsync()
         {
             return await _context.Lessons
