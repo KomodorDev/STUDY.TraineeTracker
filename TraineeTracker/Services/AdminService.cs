@@ -1,5 +1,6 @@
 using TraineeTracker.Data.ApplicationUsers;
 using TraineeTracker.Data.ProcessingPauses;
+using TraineeTracker.Services.Email;
 using TraineeTracker.Models.Domain;
 using TraineeTracker.Models.Dtos;
 
@@ -8,13 +9,13 @@ namespace TraineeTracker.Services.Admin {
         private readonly IApplicationUserRepository _applicationUserRepository;
         private readonly IProcessingPauseRepository _processingPauseRepository;
 
-        private readonly EmailNotificationSettingService _emailNotificationSettingService;
+        private readonly EmailNotificationService _emailNotificationService;
         private readonly TeachingPlanService _teachingPlanService;
 
-        public AdminService(IApplicationUserRepository applicationUserRepository, IProcessingPauseRepository processingPauseRepository, IEmailNotificationSettingService emailNotificationSettingService, ITeachingPlanService teachingPlanService) {
+        public AdminService(IApplicationUserRepository applicationUserRepository, IProcessingPauseRepository processingPauseRepository, EmailNotificationService emailNotificationService, TeachingPlanService teachingPlanService) {
             _applicationUserRepository = applicationUserRepository;
             _processingPauseRepository = processingPauseRepository;
-            _emailNotificationSettingService = emailNotificationSettingService;
+            _emailNotificationService = emailNotificationService;
             _teachingPlanService = teachingPlanService;
         }
 
@@ -23,17 +24,19 @@ namespace TraineeTracker.Services.Admin {
                 UserName = dto.Email,
                 Email = dto.Email,
                 EmailConfirmed = true,
-                EmailNotificationSetting = _emailNotificationSettingService.CreateDefaultEmailNotificationSetting(dto.Role)
+                EmailNotificationSetting = _emailNotificationService.CreateDefaultEmailNotificationSetting(dto.Role)
             };
 
             if (dto.Role == "Trainee") {
                 if (dto.TeachingPlanId == null) {
                     return ServiceResult.Failed("Trainee requires Teachingplan.");
                 }
+                /*     
                 var teachingPlanResult = await _teachingPlanService.AssignTeachingPlanToTraineeAsync(user, dto.TeachingPlanId);
                 if (!teachingPlanResult.Succeeded) {
                     return teachingPlanResult;
                 }
+                */
             }
 
             var result = await _applicationUserRepository.CreateAsync(user, dto.Password);
