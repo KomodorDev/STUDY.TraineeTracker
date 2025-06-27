@@ -28,9 +28,15 @@ namespace TraineeTracker.Data {
             return await _context.EmailNotificationSettings.AnyAsync(s => s.UserId == userId);
         }
 
-        public async Task<EmailNotificationSetting?> GetByUserIdAsync(string userId) {
-            return await _context.EmailNotificationSettings
+        public async Task<EmailNotificationSetting> GetByUserIdAsync(string userId) {
+            var setting = await _context.EmailNotificationSettings
                 .FirstOrDefaultAsync(s => s.UserId == userId);
+
+            if (setting == null)
+                throw new InvalidOperationException($"No EmailNotificationSetting found for user with ID '{userId}'.");
+
+            return setting;
         }
+
     }
 }
