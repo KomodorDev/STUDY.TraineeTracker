@@ -6,11 +6,12 @@ using TraineeTracker.Data.Feedbacks;
 using TraineeTracker.Data.Lessons;
 using TraineeTracker.Data.TraineeLessons;
 using TraineeTracker.Data.TraineeLessonLog;
-using TraineeTracker.Data.
+using TraineeTracker.Data.ApplicationUsers;
 
 using TraineeTracker.Models.Domain;
 using TraineeTracker.Models.Dtos;
 using TraineeTracker.Models.ViewModels;
+
 using TraineeTracker.Exceptions;
 using TraineeTracker.Services.TraineeLessonStates;
 
@@ -22,23 +23,26 @@ namespace TraineeTracker.Services
         private ITraineeLessonRepository _iTraineeLessonRepository;
         private ITraineeLessonLogEntryRepository _iTraineeLessonLogEntryRepository;
         private IFeedbackRepository _iFeedbackrepository;
+        // this one is not included in the viewmodel, because i dont't think we need it there?
+        private IApplicationUserRepository _iApplicationUserRepository;
 
         public TraineeLessonDetailService(ILessonRepository iLessonRepository,
                                             ITraineeLessonRepository iTraineeLessonRepository,
                                             ITraineeLessonLogEntryRepository iTraineeLessonLogEntryRepository,
                                             IFeedbackRepository iFeedbackRepository,
-                                            IApplicationUserRepository i) {
+                                            IApplicationUserRepository iApplicationUserRepository) {
             _iLessonRepository = iLessonRepository;
             _iTraineeLessonLogEntryRepository = iTraineeLessonLogEntryRepository;
             _iTraineeLessonRepository = iTraineeLessonRepository;
             _iFeedbackrepository = iFeedbackRepository;
+            _iApplicationUserRepository = iApplicationUserRepository;
         }
 
         private async Task CheckHasAccess(ClaimsPrincipal user, int traineeLessonId) {
             if (user == null)
                 throw new UserNotFoundException();
 
-            var traineeLesson = await _iTraineeLessonRepository.GetTraineeLessonByIdAsync(traineeLessonId) ?? throw new TraineeLessonNotFoundException(traineeLessonId);
+            var traineeLesson = await _iTraineeLessonRepository.GetTraineeLessonByIdWithLessonAsync(traineeLessonId) ?? throw new TraineeLessonNotFoundException(traineeLessonId);
 
             // looks through ClaimsPrincipal user for a claim with the type ClaimTypes.NameIdentifier, which should be the UserId
             var userId = (user.FindFirst(ClaimTypes.NameIdentifier)?.Value) ?? throw new Exception("ClaimTypes.NameIdentifier of user not found.");
@@ -48,14 +52,14 @@ namespace TraineeTracker.Services
                 return;
 
             // allows access, if the correct Trainee tries to access
-            if (!(userId == traineeLesson.UserId))
+            if (!(userId == traineeLesson.TraineeId))
                 throw new UnauthorizedAccessException("You can only access your own TraineeLessons.");
         }
 
         public async Task<TraineeLessonDetailViewModel> BuildTraineeLessonDetailViewModel(int traineeLessonId, ClaimsPrincipal user) {
             await CheckHasAccess(user, traineeLessonId);
 
-            var tl = await _iTraineeLessonRepository.GetTraineeLessonByIdAsync(traineeLessonId) ?? throw new TraineeLessonNotFoundException(traineeLessonId);
+            var tl = await _iTraineeLessonRepository.GetTraineeLessonByIdWithLessonAsync(traineeLessonId) ?? throw new TraineeLessonNotFoundException(traineeLessonId);
             var l = _iLessonRepository.GetLessonById(tl.LessonId) ?? throw new LessonNotFoundException(tl.LessonId);
             var tll = _iTraineeLessonLogEntryRepository.GetAllLogsForTraineeLesson(traineeLessonId);
             var f = _iFeedbackrepository.GetAllFeedbacksForLesson(l);
@@ -71,13 +75,26 @@ namespace TraineeTracker.Services
         public async Task SaveTraineeLessonStateChange(TraineeLessonDto traineeLessonUpdate, ClaimsPrincipal user) {
             await CheckHasAccess(user, traineeLessonUpdate.TraineeLessonId);
 
-            var traineeLesson = await _iTraineeLessonRepository.GetTraineeLessonByIdAsync(traineeLessonUpdate.TraineeLessonId) ?? throw new TraineeLessonNotFoundException(traineeLessonUpdate.TraineeLessonId);
-            var oldState = traineeLesson.State;
-            var targetState = TraineeLessonStateFactory.Create(traineeLessonUpdate.TargetStateName)
+            var oldTraineeLesson = await _iTraineeLessonRepository.GetTraineeLessonByIdWithLessonAsync(traineeLessonUpdate.TraineeLessonId) ?? throw new TraineeLessonNotFoundException(traineeLessonUpdate.TraineeLessonId);
+            var oldState = oldTraineeLesson.State;
 
-            if (null == TraineeLessonStateFactory.Create(traineeLesson.State).GetAllowedLessonStateTransitions(user).Contains())
+            // returns true if TargetStateName could be parsed into targetState
+            TraineeLessonState targetState;
+            if (!Enum.TryParse<TraineeLessonState>(traineeLessonUpdate.TargetStateName, out targetState))
+                throw new Exception("Inalid target state in TraineeLessonDto.");
 
-            await LogStatusChange(traineeLesson, oldState, traineeLesson.State, user);
+            // changes state, if allowed - and checks if rejection reason is present, if needed
+            TraineeLessonStateFactory factory = new();
+            oldTraineeLesson.State = factory.Create(oldTraineeLesson.State).TransitionTo(targetState, user);
+            if (oldTraineeLesson.State == TraineeLessonState.Rejected)
+                if (String.IsNullOrWhiteSpace(traineeLessonUpdate.RejectionReason))
+                    throw new ArgumentException("Rejection reason must be provided for transitioning to rejected.", nameof(traineeLessonUpdate));
+
+            // adds rejection reason and updates db
+            oldTraineeLesson.RejectionReason = traineeLessonUpdate.RejectionReason;
+            await _iTraineeLessonRepository.UpdateAsync(oldTraineeLesson);
+
+            await LogStatusChange(oldTraineeLesson, oldState, targetState, user);
         }
 
         private async Task LogStatusChange(TraineeLesson traineeLesson, TraineeLessonState oldState, TraineeLessonState newState, ClaimsPrincipal user) {
@@ -90,7 +107,7 @@ namespace TraineeTracker.Services
                 new TraineeLessonLogEntry {
                     TraineeLessonId = traineeLesson.TraineeLessonId,
                     LessonName = lesson.Title,
-                    UserId = (user.FindFirst(ClaimTypes.NameIdentifier)?.Value) ?? throw new Exception("ClaimTypes.NameIdentifier of user not found."),
+                    UserId = user.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? throw new Exception("ClaimTypes.NameIdentifier of user not found."),
                     UserName = user.FindFirst(ClaimTypes.Name)?.Value ?? throw new Exception("ClaimTypes.Name of user not found"),
                     OldState = oldState.ToString(),
                     NewState = newState.ToString(),
@@ -104,7 +121,7 @@ namespace TraineeTracker.Services
             if (feedbackDto == null)
                 throw new Exception("FeedbackDto is null");
 
-            var correspondingTraineeLesson = await _iTraineeLessonRepository.GetTraineeLessonByIdAsync(feedbackDto.TraineeLessonId) ?? throw new TraineeLessonNotFoundException(feedbackDto.TraineeLessonId);
+            var correspondingTraineeLesson = await _iTraineeLessonRepository.GetTraineeLessonByIdWithLessonAsync(feedbackDto.TraineeLessonId) ?? throw new TraineeLessonNotFoundException(feedbackDto.TraineeLessonId);
             var existingFeedback = _iFeedbackrepository.GetFeedbackOfTraineeLesson(correspondingTraineeLesson);
 
             if (existingFeedback != null) {
@@ -123,6 +140,8 @@ namespace TraineeTracker.Services
                 if (correspondingTraineeLesson.State != TraineeLessonState.Accepted)
                     throw new UnauthorizedAccessException("You can write a feedback once your TraineeLesson has been accepted.");
 
+                var authorId = user.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? throw new Exception("ClaimTypes.NameIdentifier of user not found.");
+
                 _iFeedbackrepository.Create(new Feedback {
                     Difficulty = feedbackDto.Difficulty ?? throw new ArgumentNullException(nameof(feedbackDto), "Difficulty cannot be null."),
                     PreviousKnowledge = feedbackDto.PreviousKnowledge ?? throw new ArgumentNullException(nameof(feedbackDto), "PreviousKnowledge cannot be null."),
@@ -132,8 +151,8 @@ namespace TraineeTracker.Services
                     // relations
                     LessonId = correspondingTraineeLesson.LessonId,
                     Lesson = _iLessonRepository.GetLessonById(correspondingTraineeLesson.LessonId) ?? throw new LessonNotFoundException(correspondingTraineeLesson.LessonId),
-                    AuthorId = (user.FindFirst(ClaimTypes.NameIdentifier)?.Value) ?? throw new Exception("ClaimTypes.NameIdentifier of user not found."),
-                    Author = 
+                    AuthorId = authorId,
+                    Author = await _iApplicationUserRepository.FindByIdAsync(authorId) ?? throw new UserNotFoundException($"User with id {authorId} not found."),
                     ReadByUsers = new List<ApplicationUser>()
                 });
             }
