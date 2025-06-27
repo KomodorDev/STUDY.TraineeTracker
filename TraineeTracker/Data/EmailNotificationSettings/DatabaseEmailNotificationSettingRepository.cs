@@ -1,7 +1,7 @@
+using Microsoft.EntityFrameworkCore;
 using TraineeTracker.Models.Domain;
 
-namespace TraineeTracker.Data
-{
+namespace TraineeTracker.Data {
     public class DatabaseEmailNotificationSettingRepository : IEmailNotificationSettingRepository {
         private readonly ApplicationDbContext _context;
 
@@ -9,29 +9,34 @@ namespace TraineeTracker.Data
             _context = context;
         }
 
-        public void Create(EmailNotificationSetting emailNotificationSetting) {
+        public async Task CreateAsync(EmailNotificationSetting emailNotificationSetting) {
             _context.EmailNotificationSettings.Add(emailNotificationSetting);
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
         }
 
-        public void Update(EmailNotificationSetting emailNotificationSetting) {
+        public async Task UpdateAsync(EmailNotificationSetting emailNotificationSetting) {
             _context.EmailNotificationSettings.Update(emailNotificationSetting);
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
         }
 
-        public void Delete(EmailNotificationSetting emailNotificationSetting) {
+        public async Task DeleteAsync(EmailNotificationSetting emailNotificationSetting) {
             _context.EmailNotificationSettings.Remove(emailNotificationSetting);
-            _context.SaveChanges();
-        }
-        
-        public bool Exists(string userId)
-        {
-            return _context.EmailNotificationSettings.Any(s => s.UserId == userId);
+            await _context.SaveChangesAsync();
         }
 
-        public EmailNotificationSetting? GetByUserId(string userId) {
-            return _context.EmailNotificationSettings
-                .FirstOrDefault(s => s.UserId == userId);
+        public async Task<bool> ExistsAsync(string userId) {
+            return await _context.EmailNotificationSettings.AnyAsync(s => s.UserId == userId);
         }
+
+        public async Task<EmailNotificationSetting> GetByUserIdAsync(string userId) {
+            var setting = await _context.EmailNotificationSettings
+                .FirstOrDefaultAsync(s => s.UserId == userId);
+
+            if (setting == null)
+                throw new InvalidOperationException($"No EmailNotificationSetting found for user with ID '{userId}'.");
+
+            return setting;
+        }
+
     }
 }
