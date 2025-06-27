@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using TraineeTracker.Exceptions;
 using TraineeTracker.Models.Domain;
 
 namespace TraineeTracker.Data.TraineeLessons {
@@ -16,7 +17,7 @@ namespace TraineeTracker.Data.TraineeLessons {
         }
 
         public async Task CreateRangeAsync(IEnumerable<TraineeLesson> traineeLessons) {
-            await _context.AddRangeAsync(traineeLessons);
+            await _context.TraineeLessons.AddRangeAsync(traineeLessons);
             await _context.SaveChangesAsync();
         }
 
@@ -51,6 +52,15 @@ namespace TraineeTracker.Data.TraineeLessons {
             return await _context.TraineeLessons
                 .Include(t => t.Lesson)     // eager loads the Lesson for easier access to properties of the fitting lesson
                 .FirstOrDefaultAsync(tl => tl.TraineeLessonId == traineeLessonId);
+        }
+
+        public async Task DeleteAsync(int traineeLessonId) {
+            var traineeLesson = await _context.TraineeLessons
+                                    .FirstOrDefaultAsync(l => l.TraineeLessonId == traineeLessonId)
+                                        ?? throw new TraineeLessonNotFoundException(traineeLessonId);
+
+            _context.TraineeLessons.Remove(traineeLesson);
+            await _context.SaveChangesAsync();
         }
     }
 }
