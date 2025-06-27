@@ -2,14 +2,14 @@ namespace TraineeTracker.Models.Domain
 {
     public class TraineeLesson {
 
-        // Key
+        // Id or {ClassName}Id -> treated as primary key, not nullable, auto-incremented
         public int TraineeLessonId { get; set; }
 
         public required string TraineeId { get; set; }
         
         public required ApplicationUser Trainee { get; set; }
 
-        public required TraineeLessonState State { get; set; }
+        public TraineeLessonState State { get; set; } = TraineeLessonState.Open;
 
         // only required if state is rejected
         public string? RejectionReason { get; set; }
@@ -22,5 +22,5 @@ namespace TraineeTracker.Models.Domain
 
         public required Lesson Lesson { get; set; }
 
-        }
+    }
 }

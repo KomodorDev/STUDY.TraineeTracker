@@ -83,8 +83,16 @@ namespace TraineeTracker.Data.Feedbacks {
                 .Where(f => !f.ReadByUsers.Any(u => u.Id == user.Id))
                 .ToList();
         }
+
+        public Feedback? GetFeedbackOfTraineeLesson(TraineeLesson traineeLesson) {
+            return _context.Feedbacks
+                .Include(f => f.Lesson)
+                .Include(f => f.Author)
+                .Include(f => f.ReadByUsers)
+                .FirstOrDefault(f => f.AuthorId == traineeLesson.UserId && f.LessonId == traineeLesson.LessonId);
+        }
         // -------------------------------------------
-        
+
 
 
 
