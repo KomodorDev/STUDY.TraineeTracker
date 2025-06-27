@@ -89,7 +89,7 @@ namespace TraineeTracker.Data.Feedbacks {
                 .Include(f => f.Lesson)
                 .Include(f => f.Author)
                 .Include(f => f.ReadByUsers)
-                .FirstOrDefault(f => f.AuthorId == traineeLesson.UserId && f.LessonId == traineeLesson.LessonId);
+                .FirstOrDefault(f => f.AuthorId == traineeLesson.TraineeId && f.LessonId == traineeLesson.LessonId);
         }
         // -------------------------------------------
 
