@@ -62,7 +62,7 @@ namespace TraineeTracker.Data.TeachingPlans
         {
             return _context.TeachingPlans
             .Include(tp => tp.Lessons)
-            .Include(tp => tp.AffectedUsers)
+            .Include(tp => tp.Trainees)
             .ToList();
         }
     }
