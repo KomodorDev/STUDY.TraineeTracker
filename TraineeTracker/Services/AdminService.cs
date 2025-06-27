@@ -28,16 +28,12 @@ namespace TraineeTracker.Services.Admin {
 
             if (dto.Role == "Trainee") {
                 if (dto.TeachingPlanId == null) {
-                    return ServiceResult.Failed("Teachingplan required for Trainee.");
+                    return ServiceResult.Failed("Trainee requires Teachingplan.");
                 }
-                var teachingPlan = _teachingPlanService.GetTeachingPlanByIdAsync(dto.TeachingPlanId);
-                if (teachingPlan == null) {
-                    return ServiceResult.Failed("Teachingplan not found.");
+                var teachingPlanResult = await _teachingPlanService.AssignTeachingPlanToTraineeAsync(user, dto.TeachingPlanId);
+                if (!teachingPlanResult.Succeeded) {
+                    return teachingPlanResult;
                 }
-                user.TeachingPlan = teachingPlan;
-                
-                var traineeLessons = await _teachingPlanService.CreateTraineeLessonsAsync(user, dto.TeachingPlanId);
-                user.TraineeLessons = traineeLessons;
             }
 
             var result = await _applicationUserRepository.CreateAsync(user, dto.Password);
