@@ -2,24 +2,23 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using TraineeTracker.Models.Domain;
 
-namespace TraineeTracker.Data.TeachingPlans
-{
-    public interface ITeachingPlanRepository
-    {
-        bool Exists(int id);
+namespace TraineeTracker.Data.TeachingPlans {
+    public interface ITeachingPlanRepository {
 
-        bool Exists(TeachingPlan teachingPlan);
+        Task<bool> ExistsAsync(int id);
 
-        void Create(TeachingPlan teachingPlan);
+        Task<bool> ExistsAsync(TeachingPlan teachingPlan);
 
-        void Update(TeachingPlan teachingPlan);
+        Task CreateAsync(TeachingPlan teachingPlan);
 
-        void Delete(TeachingPlan teachingPlan);
+        Task UpdateAsync(TeachingPlan teachingPlan);
 
-        TeachingPlan? GetTeachingPlanByIdWithLessonsAndTrainees(int id);
+        Task DeleteAsync(TeachingPlan teachingPlan);
 
-        TeachingPlan? GetTeachingPlanById(int id);
+        Task<TeachingPlan?> GetTeachingPlanByIdAsync(int id);
 
-        IEnumerable<TeachingPlan> GetAllTeachingPlans();
+        Task<TeachingPlan?> GetTeachingPlanByIdWithLessonsAndTraineesAsync(int id);
+
+        Task<IEnumerable<TeachingPlan>> GetAllTeachingPlansAsync();
     }
 }
