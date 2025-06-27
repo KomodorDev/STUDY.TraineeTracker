@@ -25,7 +25,5 @@ namespace TraineeTracker.Models.Domain
 
         public ICollection<TeachingPlan> TeachingPlans { get; set; } = new List<TeachingPlan>();
         
-    
-
     }
 }

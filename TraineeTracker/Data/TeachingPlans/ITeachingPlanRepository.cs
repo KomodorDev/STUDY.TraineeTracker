@@ -4,20 +4,21 @@ using TraineeTracker.Models.Domain;
 
 namespace TraineeTracker.Data.TeachingPlans {
     public interface ITeachingPlanRepository {
-        bool Exists(int id);
 
-        bool Exists(TeachingPlan teachingPlan);
+        Task<bool> ExistsAsync(int id);
 
-        Task Create(TeachingPlan teachingPlan);
+        Task<bool> ExistsAsync(TeachingPlan teachingPlan);
 
-        Task Update(TeachingPlan teachingPlan);
+        Task CreateAsync(TeachingPlan teachingPlan);
 
-        Task Delete(TeachingPlan teachingPlan);
+        Task UpdateAsync(TeachingPlan teachingPlan);
 
-        Task<TeachingPlan?> GetTeachingPlanById(int id);
+        Task DeleteAsync(TeachingPlan teachingPlan);
 
-        TeachingPlan? GetTeachingPlanByIdWithLessonsAndTrainees(int id);
+        Task<TeachingPlan?> GetTeachingPlanByIdAsync(int id);
 
-        IEnumerable<TeachingPlan> GetAllTeachingPlans();
+        Task<TeachingPlan?> GetTeachingPlanByIdWithLessonsAndTraineesAsync(int id);
+
+        Task<IEnumerable<TeachingPlan>> GetAllTeachingPlansAsync();
     }
 }

@@ -52,8 +52,8 @@ namespace TraineeTracker.Services {
             await _teachingPlanRepo.Create(teachingPlan);
         }
 
-        public async Task UpdateTeachingPlan(IFormFile file) {
-
+        public async Task UpdateTeachingPlan(IFormFile file, int teachingPlanId)
+        {
             if (file == null || file.Length == 0)
                 throw new ArgumentException("Die Datei ist leer!");
 
@@ -65,40 +65,61 @@ namespace TraineeTracker.Services {
             if (lessonsDto == null || lessonsDto.Count == 0)
                 throw new InvalidOperationException("Keine gültigen Lektionen im JSON gefunden.");
 
-            var lessons = lessonsDto.Select(dto => new Lesson
+            var teachingPlan = await _teachingPlanRepo.GetTeachingPlanById(teachingPlanId);
+            if (teachingPlan == null)
+                throw new InvalidOperationException("TeachingPlan nicht gefunden.");
+
+            foreach (var dto in lessonsDto)
             {
-                LessonId = dto.Id,
-                Title = dto.Title,
-                LinkUrl = dto.Url,
-                EstimatedEffort = dto.Estimate ?? 0,
-                IsInactive = dto.Deprecated
-            }).ToList();
+                var lesson = new Lesson
+                {
+                    LessonId = dto.Id,
+                    Title = dto.Title,
+                    LinkUrl = dto.Url,
+                    EstimatedEffort = dto.Estimate ?? 0,
+                    IsInactive = dto.Deprecated
+                };
 
-            foreach(var lesson in lessons){
+                var traineeLesson = await _traineeLessonRepo.GetTraineeLessonById(lesson.LessonId);
+                var existingLesson = await _lessonRepo.GetLessonById(lesson.LessonId);
 
-                var traineeLesson = _traineeLessonRepo.GetTraineeLessonById(lesson.LessonId);
-
-                if(_lessonRepo.GetLessonById(lesson.LessonId) != null){
-                    if(lesson.IsInactive == true){
-                        if(traineeLesson.TraineeLessonState == "open"){
-                            await _traineeLessonRepo.Delete(lesson.LessonId);
+                if (existingLesson != null)
+                {
+                    if (lesson.IsInactive)
+                    {
+                        if (traineeLesson != null && traineeLesson.TraineeLessonState == "open")
+                        {
+                            await _traineeLessonRepo.Delete(dto.Id);
                         }
-                    }else{
+
+                        await _lessonRepo.Update(lesson);
+                    }
+                    else
+                    {
                         await _lessonRepo.Update(lesson);
                     }
                 }
+                else
+                {
+                    await _lessonRepo.Create(lesson);
+                }
             }
 
+            teachingPlan.LastUpdated = DateTime.UtcNow;
             await _teachingPlanRepo.Update(teachingPlan);
         }
 
         public async Task DeleteTeachingPlan(int id) {
+
             TeachingPlan teachingPlan = await _teachingPlanRepo.GetTeachingPlanById(id);
 
-            if (teachingPlan == null)
+            if(teachingPlan == null)
                 throw new InvalidOperationException("TeachingPlan nicht gefunden.");
 
-            //Hier muss noch checkst für affected users gemacht werden
+            if(teachingPlan.Trainees != null)
+                throw new InvalidOperationException("Dieser TeachingPlan wird noch verwendet!");
+
+
 
             await _teachingPlanRepo.Delete(teachingPlan);
         }
