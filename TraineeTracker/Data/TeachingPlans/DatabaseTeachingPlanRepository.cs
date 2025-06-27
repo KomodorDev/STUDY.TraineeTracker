@@ -44,7 +44,7 @@ namespace TraineeTracker.Data.TeachingPlans
             _context.SaveChanges();
         }
 
-        public TeachingPlan? GetTeachingPlanByIdWithLessonsAndTrainees(int id)
+        public TeachingPlan? GetTeachingPlanByIdWithLessonAndTrainees(int id)
         {
             return _context.TeachingPlans
                 .Include(tp => tp.Trainees)
@@ -53,7 +53,7 @@ namespace TraineeTracker.Data.TeachingPlans
 
         }
 
-        public TeachingPlan? GetTechingPlanById(int id)
+        public TeachingPlan? GetTeachingPlanById(int id)
         {
             return _context.TeachingPlan.FirstOrDefault(tp => tp.TeachingPlanId == id);
         }
