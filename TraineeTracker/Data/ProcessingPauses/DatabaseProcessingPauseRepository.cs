@@ -9,11 +9,11 @@ namespace TraineeTracker.Data.ProcessingPauses {
         }
 
         public bool Exists(int processingPauseId) {
-            return _context.ProcessingPauses.Any(p => p.Id == processingPauseId);
+            return _context.ProcessingPauses.Any(p => p.ProcessingPauseId == processingPauseId);
         }
 
         public bool Exists(ProcessingPause processingPause) {
-            return _context.ProcessingPauses.Any(p => p.Id == processingPause.Id);
+            return _context.ProcessingPauses.Any(p => p.ProcessingPauseId == processingPause.ProcessingPauseId);
         }
 
         public void Create(ProcessingPause processingPause) {
