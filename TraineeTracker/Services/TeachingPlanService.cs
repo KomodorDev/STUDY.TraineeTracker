@@ -39,7 +39,6 @@ namespace TraineeTracker.Services {
             if (teachingPlan == null)
                 throw new InvalidOperationException("Ungültiges JSON: TeachingPlan konnte nicht deserialisiert werden.");
 
-
             await _teachingPlanRepo.Update(teachingPlan);
         }
 
