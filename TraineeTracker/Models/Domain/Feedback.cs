@@ -9,7 +9,7 @@ namespace TraineeTracker.Models.Domain {
         }
 
         [Range(1, 10)]
-        public int Difficulty {
+        public required int Difficulty {
             get; set;
         }
 
@@ -17,11 +17,11 @@ namespace TraineeTracker.Models.Domain {
             get; set;
         }
 
-        public float HoursOfEffort {
+        public required float HoursOfEffort {
             get; set;
         }
 
-        public required string Comment {
+        public string? Comment {
             get; set;
         }
 
