@@ -45,7 +45,7 @@ namespace TraineeTracker.Data.TeachingPlans {
         }
 
         public async Task<TeachingPlan?> GetTeachingPlanByIdWithLessonsAndTraineesAsync(int id) {
-            return _context.TeachingPlans
+            return await _context.TeachingPlans
                 .Include(tp => tp.Trainees)
                 .Include(tp => tp.Lessons)
                 .FirstOrDefaultAsync(tp => tp.TeachingPlanId == id);
