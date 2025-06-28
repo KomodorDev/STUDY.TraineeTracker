@@ -3,10 +3,10 @@ namespace TraineeTracker.Models.Domain {
         public int TraineeStatisticsSnapshotId { get; set; }
 
         public required string TraineeId { get; set; }
-        public ApplicationUser Trainee { get; set; }
+        public required ApplicationUser Trainee { get; set; }
 
         // das Datum von dem Snapshot zu den einzelnen Kennzahlen
-        public DateTime SnapshotDate { get; set; }
+        public DateTime SnapshotDateTime { get; set; }
 
         //entspricht der Kennzahl "Anwesend"
         public double DaysPresent { get; set; }
