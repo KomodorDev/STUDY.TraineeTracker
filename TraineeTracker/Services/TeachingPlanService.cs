@@ -52,8 +52,8 @@ namespace TraineeTracker.Services {
             await _teachingPlanRepo.CreateAsync(teachingPlan);
         }
 
-        // ----------------------------------------------
         public async Task UpdateTeachingPlan(IFormFile file, int teachingPlanId) {
+
             if (file == null || file.Length == 0)
                 throw new ArgumentException("Die Datei ist leer!");
 
@@ -66,12 +66,14 @@ namespace TraineeTracker.Services {
                 throw new InvalidOperationException("Keine gültigen Lektionen im JSON gefunden.");
 
             var teachingPlan = await _teachingPlanRepo.GetTeachingPlanByIdAsync(teachingPlanId);
+
             if (teachingPlan == null)
                 throw new InvalidOperationException("TeachingPlan nicht gefunden.");
 
             var oldLessons = await _lessonRepo.GetAllLessonsAsync();
 
             foreach (var oldLesson in oldLessons) {
+
                 bool stillExists = lessonsDto.Any(dto => dto.Id == oldLesson.LessonId);
 
                 if (!stillExists) {
@@ -85,6 +87,7 @@ namespace TraineeTracker.Services {
             }
 
             foreach (var dto in lessonsDto) {
+
                 var lesson = new Lesson {
                     LessonId = dto.Id,
                     Title = dto.Title,
@@ -97,16 +100,21 @@ namespace TraineeTracker.Services {
                 var existingLesson = await _lessonRepo.GetLessonByIdAsync(lesson.LessonId);
 
                 if (existingLesson != null) {
+
                     if (lesson.IsInactive) {
+
                         if (traineeLesson != null && traineeLesson.State == TraineeLessonState.Open) {
+
                             await _traineeLessonRepo.DeleteAsync(lesson.LessonId);
                         }
 
                         await _lessonRepo.UpdateAsync(lesson);
                     } else {
+
                         await _lessonRepo.UpdateAsync(lesson);
                     }
                 } else {
+
                     await _lessonRepo.CreateAsync(lesson);
                 }
             }
@@ -115,7 +123,6 @@ namespace TraineeTracker.Services {
             await _teachingPlanRepo.UpdateAsync(teachingPlan);
         }
 
-        // ----------------------------------------------
         public async Task DeleteTeachingPlan(int id) {
 
             TeachingPlan teachingPlan = await _teachingPlanRepo.GetTeachingPlanByIdAsync(id);
@@ -142,8 +149,29 @@ namespace TraineeTracker.Services {
             await _teachingPlanRepo.DeleteAsync(teachingPlan);
         }
 
-        public async Task<TeachingPlan> GetTeachingPlanByIdAsync(int id) {
-            return await _teachingPlanRepo.GetTeachingPlanByIdAsync(id);
+        public async Task AssignTeachingPlanToTraineeAsync(ApplicationUser trainee, int teachingPlanId){
+
+            var teachingPlan = await _teachingPlanRepo.GetTeachingPlanByIdAsync(teachingPlanId);
+
+            if (teachingPlan == null)
+                throw new InvalidOperationException("TeachingPlan nicht gefunden.");
+
+            trainee.TeachingPlan = teachingPlan;
+
+            foreach (var lesson in teachingPlan.Lessons)
+            {
+                var traineeLesson = new TraineeLesson{
+                    TraineeId = trainee.Id,
+                    Trainee = trainee,
+                    LessonId = lesson.LessonId,
+                    Lesson = lesson
+                };
+
+                await _traineeLessonRepo.CreateAsync(traineeLesson);
+            }
+
+            teachingPlan.Trainees.Add(trainee);
+            await _teachingPlanRepo.UpdateAsync(teachingPlan);
         }
     }
 }

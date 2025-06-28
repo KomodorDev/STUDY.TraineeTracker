@@ -15,6 +15,8 @@ namespace TraineeTracker.Data.TeachingPlans {
 
         Task DeleteAsync(TeachingPlan teachingPlan);
 
+        Task AddTrainee(ApplicationUser trainee, TeachingPlan teachingPlan);
+
         Task<TeachingPlan?> GetTeachingPlanByIdAsync(int id);
 
         Task<TeachingPlan?> GetTeachingPlanByIdWithLessonsAndTraineesAsync(int id);
