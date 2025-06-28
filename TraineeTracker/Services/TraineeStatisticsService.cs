@@ -55,19 +55,19 @@ namespace TraineeTracker.Services
             return false;
         }
 
-        public async Task<TraineeStatisticsSnapshot> BuildLatestTraineeStatisticsSnapshot(string traineeId, DateTime startDate, DateTime endDate, string email)
+        public async Task<TraineeStatisticsSnapshot> BuildLatestTraineeStatisticsSnapshotAsync(string traineeId, DateTime startDate, DateTime endDate, string email)
         {
-            double daysPresent = await GetPresentDays(startDate, endDate, email);
+            double daysPresent = await GetPresentDaysAsync(startDate, endDate, email);
             if (daysPresent < 0)
             {
                 Console.WriteLine("⚠️ API-Error – use latest snapshot.");
                 return _traineeStatisticsRepository.GetTraineeStatisticsSnapshot(traineeId);
             }
-            double lessonDaysCompleted = CalculateLessonDaysCompleted();
-            double lessonDaysOpen = CalculateLessonDaysOpen();
+            double lessonDaysCompleted = await CalculateLessonDaysCompletedAsync(traineeId);
+            double lessonDaysOpen = await CalculateLessonDaysOpenAsync(traineeId);
             double lessonDaysBuffer = CalculateLessonDaysBuffer(daysPresent, lessonDaysCompleted);
             double speed = CalculateSpeed(daysPresent, lessonDaysCompleted);
-            double daysBufferPredicted = CalculateDaysBufferPrediction(daysPresent, lessonDaysCompleted, speed, lessonDaysOpen);
+            double daysBufferPredicted = await CalculateDaysBufferPrediction(traineeId, daysPresent, lessonDaysOpen, speed);
 
             var snapshot = new TraineeStatisticsSnapshot
             {
@@ -86,7 +86,7 @@ namespace TraineeTracker.Services
             return snapshot;
         }
 
-        private async Task<double> GetPresentDays(DateTime startDate, DateTime endDate, string email)
+        private async Task<double> GetPresentDaysAsync(DateTime startDate, DateTime endDate, string email)
         {
             var baseUrl = "https://api.sopro.makandra.de/api/v1/present_days";
             var url = $"{baseUrl}?email={Uri.EscapeDataString(email)}&start_date={startDate:yyyy-MM-dd}&end_date={endDate:yyyy-MM-dd}";
@@ -119,14 +119,53 @@ namespace TraineeTracker.Services
             }
         }
 
-        public double CalculateLessonDaysCompleted()
+        public async<double> CalculateLessonDaysCompletedAsync(string traineeId)
         {
-            return 10; //Infos dazu müssen noch von woanders übergeben werden
+            var lessons = await _traineeLessonRepository.GetAllTraineeLessonsOfTraineeWithLessonAsync(traineeId);
+
+            return lessons
+                .Where(tl => tl.State != TraineeLessonState.Skipped &&
+                            !(tl.Lesson.IsInactive && tl.State == TraineeLessonState.Open))
+                .Sum(tl =>
+                {
+                    var effort = tl.Lesson.EstimatedEffort;
+
+                    return tl.State switch
+                    {
+                        TraineeLessonState.Finished => effort * 0.7,
+                        TraineeLessonState.Accepted => effort,
+                        TraineeLessonState.Rejected => effort * 0.8,
+                        TraineeLessonState.Rated    => effort,
+                        _ => 0
+                    };
+                });
         }
 
-        public double CalculateLessonDaysOpen()
+        public async Task<double> CalculateLessonDaysOpenAsync(string traineeId)
         {
-            return 5; //Infos dazu müssen noch von woanders übergeben werden
+            var lessons = await _traineeLessonRepository.GetAllTraineeLessonsOfTraineeWithLessonAsync(traineeId);
+
+            var relevantLessons = lessons
+                .Where(tl => tl.State != TraineeLessonState.Skipped &&
+                            !(tl.Lesson.IsInactive && tl.State == TraineeLessonState.Open));
+
+            double totalEffort = relevantLessons.Sum(tl => tl.Lesson.EstimatedEffort);
+
+            double completedEffort = relevantLessons.Sum(tl =>
+            {
+                var effort = tl.Lesson.EstimatedEffort;
+
+                return tl.State switch
+                {
+                    TraineeLessonState.Finished => effort * 0.7,
+                    TraineeLessonState.Accepted => effort,
+                    TraineeLessonState.Rejected => effort * 0.8,
+                    TraineeLessonState.Rated    => effort,
+                    _ => 0
+                };
+            });
+
+            return totalEffort - completedEffort;
         }
 
         public double CalculateLessonDaysBuffer(double daysPresent, double lessonDaysCompleted)
@@ -139,19 +178,24 @@ namespace TraineeTracker.Services
             return daysPresent > 0 ? lessonDaysCompleted / daysPresent : 0;
         }
 
-        public double CalculateDaysBufferPrediction(double daysPresent, double lessonDaysCompleted, double speed, double lessonDaysOpen)
+        public async Task<double> CalculateDaysBufferPrediction(string traineeId, double daysPresent, double lessonDaysOpen, double speed)
         {
-            double totalProgramDays = 100; ///bisher nur Beispiel für die Funktionsweise
+            var traineeLessons = await _traineeLessonRepository.GetAllTraineeLessonsOfTraineeWithLessonAsync(traineeId);
+
+            double targetEffortInDays = traineeLessons
+                .Where(tl => tl.State != TraineeLessonState.Skipped &&
+                            !(tl.Lesson.IsInactive && tl.State == TraineeLessonState.Open)
+                )
+                .Select(tl => tl.Lesson.EstimatedEffort)
+                .Sum();
 
             if (speed <= 0)
-            {
                 return -1;
-            }
-                
-            double daysLeft = totalProgramDays - daysPresent; //totalProgramDays muss noch von woanders übergeben werden
-            double requiredDays = lessonDaysOpen / speed;
 
-            return daysLeft - requiredDays;
+            double daysLeft = targetEffortInDays - daysPresent;
+            double daysNeeded = lessonDaysOpen / speed;
+
+            return daysLeft - daysNeeded;
         }
     }
 }
