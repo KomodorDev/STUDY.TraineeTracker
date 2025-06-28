@@ -9,92 +9,80 @@ namespace TraineeTracker.Data.Feedbacks {
             _context = context;
         }
 
-        // -------------------------------------------
-        public bool Exists(int feedbackId) {
-            return _context.Feedbacks.Any(f => f.FeedbackId == feedbackId);
+        public async Task<bool> ExistsAsync(int feedbackId) {
+            return await _context.Feedbacks.AnyAsync(f => f.FeedbackId == feedbackId);
         }
 
-        // -------------------------------------------
-        public bool Exists(Feedback feedback) {
-            return _context.Feedbacks.Any(f => f.FeedbackId == feedback.FeedbackId);
+        public async Task<bool> ExistsAsync(Feedback feedback) {
+            return await _context.Feedbacks.AnyAsync(f => f.FeedbackId == feedback.FeedbackId);
         }
 
-        // -------------------------------------------
-        public void Create(Feedback feedback) {
-            _context.Feedbacks.Add(feedback);
-            _context.SaveChanges();
+        public async Task CreateAsync(Feedback feedback) {
+            await _context.Feedbacks.AddAsync(feedback);
+            await _context.SaveChangesAsync();
         }
-        // -------------------------------------------
-        public void Update(Feedback feedback)
+
+        public async Task UpdateAsync(Feedback feedback)
         {
             _context.Feedbacks.Update(feedback);
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
         }
 
-        // -------------------------------------------
-        public void Delete(Feedback feedback) {
+        public async Task DeleteAsync(Feedback feedback) {
             _context.Feedbacks.Remove(feedback);
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
         }
 
-        // -------------------------------------------
-        public void Delete(int feedbackId) {
-            var feedback = _context.Feedbacks.Find(feedbackId);
+        public async Task DeleteAsync(int feedbackId) {
+            var feedback = await _context.Feedbacks.FindAsync(feedbackId);
             if (feedback != null) {
                 _context.Feedbacks.Remove(feedback);
-                _context.SaveChanges();
+                await _context.SaveChangesAsync();
             }
         }
-        // -------------------------------------------
-        public IEnumerable<Feedback> GetAllFeedbacksForLesson(Lesson lesson) {
-            return _context.Feedbacks
+
+        public async Task<IEnumerable<Feedback>> GetAllFeedbacksForLessonWithLessonAndAuthorAndReadByUsersAsync(Lesson lesson) {
+            return await _context.Feedbacks
                 .Include(f => f.Lesson)
                 .Include(f => f.Author)
                 .Include(f => f.ReadByUsers)
                 .Where(f => f.LessonId == lesson.LessonId)
-                .ToList();
+                .ToListAsync();
         }
 
-        // -------------------------------------------
-        public IEnumerable<Feedback> GetAllFeedbacksWrittenByUser(ApplicationUser user) {
-            return _context.Feedbacks
+        public async Task<IEnumerable<Feedback>> GetAllFeedbacksWrittenByUserWithLessonAndAuthorAndReadByUsersAsync(ApplicationUser user) {
+            return await _context.Feedbacks
                 .Include(f => f.Lesson)
                 .Include(f => f.Author)
                 .Include(f => f.ReadByUsers)
                 .Where(f => f.AuthorId == user.Id)
-                .ToList();
+                .ToListAsync();
         }
 
-        // -------------------------------------------
-        public IEnumerable<Feedback> GetAllFeedbacksReadByUser(ApplicationUser user) {
-            return _context.Feedbacks
+        public async Task<IEnumerable<Feedback>> GetAllFeedbacksReadByUserWithLessonAndAuthorAndReadByUsersAsync(ApplicationUser user) {
+            return await _context.Feedbacks
                 .Include(f => f.Lesson)
                 .Include(f => f.Author)
                 .Include(f => f.ReadByUsers)
                 .Where(f => f.ReadByUsers.Any(u => u.Id == user.Id))
-                .ToList();
+                .ToListAsync();
         }
-        // -------------------------------------------
-        public IEnumerable<Feedback> GetAllFeedbacksUnreadByUser(ApplicationUser user) {
-            return _context.Feedbacks
+
+        public async Task<IEnumerable<Feedback>> GetAllFeedbacksUnreadByUserWithLessonAndAuthorAndReadByUsersAsync(ApplicationUser user) {
+            return await _context.Feedbacks
                 .Include(f => f.Lesson)
                 .Include(f => f.Author)
                 .Include(f => f.ReadByUsers)
                 .Where(f => !f.ReadByUsers.Any(u => u.Id == user.Id))
-                .ToList();
+                .ToListAsync();
         }
 
-        public Feedback? GetFeedbackOfTraineeLesson(TraineeLesson traineeLesson) {
-            return _context.Feedbacks
+        public async Task<Feedback?> GetFeedbackOfTraineeLessonWithLessonAndAuthorAndReadByUsersAsync(TraineeLesson traineeLesson) {
+            return await _context.Feedbacks
                 .Include(f => f.Lesson)
                 .Include(f => f.Author)
                 .Include(f => f.ReadByUsers)
-                .FirstOrDefault(f => f.AuthorId == traineeLesson.TraineeId && f.LessonId == traineeLesson.LessonId);
+                .FirstOrDefaultAsync(f => f.AuthorId == traineeLesson.TraineeId && f.LessonId == traineeLesson.LessonId);
         }
-        // -------------------------------------------
-
-
-
-
     }
 }
