@@ -107,7 +107,7 @@ namespace TraineeTracker.Services.Admin {
                 if (user.TeachingPlan == null) {
                     throw new Exception("Trainee requires Teachingplan.");
                 }
-                referenceUpdateTasks.Add(_teachingPlanService.UnassignTeachingPlanFromTraineeAsync(user);
+                referenceUpdateTasks.Add(_teachingPlanService.UnassignTeachingPlanFromTraineeAsync(user));
 
                 if (user.TraineeStatisticsSnapshot != null) {
                     referenceUpdateTasks.Add(_traineeStatisticsRepository.DeleteAsync(user.TraineeStatisticsSnapshot));
