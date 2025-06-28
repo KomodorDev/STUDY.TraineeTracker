@@ -121,11 +121,11 @@ namespace TraineeTracker.Services {
 
                             await _traineeLessonRepo.DeleteAsync(traineeLesson.TraineeLessonId);
                         }
-
-
                     }
+                    await _lessonRepo.UpdateAsync(lesson);
+                }else{
+                    await _lessonRepo.CreateAsync(lesson);
                 }
-                await _lessonRepo.UpdateAsync(lesson);
             }
 
             teachingPlan.LastUpdated = DateTime.UtcNow;
