@@ -69,7 +69,7 @@ namespace TraineeTracker.Services
             double speed = CalculateSpeed(daysPresent, lessonDaysCompleted);
             double daysBufferPredicted = CalculateDaysBufferPrediction(daysPresent, lessonDaysCompleted, speed, lessonDaysOpen);
 
-            return new TraineeStatisticsSnapshot
+            var snapshot = new TraineeStatisticsSnapshot
             {
                 TraineeId = traineeId,
                 SnapshotDate = DateTime.Now,
@@ -80,6 +80,10 @@ namespace TraineeTracker.Services
                 Speed = speed,
                 DaysBufferPredicted = daysBufferPredicted,
             };
+
+            _traineeStatisticsRepository.Create(snapshot);
+
+            return snapshot;
         }
 
         private async Task<double> GetPresentDays(DateTime startDate, DateTime endDate, string email)
