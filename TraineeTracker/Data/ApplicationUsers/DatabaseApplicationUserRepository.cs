@@ -53,8 +53,11 @@ namespace TraineeTracker.Data.ApplicationUsers {
             .FirstOrDefaultAsync(u => u.Id == userId);
         }
 
-        public async Task<IEnumerable<ApplicationUser>> GetOpenUsersAsync() {
+        public async Task<IEnumerable<ApplicationUser>> GetOpenUsersInRoleAsync(string roleName) {
+            var usersInRole = await _userManager.GetUsersInRoleAsync(roleName);
+            var userIds = usersInRole.Select(u => u.Id).ToList();
             return await _context.Users
+            .Where(u => userIds.Contains(u.Id))
             .Where(u => !u.IsClosed)
             .ToListAsync();
         }
