@@ -161,7 +161,7 @@ namespace TraineeTracker.Services.Seeders {
                 if (dto.Email == "closed.trainee@uni-a.de") {
                     var user = await _databaseApplicationUserRepository.FindByEmailAsync(dto.Email);
                     if (user != null) {
-                        await _adminService.SetIsClosedAsync(user.Id, true);
+                        await _adminService.CloseUserAsync(user.Id);
                     }
                 }
             }
