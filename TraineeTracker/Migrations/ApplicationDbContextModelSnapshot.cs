@@ -230,10 +230,10 @@ namespace TraineeTracker.Migrations
                     b.Property<int?>("TeachingPlanId")
                         .HasColumnType("INTEGER");
 
-                    b.Property<DateTime?>("TraineeEndDate")
+                    b.Property<DateOnly?>("TraineeEndDate")
                         .HasColumnType("TEXT");
 
-                    b.Property<DateTime?>("TraineeStartDate")
+                    b.Property<DateOnly?>("TraineeStartDate")
                         .HasColumnType("TEXT");
 
                     b.Property<bool>("TwoFactorEnabled")
@@ -269,6 +269,9 @@ namespace TraineeTracker.Migrations
                     b.Property<bool>("ReceiveFinishedNotifications")
                         .HasColumnType("INTEGER");
 
+                    b.Property<bool>("ReceiveImportChangeNotifications")
+                        .HasColumnType("INTEGER");
+
                     b.Property<bool>("ReceiveOpenNotifications")
                         .HasColumnType("INTEGER");
 
@@ -278,11 +281,13 @@ namespace TraineeTracker.Migrations
                     b.Property<bool>("ReceiveRejectedNotifications")
                         .HasColumnType("INTEGER");
 
+                    b.Property<bool>("ReceiveSkippedNotifications")
+                        .HasColumnType("INTEGER");
+
                     b.Property<bool>("ReceiveStartedNotifications")
                         .HasColumnType("INTEGER");
 
                     b.Property<string>("UserId")
-                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.HasKey("EmailNotificationSettingsId");
@@ -304,7 +309,6 @@ namespace TraineeTracker.Migrations
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Comment")
-                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.Property<int>("Difficulty")
@@ -600,9 +604,7 @@ namespace TraineeTracker.Migrations
                 {
                     b.HasOne("TraineeTracker.Models.Domain.ApplicationUser", "User")
                         .WithOne("EmailNotificationSetting")
-                        .HasForeignKey("TraineeTracker.Models.Domain.EmailNotificationSetting", "UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("TraineeTracker.Models.Domain.EmailNotificationSetting", "UserId");
 
                     b.Navigation("User");
                 });
@@ -669,7 +671,8 @@ namespace TraineeTracker.Migrations
 
             modelBuilder.Entity("TraineeTracker.Models.Domain.ApplicationUser", b =>
                 {
-                    b.Navigation("EmailNotificationSetting");
+                    b.Navigation("EmailNotificationSetting")
+                        .IsRequired();
 
                     b.Navigation("ProcessingPauses");
 
