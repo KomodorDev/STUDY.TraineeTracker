@@ -14,6 +14,7 @@ using TraineeTracker.Models.ViewModels;
 
 using TraineeTracker.Exceptions;
 using TraineeTracker.Services.TraineeLessonStates;
+using TraineeTracker.Services.Email;
 
 namespace TraineeTracker.Services
 {
@@ -23,19 +24,22 @@ namespace TraineeTracker.Services
         private ITraineeLessonRepository _databaseTraineeLessonRepository;
         private ITraineeLessonLogEntryRepository _databaseTraineeLessonLogEntryRepository;
         private IFeedbackRepository _databaseFeedbackrepository;
-        // this one is not included in the viewmodel, because i dont't think we need it there?
+        // the following are not included in the viewmodel, because i dont't think we need them there?
         private IApplicationUserRepository _databaseApplicationUserRepository;
+        private EmailNotificationService _emailNotificationService;
 
         public TraineeLessonDetailService(ILessonRepository databaseLessonRepository,
                                             ITraineeLessonRepository databaseTraineeLessonRepository,
                                             ITraineeLessonLogEntryRepository databaseTraineeLessonLogEntryRepository,
                                             IFeedbackRepository databaseFeedbackRepository,
-                                            IApplicationUserRepository databaseApplicationUserRepository) {
+                                            IApplicationUserRepository databaseApplicationUserRepository,
+                                            EmailNotificationService emailNotificationService) {
             _databaseLessonRepository = databaseLessonRepository;
             _databaseTraineeLessonLogEntryRepository = databaseTraineeLessonLogEntryRepository;
             _databaseTraineeLessonRepository = databaseTraineeLessonRepository;
             _databaseFeedbackrepository = databaseFeedbackRepository;
             _databaseApplicationUserRepository = databaseApplicationUserRepository;
+            _emailNotificationService = emailNotificationService;
         }
 
         private async Task CheckHasAccess(ClaimsPrincipal user, int traineeLessonId) {
@@ -94,6 +98,8 @@ namespace TraineeTracker.Services
             oldTraineeLesson.RejectionReason = traineeLessonUpdate.RejectionReason;
             await _databaseTraineeLessonRepository.UpdateAsync(oldTraineeLesson);
 
+            // sends email and creates log
+            await _emailNotificationService.NotifyAboutStateChangeAsync(oldTraineeLesson, oldState, targetState);
             await LogStatusChange(oldTraineeLesson, oldState, targetState, user);
         }
 
