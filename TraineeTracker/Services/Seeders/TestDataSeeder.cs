@@ -179,36 +179,36 @@ namespace TraineeTracker.Services.Seeders {
             if (alex != null) {
                 pauseDtos.Add(new ProcessingPauseDto {
                     TraineeId = alex.Id,
-                    StartDate = new DateTime(2025, 5, 5),
-                    EndDate = new DateTime(2025, 5, 10)
+                    StartDate = new DateOnly(2025, 5, 5),
+                    EndDate = new DateOnly(2025, 5, 10)
                 });
 
                 pauseDtos.Add(new ProcessingPauseDto {
                     TraineeId = alex.Id,
-                    StartDate = new DateTime(2025, 6, 1),
-                    EndDate = new DateTime(2025, 6, 3)
+                    StartDate = new DateOnly(2025, 6, 1),
+                    EndDate = new DateOnly(2025, 6, 3)
                 });
             }
 
             if (nikita != null) {
                 pauseDtos.Add(new ProcessingPauseDto {
                     TraineeId = nikita.Id,
-                    StartDate = new DateTime(2025, 5, 20),
-                    EndDate = new DateTime(2025, 5, 25)
+                    StartDate = new DateOnly(2025, 5, 20),
+                    EndDate = new DateOnly(2025, 5, 25)
                 });
             }
             if (stefan != null) {
                 pauseDtos.Add(new ProcessingPauseDto {
                     TraineeId = stefan.Id,
-                    StartDate = new DateTime(2025, 5, 20),
-                    EndDate = new DateTime(2025, 5, 25)
+                    StartDate = new DateOnly(2025, 5, 20),
+                    EndDate = new DateOnly(2025, 5, 25)
                 });
             }
             if (ursula != null) {
                 pauseDtos.Add(new ProcessingPauseDto {
                     TraineeId = ursula.Id,
-                    StartDate = new DateTime(2025, 5, 20),
-                    EndDate = new DateTime(2025, 5, 25)
+                    StartDate = new DateOnly(2025, 5, 20),
+                    EndDate = new DateOnly(2025, 5, 25)
                 });
             }
             foreach (var dto in pauseDtos) {
