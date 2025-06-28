@@ -57,6 +57,10 @@ namespace TraineeTracker.Services {
 
         public async Task UpdateTeachingPlan(IFormFile file, int teachingPlanId) {
 
+            string role = "Trainee";
+
+
+            //Erst entpacke ich hier die Kurwa Datei
             if (file == null || file.Length == 0)
                 throw new ArgumentException("Die Datei ist leer!");
 
@@ -68,11 +72,13 @@ namespace TraineeTracker.Services {
             if (lessonsDto == null || lessonsDto.Count == 0)
                 throw new InvalidOperationException("Keine gültigen Lektionen im JSON gefunden.");
 
+            //Dann hole ich mir hier den Kurwa TeachingPlan
             var teachingPlan = await _teachingPlanRepo.GetTeachingPlanByIdAsync(teachingPlanId);
 
             if (teachingPlan == null)
                 throw new InvalidOperationException("TeachingPlan nicht gefunden.");
 
+            //Ich betrachte dann hier 2 Goyfälle 1) Den Fall das die neue JSON weniger Lessons hat als die alte und dann den Fall das sie mehr oder gleich viel hat
             var oldLessons = await _lessonRepo.GetAllLessonsAsync();
 
             foreach (var oldLesson in oldLessons) {
@@ -80,11 +86,19 @@ namespace TraineeTracker.Services {
                 bool stillExists = lessonsDto.Any(dto => dto.Id == oldLesson.LessonId);
 
                 if (!stillExists) {
-                    var traineeLesson = await _traineeLessonRepo.GetTraineeLessonByIdWithLessonAsync(oldLesson.LessonId);
+                    var trainees = await _applicationUserRepo.GetUsersInRoleAsync(role);
+                    foreach(var trainee in trainees) {
+                        if (trainee != null) {
+                            var traineeLessons = await _traineeLessonRepo.GetAllTraineeLessonsOfTraineeWithLessonAsync(trainee.Id);
 
-                    if (traineeLesson != null && traineeLesson.State == TraineeLessonState.Open) {
-                        await _traineeLessonRepo.DeleteAsync(oldLesson.LessonId);
+                            foreach(var traineeLesson in traineeLessons){
+                                if (traineeLesson != null && traineeLesson.State == TraineeLessonState.Open) {
+                                    await _traineeLessonRepo.DeleteAsync(traineeLesson.TraineeLessonId);
+                                }
+                            }
+                        }
                     }
+
                     await _lessonRepo.DeleteAsync(oldLesson);
                 }
             }
@@ -108,7 +122,7 @@ namespace TraineeTracker.Services {
 
                         if (traineeLesson != null && traineeLesson.State == TraineeLessonState.Open) {
 
-                            await _traineeLessonRepo.DeleteAsync(lesson.LessonId);
+                            await _traineeLessonRepo.DeleteAsync(traineeLesson.TraineeLessonId);
                         }
 
                         await _lessonRepo.UpdateAsync(lesson);
