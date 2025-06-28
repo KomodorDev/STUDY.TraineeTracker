@@ -4,11 +4,13 @@ using Microsoft.AspNetCore.Mvc;
 
 using TraineeTracker.Services;
 using TraineeTracker.Models.Dtos;
+using TraineeTracker.Models.Domain;
+using System.Threading.Tasks;
 
 namespace TraineeTracker.Controllers {
     [ApiController]
     [Route("api/[controller]")]
-    public class TraineeLessonDetailController : ControllerBase {
+    public class TraineeLessonDetailController : Controller {
         private readonly TraineeLessonDetailService _traineeLessonDetailService;
 
         public TraineeLessonDetailController(TraineeLessonDetailService traineeLessonDetailService) {
@@ -19,7 +21,7 @@ namespace TraineeTracker.Controllers {
         public async Task<IActionResult> ShowTraineeLessonDetailView(int traineeLessonId) {
             var viewModel = await _traineeLessonDetailService.BuildTraineeLessonDetailViewModel(traineeLessonId, User);
 
-            return Ok(viewModel);
+            return View("TraineeLessonDetail", viewModel);
         }
 
         // [FromBody] : "deserialize the JSON in the request body into this C# object", necessary for more complex types
@@ -27,7 +29,8 @@ namespace TraineeTracker.Controllers {
         public async Task<IActionResult> SaveTraineeLessonStateChange([FromBody] TraineeLessonDto traineeLessonUpdate) {
             await _traineeLessonDetailService.SaveTraineeLessonStateChange(traineeLessonUpdate, User);
 
-            return NoContent();
+            // reloads page
+            return RedirectToAction("ShowTraineeLessonDetailView", "TraineeLessonDetailController", new { traineeLessonId = traineeLessonUpdate.TraineeLessonId });
         }
 
         // [FromBody] : "deserialize the JSON in the request body into this C# object", necessary for more complex types
@@ -35,14 +38,14 @@ namespace TraineeTracker.Controllers {
         public async Task<IActionResult> SaveFeedback([FromBody] FeedbackDto feedback) {
             await _traineeLessonDetailService.SaveFeedback(feedback, User);
 
-            return NoContent();
+            return RedirectToAction("ShowTraineeLessonDetailView", "TraineeLessonDetailController", new { traineeLessonId = feedback.TraineeLessonId });
         }
 
         [HttpDelete("delete-feedback")]
-        public IActionResult DeleteFeedback(int feedbackId) {
-            _traineeLessonDetailService.DeleteFeedback(User, feedbackId);
+        public async Task<IActionResult> DeleteFeedback(int feedbackId, int traineeLessonIdForReturn) {
+            await _traineeLessonDetailService.DeleteFeedback(User, feedbackId);
 
-            return NoContent();
+            return RedirectToAction("ShowTraineeLessonDetailView", new { traineeLessonIdForReturn });
         }
     }
 }
