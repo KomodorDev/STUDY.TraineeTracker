@@ -11,7 +11,7 @@ using TraineeTracker.Data;
 namespace TraineeTracker.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250628142051_InitalCreate")]
+    [Migration("20250628182230_InitalCreate")]
     partial class InitalCreate
     {
         /// <inheritdoc />
@@ -367,10 +367,10 @@ namespace TraineeTracker.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
-                    b.Property<DateTime>("EndDate")
+                    b.Property<DateOnly>("EndDate")
                         .HasColumnType("TEXT");
 
-                    b.Property<DateTime>("StartDate")
+                    b.Property<DateOnly>("StartDate")
                         .HasColumnType("TEXT");
 
                     b.Property<string>("TraineeId")
@@ -495,7 +495,7 @@ namespace TraineeTracker.Migrations
                     b.Property<double>("LessonDaysOpen")
                         .HasColumnType("REAL");
 
-                    b.Property<DateTime>("SnapshotDate")
+                    b.Property<DateTime>("SnapshotDateTime")
                         .HasColumnType("TEXT");
 
                     b.Property<double>("Speed")

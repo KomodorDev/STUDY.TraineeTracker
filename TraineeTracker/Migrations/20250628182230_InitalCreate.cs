@@ -301,8 +301,8 @@ namespace TraineeTracker.Migrations
                     ProcessingPauseId = table.Column<int>(type: "INTEGER", nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
                     TraineeId = table.Column<string>(type: "TEXT", nullable: false),
-                    StartDate = table.Column<DateTime>(type: "TEXT", nullable: false),
-                    EndDate = table.Column<DateTime>(type: "TEXT", nullable: false)
+                    StartDate = table.Column<DateOnly>(type: "TEXT", nullable: false),
+                    EndDate = table.Column<DateOnly>(type: "TEXT", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -352,7 +352,7 @@ namespace TraineeTracker.Migrations
                     TraineeStatisticsSnapshotId = table.Column<int>(type: "INTEGER", nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
                     TraineeId = table.Column<string>(type: "TEXT", nullable: false),
-                    SnapshotDate = table.Column<DateTime>(type: "TEXT", nullable: false),
+                    SnapshotDateTime = table.Column<DateTime>(type: "TEXT", nullable: false),
                     DaysPresent = table.Column<double>(type: "REAL", nullable: false),
                     LessonDaysCompleted = table.Column<double>(type: "REAL", nullable: false),
                     LessonDaysOpen = table.Column<double>(type: "REAL", nullable: false),
