@@ -66,7 +66,7 @@ namespace TraineeTracker.Services
             var tl = await _databaseTraineeLessonRepository.GetTraineeLessonByIdWithLessonAsync(traineeLessonId) ?? throw new TraineeLessonNotFoundException(traineeLessonId);
             var l = await _databaseLessonRepository.GetLessonByIdAsync(tl.LessonId) ?? throw new LessonNotFoundException(tl.LessonId);
             var tll = _databaseTraineeLessonLogEntryRepository.GetAllLogsForTraineeLesson(traineeLessonId);
-            var f = _databaseFeedbackrepository.GetAllFeedbacksForLesson(l);
+            var f = await _databaseFeedbackrepository.GetAllFeedbacksForLessonWithLessonAndAuthorAndReadByUsersAsync(l);
 
             return new TraineeLessonDetailViewModel {
                 TraineeLesson = tl,
@@ -128,7 +128,7 @@ namespace TraineeTracker.Services
                 throw new Exception("FeedbackDto is null");
 
             var correspondingTraineeLesson = await _databaseTraineeLessonRepository.GetTraineeLessonByIdWithLessonAsync(feedbackDto.TraineeLessonId) ?? throw new TraineeLessonNotFoundException(feedbackDto.TraineeLessonId);
-            var existingFeedback = _databaseFeedbackrepository.GetFeedbackOfTraineeLesson(correspondingTraineeLesson);
+            var existingFeedback = await _databaseFeedbackrepository.GetFeedbackOfTraineeLessonWithLessonAndAuthorAndReadByUsersAsync(correspondingTraineeLesson);
 
             if (existingFeedback != null) {
                 // feedback exists
@@ -136,7 +136,8 @@ namespace TraineeTracker.Services
                 existingFeedback.Difficulty = feedbackDto.Difficulty ?? existingFeedback.Difficulty;
                 existingFeedback.PreviousKnowledge = feedbackDto.PreviousKnowledge ?? existingFeedback.PreviousKnowledge;
                 existingFeedback.HoursOfEffort = feedbackDto.HoursOfEffort ?? existingFeedback.HoursOfEffort;
-                _databaseFeedbackrepository.Update(existingFeedback);
+
+                await _databaseFeedbackrepository.UpdateAsync(existingFeedback);
             } else {
                 // feedback doesn't exist
 
@@ -148,7 +149,7 @@ namespace TraineeTracker.Services
 
                 var authorId = user.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? throw new Exception("ClaimTypes.NameIdentifier of user not found.");
 
-                _databaseFeedbackrepository.Create(new Feedback {
+                await _databaseFeedbackrepository.CreateAsync(new Feedback {
                     Difficulty = feedbackDto.Difficulty ?? throw new ArgumentNullException(nameof(feedbackDto), "Difficulty cannot be null."),
                     PreviousKnowledge = feedbackDto.PreviousKnowledge ?? throw new ArgumentNullException(nameof(feedbackDto), "PreviousKnowledge cannot be null."),
                     HoursOfEffort = feedbackDto.HoursOfEffort ?? throw new ArgumentNullException(nameof(feedbackDto), "HoursOfEffort cannot be null."),
@@ -172,10 +173,10 @@ namespace TraineeTracker.Services
         public async Task DeleteFeedback(ClaimsPrincipal user, int feedbackId) {
             if (user.IsInRole("Trainee"))
                 throw new UnauthorizedAccessException("Trainees cannot delete feedbacks.");
-            if (!_databaseFeedbackrepository.Exists(feedbackId))
+            if (!await _databaseFeedbackrepository.ExistsAsync(feedbackId))
                 throw new FeedbackNotFoundException(feedbackId);
 
-            _databaseFeedbackrepository.Delete(feedbackId);
+            await _databaseFeedbackrepository.DeleteAsync(feedbackId);
         }
     }
 }
