@@ -18,6 +18,7 @@ namespace TraineeTracker.Services {
         private readonly HttpClient _httpClient;
         private readonly UserManager<ApplicationUser> _userManager;
 
+        // --------------------------------------------------
         public TraineeStatisticsService(ITraineeStatisticsRepository traineeStatisticsRepository, ITraineeLessonRepository traineeLessonRepository, HttpClient httpClient, UserManager<ApplicationUser> userManager) {
             _traineeStatisticsRepository = traineeStatisticsRepository;
             _traineeLessonRepository = traineeLessonRepository;
@@ -25,6 +26,7 @@ namespace TraineeTracker.Services {
             _userManager = userManager;
         }
 
+        // --------------------------------------------------
         public TraineeStatisticsViewModel BuildTraineeStatisticsViewModel(string traineeId) {
             var snapshot = _traineeStatisticsRepository.GetTraineeStatisticsSnapshot(traineeId);
 
@@ -39,6 +41,7 @@ namespace TraineeTracker.Services {
             };
         }
 
+        // --------------------------------------------------
         public bool CheckHasAccess(ClaimsPrincipal user, string traineeId) {
             var currentUserId = user.FindFirstValue(ClaimTypes.NameIdentifier);
 
@@ -53,6 +56,7 @@ namespace TraineeTracker.Services {
             return false;
         }
 
+        // --------------------------------------------------
         public async Task<TraineeStatisticsSnapshot> BuildLatestTraineeStatisticsSnapshotAsync(string traineeId) {
             var trainee = await _userManager.FindByIdAsync(traineeId);
             if (trainee == null || trainee.TraineeStartDate == null) {
@@ -91,6 +95,7 @@ namespace TraineeTracker.Services {
             return snapshot;
         }
 
+        // --------------------------------------------------
         public async Task<double> GetPresentDaysAsync(DateTime startDate, DateTime endDate, string email) {
             var baseUrl = "https://api.sopro.makandra.de/api/v1/present_days";
             var url = $"{baseUrl}?email={Uri.EscapeDataString(email)}&start_date={startDate:yyyy-MM-dd}&end_date={endDate:yyyy-MM-dd}";
@@ -120,6 +125,7 @@ namespace TraineeTracker.Services {
             }
         }
 
+        // --------------------------------------------------
         private async Task<double> GetEffectivePresentDaysAsync(ApplicationUser trainee) {
             var startDate = trainee.TraineeStartDate ?? throw new Exception("Startdatum fehlt");
             var endDate = trainee.TraineeEndDate ?? DateTime.Today;
@@ -152,6 +158,7 @@ namespace TraineeTracker.Services {
             return totalDays - pauseDaysTotal;
         }
 
+        // --------------------------------------------------
         public async Task<double> CalculateLessonDaysCompletedAsync(string traineeId) {
             var lessons = await _traineeLessonRepository.GetAllTraineeLessonsOfTraineeWithLessonAsync(traineeId);
 
@@ -171,6 +178,7 @@ namespace TraineeTracker.Services {
                 });
         }
 
+        // --------------------------------------------------
         public async Task<double> CalculateLessonDaysOpenAsync(string traineeId) {
             var lessons = await _traineeLessonRepository.GetAllTraineeLessonsOfTraineeWithLessonAsync(traineeId);
 
