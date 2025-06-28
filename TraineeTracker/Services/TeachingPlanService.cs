@@ -79,14 +79,14 @@ namespace TraineeTracker.Services {
                 throw new InvalidOperationException("TeachingPlan nicht gefunden.");
 
             //Ich betrachte dann hier 2 Goyfälle 1) Den Fall das die neue JSON weniger Lessons hat als die alte und dann den Fall das sie mehr oder gleich viel hat
-            var oldLessons = await _lessonRepo.GetAllLessonsAsync();
+            var oldLessons = teachingPlan.Lessons;
 
             foreach (var oldLesson in oldLessons) {
 
                 bool stillExists = lessonsDto.Any(dto => dto.Id == oldLesson.LessonId);
 
                 if (!stillExists) {
-                    var trainees = await _applicationUserRepo.GetUsersInRoleAsync(role);
+                    var trainees = teachingPlan.Trainees;
                     foreach(var trainee in trainees) {
                         if (trainee != null) {
                             var traineeLessons = await _traineeLessonRepo.GetAllTraineeLessonsOfTraineeWithLessonAsync(trainee.Id);
@@ -126,14 +126,9 @@ namespace TraineeTracker.Services {
                         }
 
                         await _lessonRepo.UpdateAsync(lesson);
-                    } else {
-
-                        await _lessonRepo.UpdateAsync(lesson);
                     }
-                } else {
-
-                    await _lessonRepo.CreateAsync(lesson);
                 }
+                await _lessonRepo.UpdateAsync(lesson);
             }
 
             teachingPlan.LastUpdated = DateTime.UtcNow;
