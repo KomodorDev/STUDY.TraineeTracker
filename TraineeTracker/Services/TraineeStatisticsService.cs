@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using TraineeTracker.Data.TraineeStatistics;
 using TraineeTracker.Models.ViewModels;
 using TraineeTracker.Models.Domain;
+using TraineeTracker.Data.TraineeLessons;
 using Microsoft.AspNetCore.Identity;
 
 namespace TraineeTracker.Services
@@ -62,17 +63,17 @@ namespace TraineeTracker.Services
 
         public async Task<TraineeStatisticsSnapshot> BuildLatestTraineeStatisticsSnapshotAsync(string traineeId)
         {
-            var user = await _userManager.FindByIdAsync(traineeId);
-            if (user == null || user.TraineeStartDate == null)
+            var trainee = await _userManager.FindByIdAsync(traineeId);
+            if (trainee == null || trainee.TraineeStartDate == null)
             {
                 throw new Exception("Trainee not found or start date is missing.");
             }
 
-            var startDate = user.TraineeStartDate.Value;
-            var endDate = user.TraineeEndDate ?? DateTime.Today;
-            var email = user.Email ?? throw new Exception("Trainee has no email.");
+            var startDate = trainee.TraineeStartDate.Value;
+            var endDate = trainee.TraineeEndDate ?? DateTime.Today;
+            var email = trainee.Email ?? throw new Exception("Trainee has no email.");
 
-            double daysPresent = await GetPresentDaysAsync(startDate, endDate, email);
+            double daysPresent = await GetEffectivePresentDaysAsync(trainee);
             if (daysPresent < 0)
             {
                 Console.WriteLine("⚠️ API-Error – use latest snapshot.");
@@ -133,6 +134,41 @@ namespace TraineeTracker.Services
                 return -1;
             }
         }
+        
+        private async Task<double> GetEffectivePresentDaysAsync(ApplicationUser trainee)
+        {
+            var startDate = trainee.TraineeStartDate ?? throw new Exception("Startdatum fehlt");
+            var endDate = trainee.TraineeEndDate ?? DateTime.Today;
+            var email = trainee.Email ?? throw new Exception("E-Mail fehlt");
+
+            double totalDays = await GetPresentDaysAsync(startDate, endDate, email);
+
+            if (totalDays < 0)
+                return -1;
+
+            double pauseDaysTotal = 0;
+
+            foreach (var pause in trainee.ProcessingPauses)
+            {
+                var pauseStart = pause.StartDate;
+                var pauseEnd = pause.EndDate;
+
+                if (pauseEnd < startDate || pauseStart > endDate)
+                    continue;
+
+                var effectivePauseStart = pauseStart < startDate ? startDate : pauseStart;
+                var effectivePauseEnd = pauseEnd > endDate ? endDate : pauseEnd;
+
+                double pauseDays = await GetPresentDaysAsync(effectivePauseStart, effectivePauseEnd, email);
+
+                if (pauseDays > 0)
+                {
+                    pauseDaysTotal += pauseDays;
+                }
+            }
+
+            return totalDays - pauseDaysTotal;
+        }
 
         public async Task<double> CalculateLessonDaysCompletedAsync(string traineeId)
         {
@@ -150,7 +186,7 @@ namespace TraineeTracker.Services
                         TraineeLessonState.Finished => effort * 0.7,
                         TraineeLessonState.Accepted => effort,
                         TraineeLessonState.Rejected => effort * 0.8,
-                        TraineeLessonState.Rated    => effort,
+                        TraineeLessonState.Rated => effort,
                         _ => 0
                     };
                 });
