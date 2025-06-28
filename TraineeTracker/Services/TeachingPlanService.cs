@@ -12,11 +12,13 @@ namespace TraineeTracker.Services {
         private readonly ITeachingPlanRepository _teachingPlanRepo;
         private readonly ILessonRepository _lessonRepo;
         private readonly ITraineeLessonRepository _traineeLessonRepo;
+        private readonly IApplicationUserRepository _applicationUserRepo;
 
-        public TeachingPlanService(ITeachingPlanRepository teachingPlanRepo, ILessonRepository lessonRepo, ITraineeLessonRepository traineeLessonRepo) {
+        public TeachingPlanService(ITeachingPlanRepository teachingPlanRepo, ILessonRepository lessonRepo, ITraineeLessonRepository traineeLessonRepo, IApplicationUserRepository applicationUserRepo) {
             _teachingPlanRepo = teachingPlanRepo;
             _lessonRepo = lessonRepo;
             _traineeLessonRepo = traineeLessonRepo;
+            _applicationUserRepo = applicationUserRepo;
         }
 
         public async Task ImportNewTeachingPlan(IFormFile file, String name) {
@@ -160,17 +162,22 @@ namespace TraineeTracker.Services {
 
             foreach (var lesson in teachingPlan.Lessons)
             {
-                var traineeLesson = new TraineeLesson{
-                    TraineeId = trainee.Id,
-                    Trainee = trainee,
-                    LessonId = lesson.LessonId,
-                    Lesson = lesson
-                };
+                if(lesson.IsInactive == false) {
 
+                    var traineeLesson = new TraineeLesson{
+                        TraineeId = trainee.Id,
+                        Trainee = trainee,
+                        LessonId = lesson.LessonId,
+                        Lesson = lesson
+                    };
+                }
+
+                trainee.TraineeLessons.Add(traineeLesson);
                 await _traineeLessonRepo.CreateAsync(traineeLesson);
             }
 
             teachingPlan.Trainees.Add(trainee);
+            await _applicationUserRepo.UpdateAsync(trainee);
             await _teachingPlanRepo.UpdateAsync(teachingPlan);
         }
     }
