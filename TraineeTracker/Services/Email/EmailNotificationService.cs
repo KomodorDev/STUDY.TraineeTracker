@@ -70,6 +70,12 @@ namespace TraineeTracker.Services.Email {
             string traineeName = trainee.UserName!;
             string lessonTitle = traineeLesson.Lesson.Title;
 
+            string rejectedReason = traineeLesson.RejectionReason!;
+            var rejectionNote = "";
+            if (newState == TraineeLessonState.Rejected && !string.IsNullOrWhiteSpace(traineeLesson.RejectionReason)) {
+                rejectionNote = $"<p><strong>Rejection Reason:</strong> {rejectedReason}</p>";
+            }
+
             // ++++++++++++++++++++++++++++++++++++++++++
             // Notify Mentors and Admins
             var mentors = await _databaseApplicationUserRepository.GetUsersInRoleAsync("Mentor");
@@ -96,6 +102,7 @@ namespace TraineeTracker.Services.Email {
                     <p>The lesson <strong>“{lessonTitle}”</strong> of trainee <strong>{traineeName}</strong> has changed.</p>
                     <p><strong>Previous:</strong> {oldState}<br/>
                     <strong>New:</strong> {newState}</p>
+                    {rejectionNote}
                     <p>– TraineeTracker Notification System</p>";
 
                 await _emailSender.SendEmailAsync(person.Email!, subject, messageHtml);
@@ -111,6 +118,7 @@ namespace TraineeTracker.Services.Email {
                     <p>The status of your lesson <strong>“{lessonTitle}”</strong> has changed.</p>
                     <p><strong>Previous:</strong> {oldState}<br/>
                     <strong>New:</strong> {newState}</p>
+                    {rejectionNote}
                     <p>Best regards,<br/>Your TraineeTracker Team</p>";
 
                 await _emailSender.SendEmailAsync(trainee.Email!, subject, messageHtml);
