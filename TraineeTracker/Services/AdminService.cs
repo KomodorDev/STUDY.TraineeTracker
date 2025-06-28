@@ -31,12 +31,10 @@ namespace TraineeTracker.Services.Admin {
                 if (dto.TeachingPlanId == null) {
                     return ServiceResult.Failed("Trainee requires Teachingplan.");
                 }
-                /*     
-                var teachingPlanResult = await _teachingPlanService.AssignTeachingPlanToTraineeAsync(user, dto.TeachingPlanId);
-                if (!teachingPlanResult.Succeeded) {
+                /* var teachingPlanResult = */ await _teachingPlanService.AssignTeachingPlanToTraineeAsync(user, dto.TeachingPlanId.Value); // TODO: method should return a ServiceResult
+                /* if (!teachingPlanResult.Succeeded) {
                     return teachingPlanResult;
-                }
-                */
+                } */
             }
 
             var result = await _applicationUserRepository.CreateAsync(user, dto.Password);
