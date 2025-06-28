@@ -41,7 +41,7 @@ namespace TraineeTracker.Data.Feedbacks {
             }
         }
 
-        public async Task<IEnumerable<Feedback>> GetAllFeedbacksForLessonAsync(Lesson lesson) {
+        public async Task<IEnumerable<Feedback>> GetAllFeedbacksForLessonWithLessonAndAuthorAndReadByUsersAsync(Lesson lesson) {
             return await _context.Feedbacks
                 .Include(f => f.Lesson)
                 .Include(f => f.Author)
@@ -50,7 +50,7 @@ namespace TraineeTracker.Data.Feedbacks {
                 .ToListAsync();
         }
 
-        public async Task<IEnumerable<Feedback>> GetAllFeedbacksWrittenByUserAsync(ApplicationUser user) {
+        public async Task<IEnumerable<Feedback>> GetAllFeedbacksWrittenByUserWithLessonAndAuthorAndReadByUsersAsync(ApplicationUser user) {
             return await _context.Feedbacks
                 .Include(f => f.Lesson)
                 .Include(f => f.Author)
@@ -59,7 +59,7 @@ namespace TraineeTracker.Data.Feedbacks {
                 .ToListAsync();
         }
 
-        public async Task<IEnumerable<Feedback>> GetAllFeedbacksReadByUserAsync(ApplicationUser user) {
+        public async Task<IEnumerable<Feedback>> GetAllFeedbacksReadByUserWithLessonAndAuthorAndReadByUsersAsync(ApplicationUser user) {
             return await _context.Feedbacks
                 .Include(f => f.Lesson)
                 .Include(f => f.Author)
@@ -68,7 +68,7 @@ namespace TraineeTracker.Data.Feedbacks {
                 .ToListAsync();
         }
 
-        public async Task<IEnumerable<Feedback>> GetAllFeedbacksUnreadByUserAsync(ApplicationUser user) {
+        public async Task<IEnumerable<Feedback>> GetAllFeedbacksUnreadByUserWithLessonAndAuthorAndReadByUsersAsync(ApplicationUser user) {
             return await _context.Feedbacks
                 .Include(f => f.Lesson)
                 .Include(f => f.Author)
@@ -77,7 +77,7 @@ namespace TraineeTracker.Data.Feedbacks {
                 .ToListAsync();
         }
 
-        public async Task<Feedback?> GetFeedbackOfTraineeLessonAsync(TraineeLesson traineeLesson) {
+        public async Task<Feedback?> GetFeedbackOfTraineeLessonWithLessonAndAuthorAndReadByUsersAsync(TraineeLesson traineeLesson) {
             return await _context.Feedbacks
                 .Include(f => f.Lesson)
                 .Include(f => f.Author)

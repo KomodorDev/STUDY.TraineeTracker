@@ -12,11 +12,11 @@ namespace TraineeTracker.Data.Feedbacks {
         Task DeleteAsync(Feedback feedback);
         Task DeleteAsync(int feedbackId);
 
-        Task<IEnumerable<Feedback>> GetAllFeedbacksForLessonAsync(Lesson lesson);
-        Task<IEnumerable<Feedback>> GetAllFeedbacksWrittenByUserAsync(ApplicationUser user);
-        Task<IEnumerable<Feedback>> GetAllFeedbacksReadByUserAsync(ApplicationUser user);
-        Task<IEnumerable<Feedback>> GetAllFeedbacksUnreadByUserAsync(ApplicationUser user);
+        Task<IEnumerable<Feedback>> GetAllFeedbacksForLessonWithLessonAndAuthorAndReadByUsersAsync(Lesson lesson);
+        Task<IEnumerable<Feedback>> GetAllFeedbacksWrittenByUserWithLessonAndAuthorAndReadByUsersAsync(ApplicationUser user);
+        Task<IEnumerable<Feedback>> GetAllFeedbacksReadByUserWithLessonAndAuthorAndReadByUsersAsync(ApplicationUser user);
+        Task<IEnumerable<Feedback>> GetAllFeedbacksUnreadByUserWithLessonAndAuthorAndReadByUsersAsync(ApplicationUser user);
 
-        Task<Feedback?> GetFeedbackOfTraineeLessonAsync(TraineeLesson traineeLesson);
+        Task<Feedback?> GetFeedbackOfTraineeLessonWithLessonAndAuthorAndReadByUsersAsync(TraineeLesson traineeLesson);
     }
 }
