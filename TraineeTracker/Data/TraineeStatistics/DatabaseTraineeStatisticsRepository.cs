@@ -1,3 +1,4 @@
+using Microsoft.EntityFrameworkCore;
 using TraineeTracker.Models.Domain;
 
 namespace TraineeTracker.Data.TraineeStatistics {
@@ -8,34 +9,34 @@ namespace TraineeTracker.Data.TraineeStatistics {
             _context = context;
         }
 
-        public async Task<bool> Exists(int id) {
-            return _context.TraineeStatisticsSnapshots.Any(s => s.TraineeStatisticsSnapshotId == id);
+        public async Task<bool> ExistsAsync(int id) {
+            return await _context.TraineeStatisticsSnapshots.AnyAsync(s => s.TraineeStatisticsSnapshotId == id);
         }
 
-        public async Task<bool> Exists(TraineeStatisticsSnapshot snapshot) {
-            return _context.TraineeStatisticsSnapshots.Any(s =>
+        public async Task<bool> ExistsAsync(TraineeStatisticsSnapshot snapshot) {
+            return await _context.TraineeStatisticsSnapshots.AnyAsync(s =>
                 s.TraineeId == snapshot.TraineeId &&
                 s.SnapshotDateTime == snapshot.SnapshotDateTime);
         }
 
-        public async Task Create(TraineeStatisticsSnapshot snapshot) {
-            _context.TraineeStatisticsSnapshots.Add(snapshot);
-            _context.SaveChanges();
+        public async Task CreateAsync(TraineeStatisticsSnapshot snapshot) {
+            await _context.TraineeStatisticsSnapshots.AddAsync(snapshot);
+            await _context.SaveChangesAsync();
         }
 
-        public async Task Update(TraineeStatisticsSnapshot snapshot) {
+        public async Task UpdateAsync(TraineeStatisticsSnapshot snapshot) {
             _context.TraineeStatisticsSnapshots.Update(snapshot);
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
         }
 
-        public async Task Delete(TraineeStatisticsSnapshot snapshot) {
+        public async Task DeleteAsync(TraineeStatisticsSnapshot snapshot) {
             _context.TraineeStatisticsSnapshots.Remove(snapshot);
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
         }
 
-        public async Task<TraineeStatisticsSnapshot> GetTraineeStatisticsSnapshot(string traineeId) {
-            var snapshot = _context.TraineeStatisticsSnapshots
-            .FirstOrDefault(s => s.TraineeId == traineeId);
+        public async Task<TraineeStatisticsSnapshot> GetTraineeStatisticsSnapshotAsync(string traineeId) {
+            var snapshot = await _context.TraineeStatisticsSnapshots
+            .FirstOrDefaultAsync(s => s.TraineeId == traineeId);
 
             if (snapshot == null) {
             throw new InvalidOperationException($"No snapshot for trainee with ID '{traineeId}' found.");
