@@ -39,9 +39,16 @@ namespace TraineeTracker.Services.Admin {
             }
 
             if (dto.Role == "Trainee") {
+                if (dto.TraineeStartDate == null || dto.TraineeEndDate == null) {
+                    return ServiceResult.Failed("Trainee requires start- and end-date.");
+                }
                 if (dto.TeachingPlanId == null) {
                     return ServiceResult.Failed("Trainee requires Teachingplan.");
                 }
+
+                user.TraineeStartDate = dto.TraineeStartDate;
+                user.TraineeEndDate = dto.TraineeEndDate;
+
                 /* var teachingPlanResult = */
                 await _teachingPlanService.AssignTeachingPlanToTraineeAsync(user, dto.TeachingPlanId.Value); // TODO: method should return a ServiceResult
                 /* if (!teachingPlanResult.Succeeded) {
