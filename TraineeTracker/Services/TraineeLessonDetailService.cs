@@ -87,15 +87,31 @@ namespace TraineeTracker.Services
             if (!Enum.TryParse<TraineeLessonState>(traineeLessonUpdate.TargetStateName, out targetState))
                 throw new Exception("Inalid target state in TraineeLessonDto.");
 
-            // changes state, if allowed - and checks if rejection reason is present, if needed
+            // changes state, if allowed
             TraineeLessonStateFactory factory = new();
             oldTraineeLesson.State = factory.Create(oldTraineeLesson.State).TransitionTo(targetState, user);
-            if (oldTraineeLesson.State == TraineeLessonState.Rejected)
+
+            if (oldTraineeLesson.State == TraineeLessonState.Rejected) {
+                // add rejection reason & remove dayFinished if lesson rejected
                 if (String.IsNullOrWhiteSpace(traineeLessonUpdate.RejectionReason))
                     throw new ArgumentException("Rejection reason must be provided for transitioning to rejected.", nameof(traineeLessonUpdate));
+                oldTraineeLesson.RejectionReason = traineeLessonUpdate.RejectionReason;
+                oldTraineeLesson.DayFinished = null;
 
-            // adds rejection reason and updates db
-            oldTraineeLesson.RejectionReason = traineeLessonUpdate.RejectionReason;
+            } else if (oldTraineeLesson.State == TraineeLessonState.Started) {
+                // add dayStarted if lesson started
+                oldTraineeLesson.DayStarted = DateOnly.FromDateTime(DateTime.Today);
+
+            } else if (oldTraineeLesson.State == TraineeLessonState.Open) {
+                // remove dayStarted if lesson un-started
+                oldTraineeLesson.DayStarted = null;
+                
+            } else if (oldTraineeLesson.State == TraineeLessonState.Finished) {
+                // add dayFinished if lesson finished
+                oldTraineeLesson.DayFinished = DateOnly.FromDateTime(DateTime.Today);
+            } 
+
+            // update database
             await _databaseTraineeLessonRepository.UpdateAsync(oldTraineeLesson);
 
             // sends email and creates log
