@@ -105,6 +105,7 @@ using (var scope = app.Services.CreateScope()) {
     await testDataSeeder.SeedUsersAsync();
     await testDataSeeder.SeedProcessingPausesAsync();
     await testDataSeeder.SeedFeedbackAsync();
+    await testDataSeeder.SeedTraineeStatisticsSnapshotAsync();
 }
 
 // ---------------------------------------------
