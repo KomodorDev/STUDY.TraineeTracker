@@ -14,6 +14,8 @@ using System.Threading;
 using System.Net.Http.Headers;
 
 public class TraineeStatisticsServiceTests {
+
+    // --------------------------------------------------
     [Fact]
     public async Task GetPresentDaysAsyncTest() {
         var httpClient = new HttpClient();
@@ -32,9 +34,12 @@ public class TraineeStatisticsServiceTests {
 
         Console.WriteLine($"Present days: {presentDays}");
 
+
+        // Test 1
         Assert.Equal(37, presentDays);
     }
 
+    // --------------------------------------------------
     [Fact]
     public async Task BuildLatestTraineeStatisticsSnapshotAsync_ShouldCalculateCorrectPresentDays() {
         var traineeId = "ursula-1";
@@ -90,9 +95,11 @@ public class TraineeStatisticsServiceTests {
 
         var snapshot = await service.BuildLatestTraineeStatisticsSnapshotAsync(traineeId);
 
+        // Test 2
         Assert.Equal(10, snapshot.DaysPresent); // 20 total - 5 - 5 pause = 10
     }
 
+    // --------------------------------------------------
     private class FakeHttpMessageHandler : HttpMessageHandler {
         private readonly Func<HttpRequestMessage, HttpResponseMessage> _responder;
 
@@ -104,13 +111,7 @@ public class TraineeStatisticsServiceTests {
             => Task.FromResult(_responder(request));
     }
 
-
-
-
-
-
-
-
+    // --------------------------------------------------
     private class FakeUserManager : UserManager<ApplicationUser> {
         private readonly ApplicationUser _user;
 
@@ -123,6 +124,7 @@ public class TraineeStatisticsServiceTests {
             => Task.FromResult<ApplicationUser?>(_user);
     }
 
+    // --------------------------------------------------
     private class FakeUserStore : IUserStore<ApplicationUser> {
         public Task<IdentityResult> CreateAsync(ApplicationUser user, CancellationToken cancellationToken) => Task.FromResult(IdentityResult.Success);
         public Task<IdentityResult> DeleteAsync(ApplicationUser user, CancellationToken cancellationToken) => Task.FromResult(IdentityResult.Success);
@@ -137,6 +139,7 @@ public class TraineeStatisticsServiceTests {
         public Task<IdentityResult> UpdateAsync(ApplicationUser user, CancellationToken cancellationToken) => Task.FromResult(IdentityResult.Success);
     }
 
+    // --------------------------------------------------
     private class FakeTraineeStatisticsRepository : ITraineeStatisticsRepository {
         private readonly ApplicationUser _user;
 
@@ -144,24 +147,40 @@ public class TraineeStatisticsServiceTests {
             _user = user;
         }
 
-        public void Create(TraineeStatisticsSnapshot snapshot) { }
-
-        public void Delete(TraineeStatisticsSnapshot snapshot) { }
-
-        public bool Exists(int id) => false;
-
-        public bool Exists(TraineeStatisticsSnapshot snapshot) => false;
-
-        public void Update(TraineeStatisticsSnapshot snapshot) { }
 
         public TraineeStatisticsSnapshot GetTraineeStatisticsSnapshot(string traineeId)
             => new TraineeStatisticsSnapshot {
                 TraineeId = traineeId,
                 Trainee = _user,
-                SnapshotDate = DateTime.Today
+                SnapshotDateTime = DateTime.Today
             };
+
+        Task<bool> ITraineeStatisticsRepository.ExistsAsync(int id) {
+            throw new NotImplementedException();
+        }
+
+        Task<bool> ITraineeStatisticsRepository.ExistsAsync(TraineeStatisticsSnapshot snapshot) {
+            throw new NotImplementedException();
+        }
+
+        Task ITraineeStatisticsRepository.CreateAsync(TraineeStatisticsSnapshot snapshot) {
+            return Task.FromResult(snapshot); // oder ein neuer Snapshot, wenn gewünscht
+        }
+
+        Task ITraineeStatisticsRepository.UpdateAsync(TraineeStatisticsSnapshot snapshot) {
+            throw new NotImplementedException();
+        }
+
+        Task ITraineeStatisticsRepository.DeleteAsync(TraineeStatisticsSnapshot snapshot) {
+            throw new NotImplementedException();
+        }
+
+        Task<TraineeStatisticsSnapshot> ITraineeStatisticsRepository.GetTraineeStatisticsSnapshotAsync(string traineeId) {
+            throw new NotImplementedException();
+        }
     }
 
+    // --------------------------------------------------
     private class FakeTraineeLessonRepository : ITraineeLessonRepository {
         public Task<IEnumerable<TraineeLesson>> GetAllTraineeLessonsOfTraineeWithLessonAsync(string traineeId)
             => Task.FromResult<IEnumerable<TraineeLesson>>(new List<TraineeLesson>());
@@ -184,4 +203,6 @@ public class TraineeStatisticsServiceTests {
 
         public Task DeleteAsync(int id) => Task.CompletedTask;
     }
+
+    // --------------------------------------------------
 }
