@@ -8,6 +8,7 @@
     string textColour = "#ffffff";
 
     switch (state) {
+        case "Trainee":
         case "Open":
             backgroundStyle = "background-color: #626262";
             break;
@@ -20,9 +21,11 @@
         case "Finished":
             backgroundStyle = "background-color: #fb6770";
             break;
+        case "Mentor":
         case "Rejected":
             backgroundStyle = "background-color: #e61d47";
             break;
+        case "Admin":
         case "Accepted":
             backgroundStyle = "background-image: linear-gradient(to right, #e61d47, #ffb199)";
             break;
@@ -30,6 +33,7 @@
             backgroundStyle = "background-color: #dbdbdb";
             textColour = "#000000";
             break;
+
         default:
             break;
     };
@@ -45,4 +49,4 @@
     @Model
 </button>
 
-<!-- how to call: @await Html.PartialAsync("_TraineeLessonStatus", "open") -->
+<!-- how to call: @await Html.PartialAsync("_RoleOrStatus", "Open") -->
