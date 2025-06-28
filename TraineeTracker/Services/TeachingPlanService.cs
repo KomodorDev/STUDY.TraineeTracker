@@ -88,6 +88,21 @@ namespace TraineeTracker.Services {
             await _teachingPlanRepo.UpdateAsync(plan);
         }
 
+        public async Task UnassignTeachingPlanFromTraineeAsync(ApplicationUser trainee) {
+            var traineeLessons = await _traineeLessonRepo.GetAllTraineeLessonsOfTraineeWithLessonAsync(trainee.Id);
+            foreach(var traineeLesson in traineeLessons) {
+                await _traineeLessonRepo.DeleteAsync(traineeLesson.TraineeLessonId);
+            }
+
+            var teachingPlan = trainee.TeachingPlan;
+            if(teachingPlan == null)
+                throw new InvalidOperationException("TeachingPlan nicht gefunden.");
+            
+            trainee.TeachingPlan = null;
+            
+            await _teachingPlanRepo.UpdateAsync(teachingPlan);
+        }
+
         public Task<IEnumerable<TeachingPlan>> GetAllTeachingPlansAsync()
             => _teachingPlanRepo.GetAllTeachingPlansAsync();
 
@@ -217,5 +232,7 @@ namespace TraineeTracker.Services {
                 await _traineeLessonRepo.CreateAsync(tl);
             }
         }
+
+
     }
 }
