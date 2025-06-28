@@ -169,9 +169,11 @@ namespace TraineeTracker.Services
             }, user);
         }
 
-        public void DeleteFeedback(ClaimsPrincipal user, int feedbackId) {
+        public async Task DeleteFeedback(ClaimsPrincipal user, int feedbackId) {
             if (user.IsInRole("Trainee"))
                 throw new UnauthorizedAccessException("Trainees cannot delete feedbacks.");
+            if (!_databaseFeedbackrepository.Exists(feedbackId))
+                throw new FeedbackNotFoundException(feedbackId);
 
             _databaseFeedbackrepository.Delete(feedbackId);
         }
