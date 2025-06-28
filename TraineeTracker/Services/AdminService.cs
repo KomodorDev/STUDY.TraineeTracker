@@ -88,7 +88,7 @@ namespace TraineeTracker.Services.Admin {
             }
 
             user.IsClosed = true;
-            
+
             var referenceUpdateTasks = new List<Task>();
 
             foreach (var feedback in user.ReadFeedbacks.ToList()) {
