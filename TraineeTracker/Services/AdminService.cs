@@ -3,6 +3,7 @@ using TraineeTracker.Data.ProcessingPauses;
 using TraineeTracker.Services.Email;
 using TraineeTracker.Models.Domain;
 using TraineeTracker.Models.Dtos;
+using TraineeTracker.Data.Feedbacks;
 
 namespace TraineeTracker.Services.Admin {
     public class AdminService {
@@ -12,11 +13,18 @@ namespace TraineeTracker.Services.Admin {
         private readonly EmailNotificationService _emailNotificationService;
         private readonly TeachingPlanService _teachingPlanService;
 
-        public AdminService(IApplicationUserRepository applicationUserRepository, IProcessingPauseRepository processingPauseRepository, EmailNotificationService emailNotificationService, TeachingPlanService teachingPlanService) {
+        private readonly IFeedbackRepository _feedbackRepository;
+
+        public AdminService(IApplicationUserRepository applicationUserRepository,
+                            IProcessingPauseRepository processingPauseRepository,
+                            EmailNotificationService emailNotificationService,
+                            TeachingPlanService teachingPlanService,
+                            IFeedbackRepository feedbackRepository) {
             _applicationUserRepository = applicationUserRepository;
             _processingPauseRepository = processingPauseRepository;
             _emailNotificationService = emailNotificationService;
             _teachingPlanService = teachingPlanService;
+            _feedbackRepository = feedbackRepository;
         }
 
         public async Task<ServiceResult> CreateUserAsync(ApplicationUserDto dto) {
@@ -70,8 +78,18 @@ namespace TraineeTracker.Services.Admin {
             if (user == null) {
                 return false;
             }
+
             user.IsClosed = true;
+
+            var readFeedbacks = await _feedbackRepository.GetAllFeedbacksReadByUserAsync(user);
+            foreach (var feedback in readFeedbacks) {
+                feedback.ReadByUsers.Remove(user);
+                await _feedbackRepository.UpdateAsync(feedback);
+            }
+            user.ReadFeedbacks.Clear();
+
             await _applicationUserRepository.UpdateAsync(user);
+
             return true;
         }
 
