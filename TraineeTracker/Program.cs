@@ -85,7 +85,6 @@ builder.Services.AddTransient<IEmailSender, GmailEmailSender>();
 // ----------------------------------------
 
 
-
 var app = builder.Build();
 
 // ---------------------------------------------
@@ -97,9 +96,10 @@ using (var scope = app.Services.CreateScope()) {
 
     // Testdaten (User, Lessons, TeachingPlans)
     var testDataSeeder = serviceProvider.GetRequiredService<TestDataSeeder>();
-    await testDataSeeder.SeedUsersAsync();
     await testDataSeeder.SeedLessonsAsync();
     await testDataSeeder.SeedTeachingPlansAsync();
+    await testDataSeeder.SeedUsersAsync();
+    await testDataSeeder.SeedProcessingPausesAsync();
 }
 
 // ---------------------------------------------
