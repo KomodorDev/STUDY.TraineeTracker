@@ -8,6 +8,8 @@
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/TraineeTracker.styles.css" asp-append-version="true" />
+    @* Open Sans font *@
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans&display=swap" rel="stylesheet"> 
 </head>
 
 <body>
@@ -19,20 +21,29 @@
         }
         else {
             <!-- default nav bar -->
-            <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
+            <nav class="navbar custom-navbar navbar-expand-sm box-shadow">
                 <div class="container-fluid">
-                    <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">TraineeTracker</a>
-                    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
+                    @* <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">TraineeTracker</a> *@
+                    @* <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
                             aria-expanded="false" aria-label="Toggle navigation">
                         <span class="navbar-toggler-icon"></span>
-                    </button>
+                    </button> *@
                     <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
                         <ul class="navbar-nav flex-grow-1">
                             <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
+                                <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">User</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+                                <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Dashboard</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Feedback</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Import</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Admin</a>
                             </li>
                         </ul>
                         <partial name="_LoginPartial" />
@@ -57,5 +68,48 @@
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
     @await RenderSectionAsync("Scripts", required: false)
+
+    <style>
+        /* overall container */
+        .navbar.custom-navbar {
+            /* !important overrides bootstrap */
+            background-color: #ffffff !important;
+            color: #000 !important;
+
+            font-family: 'Open Sans', sans-serif;
+            font-weight: bold;
+            font-size: 30px;
+
+            height: 100px;
+            padding-left: 50px;
+            padding-right: 50px;
+            display: flex;
+            align-items: center;
+
+            /* rounded bottom corners */
+            border-bottom-left-radius: 15px;
+            border-bottom-right-radius: 15px;
+        }
+
+        /* nav links container */
+        .navbar.custom-navbar .navbar-nav {
+            display: flex;
+            gap: 50px;
+        }
+
+        /* menu items */
+        .navbar.custom-navbar .nav-link {
+            color: #000 !important;
+            font-weight: bold;
+            font-size: 30px;
+        }
+
+        /* logo/text on the left */
+        .navbar.custom-navbar .navbar-brand {
+            color: #000 !important;
+            font-weight: bold;
+            font-size: 30px;
+        }
+    </style>
 </body>
 </html>
