@@ -2,21 +2,21 @@ using TraineeTracker.Models.Domain;
 
 namespace TraineeTracker.Data.Feedbacks {
     public interface IFeedbackRepository {
-        bool Exists(int feedbackId);
-        bool Exists(Feedback feedback);
+        Task<bool> ExistsAsync(int feedbackId);
+        Task<bool> ExistsAsync(Feedback feedback);
 
-        void Create(Feedback feedback);
+        Task CreateAsync(Feedback feedback);
 
-        void Update(Feedback feedback);
+        Task UpdateAsync(Feedback feedback);
 
-        void Delete(Feedback feedback);
-        void Delete(int feedbackId);
+        Task DeleteAsync(Feedback feedback);
+        Task DeleteAsync(int feedbackId);
 
-        IEnumerable<Feedback> GetAllFeedbacksForLesson(Lesson lesson);
-        IEnumerable<Feedback> GetAllFeedbacksWrittenByUser(ApplicationUser user);
-        IEnumerable<Feedback> GetAllFeedbacksReadByUser(ApplicationUser user);
-        IEnumerable<Feedback> GetAllFeedbacksUnreadByUser(ApplicationUser user);
+        Task<IEnumerable<Feedback>> GetAllFeedbacksForLessonWithLessonAndAuthorAndReadByUsersAsync(Lesson lesson);
+        Task<IEnumerable<Feedback>> GetAllFeedbacksWrittenByUserWithLessonAndAuthorAndReadByUsersAsync(ApplicationUser user);
+        Task<IEnumerable<Feedback>> GetAllFeedbacksReadByUserWithLessonAndAuthorAndReadByUsersAsync(ApplicationUser user);
+        Task<IEnumerable<Feedback>> GetAllFeedbacksUnreadByUserWithLessonAndAuthorAndReadByUsersAsync(ApplicationUser user);
 
-        Feedback? GetFeedbackOfTraineeLesson(TraineeLesson traineeLesson);
+        Task<Feedback?> GetFeedbackOfTraineeLessonWithLessonAndAuthorAndReadByUsersAsync(TraineeLesson traineeLesson);
     }
 }
