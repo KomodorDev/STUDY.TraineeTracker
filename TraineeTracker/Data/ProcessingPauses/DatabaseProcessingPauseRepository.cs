@@ -13,7 +13,11 @@ namespace TraineeTracker.Data.ProcessingPauses {
         }
 
         public bool Exists(ProcessingPause processingPause) {
-            return _context.ProcessingPauses.Any(p => p.ProcessingPauseId == processingPause.ProcessingPauseId);
+            return _context.ProcessingPauses.Any(p =>
+                p.TraineeId == processingPause.TraineeId &&
+                p.StartDate == processingPause.StartDate &&
+                p.EndDate == processingPause.EndDate
+            );
         }
 
         public void Create(ProcessingPause processingPause) {

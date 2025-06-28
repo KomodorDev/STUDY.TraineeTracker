@@ -101,8 +101,8 @@ namespace TraineeTracker.Migrations
                 {
                     Id = table.Column<string>(type: "TEXT", nullable: false),
                     IsClosed = table.Column<bool>(type: "INTEGER", nullable: false),
-                    TraineeStartDate = table.Column<DateTime>(type: "TEXT", nullable: true),
-                    TraineeEndDate = table.Column<DateTime>(type: "TEXT", nullable: true),
+                    TraineeStartDate = table.Column<DateOnly>(type: "TEXT", nullable: true),
+                    TraineeEndDate = table.Column<DateOnly>(type: "TEXT", nullable: true),
                     TeachingPlanId = table.Column<int>(type: "INTEGER", nullable: true),
                     UserName = table.Column<string>(type: "TEXT", maxLength: 256, nullable: true),
                     NormalizedUserName = table.Column<string>(type: "TEXT", maxLength: 256, nullable: true),
@@ -244,13 +244,15 @@ namespace TraineeTracker.Migrations
                 {
                     EmailNotificationSettingsId = table.Column<int>(type: "INTEGER", nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
+                    ReceiveSkippedNotifications = table.Column<bool>(type: "INTEGER", nullable: false),
                     ReceiveOpenNotifications = table.Column<bool>(type: "INTEGER", nullable: false),
                     ReceiveStartedNotifications = table.Column<bool>(type: "INTEGER", nullable: false),
                     ReceiveFinishedNotifications = table.Column<bool>(type: "INTEGER", nullable: false),
                     ReceiveRejectedNotifications = table.Column<bool>(type: "INTEGER", nullable: false),
                     ReceiveAcceptedNotifications = table.Column<bool>(type: "INTEGER", nullable: false),
                     ReceiveRatedNotifications = table.Column<bool>(type: "INTEGER", nullable: false),
-                    UserId = table.Column<string>(type: "TEXT", nullable: false)
+                    ReceiveImportChangeNotifications = table.Column<bool>(type: "INTEGER", nullable: false),
+                    UserId = table.Column<string>(type: "TEXT", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -259,8 +261,7 @@ namespace TraineeTracker.Migrations
                         name: "FK_EmailNotificationSettings_AspNetUsers_UserId",
                         column: x => x.UserId,
                         principalTable: "AspNetUsers",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
@@ -272,7 +273,7 @@ namespace TraineeTracker.Migrations
                     Difficulty = table.Column<int>(type: "INTEGER", nullable: false),
                     PreviousKnowledge = table.Column<string>(type: "TEXT", nullable: false),
                     HoursOfEffort = table.Column<float>(type: "REAL", nullable: false),
-                    Comment = table.Column<string>(type: "TEXT", nullable: false),
+                    Comment = table.Column<string>(type: "TEXT", nullable: true),
                     LessonId = table.Column<int>(type: "INTEGER", nullable: false),
                     AuthorId = table.Column<string>(type: "TEXT", nullable: false)
                 },
