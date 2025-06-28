@@ -21,7 +21,7 @@
         }
         else {
             <!-- default nav bar -->
-            <nav class="navbar custom-navbar navbar-expand-sm box-shadow">
+            <nav class="navbar custom-navbar navbar-expand-sm custom-drop-shadow">
                 <div class="container-fluid">
                     @* <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">TraineeTracker</a> *@
                     @* <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
@@ -78,37 +78,58 @@
 
             font-family: 'Open Sans', sans-serif;
             font-weight: bold;
-            font-size: 30px;
+            font-size: 1.406rem;
 
-            height: 100px;
-            padding-left: 50px;
-            padding-right: 50px;
+            height: 3.516rem !important;
+            padding-left: 1.7rem !important;
+            padding-right: 1.7rem !important;
             display: flex;
             align-items: center;
 
             /* rounded bottom corners */
-            border-bottom-left-radius: 15px;
-            border-bottom-right-radius: 15px;
+            border-bottom-left-radius: 10px !important;
+            border-bottom-right-radius: 10px !important;
         }
 
         /* nav links container */
         .navbar.custom-navbar .navbar-nav {
             display: flex;
-            gap: 50px;
+            gap: 1.7rem !important;
         }
 
         /* menu items */
         .navbar.custom-navbar .nav-link {
             color: #000 !important;
             font-weight: bold;
-            font-size: 30px;
+            font-size: 1.406rem;
+
+            text-decoration: none !important;
+            display: inline-block;
+            position: relative;
         }
 
         /* logo/text on the left */
         .navbar.custom-navbar .navbar-brand {
             color: #000 !important;
             font-weight: bold;
-            font-size: 30px;
+            font-size: 1.406rem;
+        }
+
+        /* pseudo element, is the underline animaton */
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            left: 0;
+            bottom: 3px;
+            width: 0%;
+            height: 2px; /* Thickness of the underline */
+            background-color: black;
+            border-radius: 10px;
+            transition: width 0.3s ease-in-out;
+        }
+
+        .nav-link:hover::after {
+            width: 100%;
         }
     </style>
 </body>
