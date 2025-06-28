@@ -13,11 +13,9 @@ using TraineeTracker.Data.TraineeLessons;
 using System.Threading;
 using System.Net.Http.Headers;
 
-public class TraineeStatisticsServiceTests
-{
+public class TraineeStatisticsServiceTests {
     [Fact]
-    public async Task GetPresentDaysAsyncTest()
-    {
+    public async Task GetPresentDaysAsyncTest() {
         var httpClient = new HttpClient();
         var service = new TraineeStatisticsService(
             traineeStatisticsRepository: null!,
@@ -38,13 +36,11 @@ public class TraineeStatisticsServiceTests
     }
 
     [Fact]
-    public async Task BuildLatestTraineeStatisticsSnapshotAsync_ShouldCalculateCorrectPresentDays()
-    {
+    public async Task BuildLatestTraineeStatisticsSnapshotAsync_ShouldCalculateCorrectPresentDays() {
         var traineeId = "ursula-1";
         var email = "ursula.urlaub@makandra.de";
 
-        var trainee = new ApplicationUser
-        {
+        var trainee = new ApplicationUser {
             Id = traineeId,
             Email = email,
             EmailNotificationSetting = new EmailNotificationSetting(),
@@ -69,21 +65,18 @@ public class TraineeStatisticsServiceTests
                 TraineeId = traineeId,
                 Trainee = trainee
             }
-        })
-        {
+        }) {
             trainee.ProcessingPauses.Add(pause);
         }
 
 
-        var handler = new FakeHttpMessageHandler((request) =>
-        {
+        var handler = new FakeHttpMessageHandler((request) => {
             var url = request.RequestUri!.ToString();
             double days = url.Contains("2025-06-09") ? 5 :
                           url.Contains("2025-06-23") ? 5 : 20;
 
             var content = $"{{ \"present_days\": {days} }}";
-            return new HttpResponseMessage(HttpStatusCode.OK)
-            {
+            return new HttpResponseMessage(HttpStatusCode.OK) {
                 Content = new StringContent(content, Encoding.UTF8, "application/json")
             };
         });
@@ -100,12 +93,10 @@ public class TraineeStatisticsServiceTests
         Assert.Equal(10, snapshot.DaysPresent); // 20 total - 5 - 5 pause = 10
     }
 
-    private class FakeHttpMessageHandler : HttpMessageHandler
-    {
+    private class FakeHttpMessageHandler : HttpMessageHandler {
         private readonly Func<HttpRequestMessage, HttpResponseMessage> _responder;
 
-        public FakeHttpMessageHandler(Func<HttpRequestMessage, HttpResponseMessage> responder)
-        {
+        public FakeHttpMessageHandler(Func<HttpRequestMessage, HttpResponseMessage> responder) {
             _responder = responder;
         }
 
@@ -120,13 +111,11 @@ public class TraineeStatisticsServiceTests
 
 
 
-    private class FakeUserManager : UserManager<ApplicationUser>
-    {
+    private class FakeUserManager : UserManager<ApplicationUser> {
         private readonly ApplicationUser _user;
 
         public FakeUserManager(ApplicationUser user)
-            : base(new FakeUserStore(), null!, null!, null!, null!, null!, null!, null!, null!)
-        {
+            : base(new FakeUserStore(), null!, null!, null!, null!, null!, null!, null!, null!) {
             _user = user;
         }
 
@@ -134,8 +123,7 @@ public class TraineeStatisticsServiceTests
             => Task.FromResult<ApplicationUser?>(_user);
     }
 
-    private class FakeUserStore : IUserStore<ApplicationUser>
-    {
+    private class FakeUserStore : IUserStore<ApplicationUser> {
         public Task<IdentityResult> CreateAsync(ApplicationUser user, CancellationToken cancellationToken) => Task.FromResult(IdentityResult.Success);
         public Task<IdentityResult> DeleteAsync(ApplicationUser user, CancellationToken cancellationToken) => Task.FromResult(IdentityResult.Success);
         public void Dispose() { }
@@ -149,12 +137,10 @@ public class TraineeStatisticsServiceTests
         public Task<IdentityResult> UpdateAsync(ApplicationUser user, CancellationToken cancellationToken) => Task.FromResult(IdentityResult.Success);
     }
 
-    private class FakeTraineeStatisticsRepository : ITraineeStatisticsRepository
-    {
+    private class FakeTraineeStatisticsRepository : ITraineeStatisticsRepository {
         private readonly ApplicationUser _user;
 
-        public FakeTraineeStatisticsRepository(ApplicationUser user)
-        {
+        public FakeTraineeStatisticsRepository(ApplicationUser user) {
             _user = user;
         }
 
@@ -169,16 +155,14 @@ public class TraineeStatisticsServiceTests
         public void Update(TraineeStatisticsSnapshot snapshot) { }
 
         public TraineeStatisticsSnapshot GetTraineeStatisticsSnapshot(string traineeId)
-            => new TraineeStatisticsSnapshot
-            {
+            => new TraineeStatisticsSnapshot {
                 TraineeId = traineeId,
                 Trainee = _user,
                 SnapshotDate = DateTime.Today
             };
     }
 
-    private class FakeTraineeLessonRepository : ITraineeLessonRepository
-    {
+    private class FakeTraineeLessonRepository : ITraineeLessonRepository {
         public Task<IEnumerable<TraineeLesson>> GetAllTraineeLessonsOfTraineeWithLessonAsync(string traineeId)
             => Task.FromResult<IEnumerable<TraineeLesson>>(new List<TraineeLesson>());
 
