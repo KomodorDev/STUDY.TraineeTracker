@@ -61,7 +61,7 @@ builder.Services.AddScoped<ITraineeStatisticsRepository, DatabaseTraineeStatisti
 
 // -----------------------------------------
 // HttpClient
-builder.Services.AddHttpClient(); 
+builder.Services.AddHttpClient();
 
 
 // -----------------------------------------
@@ -75,12 +75,16 @@ builder.Services.AddScoped<TraineeStatisticsService>();
 // FeedbackService
 // TraineeLessonDashboardService
 
-
 // ----------------------------------------
 // Register Email Service
 builder.Services.Configure<EmailSettings>(builder.Configuration.GetSection("EmailSettings"));
 
 builder.Services.AddTransient<IEmailSender, GmailEmailSender>();
+
+// -----------------------------------------
+// Seeder Services
+builder.Services.AddScoped<RolesSeeder>();
+builder.Services.AddScoped<TestDataSeeder>();
 
 // ----------------------------------------
 
@@ -88,7 +92,7 @@ builder.Services.AddTransient<IEmailSender, GmailEmailSender>();
 var app = builder.Build();
 
 // ---------------------------------------------
-// Create Roles if non-existent
+// Seeding
 using (var scope = app.Services.CreateScope()) {
     var serviceProvider = scope.ServiceProvider;
     var rolesSeeder = serviceProvider.GetRequiredService<RolesSeeder>();
@@ -100,6 +104,7 @@ using (var scope = app.Services.CreateScope()) {
     await testDataSeeder.SeedTeachingPlansAsync();
     await testDataSeeder.SeedUsersAsync();
     await testDataSeeder.SeedProcessingPausesAsync();
+    await testDataSeeder.SeedFeedbackAsync();
 }
 
 // ---------------------------------------------
