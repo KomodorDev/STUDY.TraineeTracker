@@ -8,18 +8,23 @@ using System.Threading.Tasks;
 using TraineeTracker.Data.TraineeStatistics;
 using TraineeTracker.Models.ViewModels;
 using TraineeTracker.Models.Domain;
+using Microsoft.AspNetCore.Identity;
 
 namespace TraineeTracker.Services
 {
     public class TraineeStatisticsService
     {
         private readonly ITraineeStatisticsRepository _traineeStatisticsRepository;
+        private readonly ITraineeLessonRepository _traineeLessonRepository;
         private readonly HttpClient _httpClient;
+        private readonly UserManager<ApplicationUser> _userManager;
 
-        public TraineeStatisticsService(ITraineeStatisticsRepository traineeStatisticsRepository, HttpClient httpClient)
+        public TraineeStatisticsService(ITraineeStatisticsRepository traineeStatisticsRepository, ITraineeLessonRepository traineeLessonRepository, HttpClient httpClient, UserManager<ApplicationUser> userManager)
         {
             _traineeStatisticsRepository = traineeStatisticsRepository;
+            _traineeLessonRepository = traineeLessonRepository;
             _httpClient = httpClient;
+            _userManager = userManager;
         }
 
         public TraineeStatisticsViewModel BuildTraineeStatisticsViewModel(string traineeId)
@@ -55,8 +60,18 @@ namespace TraineeTracker.Services
             return false;
         }
 
-        public async Task<TraineeStatisticsSnapshot> BuildLatestTraineeStatisticsSnapshotAsync(string traineeId, DateTime startDate, DateTime endDate, string email)
+        public async Task<TraineeStatisticsSnapshot> BuildLatestTraineeStatisticsSnapshotAsync(string traineeId)
         {
+            var user = await _userManager.FindByIdAsync(traineeId);
+            if (user == null || user.TraineeStartDate == null)
+            {
+                throw new Exception("Trainee not found or start date is missing.");
+            }
+
+            var startDate = user.TraineeStartDate.Value;
+            var endDate = user.TraineeEndDate ?? DateTime.Today;
+            var email = user.Email ?? throw new Exception("Trainee has no email.");
+
             double daysPresent = await GetPresentDaysAsync(startDate, endDate, email);
             if (daysPresent < 0)
             {
@@ -67,7 +82,7 @@ namespace TraineeTracker.Services
             double lessonDaysOpen = await CalculateLessonDaysOpenAsync(traineeId);
             double lessonDaysBuffer = CalculateLessonDaysBuffer(daysPresent, lessonDaysCompleted);
             double speed = CalculateSpeed(daysPresent, lessonDaysCompleted);
-            double daysBufferPredicted = await CalculateDaysBufferPrediction(traineeId, daysPresent, lessonDaysOpen, speed);
+            double daysBufferPredicted = await CalculateDaysBufferPredictionAsync(traineeId, daysPresent, lessonDaysOpen, speed);
 
             var snapshot = new TraineeStatisticsSnapshot
             {
@@ -119,7 +134,7 @@ namespace TraineeTracker.Services
             }
         }
 
-        public async<double> CalculateLessonDaysCompletedAsync(string traineeId)
+        public async Task<double> CalculateLessonDaysCompletedAsync(string traineeId)
         {
             var lessons = await _traineeLessonRepository.GetAllTraineeLessonsOfTraineeWithLessonAsync(traineeId);
 
@@ -178,7 +193,7 @@ namespace TraineeTracker.Services
             return daysPresent > 0 ? lessonDaysCompleted / daysPresent : 0;
         }
 
-        public async Task<double> CalculateDaysBufferPrediction(string traineeId, double daysPresent, double lessonDaysOpen, double speed)
+        public async Task<double> CalculateDaysBufferPredictionAsync(string traineeId, double daysPresent, double lessonDaysOpen, double speed)
         {
             var traineeLessons = await _traineeLessonRepository.GetAllTraineeLessonsOfTraineeWithLessonAsync(traineeId);
 
