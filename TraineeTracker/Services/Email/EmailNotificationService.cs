@@ -18,7 +18,7 @@ namespace TraineeTracker.Services.Email {
         }
 
         // ------------------------------------------------------
-        public async Task SaveNotificationSettingsChange(string userId, NotificationSettingDto update) {
+        public async Task SaveNotificationSettingChange(string userId, NotificationSettingDto update) {
 
             // Load setting
             var setting = await _databaseEmailNotificationSettingRepository.GetByUserIdAsync(userId);
@@ -38,6 +38,21 @@ namespace TraineeTracker.Services.Email {
             await _databaseEmailNotificationSettingRepository.UpdateAsync(setting);
         }
 
+        // ------------------------------------------------------
+        public async Task<NotificationSettingDto> GetNotificationSetting(string userId) {
+            var setting = await _databaseEmailNotificationSettingRepository.GetByUserIdAsync(userId);
+
+            return new NotificationSettingDto {
+                ReceiveSkippedNotifications = setting.ReceiveSkippedNotifications,
+                ReceiveOpenNotifications = setting.ReceiveOpenNotifications,
+                ReceiveStartedNotifications = setting.ReceiveStartedNotifications,
+                ReceiveFinishedNotifications = setting.ReceiveFinishedNotifications,
+                ReceiveRejectedNotifications = setting.ReceiveRejectedNotifications,
+                ReceiveAcceptedNotifications = setting.ReceiveAcceptedNotifications,
+                ReceiveRatedNotifications = setting.ReceiveRatedNotifications,
+                ReceiveImportChangeNotifications = setting.ReceiveImportChangeNotifications
+            };
+        }
 
         // ------------------------------------------------------
         public async Task NotifyUserAsync(ApplicationUser user, string subject, string message) {
