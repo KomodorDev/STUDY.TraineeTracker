@@ -2,6 +2,7 @@ using Newtonsoft.Json;
 using TraineeTracker.Data.TeachingPlans;
 using TraineeTracker.Data.Lessons;
 using TraineeTracker.Data.TraineeLessons;
+using TraineeTracker.Data.ApplicationUsers;
 using TraineeTracker.Models.Domain;
 using TraineeTracker.Models.Dtos;
 
@@ -170,10 +171,10 @@ namespace TraineeTracker.Services {
                         LessonId = lesson.LessonId,
                         Lesson = lesson
                     };
-                }
 
-                trainee.TraineeLessons.Add(traineeLesson);
-                await _traineeLessonRepo.CreateAsync(traineeLesson);
+                    trainee.TraineeLessons.Add(traineeLesson);
+                    await _traineeLessonRepo.CreateAsync(traineeLesson);
+                }
             }
 
             teachingPlan.Trainees.Add(trainee);
