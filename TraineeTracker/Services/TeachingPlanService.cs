@@ -56,75 +56,69 @@ namespace TraineeTracker.Services {
         }
 
         public async Task UpdateTeachingPlan(IFormFile file, int teachingPlanId) {
-
             if (file == null || file.Length == 0)
                 throw new ArgumentException("Die Datei ist leer!");
 
             using var stream = new StreamReader(file.OpenReadStream());
             var jsonContent = await stream.ReadToEndAsync();
+            var lessonsDto = JsonConvert.DeserializeObject<List<LessonDto>>(jsonContent)
+                ?? throw new InvalidOperationException("Keine gültigen Lektionen im JSON gefunden.");
 
-            var lessonsDto = JsonConvert.DeserializeObject<List<LessonDto>>(jsonContent);
+            var teachingPlan = await _teachingPlanRepo.GetTeachingPlanByIdWithLessonsAndTraineesAsync(teachingPlanId)
+                ?? throw new InvalidOperationException("TeachingPlan nicht gefunden.");
 
-            if (lessonsDto == null || lessonsDto.Count == 0)
-                throw new InvalidOperationException("Keine gültigen Lektionen im JSON gefunden.");
+            var dtoLessonIds = lessonsDto.Select(dto => dto.Id).ToHashSet();
+            var existingLessons = teachingPlan.Lessons.ToList();
 
-            var teachingPlan = await _teachingPlanRepo.GetTeachingPlanByIdAsync(teachingPlanId);
-
-            if (teachingPlan == null)
-                throw new InvalidOperationException("TeachingPlan nicht gefunden.");
-
-            var oldLessons = await _lessonRepo.GetAllLessonsAsync();
-
-            foreach (var oldLesson in oldLessons) {
-
-                bool stillExists = lessonsDto.Any(dto => dto.Id == oldLesson.LessonId);
-
-                if (!stillExists) {
-                    var traineeLesson = await _traineeLessonRepo.GetTraineeLessonByIdWithLessonAsync(oldLesson.LessonId);
-
-                    if (traineeLesson != null && traineeLesson.State == TraineeLessonState.Open) {
-                        await _traineeLessonRepo.DeleteAsync(oldLesson.LessonId);
+            // Entferne Lessons, die nicht mehr im DTO enthalten sind
+            foreach (var oldLesson in existingLessons) {
+                if (!dtoLessonIds.Contains(oldLesson.LessonId)) {
+                    var traineeLessons = await _traineeLessonRepo.GetAllTraineeLessonsOfLessonWithLessonAsync(oldLesson.LessonId);
+                    foreach (var tl in traineeLessons.Where(t => t.State == TraineeLessonState.Open)) {
+                        await _traineeLessonRepo.DeleteAsync(tl.TraineeLessonId);
                     }
+
+                    teachingPlan.Lessons.Remove(oldLesson);
                     await _lessonRepo.DeleteAsync(oldLesson);
                 }
             }
 
+            // Update oder Create Lessons
             foreach (var dto in lessonsDto) {
+                var existingLesson = teachingPlan.Lessons.FirstOrDefault(l => l.LessonId == dto.Id);
 
-                var lesson = new Lesson {
+                if (existingLesson != null) {
+                    existingLesson.Title = dto.Title;
+                    existingLesson.LinkUrl = dto.Url;
+                    existingLesson.EstimatedEffort = dto.Estimate ?? 0;
+                    existingLesson.IsInactive = dto.Deprecated;
+
+                    if (dto.Deprecated) {
+                        var traineeLessons = await _traineeLessonRepo.GetAllTraineeLessonsOfLessonWithLessonAsync(existingLesson.LessonId);
+                        foreach (var tl in traineeLessons.Where(t => t.State == TraineeLessonState.Open)) {
+                            await _traineeLessonRepo.DeleteAsync(tl.TraineeLessonId);
+                        }
+                    }
+
+                    await _lessonRepo.UpdateAsync(existingLesson);
+                } else {
+                    var newLesson = new Lesson {
                     LessonId = dto.Id,
                     Title = dto.Title,
                     LinkUrl = dto.Url,
                     EstimatedEffort = dto.Estimate ?? 0,
                     IsInactive = dto.Deprecated
-                };
+                    };
 
-                var traineeLesson = await _traineeLessonRepo.GetTraineeLessonByIdWithLessonAsync(lesson.LessonId);
-                var existingLesson = await _lessonRepo.GetLessonByIdAsync(lesson.LessonId);
-
-                if (existingLesson != null) {
-
-                    if (lesson.IsInactive) {
-
-                        if (traineeLesson != null && traineeLesson.State == TraineeLessonState.Open) {
-
-                            await _traineeLessonRepo.DeleteAsync(lesson.LessonId);
-                        }
-
-                        await _lessonRepo.UpdateAsync(lesson);
-                    } else {
-
-                        await _lessonRepo.UpdateAsync(lesson);
-                    }
-                } else {
-
-                    await _lessonRepo.CreateAsync(lesson);
+                    await _lessonRepo.CreateAsync(newLesson);
+                    teachingPlan.Lessons.Add(newLesson);
                 }
             }
 
             teachingPlan.LastUpdated = DateTime.UtcNow;
             await _teachingPlanRepo.UpdateAsync(teachingPlan);
         }
+
 
         public async Task DeleteTeachingPlan(int id) {
 
