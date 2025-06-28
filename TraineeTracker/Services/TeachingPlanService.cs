@@ -151,7 +151,7 @@ namespace TraineeTracker.Services {
 
         public async Task AssignTeachingPlanToTraineeAsync(ApplicationUser trainee, int teachingPlanId){
 
-            var teachingPlan = await _teachingPlanRepo.GetTeachingPlanByIdAsync(teachingPlanId);
+            var teachingPlan = await _teachingPlanRepo.GetTeachingPlanByIdWithLessonsAndTraineesAsync(teachingPlanId);
 
             if (teachingPlan == null)
                 throw new InvalidOperationException("TeachingPlan nicht gefunden.");
