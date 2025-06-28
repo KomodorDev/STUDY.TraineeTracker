@@ -86,10 +86,12 @@ namespace TraineeTracker.Services.Admin {
                 StartDate = dto.StartDate,
                 EndDate = dto.EndDate
             };
+
+            // Only create processingPause if non-existent
             if (_processingPauseRepository.Exists(processingPause)) {
-                _processingPauseRepository.Create(processingPause);
                 return ServiceResult.Failed("A break already exists for this user for this period.");
             }
+            _processingPauseRepository.Create(processingPause);
             return ServiceResult.Success();
         }
     }
