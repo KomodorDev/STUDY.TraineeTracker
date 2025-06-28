@@ -85,16 +85,22 @@ builder.Services.AddTransient<IEmailSender, GmailEmailSender>();
 // ----------------------------------------
 
 
-
 var app = builder.Build();
 
-// Rollen erstellen, falls noch nicht in der Datenbank
+// ---------------------------------------------
+// Create Roles if non-existent
 using (var scope = app.Services.CreateScope()) {
     var serviceProvider = scope.ServiceProvider;
-    await IdentitySeeder.SeedRolesAsync(serviceProvider);
-    await IdentitySeeder.SeedTestUsersAsync(serviceProvider);
-}
+    var rolesSeeder = serviceProvider.GetRequiredService<RolesSeeder>();
+    await rolesSeeder.SeedRolesAsync();
 
+    // Testdaten (User, Lessons, TeachingPlans)
+    var testDataSeeder = serviceProvider.GetRequiredService<TestDataSeeder>();
+    await testDataSeeder.SeedLessonsAsync();
+    await testDataSeeder.SeedTeachingPlansAsync();
+    await testDataSeeder.SeedUsersAsync();
+    await testDataSeeder.SeedProcessingPausesAsync();
+}
 
 // ---------------------------------------------
 // Configure the HTTP request pipeline.
