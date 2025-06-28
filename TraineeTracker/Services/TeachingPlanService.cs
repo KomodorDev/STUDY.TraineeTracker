@@ -111,20 +111,22 @@ namespace TraineeTracker.Services {
                 };
 
                 var traineeLesson = await _traineeLessonRepo.GetTraineeLessonByIdWithLessonAsync(lesson.LessonId);
-                var existingLesson = await _lessonRepo.GetLessonByIdAsync(lesson.LessonId);
+                var existingLessons = await _lessonRepo.GetAllTraineeLessonsOfLessonWithLessonAsync(lesson.LessonId);
 
-                if (existingLesson != null) {
+                foreach(var existingLesson in existingLessons) {
+                    if (existingLesson != null) {
 
-                    if (lesson.IsInactive) {
+                        if (lesson.IsInactive) {
 
-                        if (traineeLesson != null && traineeLesson.State == TraineeLessonState.Open) {
+                            if (traineeLesson != null && traineeLesson.State == TraineeLessonState.Open) {
 
-                            await _traineeLessonRepo.DeleteAsync(traineeLesson.TraineeLessonId);
+                                await _traineeLessonRepo.DeleteAsync(traineeLesson.TraineeLessonId);
+                            }
                         }
+                        await _lessonRepo.UpdateAsync(lesson);
+                    }else{
+                        await _lessonRepo.CreateAsync(lesson);
                     }
-                    await _lessonRepo.UpdateAsync(lesson);
-                }else{
-                    await _lessonRepo.CreateAsync(lesson);
                 }
             }
 
