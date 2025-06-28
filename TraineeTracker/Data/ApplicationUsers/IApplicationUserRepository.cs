@@ -20,7 +20,7 @@ namespace TraineeTracker.Data.ApplicationUsers {
 
         public Task<ApplicationUser?> FindByIdWithProcessingPausesAndTraineeLessonsAsync(string userId);
 
-        public Task<IEnumerable<ApplicationUser>> GetOpenUsersAsync();
+        public Task<IEnumerable<ApplicationUser>> GetOpenUsersInRoleAsync(string roleName);
 
         public Task<IEnumerable<ApplicationUser>> GetUsersInRoleAsync(string roleName);
 
