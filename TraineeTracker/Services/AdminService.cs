@@ -54,6 +54,12 @@ namespace TraineeTracker.Services.Admin {
                 /* if (!teachingPlanResult.Succeeded) {
                     return teachingPlanResult;
                 } */
+
+                var updateResult = await _applicationUserRepository.UpdateAsync(user);
+                if (!updateResult.Succeeded) {
+                    var errors = result.Errors.Concat(updateResult.Errors);
+                    return ServiceResult.Failed(errors.Select(e => e.Description).ToArray());
+                }
             }
 
             return ServiceResult.Success();
