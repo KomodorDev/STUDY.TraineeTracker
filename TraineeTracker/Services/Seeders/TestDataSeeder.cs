@@ -1,7 +1,10 @@
 using Microsoft.AspNetCore.Identity;
 using TraineeTracker.Data.ApplicationUsers;
+using TraineeTracker.Data.Feedbacks;
 using TraineeTracker.Data.Lessons;
 using TraineeTracker.Data.TeachingPlans;
+using TraineeTracker.Data.TraineeLessonLog;
+using TraineeTracker.Data.TraineeLessons;
 using TraineeTracker.Models.Domain;
 using TraineeTracker.Models.Dtos;
 using TraineeTracker.Services.Admin;
@@ -12,14 +15,22 @@ namespace TraineeTracker.Services.Seeders {
         private readonly AdminService _adminService;
         private readonly IApplicationUserRepository _databaseApplicationUserRepository;
         private readonly ILessonRepository _databaseLessonRepository;
+
+        private readonly ITraineeLessonRepository _databaseTraineeLessonRepository;
         private readonly ITeachingPlanRepository _databaseTeachingPlanRepository;
 
+        private readonly IFeedbackRepository _databaseFeedbackRepository;
+        private readonly ITraineeLessonLogEntryRepository _databaseTraineeLessonLogEntryRepository;
+
         // ---------------------------------------------------
-        public TestDataSeeder(IApplicationUserRepository databaseApplicationUserRepository, ILessonRepository lessonRepo, ITeachingPlanRepository teachingPlanRepo, AdminService adminService) {
+        public TestDataSeeder(IApplicationUserRepository databaseApplicationUserRepository, ILessonRepository lessonRepo, ITraineeLessonRepository traineeLessonRepo, ITeachingPlanRepository teachingPlanRepo, AdminService adminService, IFeedbackRepository feedbackRepo, ITraineeLessonLogEntryRepository logEntryRepo) {
             _databaseApplicationUserRepository = databaseApplicationUserRepository;
             _databaseLessonRepository = lessonRepo;
             _databaseTeachingPlanRepository = teachingPlanRepo;
             _adminService = adminService;
+            _databaseTraineeLessonRepository = traineeLessonRepo;
+            _databaseFeedbackRepository = feedbackRepo;
+            _databaseTraineeLessonLogEntryRepository = logEntryRepo;
         }
 
 
@@ -118,6 +129,23 @@ namespace TraineeTracker.Services.Seeders {
                     TraineeEndDate = new DateOnly(2026, 6, 30)
                 },
                 new ApplicationUserDto {
+                    Email = "stefan.schnupfen@makandra.de",
+                    Role = "Trainee",
+                    TeachingPlanId = 2,
+                    Password = "Sopro.2025",
+                    TraineeStartDate = new DateOnly(2025, 3, 15),
+                    TraineeEndDate = new DateOnly(2026, 6, 30)
+                },
+                new ApplicationUserDto {
+                    Email = "ursula.urlaub@makandra.de",
+                    Role = "Trainee",
+                    TeachingPlanId = 2,
+                    Password = "Sopro.2025",
+                    TraineeStartDate = new DateOnly(2025, 3, 15),
+                    TraineeEndDate = new DateOnly(2026, 6, 30)
+                },
+
+                new ApplicationUserDto {
                     Email = "closed.trainee@uni-a.de",
                     Role = "Trainee",
                     TeachingPlanId = 2,
@@ -143,6 +171,8 @@ namespace TraineeTracker.Services.Seeders {
         public async Task SeedProcessingPausesAsync() {
             var alex = await _databaseApplicationUserRepository.FindByEmailAsync("alexandros.blask@uni-a.de");
             var nikita = await _databaseApplicationUserRepository.FindByEmailAsync("nikita.stefan@uni-a.de");
+            var stefan = await _databaseApplicationUserRepository.FindByEmailAsync("stefan.schnupfen@makandra.de");
+            var ursula = await _databaseApplicationUserRepository.FindByEmailAsync("ursula.urlaub@makandra.de");
 
             var pauseDtos = new List<ProcessingPauseDto>();
 
@@ -167,10 +197,106 @@ namespace TraineeTracker.Services.Seeders {
                     EndDate = new DateTime(2025, 5, 25)
                 });
             }
+            if (stefan != null) {
+                pauseDtos.Add(new ProcessingPauseDto {
+                    TraineeId = stefan.Id,
+                    StartDate = new DateTime(2025, 5, 20),
+                    EndDate = new DateTime(2025, 5, 25)
+                });
+            }
+            if (ursula != null) {
+                pauseDtos.Add(new ProcessingPauseDto {
+                    TraineeId = ursula.Id,
+                    StartDate = new DateTime(2025, 5, 20),
+                    EndDate = new DateTime(2025, 5, 25)
+                });
+            }
             foreach (var dto in pauseDtos) {
                 await _adminService.CreateProcessingPauseAsync(dto);
             }
             // ---------------------------------------------------
+        }
+
+        public async Task SeedFeedbackAsync() {
+
+            // Get Trainees
+            var alex = await _databaseApplicationUserRepository.FindByEmailAsync("alexandros.blask@uni-a.de");
+            var nikita = await _databaseApplicationUserRepository.FindByEmailAsync("nikita.stefan@uni-a.de");
+
+            // Get Mentor and Admin who read it
+            var simon = await _databaseApplicationUserRepository.FindByEmailAsync("simon.hinterreiter@uni-a.de"); // Admin
+            var paul = await _databaseApplicationUserRepository.FindByEmailAsync("paul.schweizer@uni-a.de");     // Mentor
+
+            // Get Lesson
+            var lesson1 = await _databaseLessonRepository.GetLessonByIdAsync(1);
+            var lesson3 = await _databaseLessonRepository.GetLessonByIdAsync(3);
+
+
+            // FeedbackSeeds
+            var feedbackSeeds = new List<(ApplicationUser? user, Lesson? lesson, int difficulty, float effort, string previousKnowledge, string? comment)> { (alex, lesson1, 7, 2.5f, "Some Java experience", "Good lesson, but needed more time for the exercises."),
+            (nikita, lesson3, 4, 1.2f, "Already knew most of it", "Quick to go through, well explained.")
+            };
+
+            var readers = new List<ApplicationUser?> { simon, paul };
+            int readerIndex = 0;
+
+            foreach (var (user, lesson, difficulty, effort, previousKnowledge, comment) in feedbackSeeds) {
+                if (user == null || lesson == null)
+                    continue;
+
+                var reader = readers[readerIndex % readers.Count];
+                readerIndex++;
+
+                if (reader == null)
+                    continue;
+
+                // Get the corret TraineeLesson
+                var traineeLessons = await _databaseTraineeLessonRepository.GetAllTraineeLessonsOfTraineeWithLessonAsync(user.Id);
+                var traineeLesson = traineeLessons.FirstOrDefault(tl => tl.Lesson.LessonId == lesson.LessonId);
+                if (traineeLesson == null)
+                    continue;
+
+
+                // Change the State to Rated
+                traineeLesson.State = TraineeLessonState.Rated;
+                await _databaseTraineeLessonRepository.UpdateAsync(traineeLesson);
+
+                // Check if Feedback already exists
+                var existingFeedbacks = await _databaseFeedbackRepository
+                    .GetAllFeedbacksWrittenByUserWithLessonAndAuthorAndReadByUsersAsync(user);
+
+                if (existingFeedbacks.Any(f => f.LessonId == lesson.LessonId))
+                    continue;
+
+                // Create Feedback Objekt
+                var feedback = new Feedback {
+                    Difficulty = difficulty,
+                    HoursOfEffort = effort,
+                    PreviousKnowledge = previousKnowledge,
+                    Comment = comment,
+                    LessonId = lesson.LessonId,
+                    Lesson = lesson,
+                    AuthorId = user.Id,
+                    Author = user,
+                    ReadByUsers = new List<ApplicationUser> { reader }
+                };
+
+                // Store in DB
+                await _databaseFeedbackRepository.CreateAsync(feedback);
+
+
+                var logEntry = new TraineeLessonLogEntry {
+                    TraineeLessonId = traineeLesson.TraineeLessonId,
+                    LessonName = lesson.Title,
+                    UserId = user.Id,
+                    UserName = user.Email!, 
+                    OldState = "Accepted",
+                    NewState = "Rated",
+                    Timestamp = DateTime.UtcNow
+                };
+
+                _databaseTraineeLessonLogEntryRepository.Create(logEntry);
+            }
         }
 
     }
