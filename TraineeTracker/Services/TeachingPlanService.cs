@@ -175,6 +175,10 @@ namespace TraineeTracker.Services {
             await _applicationUserRepo.UpdateAsync(trainee);
             await _teachingPlanRepo.UpdateAsync(teachingPlan);
         }
+
+        public async Task<IEnumerable<TeachingPlan>> GetAllTeachingPlansAsync(){
+            return await _teachingPlanRepo.GetAllTeachingPlansAsync();
+        }
     }
 }
 
