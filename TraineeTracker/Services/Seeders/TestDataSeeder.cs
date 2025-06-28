@@ -105,19 +105,25 @@ namespace TraineeTracker.Services.Seeders {
                     Email = "alexandros.blask@uni-a.de",
                     Role = "Trainee",
                     TeachingPlanId = 1,
-                    Password = "Sopro.2025"
+                    Password = "Sopro.2025",
+                    TraineeStartDate = new DateOnly(2025, 4, 1),
+                    TraineeEndDate = new DateOnly(2026, 7, 1)
                 },
                 new ApplicationUserDto {
                     Email = "nikita.stefan@uni-a.de",
                     Role = "Trainee",
                     TeachingPlanId = 2,
-                    Password = "Sopro.2025"
-                }
+                    Password = "Sopro.2025",
+                    TraineeStartDate = new DateOnly(2025, 3, 15),
+                    TraineeEndDate = new DateOnly(2026, 6, 30)
+                },
                 new ApplicationUserDto {
                     Email = "closed.trainee@uni-a.de",
                     Role = "Trainee",
                     TeachingPlanId = 2,
-                    Password = "Sopro.2025"
+                    Password = "Sopro.2025",
+                    TraineeStartDate = new DateOnly(2024, 1, 1),
+                    TraineeEndDate = new DateOnly(2025, 4, 1)
                 }
             };
 
@@ -125,6 +131,37 @@ namespace TraineeTracker.Services.Seeders {
                 await _adminService.CreateUserAsync(dto);
             }
         }
+
+        // ---------------------------------------------------
+        public async Task SeedProcessingPausesAsync() {
+            var alex = await _databaseApplicationUserRepository.FindByEmailAsync("alexandros.blask@uni-a.de");
+            var nikita = await _databaseApplicationUserRepository.FindByEmailAsync("nikita.stefan@uni-a.de");
+
+            var pauseDtos = new List<ProcessingPauseDto>();
+
+            if (alex != null) {
+                pauseDtos.Add(new ProcessingPauseDto {
+                    TraineeId = alex.Id,
+                    StartDate = new DateTime(2025, 5, 5),
+                    EndDate = new DateTime(2025, 5, 10)
+                });
+
+                pauseDtos.Add(new ProcessingPauseDto {
+                    TraineeId = alex.Id,
+                    StartDate = new DateTime(2025, 6, 1),
+                    EndDate = new DateTime(2025, 6, 3)
+                });
+            }
+
+            if (nikita != null) {
+                pauseDtos.Add(new ProcessingPauseDto {
+                    TraineeId = nikita.Id,
+                    StartDate = new DateTime(2025, 5, 20),
+                    EndDate = new DateTime(2025, 5, 25)
+                });
+            }
+        }
+        // ---------------------------------------------------
     }
 
 }
