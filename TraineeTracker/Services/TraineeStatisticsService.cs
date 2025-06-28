@@ -188,30 +188,26 @@ namespace TraineeTracker.Services {
 
             double totalEffort = relevantLessons.Sum(tl => tl.Lesson.EstimatedEffort);
 
-            double completedEffort = relevantLessons.Sum(tl => {
-                var effort = tl.Lesson.EstimatedEffort;
-
-                return tl.State switch {
-                    TraineeLessonState.Finished => effort * 0.7,
-                    TraineeLessonState.Accepted => effort,
-                    TraineeLessonState.Rejected => effort * 0.8,
-                    TraineeLessonState.Rated => effort,
-                    _ => 0
-                };
-            });
+            double completedEffort = CalculateLessonDaysCompletedAsync(traineeId);
 
             return totalEffort - completedEffort;
         }
 
-        public double CalculateLessonDaysBuffer(double daysPresent, double lessonDaysCompleted) {
+        // --------------------------------------------------
+        public double CalculateLessonDaysBuffer(double daysPresent, double lessonDaysCompleted)
+        {
             return lessonDaysCompleted - daysPresent;
         }
-
-        public double CalculateSpeed(double daysPresent, double lessonDaysCompleted) {
+        
+        // --------------------------------------------------
+        public double CalculateSpeed(double daysPresent, double lessonDaysCompleted)
+        {
             return daysPresent > 0 ? lessonDaysCompleted / daysPresent : 0;
         }
 
-        public async Task<double> CalculateDaysBufferPredictionAsync(string traineeId, double daysPresent, double lessonDaysOpen, double speed) {
+        // --------------------------------------------------
+        public async Task<double> CalculateDaysBufferPredictionAsync(string traineeId, double daysPresent, double lessonDaysOpen, double speed)
+        {
             var traineeLessons = await _traineeLessonRepository.GetAllTraineeLessonsOfTraineeWithLessonAsync(traineeId);
 
             double targetEffortInDays = traineeLessons
