@@ -65,12 +65,12 @@ namespace TraineeTracker.Services.Admin {
             return ServiceResult.Success();
         }
 
-        public async Task<bool> SetIsClosedAsync(string userId, bool isClosed) {
+        public async Task<bool> CloseUserAsync(string userId) {
             var user = await _applicationUserRepository.FindByIdAsync(userId);
             if (user == null) {
                 return false;
             }
-            user.IsClosed = isClosed;
+            user.IsClosed = true;
             await _applicationUserRepository.UpdateAsync(user);
             return true;
         }
