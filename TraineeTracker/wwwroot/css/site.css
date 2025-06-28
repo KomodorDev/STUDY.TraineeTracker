@@ -3,6 +3,7 @@ html {
 }
 
 @media (min-width: 768px) {
+  /* size for screens >768px wide, aka basically standard size*/
   html {
     font-size: 16px;
   }
