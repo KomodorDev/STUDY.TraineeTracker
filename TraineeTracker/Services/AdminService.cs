@@ -84,7 +84,7 @@ namespace TraineeTracker.Services.Admin {
             }
 
             user.IsClosed = true;
-            
+
             var referenceUpdateTasks = new List<Task>();
 
             foreach (var feedback in user.ReadFeedbacks.ToList()) {
@@ -117,10 +117,10 @@ namespace TraineeTracker.Services.Admin {
             };
 
             // Only create processingPause if non-existent
-            if (_processingPauseRepository.Exists(processingPause)) {
+            if (await _processingPauseRepository.ExistsAsync(processingPause)) {
                 return ServiceResult.Failed("A break already exists for this user for this period.");
             }
-            _processingPauseRepository.Create(processingPause);
+            await _processingPauseRepository.CreateAsync(processingPause);
             return ServiceResult.Success();
         }
     }
