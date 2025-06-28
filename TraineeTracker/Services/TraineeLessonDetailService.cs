@@ -14,6 +14,7 @@ using TraineeTracker.Models.ViewModels;
 
 using TraineeTracker.Exceptions;
 using TraineeTracker.Services.TraineeLessonStates;
+using TraineeTracker.Services.Email;
 
 namespace TraineeTracker.Services
 {
@@ -23,19 +24,22 @@ namespace TraineeTracker.Services
         private ITraineeLessonRepository _databaseTraineeLessonRepository;
         private ITraineeLessonLogEntryRepository _databaseTraineeLessonLogEntryRepository;
         private IFeedbackRepository _databaseFeedbackrepository;
-        // this one is not included in the viewmodel, because i dont't think we need it there?
+        // the following are not included in the viewmodel, because i dont't think we need them there?
         private IApplicationUserRepository _databaseApplicationUserRepository;
+        private EmailNotificationService _emailNotificationService;
 
         public TraineeLessonDetailService(ILessonRepository databaseLessonRepository,
                                             ITraineeLessonRepository databaseTraineeLessonRepository,
                                             ITraineeLessonLogEntryRepository databaseTraineeLessonLogEntryRepository,
                                             IFeedbackRepository databaseFeedbackRepository,
-                                            IApplicationUserRepository databaseApplicationUserRepository) {
+                                            IApplicationUserRepository databaseApplicationUserRepository,
+                                            EmailNotificationService emailNotificationService) {
             _databaseLessonRepository = databaseLessonRepository;
             _databaseTraineeLessonLogEntryRepository = databaseTraineeLessonLogEntryRepository;
             _databaseTraineeLessonRepository = databaseTraineeLessonRepository;
             _databaseFeedbackrepository = databaseFeedbackRepository;
             _databaseApplicationUserRepository = databaseApplicationUserRepository;
+            _emailNotificationService = emailNotificationService;
         }
 
         private async Task CheckHasAccess(ClaimsPrincipal user, int traineeLessonId) {
@@ -62,7 +66,7 @@ namespace TraineeTracker.Services
             var tl = await _databaseTraineeLessonRepository.GetTraineeLessonByIdWithLessonAsync(traineeLessonId) ?? throw new TraineeLessonNotFoundException(traineeLessonId);
             var l = await _databaseLessonRepository.GetLessonByIdAsync(tl.LessonId) ?? throw new LessonNotFoundException(tl.LessonId);
             var tll = _databaseTraineeLessonLogEntryRepository.GetAllLogsForTraineeLesson(traineeLessonId);
-            var f = _databaseFeedbackrepository.GetAllFeedbacksForLesson(l);
+            var f = await _databaseFeedbackrepository.GetAllFeedbacksForLessonWithLessonAndAuthorAndReadByUsersAsync(l);
 
             return new TraineeLessonDetailViewModel {
                 TraineeLesson = tl,
@@ -94,6 +98,8 @@ namespace TraineeTracker.Services
             oldTraineeLesson.RejectionReason = traineeLessonUpdate.RejectionReason;
             await _databaseTraineeLessonRepository.UpdateAsync(oldTraineeLesson);
 
+            // sends email and creates log
+            await _emailNotificationService.NotifyAboutStateChangeAsync(oldTraineeLesson, oldState, targetState);
             await LogStatusChange(oldTraineeLesson, oldState, targetState, user);
         }
 
@@ -122,7 +128,7 @@ namespace TraineeTracker.Services
                 throw new Exception("FeedbackDto is null");
 
             var correspondingTraineeLesson = await _databaseTraineeLessonRepository.GetTraineeLessonByIdWithLessonAsync(feedbackDto.TraineeLessonId) ?? throw new TraineeLessonNotFoundException(feedbackDto.TraineeLessonId);
-            var existingFeedback = _databaseFeedbackrepository.GetFeedbackOfTraineeLesson(correspondingTraineeLesson);
+            var existingFeedback = await _databaseFeedbackrepository.GetFeedbackOfTraineeLessonWithLessonAndAuthorAndReadByUsersAsync(correspondingTraineeLesson);
 
             if (existingFeedback != null) {
                 // feedback exists
@@ -130,7 +136,8 @@ namespace TraineeTracker.Services
                 existingFeedback.Difficulty = feedbackDto.Difficulty ?? existingFeedback.Difficulty;
                 existingFeedback.PreviousKnowledge = feedbackDto.PreviousKnowledge ?? existingFeedback.PreviousKnowledge;
                 existingFeedback.HoursOfEffort = feedbackDto.HoursOfEffort ?? existingFeedback.HoursOfEffort;
-                _databaseFeedbackrepository.Update(existingFeedback);
+
+                await _databaseFeedbackrepository.UpdateAsync(existingFeedback);
             } else {
                 // feedback doesn't exist
 
@@ -142,7 +149,7 @@ namespace TraineeTracker.Services
 
                 var authorId = user.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? throw new Exception("ClaimTypes.NameIdentifier of user not found.");
 
-                _databaseFeedbackrepository.Create(new Feedback {
+                await _databaseFeedbackrepository.CreateAsync(new Feedback {
                     Difficulty = feedbackDto.Difficulty ?? throw new ArgumentNullException(nameof(feedbackDto), "Difficulty cannot be null."),
                     PreviousKnowledge = feedbackDto.PreviousKnowledge ?? throw new ArgumentNullException(nameof(feedbackDto), "PreviousKnowledge cannot be null."),
                     HoursOfEffort = feedbackDto.HoursOfEffort ?? throw new ArgumentNullException(nameof(feedbackDto), "HoursOfEffort cannot be null."),
@@ -163,11 +170,13 @@ namespace TraineeTracker.Services
             }, user);
         }
 
-        public void DeleteFeedback(ClaimsPrincipal user, int feedbackId) {
+        public async Task DeleteFeedback(ClaimsPrincipal user, int feedbackId) {
             if (user.IsInRole("Trainee"))
                 throw new UnauthorizedAccessException("Trainees cannot delete feedbacks.");
+            if (!await _databaseFeedbackrepository.ExistsAsync(feedbackId))
+                throw new FeedbackNotFoundException(feedbackId);
 
-            _databaseFeedbackrepository.Delete(feedbackId);
+            await _databaseFeedbackrepository.DeleteAsync(feedbackId);
         }
     }
 }
