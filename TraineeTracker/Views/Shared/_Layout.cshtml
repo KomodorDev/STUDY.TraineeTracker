@@ -46,7 +46,13 @@
                                 <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Admin</a>
                             </li>
                         </ul>
-                        <partial name="_LoginPartial" />
+
+                        @* <partial name="_LoginPartial" /> *@
+
+                        <!-- makandra logo -->
+                        <a href="https://makandra.de/de" class="navbar-brand">
+                            <img src="~/resources/makandra_logo_black.png" alt="logo" />
+                        </a>
                     </div>
                 </div>
             </nav>
@@ -82,7 +88,7 @@
 
             height: 3.516rem !important;
             padding-left: 1.7rem !important;
-            padding-right: 1.7rem !important;
+            padding-right: 0 !important;
             display: flex;
             align-items: center;
 
@@ -113,6 +119,19 @@
             color: #000 !important;
             font-weight: bold;
             font-size: 1.406rem;
+            margin-right: 0.5rem;
+        }
+
+        /* makandra logo */
+        .navbar-brand img {
+            max-height: 2.6rem;
+            height: auto;
+            width: auto;
+            vertical-align: middle;
+        }
+
+        nav.navbar .container-fluid {
+            padding-right: 0 !important;
         }
 
         /* pseudo element, is the underline animaton */
