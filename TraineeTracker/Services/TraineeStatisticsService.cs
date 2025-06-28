@@ -87,6 +87,7 @@ namespace TraineeTracker.Services
 
             var snapshot = new TraineeStatisticsSnapshot
             {
+                Trainee = trainee,
                 TraineeId = traineeId,
                 SnapshotDate = DateTime.Now,
                 DaysPresent = daysPresent,
