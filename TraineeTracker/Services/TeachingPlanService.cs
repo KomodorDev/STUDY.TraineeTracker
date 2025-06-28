@@ -57,9 +57,6 @@ namespace TraineeTracker.Services {
 
         public async Task UpdateTeachingPlan(IFormFile file, int teachingPlanId) {
 
-            string role = "Trainee";
-
-
             //Erst entpacke ich hier die Kurwa Datei
             if (file == null || file.Length == 0)
                 throw new ArgumentException("Die Datei ist leer!");
