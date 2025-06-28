@@ -5,6 +5,7 @@ using TraineeTracker.Models.Domain;
 using TraineeTracker.Models.Dtos;
 using TraineeTracker.Data.Feedbacks;
 using TraineeTracker.Data.TeachingPlans;
+using TraineeTracker.Data.TraineeStatistics;
 
 namespace TraineeTracker.Services.Admin {
     public class AdminService {
@@ -16,19 +17,22 @@ namespace TraineeTracker.Services.Admin {
 
         private readonly IFeedbackRepository _feedbackRepository;
         private readonly ITeachingPlanRepository _teachingPlanRepository;
+        private readonly ITraineeStatisticsRepository _traineeStatisticsRepository;
 
         public AdminService(IApplicationUserRepository applicationUserRepository,
                             IProcessingPauseRepository processingPauseRepository,
                             EmailNotificationService emailNotificationService,
                             TeachingPlanService teachingPlanService,
                             IFeedbackRepository feedbackRepository,
-                            ITeachingPlanRepository teachingPlanRepository) {
+                            ITeachingPlanRepository teachingPlanRepository,
+                            ITraineeStatisticsRepository traineeStatisticsRepository) {
             _applicationUserRepository = applicationUserRepository;
             _processingPauseRepository = processingPauseRepository;
             _emailNotificationService = emailNotificationService;
             _teachingPlanService = teachingPlanService;
             _feedbackRepository = feedbackRepository;
             _teachingPlanRepository = teachingPlanRepository;
+            _traineeStatisticsRepository = traineeStatisticsRepository;
         }
 
         public async Task<ServiceResult> CreateUserAsync(ApplicationUserDto dto) {
@@ -99,7 +103,13 @@ namespace TraineeTracker.Services.Admin {
             user.ProcessingPauses.Clear();
 
             if (await _applicationUserRepository.IsInRoleAsync(user, "Trainee")) {
+                
                 referenceUpdateTasks.Add(_teachingPlanService.UnassignTeachingPlanFromTraineeAsync(user, user.TeachingPlan.TeachingPlanId));
+
+                if (user.TraineeStatisticsSnapshot != null) {
+                    _traineeStatisticsRepository.Delete(user.TraineeStatisticsSnapshot);
+                    user.TraineeStatisticsSnapshot = null;
+                }
             }
 
             await Task.WhenAll(referenceUpdateTasks);
