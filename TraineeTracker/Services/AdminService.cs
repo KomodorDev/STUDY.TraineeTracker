@@ -27,16 +27,6 @@ namespace TraineeTracker.Services.Admin {
                 EmailNotificationSetting = _emailNotificationService.CreateDefaultEmailNotificationSetting(dto.Role)
             };
 
-            if (dto.Role == "Trainee") {
-                if (dto.TeachingPlanId == null) {
-                    return ServiceResult.Failed("Trainee requires Teachingplan.");
-                }
-                /* var teachingPlanResult = */ await _teachingPlanService.AssignTeachingPlanToTraineeAsync(user, dto.TeachingPlanId.Value); // TODO: method should return a ServiceResult
-                /* if (!teachingPlanResult.Succeeded) {
-                    return teachingPlanResult;
-                } */
-            }
-
             var result = await _applicationUserRepository.CreateAsync(user, dto.Password);
             if (!result.Succeeded) {
                 return ServiceResult.Failed(result.Errors.Select(e => e.Description).ToArray());
@@ -46,6 +36,17 @@ namespace TraineeTracker.Services.Admin {
             if (!roleResult.Succeeded) {
                 var errors = result.Errors.Concat(roleResult.Errors);
                 return ServiceResult.Failed(errors.Select(e => e.Description).ToArray());
+            }
+
+            if (dto.Role == "Trainee") {
+                if (dto.TeachingPlanId == null) {
+                    return ServiceResult.Failed("Trainee requires Teachingplan.");
+                }
+                /* var teachingPlanResult = */
+                await _teachingPlanService.AssignTeachingPlanToTraineeAsync(user, dto.TeachingPlanId.Value); // TODO: method should return a ServiceResult
+                /* if (!teachingPlanResult.Succeeded) {
+                    return teachingPlanResult;
+                } */
             }
 
             return ServiceResult.Success();
