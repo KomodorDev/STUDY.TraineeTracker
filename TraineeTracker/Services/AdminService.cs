@@ -103,7 +103,10 @@ namespace TraineeTracker.Services.Admin {
             user.ProcessingPauses.Clear();
 
             if (await _applicationUserRepository.IsInRoleAsync(user, "Trainee")) {
-                
+
+                if (user.TeachingPlan == null) {
+                    throw new Exception("Trainee requires Teachingplan.");
+                }
                 referenceUpdateTasks.Add(_teachingPlanService.UnassignTeachingPlanFromTraineeAsync(user, user.TeachingPlan.TeachingPlanId));
 
                 if (user.TraineeStatisticsSnapshot != null) {
