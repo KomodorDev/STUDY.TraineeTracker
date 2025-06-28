@@ -26,8 +26,8 @@ public class TraineeStatisticsServiceTests {
             userManager: null!
         );
 
-        var start = new DateTime(2021, 9, 1);
-        var end = new DateTime(2021, 10, 21);
+        var start = new DateOnly(2021, 9, 1);
+        var end = new DateOnly(2021, 10, 21);
         var email = "vanessa.vital@makandra.de";
 
         var presentDays = await service.GetPresentDaysAsync(start, end, email);
@@ -49,8 +49,8 @@ public class TraineeStatisticsServiceTests {
             Id = traineeId,
             Email = email,
             EmailNotificationSetting = new EmailNotificationSetting(),
-            TraineeStartDate = new DateTime(2025, 6, 1),
-            TraineeEndDate = new DateTime(2025, 6, 28),
+            TraineeStartDate = new DateOnly(2025, 6, 1),
+            TraineeEndDate = new DateOnly(2025, 6, 28),
             ProcessingPauses = new List<ProcessingPause>()
         };
 
@@ -58,15 +58,15 @@ public class TraineeStatisticsServiceTests {
         {
             new ProcessingPause
             {
-                StartDate = new DateTime(2025, 6, 9),
-                EndDate = new DateTime(2025, 6, 15),
+                StartDate = new DateOnly(2025, 6, 9),
+                EndDate = new DateOnly(2025, 6, 15),
                 TraineeId = traineeId,
                 Trainee = trainee
             },
             new ProcessingPause
             {
-                StartDate = new DateTime(2025, 6, 23),
-                EndDate = new DateTime(2025, 6, 29),
+                StartDate = new DateOnly(2025, 6, 23),
+                EndDate = new DateOnly(2025, 6, 29),
                 TraineeId = traineeId,
                 Trainee = trainee
             }
