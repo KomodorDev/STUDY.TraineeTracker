@@ -122,7 +122,7 @@ namespace TraineeTracker.Services {
                             await _traineeLessonRepo.DeleteAsync(traineeLesson.TraineeLessonId);
                         }
 
-                        await _lessonRepo.UpdateAsync(lesson);
+
                     }
                 }
                 await _lessonRepo.UpdateAsync(lesson);
