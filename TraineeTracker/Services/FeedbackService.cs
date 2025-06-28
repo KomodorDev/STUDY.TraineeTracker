@@ -4,6 +4,7 @@ using TraineeTracker.Data.ApplicationUsers;
 using TraineeTracker.Data.TraineeLessons;
 using TraineeTracker.Data.TraineeStatistics;
 using TraineeTracker.Models.Domain;
+using TraineeTracker.Models.Dtos;
 
 namespace TraineeTracker.Services
 {
@@ -72,47 +73,17 @@ namespace TraineeTracker.Services
         }
 
         /// Baut ein Dashboard-Modell für einen Trainee, basierend auf seinem Snapshot und den aktuellen TraineeLesson-Daten.
-        public TraineeStatisticsSnapshot BuildFeedBackDashboardViewModel(string traineeId, DateTime snapshotDate)
-        {
-            // 1. Existierenden Snapshot laden oder neu anlegen
-            var snapshot = _statsRepo.Exists(0) 
-                ? _statsRepo.GetTraineeStatisticsSnapshot(traineeId)
-                : new TraineeStatisticsSnapshot
-                {
-                    TraineeId = traineeId,
-                    SnapshotDate = snapshotDate
-                };
+        public async Task<List<FeedbackViewModel>> BuildUnreadFeedbackViewModelsAsync(ClaimsPrincipal mentor) {
 
-            // 2. Alle TraineeLessons dieses Trainees laden
-            var lessons = _traineeLessonRepo
-                .GetAllTraineeLessonsOfTraineeWithLessonAsync(traineeId)
-                .Result
-                .ToList();
+            var feedbacks = await GetUnreadFeedbacksForMentorAsync(mentor);
 
-            // 3. Kennzahlen berechnen
-            var user = _userRepo.FindByIdWithProcessingPausesAndTraineeLessonsAsync(traineeId).Result;
-            var start = user?.TraineeStartDate ?? DateOnly.FromDateTime(snapshotDate);
-            var totalDays = (snapshotDate.Date - start.ToDateTime(TimeOnly.MinValue).Date).TotalDays;
-            snapshot.DaysPresent = totalDays; 
-
-            var written = _feedbackRepo
-                .GetAllFeedbacksWrittenByUserWithLessonAndAuthorAndReadByUsersAsync(user!)
-                .Result;
-            snapshot.LessonDaysCompleted = written.Sum(f => f.HoursOfEffort);
-
-            var openLessons = lessons.Count(tl => tl.State == TraineeLessonState.Open);
-            snapshot.LessonDaysOpen = openLessons;
-
-            var estimated = lessons.Sum(tl => tl.Lesson.EstimatedEffort);
-            snapshot.LessonDaysBuffer = estimated - snapshot.LessonDaysCompleted;
-
-            snapshot.Speed =
-                snapshot.LessonDaysCompleted / (totalDays > 0 ? totalDays : 1);
-
-            snapshot.DaysBufferPredicted =
-                snapshot.LessonDaysBuffer / (snapshot.Speed > 0 ? snapshot.Speed : 1);
-
-            return snapshot;
+            // 2) in ViewModels umwandeln
+            return feedbacks.Select(f => new FeedbackViewModel
+            {
+                SentAt     = f.CreateTime,
+                AuthorName = f.Author.UserName,
+                Comment    = f.Comment ?? string.Empty
+            }).ToList();
         }
     }
 }
