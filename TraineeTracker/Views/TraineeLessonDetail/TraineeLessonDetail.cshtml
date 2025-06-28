@@ -1,0 +1,153 @@
+@* Modal Popup, by schleale *@
+
+@{
+    // Sample dynamic data (replace with your model or data source)
+    var title = "1. Ruby Basics";
+    var link = "https://cd.makandra.de/de";
+    var estimation = "10 days";
+    var started = "4 days ago";
+
+    var statusSteps = new[] { "OPEN", "STARTED", "FINISHED", "ACCEPTED", "RATED" };
+    var currentStatus = "STARTED";
+
+    var logEntries = new[]
+    {
+        "06.06.2025 12:52 - Schlemmer, Alexander - STARTED -> OPEN",
+        "06.06.2025 12:51 - Schlemmer, Alexander - OPEN -> STARTED",
+        "06.06.2025 12:50 - Schlemmer, Alexander - STARTED -> OPEN",
+        "06.06.2025 12:49 - Schlemmer, Alexander - OPEN -> STARTED"
+    };
+
+    var comments = new[]
+    {
+        "Schumacher, Ralf (06.06.): Du willst wissen, wie viel dein Auto wert ist?",
+        "Schumacher, Ralf (05.06.): Du willst wissen, wie viel dein Auto wert ist?",
+        "Schumacher, Ralf (04.06.): Du willst wissen, wie viel dein Auto wert ist?"
+    };
+}
+
+<!-- Modal container -->
+<div id="modal" class="modal" style="display:none;">
+    <div class="modal-content">
+        <h3 style="color:#e6004c;">@title</h3>
+        <p><strong>Link:</strong> <a href="@link" target="_blank">@link</a></p>
+        <p><strong>Estimation:</strong> @estimation</p>
+        <p><strong>Started:</strong> @started</p>
+
+        <div class="status-bar">
+            @foreach(var step in statusSteps)
+            {
+                var isActive = step == currentStatus;
+                <span class="status-step @(isActive ? "active" : "")">@step</span>
+                @if (step != statusSteps.Last())
+                {
+                    <span class="status-arrow">→</span>
+                }
+            }
+        </div>
+
+        <div class="log-section">
+            <h4>Log</h4>
+            <div class="log-entries" style="max-height: 100px; overflow-y:auto; border: 1px solid #ddd; padding: 8px; background: #fff;">
+                @foreach(var log in logEntries)
+                {
+                    <div>@log</div>
+                }
+            </div>
+        </div>
+
+        <div class="comments-section">
+            <h4>Comments</h4>
+            <ul>
+                @foreach(var comment in comments)
+                {
+                    <li>@comment</li>
+                }
+            </ul>
+        </div>
+
+        <button onclick="closeModal()">Close</button>
+    </div>
+</div>
+
+<style>
+    .modal {
+        position: fixed;
+        top: 20%;
+        left: 50%;
+        transform: translate(-50%, -20%);
+        background: #f9f9f9;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+        border-radius: 6px;
+        width: 400px;
+        z-index: 1000;
+    }
+
+    .modal-content {
+        padding: 20px;
+        font-family: Arial, sans-serif;
+    }
+
+    .status-bar {
+        margin: 15px 0;
+        display: flex;
+        align-items: center;
+        font-weight: bold;
+        font-size: 14px;
+    }
+
+    .status-step {
+        padding: 5px 10px;
+        border-radius: 12px;
+        background: #ddd;
+        color: #555;
+    }
+
+    .status-step.active {
+        background: #e6004c;
+        color: white;
+    }
+
+    .status-arrow {
+        margin: 0 5px;
+        color: #888;
+    }
+
+    .log-section, .comments-section {
+        margin-top: 15px;
+    }
+
+    .comments-section ul {
+        list-style-type: none;
+        padding-left: 0;
+    }
+
+    .comments-section li {
+        background: #f0f0f0;
+        margin-bottom: 5px;
+        padding: 5px 10px;
+        border-radius: 4px;
+    }
+
+    button {
+        margin-top: 15px;
+        padding: 8px 15px;
+        background: #e6004c;
+        border: none;
+        color: white;
+        border-radius: 4px;
+        cursor: pointer;
+    }
+    button:hover {
+        background: #cc0040;
+}
+</style>
+
+<script>
+    function openModal() {
+        document.getElementById('modal').style.display = 'block';
+    }
+    function closeModal() {
+        document.getElementById('modal').style.display = 'none';
+}
+</script>
