@@ -107,7 +107,7 @@ namespace TraineeTracker.Services.Admin {
                 referenceUpdateTasks.Add(_teachingPlanService.UnassignTeachingPlanFromTraineeAsync(user, user.TeachingPlan.TeachingPlanId));
 
                 if (user.TraineeStatisticsSnapshot != null) {
-                    _traineeStatisticsRepository.Delete(user.TraineeStatisticsSnapshot);
+                    referenceUpdateTasks.Add(_traineeStatisticsRepository.DeleteAsync(user.TraineeStatisticsSnapshot));
                     user.TraineeStatisticsSnapshot = null;
                 }
             }
