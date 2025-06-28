@@ -188,7 +188,7 @@ namespace TraineeTracker.Services {
 
             double totalEffort = relevantLessons.Sum(tl => tl.Lesson.EstimatedEffort);
 
-            double completedEffort = CalculateLessonDaysCompletedAsync(traineeId);
+            double completedEffort = await CalculateLessonDaysCompletedAsync(traineeId);
 
             return totalEffort - completedEffort;
         }
