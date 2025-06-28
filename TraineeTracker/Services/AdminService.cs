@@ -98,6 +98,11 @@ namespace TraineeTracker.Services.Admin {
             }
             user.ProcessingPauses.Clear();
 
+            if (await _applicationUserRepository.IsInRoleAsync(user, "Trainee")) {
+                user.TeachingPlan.Trainees.Remove(user);
+                user.TeachingPlan = null;
+            }
+
             await Task.WhenAll(referenceUpdateTasks);
             await _applicationUserRepository.UpdateAsync(user);
 
