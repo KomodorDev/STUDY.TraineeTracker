@@ -75,10 +75,6 @@ namespace TraineeTracker.Services {
                 throw new Exception("Trainee not found or start date is missing.");
             }
 
-            var startDate = trainee.TraineeStartDate.Value;
-            var endDate = trainee.TraineeEndDate ?? DateTime.Today;
-            var email = trainee.Email ?? throw new Exception("Trainee has no email.");
-
             double daysPresent = await GetEffectivePresentDaysAsync(trainee);
             if (daysPresent < 0) {
                 Console.WriteLine("⚠️ API-Error – use latest snapshot.");
@@ -90,25 +86,45 @@ namespace TraineeTracker.Services {
             double speed = CalculateSpeed(daysPresent, lessonDaysCompleted);
             double daysBufferPredicted = await CalculateDaysBufferPredictionAsync(traineeId, daysPresent, lessonDaysOpen, speed);
 
-            var snapshot = new TraineeStatisticsSnapshot {
-                Trainee = trainee,
-                TraineeId = traineeId,
-                SnapshotDateTime = DateTime.Now,
-                DaysPresent = daysPresent,
-                LessonDaysCompleted = lessonDaysCompleted,
-                LessonDaysOpen = lessonDaysOpen,
-                LessonDaysBuffer = lessonDaysBuffer,
-                Speed = speed,
-                DaysBufferPredicted = daysBufferPredicted,
-            };
+            TraineeStatisticsSnapshot snapshot;
 
-            await _traineeStatisticsRepository.CreateAsync(snapshot);
+            try {
+                snapshot = await _traineeStatisticsRepository.GetTraineeStatisticsSnapshotAsync(traineeId);
+
+                // Fall: Snapshot existiert → wir aktualisieren ihn
+                snapshot.SnapshotDateTime = DateTime.Now;
+                snapshot.DaysPresent = daysPresent;
+                snapshot.LessonDaysCompleted = lessonDaysCompleted;
+                snapshot.LessonDaysOpen = lessonDaysOpen;
+                snapshot.LessonDaysBuffer = lessonDaysBuffer;
+                snapshot.Speed = speed;
+                snapshot.DaysBufferPredicted = daysBufferPredicted;
+
+                await _traineeStatisticsRepository.UpdateAsync(snapshot);
+            }
+            catch (InvalidOperationException) {
+                // Fall: Kein Snapshot vorhanden → wir erstellen einen neuen
+                snapshot = new TraineeStatisticsSnapshot {
+                    Trainee = trainee,
+                    TraineeId = traineeId,
+                    SnapshotDateTime = DateTime.Now,
+                    DaysPresent = daysPresent,
+                    LessonDaysCompleted = lessonDaysCompleted,
+                    LessonDaysOpen = lessonDaysOpen,
+                    LessonDaysBuffer = lessonDaysBuffer,
+                    Speed = speed,
+                    DaysBufferPredicted = daysBufferPredicted
+                };
+
+                await _traineeStatisticsRepository.CreateAsync(snapshot);
+            }
+
 
             return snapshot;
         }
 
         // --------------------------------------------------
-        public async Task<double> GetPresentDaysAsync(DateTime startDate, DateTime endDate, string email) {
+        public async Task<double> GetPresentDaysAsync(DateOnly startDate, DateOnly endDate, string email) {
             var baseUrl = "https://api.sopro.makandra.de/api/v1/present_days";
             var url = $"{baseUrl}?email={Uri.EscapeDataString(email)}&start_date={startDate:yyyy-MM-dd}&end_date={endDate:yyyy-MM-dd}";
 
@@ -139,8 +155,12 @@ namespace TraineeTracker.Services {
 
         // --------------------------------------------------
         private async Task<double> GetEffectivePresentDaysAsync(ApplicationUser trainee) {
-            var startDate = trainee.TraineeStartDate ?? throw new Exception("Startdatum fehlt");
-            var endDate = trainee.TraineeEndDate ?? DateTime.Today;
+
+            if (trainee.TraineeStartDate is null || trainee.TraineeEndDate is null)
+                throw new Exception("TraineeStartDate or EndDate is missing");
+
+            var startDate = trainee.TraineeStartDate.Value;
+            var endDate = trainee.TraineeEndDate.Value;
             var email = trainee.Email ?? throw new Exception("E-Mail fehlt");
 
             double totalDays = await GetPresentDaysAsync(startDate, endDate, email);
