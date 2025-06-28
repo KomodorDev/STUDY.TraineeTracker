@@ -1,10 +1,10 @@
-using System;                              
-using System.Net.Http;                     
-using System.Net.Http.Headers;             
-using System.Security.Claims;              
-using System.Text;                         
-using System.Text.Json;                    
-using System.Threading.Tasks;              
+using System;
+using System.Net.Http;
+using System.Net.Http.Headers;
+using System.Security.Claims;
+using System.Text;
+using System.Text.Json;
+using System.Threading.Tasks;
 using TraineeTracker.Data.TraineeStatistics;
 using TraineeTracker.Models.ViewModels;
 using TraineeTracker.Models.Domain;
@@ -103,7 +103,7 @@ namespace TraineeTracker.Services
             return snapshot;
         }
 
-        private async Task<double> GetPresentDaysAsync(DateTime startDate, DateTime endDate, string email)
+        public async Task<double> GetPresentDaysAsync(DateTime startDate, DateTime endDate, string email)
         {
             var baseUrl = "https://api.sopro.makandra.de/api/v1/present_days";
             var url = $"{baseUrl}?email={Uri.EscapeDataString(email)}&start_date={startDate:yyyy-MM-dd}&end_date={endDate:yyyy-MM-dd}";
@@ -135,7 +135,7 @@ namespace TraineeTracker.Services
                 return -1;
             }
         }
-        
+
         private async Task<double> GetEffectivePresentDaysAsync(ApplicationUser trainee)
         {
             var startDate = trainee.TraineeStartDate ?? throw new Exception("Startdatum fehlt");
@@ -212,7 +212,7 @@ namespace TraineeTracker.Services
                     TraineeLessonState.Finished => effort * 0.7,
                     TraineeLessonState.Accepted => effort,
                     TraineeLessonState.Rejected => effort * 0.8,
-                    TraineeLessonState.Rated    => effort,
+                    TraineeLessonState.Rated => effort,
                     _ => 0
                 };
             });
