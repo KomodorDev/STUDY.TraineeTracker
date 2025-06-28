@@ -50,12 +50,12 @@ namespace TraineeTracker.Services.Seeders {
                 new {
                     Id = 1,
                     Name = "WebDevelopment",
-                    LessonIds = new[] { 1, 2 }
+                    LessonIds = new[] { 1, 2, 3 }
                 },
                 new {
                     Id = 2,
                     Name = "DevOps",
-                    LessonIds = new[] { 1, 2, 3, 4 }
+                    LessonIds = new[] { 3, 4 }
                 }
             };
 
@@ -129,6 +129,13 @@ namespace TraineeTracker.Services.Seeders {
 
             foreach (var dto in userData) {
                 await _adminService.CreateUserAsync(dto);
+
+                if (dto.Email == "closed.trainee@uni-a.de") {
+                    var user = await _databaseApplicationUserRepository.FindByEmailAsync(dto.Email);
+                    if (user != null) {
+                        await _adminService.SetIsClosedAsync(user.Id, true);
+                    }
+                }
             }
         }
 
@@ -160,8 +167,12 @@ namespace TraineeTracker.Services.Seeders {
                     EndDate = new DateTime(2025, 5, 25)
                 });
             }
+            foreach (var dto in pauseDtos) {
+                await _adminService.CreateProcessingPauseAsync(dto);
+            }
+            // ---------------------------------------------------
         }
-        // ---------------------------------------------------
+
     }
 
 }
