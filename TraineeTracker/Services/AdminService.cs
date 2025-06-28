@@ -27,18 +27,6 @@ namespace TraineeTracker.Services.Admin {
                 EmailNotificationSetting = _emailNotificationService.CreateDefaultEmailNotificationSetting(dto.Role)
             };
 
-            if (dto.Role == "Trainee") {
-                if (dto.TeachingPlanId == null) {
-                    return ServiceResult.Failed("Trainee requires Teachingplan.");
-                }
-                /*     
-                var teachingPlanResult = await _teachingPlanService.AssignTeachingPlanToTraineeAsync(user, dto.TeachingPlanId);
-                if (!teachingPlanResult.Succeeded) {
-                    return teachingPlanResult;
-                }
-                */
-            }
-
             var result = await _applicationUserRepository.CreateAsync(user, dto.Password);
             if (!result.Succeeded) {
                 return ServiceResult.Failed(result.Errors.Select(e => e.Description).ToArray());
@@ -48,6 +36,30 @@ namespace TraineeTracker.Services.Admin {
             if (!roleResult.Succeeded) {
                 var errors = result.Errors.Concat(roleResult.Errors);
                 return ServiceResult.Failed(errors.Select(e => e.Description).ToArray());
+            }
+
+            if (dto.Role == "Trainee") {
+                if (dto.TraineeStartDate == null || dto.TraineeEndDate == null) {
+                    return ServiceResult.Failed("Trainee requires start- and end-date.");
+                }
+                if (dto.TeachingPlanId == null) {
+                    return ServiceResult.Failed("Trainee requires Teachingplan.");
+                }
+
+                user.TraineeStartDate = dto.TraineeStartDate;
+                user.TraineeEndDate = dto.TraineeEndDate;
+
+                /* var teachingPlanResult = */
+                await _teachingPlanService.AssignTeachingPlanToTraineeAsync(user, dto.TeachingPlanId.Value); // TODO: method should return a ServiceResult
+                /* if (!teachingPlanResult.Succeeded) {
+                    return teachingPlanResult;
+                } */
+
+                var updateResult = await _applicationUserRepository.UpdateAsync(user);
+                if (!updateResult.Succeeded) {
+                    var errors = result.Errors.Concat(updateResult.Errors);
+                    return ServiceResult.Failed(errors.Select(e => e.Description).ToArray());
+                }
             }
 
             return ServiceResult.Success();

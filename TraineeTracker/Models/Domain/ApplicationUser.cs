@@ -5,8 +5,8 @@ namespace TraineeTracker.Models.Domain {
         public bool IsClosed { get; set; } = false; // to be implemented
         public required EmailNotificationSetting EmailNotificationSetting { get; set; }
 
-        public DateTime? TraineeStartDate { get; set; }
-        public DateTime? TraineeEndDate { get; set; }
+        public DateOnly? TraineeStartDate { get; set; }
+        public DateOnly? TraineeEndDate { get; set; }
         public TeachingPlan? TeachingPlan { get; set; }
         public TraineeStatisticsSnapshot? TraineeStatisticsSnapshot { get; set; }
 

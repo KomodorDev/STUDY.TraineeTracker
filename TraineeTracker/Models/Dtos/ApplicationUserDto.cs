@@ -10,7 +10,6 @@ namespace TraineeTracker.Models.Dtos {
 
         [Required]
         public required string Role { get; set; }
-
         public int? TeachingPlanId { get; set; }
 
         // Only for Trainees
