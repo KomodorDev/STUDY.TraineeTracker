@@ -4,6 +4,7 @@ using TraineeTracker.Services.Email;
 using TraineeTracker.Models.Domain;
 using TraineeTracker.Models.Dtos;
 using TraineeTracker.Data.Feedbacks;
+using TraineeTracker.Data.TeachingPlans;
 
 namespace TraineeTracker.Services.Admin {
     public class AdminService {
@@ -14,17 +15,20 @@ namespace TraineeTracker.Services.Admin {
         private readonly TeachingPlanService _teachingPlanService;
 
         private readonly IFeedbackRepository _feedbackRepository;
+        private readonly ITeachingPlanRepository _teachingPlanRepository;
 
         public AdminService(IApplicationUserRepository applicationUserRepository,
                             IProcessingPauseRepository processingPauseRepository,
                             EmailNotificationService emailNotificationService,
                             TeachingPlanService teachingPlanService,
-                            IFeedbackRepository feedbackRepository) {
+                            IFeedbackRepository feedbackRepository,
+                            ITeachingPlanRepository teachingPlanRepository) {
             _applicationUserRepository = applicationUserRepository;
             _processingPauseRepository = processingPauseRepository;
             _emailNotificationService = emailNotificationService;
             _teachingPlanService = teachingPlanService;
             _feedbackRepository = feedbackRepository;
+            _teachingPlanRepository = teachingPlanRepository;
         }
 
         public async Task<ServiceResult> CreateUserAsync(ApplicationUserDto dto) {
@@ -80,20 +84,21 @@ namespace TraineeTracker.Services.Admin {
             }
 
             user.IsClosed = true;
+            
+            var referenceUpdateTasks = new List<Task>();
 
-            var readFeedbacks = await _feedbackRepository.GetAllFeedbacksReadByUserAsync(user);
-            foreach (var feedback in readFeedbacks) {
+            foreach (var feedback in user.ReadFeedbacks.ToList()) {
                 feedback.ReadByUsers.Remove(user);
-                await _feedbackRepository.UpdateAsync(feedback);
+                referenceUpdateTasks.Add(_feedbackRepository.UpdateAsync(feedback));
             }
             user.ReadFeedbacks.Clear();
 
-            var processingPauses = await _processingPauseRepository.GetAllPausesAsync(user.Id);
-            foreach (var pause in processingPauses) {
-                await _processingPauseRepository.DeleteAsync(pause);
+            foreach (var pause in user.ProcessingPauses.ToList()) {
+                referenceUpdateTasks.Add(_processingPauseRepository.DeleteAsync(pause));
             }
             user.ProcessingPauses.Clear();
 
+            await Task.WhenAll(referenceUpdateTasks);
             await _applicationUserRepository.UpdateAsync(user);
 
             return true;
