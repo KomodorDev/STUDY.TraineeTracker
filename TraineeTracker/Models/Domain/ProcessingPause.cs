@@ -6,9 +6,9 @@ namespace TraineeTracker.Models.Domain {
         
         public required ApplicationUser Trainee { get; set; }
 
-        public required DateTime StartDate { get; set; }
+        public required DateOnly StartDate { get; set; }
 
-        public required DateTime EndDate { get; set; }
+        public required DateOnly EndDate { get; set; }
 
         public override bool Equals(object? obj) {
             if (obj is not ProcessingPause other) {
