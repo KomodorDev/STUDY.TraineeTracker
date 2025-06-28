@@ -88,6 +88,12 @@ namespace TraineeTracker.Services.Admin {
             }
             user.ReadFeedbacks.Clear();
 
+            var processingPauses = await _processingPauseRepository.GetAllPausesAsync(user.Id);
+            foreach (var pause in processingPauses) {
+                await _processingPauseRepository.DeleteAsync(pause);
+            }
+            user.ProcessingPauses.Clear();
+
             await _applicationUserRepository.UpdateAsync(user);
 
             return true;
