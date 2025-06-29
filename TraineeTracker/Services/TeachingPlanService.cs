@@ -125,7 +125,7 @@ namespace TraineeTracker.Services {
         }
 
         private List<LessonDto> DeserializeLessonDtos(string json) {
-            return JsonConvert.DeserializeObject<List<LessonDto>>(json);
+            return JsonConvert.DeserializeObject<List<LessonDto>>(json) ?? throw new Exception("LessonDtos could not be deserialized.");
         }
 
         private void ValidateDtos(List<LessonDto> dtos) {
