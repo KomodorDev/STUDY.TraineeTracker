@@ -12,11 +12,15 @@ namespace TraineeTracker.Services {
         private TraineeStatisticsService _traineeStatisticsService;
         private IApplicationUserRepository _applicationUserRepository;
 
+        // ++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
         public TraineeLessonDashboardService(TraineeStatisticsService traineeStatisticsService,
                                                 IApplicationUserRepository applicationUserRepository) {
             _traineeStatisticsService = traineeStatisticsService;
             _applicationUserRepository = applicationUserRepository;
         }
+
+        // ++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
         private static void CheckHasAccess(ClaimsPrincipal user, string traineeId) {
             if (user == null || String.IsNullOrWhiteSpace(traineeId))
@@ -33,6 +37,8 @@ namespace TraineeTracker.Services {
             if (!(userId == traineeId))
                 throw new UnauthorizedAccessException("You can only access your own TraineeLessons.");
         }
+
+        // ------------------------------------------------------
 
         public async Task<TraineeLessonDashboardViewModel> BuildTraineeLessonDashboardViewModel(ClaimsPrincipal user, String? traineeId) {
             var mentorId = user.FindFirst(ClaimTypes.NameIdentifier)?.Value
@@ -102,6 +108,7 @@ namespace TraineeTracker.Services {
         }
 
         // methods by schwepau
+        // ------------------------------------------------------
         public async Task AddLastSelectedTraineeAsync(string mentorId, ApplicationUser trainee) {
             var mentor = await _applicationUserRepository.FindByIdAsync(mentorId);
             if (mentor == null) {
@@ -118,6 +125,7 @@ namespace TraineeTracker.Services {
             }
         }
 
+        // ------------------------------------------------------
         public async Task<ApplicationUser?> GetLastSelectedTrainee(string mentorId) {
             var mentor = await _applicationUserRepository.FindByIdAsync(mentorId);
             if (mentor == null) {
