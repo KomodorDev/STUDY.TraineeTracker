@@ -37,7 +37,7 @@ namespace TraineeTracker.Services {
 
             var snapshot = await BuildLatestTraineeStatisticsSnapshotAsync(traineeId);
             var lessons = await _traineeLessonRepository.GetAllTraineeLessonsOfTraineeWithLessonAsync(traineeId);
-            var processingPauses = _processingPauseRepository.GetAllPauses(traineeId).ToList();
+            var processingPauses = (await _processingPauseRepository.GetAllPausesAsync(traineeId)).ToList();
 
 
             return new TraineeStatisticsViewModel
