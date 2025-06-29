@@ -5,7 +5,6 @@ using TraineeTracker.Data.TeachingPlans;
 
 namespace TraineeTracker.Controllers
 {
-    [Route("teachingplans")]
     public class TeachingPlanController : Controller
     {
         private readonly TeachingPlanService _teachingPlanService;
@@ -15,11 +14,12 @@ namespace TraineeTracker.Controllers
             _teachingPlanService = teachingPlanService;
         }
 
-        [HttpGet("dashboard")]
+        [Route("ImportDashboard")]
+        [HttpGet]
         public async Task<IActionResult> ShowTeachingplanDashboardView()
         {
             var teachingPlans = await _teachingPlanService.GetAllTeachingPlansAsync();
-            return View("TeachingPlanDashboard", teachingPlans);
+            return View("ImportDashboard", teachingPlans);
         }
 
         [HttpPost("import")]
