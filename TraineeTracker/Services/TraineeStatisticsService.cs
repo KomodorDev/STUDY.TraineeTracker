@@ -11,6 +11,7 @@ using TraineeTracker.Models.Domain;
 using TraineeTracker.Data.TraineeLessons;
 using Microsoft.AspNetCore.Identity;
 using TraineeTracker.Exceptions;
+using TraineeTracker.Data.ProcessingPauses;
 
 namespace TraineeTracker.Services {
     public class TraineeStatisticsService {
@@ -18,13 +19,16 @@ namespace TraineeTracker.Services {
         private readonly ITraineeLessonRepository _traineeLessonRepository;
         private readonly HttpClient _httpClient;
         private readonly UserManager<ApplicationUser> _userManager;
+        private readonly IProcessingPauseRepository _processingPauseRepository;
 
         // --------------------------------------------------
-        public TraineeStatisticsService(ITraineeStatisticsRepository traineeStatisticsRepository, ITraineeLessonRepository traineeLessonRepository, HttpClient httpClient, UserManager<ApplicationUser> userManager) {
+        public TraineeStatisticsService(ITraineeStatisticsRepository traineeStatisticsRepository, ITraineeLessonRepository traineeLessonRepository, HttpClient httpClient, UserManager<ApplicationUser> userManager, IProcessingPauseRepository processingPauseRepository)
+        {
             _traineeStatisticsRepository = traineeStatisticsRepository;
             _traineeLessonRepository = traineeLessonRepository;
             _httpClient = httpClient;
             _userManager = userManager;
+            _processingPauseRepository = processingPauseRepository;
         }
 
         // --------------------------------------------------
@@ -33,8 +37,11 @@ namespace TraineeTracker.Services {
 
             var snapshot = await BuildLatestTraineeStatisticsSnapshotAsync(traineeId);
             var lessons = await _traineeLessonRepository.GetAllTraineeLessonsOfTraineeWithLessonAsync(traineeId);
+            var processingPauses = _processingPauseRepository.GetAllPauses(traineeId).ToList();
 
-            return new TraineeStatisticsViewModel {
+
+            return new TraineeStatisticsViewModel
+            {
                 SnapshotDateTime = snapshot.SnapshotDateTime,
                 DaysPresent = snapshot.DaysPresent,
                 LessonDaysCompleted = snapshot.LessonDaysCompleted,
@@ -49,6 +56,7 @@ namespace TraineeTracker.Services {
                 RejectedLessons = lessons.Where(l => l.State == TraineeLessonState.Rejected).ToList(),
                 OpenLessons = lessons.Where(l => l.State == TraineeLessonState.Open).ToList(),
                 StartedLessons = lessons.Where(l => l.State == TraineeLessonState.Started).ToList(),
+                ProcessingPauses = processingPauses
             };
         }
 
