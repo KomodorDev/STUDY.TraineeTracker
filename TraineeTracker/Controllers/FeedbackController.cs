@@ -52,8 +52,16 @@ namespace TraineeTracker.Controllers
         public async Task<IActionResult> MarkAsRead(int feedbackId, int page = 1)
         {
             await _feedbackService.MarkFeedbackAsReadAsync(User, feedbackId);
-            // Redirect to Unread list to reflect changes
-            return RedirectToAction(nameof(Unread), new { page });
+
+            // 1) Referer-Header auslesen
+            var referer = Request.Headers["Referer"].ToString();
+
+            // 2) Nur lokale URLs zulassen
+            if (!string.IsNullOrEmpty(referer) && Url.IsLocalUrl(referer))
+                return Redirect(referer);
+
+            // Fallback: Dashboard
+            return RedirectToAction(nameof(ShowFeedbackDashboardView));
         }
     }
 }
