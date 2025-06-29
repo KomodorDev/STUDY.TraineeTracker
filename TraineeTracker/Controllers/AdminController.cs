@@ -20,8 +20,9 @@ namespace TraineeTracker.Controllers {
         }
 
         [HttpGet("/ManageUsers")]
-        public IActionResult ShowAdminDashboardView() {
-            return View("AdminDashboardView");
+        public async Task<IActionResult> ShowAdminDashboardView() {
+            var users = await _applicationUserRepository.GetAllAsync();
+            return View("AdminDashboardView", users);
         }
 
         [HttpGet("/CreateUser")]
