@@ -19,5 +19,6 @@ namespace TraineeTracker.Models.Domain {
 
         // Mentor
         public ICollection<Feedback> ReadFeedbacks { get; set; } = new List<Feedback>();
+        public List<ApplicationUser> LastSelectedTrainees { get; set; } = new List<ApplicationUser>();
     }
 }
