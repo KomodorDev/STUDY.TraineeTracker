@@ -1,0 +1,22 @@
+.notification-settings-form {
+    max-width: 600px;
+    margin: 2rem auto;
+    padding: 1.5rem;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    background-color: #fdfdfd;
+}
+
+.notification-settings-form div {
+    margin-bottom: 0.8rem;
+}
+
+.notification-settings-form label {
+    font-weight: 500;
+}
+
+.notification-settings-form button {
+    margin-top: 1rem;
+    padding: 0.5rem 1rem;
+    font-size: 1rem;
+}
