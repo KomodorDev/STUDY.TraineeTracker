@@ -19,9 +19,10 @@ namespace TraineeTracker.Models.Dtos
         public string? Comment {
             get; set;
         }
-        
+
         public required int TraineeLessonId {
             get; set;
         }
     }
 }
+
