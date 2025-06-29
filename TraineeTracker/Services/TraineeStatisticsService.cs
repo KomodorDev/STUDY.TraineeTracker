@@ -11,6 +11,7 @@ using TraineeTracker.Models.Domain;
 using TraineeTracker.Data.TraineeLessons;
 using Microsoft.AspNetCore.Identity;
 using TraineeTracker.Exceptions;
+using TraineeTracker.Data.ProcessingPauses;
 
 namespace TraineeTracker.Services {
     public class TraineeStatisticsService {
@@ -18,13 +19,16 @@ namespace TraineeTracker.Services {
         private readonly ITraineeLessonRepository _traineeLessonRepository;
         private readonly HttpClient _httpClient;
         private readonly UserManager<ApplicationUser> _userManager;
+        private readonly IProcessingPauseRepository _processingPauseRepository;
 
         // --------------------------------------------------
-        public TraineeStatisticsService(ITraineeStatisticsRepository traineeStatisticsRepository, ITraineeLessonRepository traineeLessonRepository, HttpClient httpClient, UserManager<ApplicationUser> userManager) {
+        public TraineeStatisticsService(ITraineeStatisticsRepository traineeStatisticsRepository, ITraineeLessonRepository traineeLessonRepository, HttpClient httpClient, UserManager<ApplicationUser> userManager, IProcessingPauseRepository processingPauseRepository)
+        {
             _traineeStatisticsRepository = traineeStatisticsRepository;
             _traineeLessonRepository = traineeLessonRepository;
             _httpClient = httpClient;
             _userManager = userManager;
+            _processingPauseRepository = processingPauseRepository;
         }
 
         // --------------------------------------------------
@@ -33,15 +37,23 @@ namespace TraineeTracker.Services {
 
             var snapshot = await BuildLatestTraineeStatisticsSnapshotAsync(traineeId);
             var lessons = await _traineeLessonRepository.GetAllTraineeLessonsOfTraineeWithLessonAsync(traineeId);
+            var processingPauses = _processingPauseRepository.GetAllPauses(traineeId).ToList();
 
-            return new TraineeStatisticsViewModel {
+
+            return new TraineeStatisticsViewModel
+            {
                 SnapshotDateTime = snapshot.SnapshotDateTime,
-                DaysPresent = snapshot.DaysPresent,
+                DaysPresentTotal = snapshot.DaysPresentTotal,
+                DaysPresentTillToday = snapshot.DaysPresentTillToday,
                 LessonDaysCompleted = snapshot.LessonDaysCompleted,
                 LessonDaysOpen = snapshot.LessonDaysOpen,
                 LessonDaysBuffer = snapshot.LessonDaysBuffer,
                 Speed = snapshot.Speed,
                 DaysBufferPredicted = snapshot.DaysBufferPredicted,
+                IsUpToDate = snapshot.IsUpToDate,
+
+                //++++++++++++++++
+
                 FinishedLessons = lessons.Where(l => l.State == TraineeLessonState.Finished).ToList(),
                 AcceptedAndRatedLessons = lessons
                     .Where(l => l.State == TraineeLessonState.Accepted || l.State == TraineeLessonState.Rated)
@@ -49,6 +61,10 @@ namespace TraineeTracker.Services {
                 RejectedLessons = lessons.Where(l => l.State == TraineeLessonState.Rejected).ToList(),
                 OpenLessons = lessons.Where(l => l.State == TraineeLessonState.Open).ToList(),
                 StartedLessons = lessons.Where(l => l.State == TraineeLessonState.Started).ToList(),
+
+                //++++++++++++++++
+
+                ProcessingPauses = processingPauses
             };
         }
 
@@ -75,16 +91,20 @@ namespace TraineeTracker.Services {
                 throw new Exception("Trainee not found or start date is missing.");
             }
 
-            double daysPresent = await GetEffectivePresentDaysAsync(trainee);
-            if (daysPresent < 0) {
+            double daysPresentTotal = await GetEffectivePresentDaysAsync(trainee, trainee.TraineeStartDate!.Value, trainee.TraineeEndDate!.Value);
+            double daysPresentTillToday = await GetEffectivePresentDaysAsync(trainee, trainee.TraineeStartDate!.Value, DateOnly.FromDateTime(DateTime.Today));
+            if (daysPresentTillToday < 0)
+            {
                 Console.WriteLine("⚠️ API-Error – use latest snapshot.");
-                return await _traineeStatisticsRepository.GetTraineeStatisticsSnapshotAsync(traineeId);
+                var fallbackSnapshot = await _traineeStatisticsRepository.GetTraineeStatisticsSnapshotAsync(traineeId);
+                fallbackSnapshot.IsUpToDate = false;
+                return fallbackSnapshot;
             }
             double lessonDaysCompleted = await CalculateLessonDaysCompletedAsync(traineeId);
             double lessonDaysOpen = await CalculateLessonDaysOpenAsync(traineeId);
-            double lessonDaysBuffer = CalculateLessonDaysBuffer(daysPresent, lessonDaysCompleted);
-            double speed = CalculateSpeed(daysPresent, lessonDaysCompleted);
-            double daysBufferPredicted = await CalculateDaysBufferPredictionAsync(traineeId, daysPresent, lessonDaysOpen, speed);
+            double lessonDaysBuffer = CalculateLessonDaysBuffer(daysPresentTillToday, lessonDaysCompleted);
+            double speed = CalculateSpeed(daysPresentTillToday, lessonDaysCompleted);
+            double daysBufferPredicted = await CalculateDaysBufferPredictionAsync(traineeId, daysPresentTotal, lessonDaysOpen, speed);
 
             TraineeStatisticsSnapshot snapshot;
 
@@ -93,27 +113,32 @@ namespace TraineeTracker.Services {
 
                 // Fall: Snapshot existiert → wir aktualisieren ihn
                 snapshot.SnapshotDateTime = DateTime.Now;
-                snapshot.DaysPresent = daysPresent;
+                snapshot.DaysPresentTotal = daysPresentTotal;
+                snapshot.DaysPresentTillToday = daysPresentTillToday;
                 snapshot.LessonDaysCompleted = lessonDaysCompleted;
                 snapshot.LessonDaysOpen = lessonDaysOpen;
                 snapshot.LessonDaysBuffer = lessonDaysBuffer;
                 snapshot.Speed = speed;
                 snapshot.DaysBufferPredicted = daysBufferPredicted;
+                snapshot.IsUpToDate = true;
 
                 await _traineeStatisticsRepository.UpdateAsync(snapshot);
             }
             catch (InvalidOperationException) {
                 // Fall: Kein Snapshot vorhanden → wir erstellen einen neuen
-                snapshot = new TraineeStatisticsSnapshot {
+                snapshot = new TraineeStatisticsSnapshot
+                {
                     Trainee = trainee,
                     TraineeId = traineeId,
                     SnapshotDateTime = DateTime.Now,
-                    DaysPresent = daysPresent,
+                    DaysPresentTotal = daysPresentTotal,
+                    DaysPresentTillToday = daysPresentTillToday,
                     LessonDaysCompleted = lessonDaysCompleted,
                     LessonDaysOpen = lessonDaysOpen,
                     LessonDaysBuffer = lessonDaysBuffer,
                     Speed = speed,
-                    DaysBufferPredicted = daysBufferPredicted
+                    DaysBufferPredicted = daysBufferPredicted,
+                    IsUpToDate = true
                 };
 
                 await _traineeStatisticsRepository.CreateAsync(snapshot);
@@ -154,13 +179,11 @@ namespace TraineeTracker.Services {
         }
 
         // --------------------------------------------------
-        private async Task<double> GetEffectivePresentDaysAsync(ApplicationUser trainee) {
+        private async Task<double> GetEffectivePresentDaysAsync(ApplicationUser trainee, DateOnly startDate, DateOnly endDate) {
 
             if (trainee.TraineeStartDate is null || trainee.TraineeEndDate is null)
                 throw new Exception("TraineeStartDate or EndDate is missing");
 
-            var startDate = trainee.TraineeStartDate.Value;
-            var endDate = trainee.TraineeEndDate.Value;
             var email = trainee.Email ?? throw new Exception("E-Mail fehlt");
 
             double totalDays = await GetPresentDaysAsync(startDate, endDate, email);
@@ -220,23 +243,23 @@ namespace TraineeTracker.Services {
         }
 
         // --------------------------------------------------
-        public double CalculateLessonDaysBuffer(double daysPresent, double lessonDaysCompleted) {
-            return lessonDaysCompleted - daysPresent;
+        public double CalculateLessonDaysBuffer(double daysPresentTillToday, double lessonDaysCompleted) {
+            return lessonDaysCompleted - daysPresentTillToday;
         }
 
         // --------------------------------------------------
-        public double CalculateSpeed(double daysPresent, double lessonDaysCompleted) {
-            return daysPresent > 0 ? lessonDaysCompleted / daysPresent : 0;
+        public double CalculateSpeed(double daysPresentTillToday, double lessonDaysCompleted) {
+            return daysPresentTillToday > 0 ? lessonDaysCompleted / daysPresentTillToday : 0;
         }
 
         // --------------------------------------------------
-        public async Task<double> CalculateDaysBufferPredictionAsync(string traineeId, double daysPresent, double lessonDaysOpen, double speed) {
+        public async Task<double> CalculateDaysBufferPredictionAsync(string traineeId, double daysPresentTotal, double lessonDaysOpen, double speed) {
             double totalEffort = await CalculateTotalEffort(traineeId);
 
             if (speed <= 0)
                 return -1;
 
-            double daysLeft = totalEffort - daysPresent;
+            double daysLeft = totalEffort - daysPresentTotal;
             double daysNeeded = lessonDaysOpen / speed;
 
             return daysLeft - daysNeeded;
