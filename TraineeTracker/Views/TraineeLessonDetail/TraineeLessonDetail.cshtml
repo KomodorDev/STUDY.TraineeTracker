@@ -1,14 +1,13 @@
 @* Modal Popup, by schleale *@
 
 @{
-    // Sample dynamic data (replace with your model or data source)
+    // dummy data
     var title = "1. Ruby Basics";
     var link = "https://cd.makandra.de/de";
     var estimation = "10 days";
-    var started = "4 days ago";
 
-    var statusSteps = new[] { "OPEN", "STARTED", "FINISHED", "ACCEPTED", "RATED" };
-    var currentStatus = "STARTED";
+    var statusSteps = new[] { "OPEN", "SKIPPED", "STARTED", "FINISHED", "REJECTED", "ACCEPTED", "RATED" };
+    var currentStatus = "OPEN";
 
     var logEntries = new[]
     {
@@ -18,11 +17,16 @@
         "06.06.2025 12:49 - Schlemmer, Alexander - OPEN -> STARTED"
     };
 
-    var comments = new[]
+    var comments1 = new[]
     {
-        "Schumacher, Ralf (06.06.): Du willst wissen, wie viel dein Auto wert ist?",
-        "Schumacher, Ralf (05.06.): Du willst wissen, wie viel dein Auto wert ist?",
-        "Schumacher, Ralf (04.06.): Du willst wissen, wie viel dein Auto wert ist?"
+        "Schumacher, Ralf (06.06.)",
+        "Schumacher, Ralf (05.06.)",
+        "Schumacher, Ralf (04.06.)"
+    };
+    var comments2 = new[] {
+        "Du willst wissen, wie viel dein Auto wert ist?",
+        "Du willst wissen, wie viel dein Auto wert ist?",
+        "Du willst wissen, wie viel dein Auto wert ist?"
     };
 }
 
@@ -59,7 +63,7 @@
         <div class="comments-section">
             <h4>Comments</h4>
             <ul>
-                @foreach(var comment in comments)
+                @foreach(var comment in comments1)
                 {
                     <li>@comment</li>
                 }
