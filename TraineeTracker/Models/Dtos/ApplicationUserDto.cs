@@ -3,13 +3,13 @@ using System.ComponentModel.DataAnnotations;
 namespace TraineeTracker.Models.Dtos {
     public class ApplicationUserDto {
         [Required]
-        public required string Email { get; set; }
+        public string? Email { get; set; }
 
         [Required]
-        public required string Password { get; set; }
+        public string? Password { get; set; }
 
         [Required]
-        public required string Role { get; set; }
+        public string? Role { get; set; }
         public int? TeachingPlanId { get; set; }
 
         // Only for Trainees

@@ -37,7 +37,7 @@ namespace TraineeTracker.Controllers {
 
         [HttpGet("/CreateUser")]
         public IActionResult ShowCreateUserView() {
-            return View("CreateUser");
+            return View("CreateUser", new ApplicationUserDto());
         }
 
         [HttpPost]
