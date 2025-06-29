@@ -1,7 +1,8 @@
 using TraineeTracker.Models.Domain;
 
 namespace TraineeTracker.Models.ViewModels {
-    public class TraineeStatisticsViewModel {
+    public class TraineeStatisticsViewModel
+    {
         public DateTime SnapshotDateTime { get; set; }
         public double DaysPresent { get; set; }
         public double LessonDaysCompleted { get; set; }
@@ -14,5 +15,6 @@ namespace TraineeTracker.Models.ViewModels {
         public List<TraineeLesson>? RejectedLessons { get; set; }
         public List<TraineeLesson>? OpenLessons { get; set; }
         public List<TraineeLesson>? StartedLessons { get; set; }
+        public List<ProcessingPause>? ProcessingPauses { get; set; }
     }
 }
