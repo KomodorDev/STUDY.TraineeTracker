@@ -35,7 +35,7 @@ namespace TraineeTracker.Services
             ?? throw new UnauthorizedAccessException("User nicht gefunden.");
         }
 
-        public async Task<Page<FeedbackDto>> GetAllFeedbacksAsync(int pageNumber)
+        public async Task<Page<FeedbackDashboardDto>> GetAllFeedbacksAsync(int pageNumber)
         {
             if (pageNumber < 1)
                 throw new ArgumentOutOfRangeException(nameof(pageNumber));
@@ -47,7 +47,7 @@ namespace TraineeTracker.Services
             return CreatePagedResult(all, pageNumber);
         }
 
-        public async Task<Page<FeedbackDto>> GetUnreadFeedbacksAsync(
+        public async Task<Page<FeedbackDashboardDto>> GetUnreadFeedbacksAsync(
             ClaimsPrincipal userPrincipal, int pageNumber)
         {
             if (pageNumber < 1)
@@ -61,7 +61,7 @@ namespace TraineeTracker.Services
             return CreatePagedResult(unread, pageNumber);
         }
 
-        public async Task<Page<FeedbackDto>> GetReadFeedbacksAsync(
+        public async Task<Page<FeedbackDashboardDto>> GetReadFeedbacksAsync(
             ClaimsPrincipal userPrincipal, int pageNumber)
         {
             if (pageNumber < 1)
@@ -77,7 +77,7 @@ namespace TraineeTracker.Services
             return CreatePagedResult(read, pageNumber);
         }
 
-        private Page<FeedbackDto> CreatePagedResult(
+        private Page<FeedbackDashboardDto> CreatePagedResult(
             List<Feedback> source, int pageNumber)
         {
             int totalItems = source.Count;
@@ -97,7 +97,7 @@ namespace TraineeTracker.Services
                 })
                 .ToList();
 
-                return new Page<FeedbackDto> {
+                return new Page<FeedbackDashboardDto> {
                     Items      = items,
                     PageNumber = pageNumber,
                     PageSize   = PageSize,
