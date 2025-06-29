@@ -1,81 +1,108 @@
 using System.Security.Claims;
+using Microsoft.EntityFrameworkCore;
 using TraineeTracker.Data.Feedbacks;
 using TraineeTracker.Data.ApplicationUsers;
-using TraineeTracker.Data.TraineeLessons;
-using TraineeTracker.Data.TraineeStatistics;
-using TraineeTracker.Models.Domain;
-unamespace TraineeTracker.Services
+using TraineeTracker.Models;
+
+namespace TraineeTracker.Services
 {
     public class FeedbackService
     {
-        private readonly IFeedbackRepository _feedbackRepo;
+        private const int PageSize = 20;
+        private readonly IFeedbackRepository      _feedbackRepo;
         private readonly IApplicationUserRepository _userRepo;
-        private readonly ITraineeLessonRepository _traineeLessonRepo;
-        private readonly ITraineeStatisticsRepository _statsRepo;
 
         public FeedbackService(
             IFeedbackRepository feedbackRepo,
-            IApplicationUserRepository userRepo,
-            ITraineeLessonRepository traineeLessonRepo,
-            ITraineeStatisticsRepository statsRepo)
+            IApplicationUserRepository userRepo)
         {
             _feedbackRepo = feedbackRepo;
-            _userRepo = userRepo;
-            _traineeLessonRepo = traineeLessonRepo;
-            _statsRepo = statsRepo;
+            _userRepo     = userRepo;
         }
 
-        // Holt alle Feedbacks, die der aktuell eingeloggte Mentor/Admin noch nicht als gelesen markiert hat. Kurwa Bober
-        public async Task<List<Feedback>> GetUnreadFeedbacksForMentorAsync(ClaimsPrincipal mentor)
+        private async Task<ApplicationUser> GetUserFromPrincipalAsync(ClaimsPrincipal userPrincipal)
         {
-            var userId = mentor.FindFirstValue(ClaimTypes.NameIdentifier)
-                         ?? throw new InvalidOperationException("Unbekannter Benutzer.");
-            var appUser = await _userRepo.FindByIdWithProcessingPausesAndTraineeLessonsAsync(userId)
-                          ?? throw new InvalidOperationException("Mentor nicht gefunden.");
+            var userId = userPrincipal
+            .FindFirstValue(ClaimTypes.NameIdentifier)
+            ?? throw new UnauthorizedAccessException("User nicht authentifiziert.");
 
-            // Unread = alle Feedbacks, bei denen der User noch nicht in ReadByUsers steht
+            return await _userRepo
+            .FindByIdAsync(userId)
+            ?? throw new UnauthorizedAccessException("User nicht gefunden.");
+        }
+
+        public async Task<Page<FeedbackDto>> GetAllFeedbacksAsync(int pageNumber)
+        {
+            if (pageNumber < 1)
+                throw new ArgumentOutOfRangeException(nameof(pageNumber));
+
+            // Alle Feedbacks laden und sortieren
+            var all = await _feedbackRepo
+            .GetAllFeedbacksWithLessonAndAuthorAndReadByUsers()
+            .OrderByDescending(f => f.CreateTime)
+            .ToListAsync();
+
+            return CreatePagedResult(all, pageNumber);
+        }
+
+        public async Task<Page<FeedbackDto>> GetUnreadFeedbacksAsync(
+            ClaimsPrincipal userPrincipal, int pageNumber)
+        {
+            if (pageNumber < 1)
+                throw new ArgumentOutOfRangeException(nameof(pageNumber));
+
+            var appUser = await GetUserFromPrincipalAsync(userPrincipal);
+
+            // Nur unge­lesene Feedbacks für diesen User
             var unread = await _feedbackRepo
-                .GetAllFeedbacksUnreadByUserWithLessonAndAuthorAndReadByUsersAsync(appUser);
-            return unread.ToList();
+            .GetUnreadForUserAsync(appUser.Id)
+            .OrderByDescending(f => f.CreateTime)
+            .ToListAsync();
+
+            return CreatePagedResult(unread, pageNumber);
         }
 
-        
-        // Markiert ein Feedback als gelesen für den aktuell eingeloggten Mentor/Admin. Jairdo Kurwe
-        public async Task MarkFeedbackAsReadAsync(int feedbackId, ClaimsPrincipal mentor)
+        private Page<FeedbackDto> CreatePagedResult(
+            List<Feedback> source, int pageNumber)
         {
-            var userId = mentor.FindFirstValue(ClaimTypes.NameIdentifier)
-                         ?? throw new InvalidOperationException("Unbekannter Benutzer.");
-            var appUser = await _userRepo.FindByIdWithProcessingPausesAndTraineeLessonsAsync(userId)
-                          ?? throw new InvalidOperationException("Benutzer nicht gefunden.");
+            int totalItems = source.Count;
+            int totalPages = (int)Math.Ceiling(totalItems / (double)PageSize);
 
-            // Lade das Feedback speedy Gonzales
-            var feedback = await _feedbackRepo.GetAllFeedbacksUnreadByUserWithLessonAndAuthorAndReadByUsersAsync(appUser)
-                                .ContinueWith(t => t.Result.FirstOrDefault(f => f.FeedbackId == feedbackId));
-            if (feedback == null)
-                throw new InvalidOperationException("Feedback nicht gefunden oder bereits gelesen.");
+            if (totalPages > 0 && pageNumber > totalPages)
+                throw new ArgumentOutOfRangeException(nameof(pageNumber),
+                                                      $"Maximal {totalPages} Seiten vorhanden.");
 
-            // Als gelesen markieren
-            if (!feedback.ReadByUsers.Any(u => u.Id == userId))
-            {
-                var userEntity = await _userRepo.FindByIdAsync(userId)
-                                 ?? throw new InvalidOperationException("Benutzer nicht gefunden.");
-                feedback.ReadByUsers.Add(userEntity);
-                await _feedbackRepo.UpdateAsync(feedback);
-            }
+                var items = source
+                .Skip((pageNumber - 1) * PageSize)
+                .Take(PageSize)
+                .Select(f => new FeedbackDto {
+                    AuthorName = f.Author.UserName,
+                    SendDate   = f.CreateTime,
+                    Comment    = f.Comment
+                })
+                .ToList();
+
+                return new Page<FeedbackDto> {
+                    Items      = items,
+                    PageNumber = pageNumber,
+                    PageSize   = PageSize,
+                    TotalItems = totalItems
+                };
         }
 
-        /// Baut ein Dashboard-Modell für einen Trainee, basierend auf seinem Snapshot und den aktuellen TraineeLesson-Daten.
-        public async Task<List<FeedbackViewModel>> BuildUnreadFeedbackViewModelsAsync(ClaimsPrincipal mentor) {
+        public async Task MarkFeedbackAsReadAsync(
+            int feedbackId, ClaimsPrincipal userPrincipal)
+        {
+            var appUser = await GetUserFromPrincipalAsync(userPrincipal);
 
-            var feedbacks = await GetUnreadFeedbacksForMentorAsync(mentor);
+            // Feedback aus Repo holen
+            var feedback = await _feedbackRepo
+            .GetUnreadForUserAsync(appUser.Id)
+            .FirstOrDefaultAsync(f => f.FeedbackId == feedbackId)
+            ?? throw new InvalidOperationException("Feedback nicht gefunden oder bereits gelesen.");
 
-            // 2) in ViewModels umwandeln
-            return feedbacks.Select(f => new FeedbackViewModel
-            {
-                SentAt     = f.CreateTime,
-                AuthorName = f.Author.UserName,
-                Comment    = f.Comment ?? string.Empty
-            }).ToList();
+            feedback.ReadByUsers.Add(appUser);
+            await _feedbackRepo.UpdateAsync(feedback);
         }
     }
 }

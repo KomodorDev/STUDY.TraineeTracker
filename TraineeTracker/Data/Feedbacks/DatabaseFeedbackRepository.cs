@@ -50,6 +50,14 @@ namespace TraineeTracker.Data.Feedbacks {
                 .ToListAsync();
         }
 
+        public async Task<IEnumerable<Feedback>> GetAllFeedbacksWithLessonAndAuthorAndReadByUsersAsync() {
+            return await context.Feedbacks
+                .Include(f => f.Lesson)
+                .Include(f => f.Author)
+                .Include(f => f.ReadByUsers)
+                .ToListAsync();
+        }
+
         public async Task<IEnumerable<Feedback>> GetAllFeedbacksWrittenByUserWithLessonAndAuthorAndReadByUsersAsync(ApplicationUser user) {
             return await _context.Feedbacks
                 .Include(f => f.Lesson)
