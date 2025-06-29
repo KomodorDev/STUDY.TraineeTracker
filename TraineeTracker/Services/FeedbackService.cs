@@ -3,6 +3,10 @@ using Microsoft.EntityFrameworkCore;
 using TraineeTracker.Data.Feedbacks;
 using TraineeTracker.Data.ApplicationUsers;
 using TraineeTracker.Models;
+using TraineeTracker.Models.Domain;
+using TraineeTracker.Models.Dtos;
+using TraineeTracker.Models.ViewModels;
+
 
 namespace TraineeTracker.Services
 {
@@ -37,10 +41,8 @@ namespace TraineeTracker.Services
                 throw new ArgumentOutOfRangeException(nameof(pageNumber));
 
             // Alle Feedbacks laden und sortieren
-            var all = await _feedbackRepo
-            .GetAllFeedbacksWithLessonAndAuthorAndReadByUsers()
-            .OrderByDescending(f => f.CreateTime)
-            .ToListAsync();
+            var all = await _feedbackRepo.GetAllFeedbacksWithLessonAndAuthorAndReadByUsersAsync();
+
 
             return CreatePagedResult(all, pageNumber);
         }
@@ -69,7 +71,7 @@ namespace TraineeTracker.Services
             var appUser = await GetUserFromPrincipalAsync(userPrincipal);
 
             // 2) Gelesene Feedbacks (ReadByUsers enthält den aktuellen User)
-            var read = await _feedbackRepo.GetAllFeedbacksReadByUserWithLessonAndAuthorAndReadByUsersAsync(appUser)
+            var read = await _feedbackRepo.GetAllFeedbacksReadByUserWithLessonAndAuthorAndReadByUsersAsync(appUser);
 
             // 3) Ergebnis paginieren
             return CreatePagedResult(read, pageNumber);
