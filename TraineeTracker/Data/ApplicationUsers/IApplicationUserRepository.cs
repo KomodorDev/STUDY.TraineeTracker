@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+using System.Security.Claims;
 using Microsoft.AspNetCore.Identity;
 using TraineeTracker.Models.Domain;
 
@@ -25,6 +25,8 @@ namespace TraineeTracker.Data.ApplicationUsers {
         public Task<ApplicationUser?> FindByIdWithTraineeLessonsWithLessonsAndTeachingPlanAsync(string userId);
 
         public Task<IEnumerable<ApplicationUser>> GetOpenUsersInRoleAsync(string roleName);
+
+        public Task<ApplicationUser?> GetUserAsync(ClaimsPrincipal principal);
 
         public Task<IEnumerable<ApplicationUser>> GetUsersInRoleAsync(string roleName);
 

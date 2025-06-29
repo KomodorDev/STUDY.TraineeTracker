@@ -1,3 +1,4 @@
+using System.Security.Claims;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using TraineeTracker.Models.Domain;
@@ -86,6 +87,10 @@ namespace TraineeTracker.Data.ApplicationUsers {
             .Where(u => userIds.Contains(u.Id))
             .Where(u => !u.IsClosed)
             .ToListAsync();
+        }
+
+        public async Task<ApplicationUser?> GetUserAsync(ClaimsPrincipal principal) {
+            return await _userManager.GetUserAsync(principal);
         }
 
         public async Task<IEnumerable<ApplicationUser>> GetUsersInRoleAsync(string roleName) {
