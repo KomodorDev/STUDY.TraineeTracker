@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
+using System.Threading.Tasks;
 using TraineeTracker.Models.Dtos;
 using TraineeTracker.Services.Email;
 
@@ -14,14 +15,16 @@ public class EmailNotificationController : Controller {
 
 
     // ------------------------------------------------------
+    // http://localhost:5079/NotificationSettings
+    [Route("NotificationSettings")]
     [HttpGet]
-    public IActionResult ShowEmailNotificationDashboardView() {
+    public async Task<IActionResult> ShowEmailNotificationDashboardView() {
         var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
         if (userId == null)
             return Unauthorized();
 
-        var setting = _emailNotificationService.GetNotificationSetting(userId);
-        return View("NotificationSettings", setting);
+        var setting = await _emailNotificationService.GetNotificationSetting(userId);
+        return View("EmailNotificationSettings", setting);
     }
 
     // ------------------------------------------------------
@@ -34,6 +37,6 @@ public class EmailNotificationController : Controller {
         await _emailNotificationService.SaveNotificationSettingChange(userId, update);
         return RedirectToAction(nameof(ShowEmailNotificationDashboardView));
     }
-    
-     // ------------------------------------------------------
+
+    // ------------------------------------------------------
 }
