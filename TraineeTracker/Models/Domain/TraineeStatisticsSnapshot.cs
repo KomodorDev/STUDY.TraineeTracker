@@ -27,7 +27,9 @@ namespace TraineeTracker.Models.Domain {
         public double Speed { get; set; }
 
         //entspricht der Kennzahl "Puffer Vorhersage"
-        public double DaysBufferPredicted { get; set; }
+        public double PredictedMissingEstimatedEffortAtEnd { get; set; }
+
+        public double PredictedMissingActualDays { get; set; }
         
         public bool IsUpToDate { get; set; }
     }

@@ -49,7 +49,8 @@ namespace TraineeTracker.Services {
                 LessonDaysOpen = snapshot.LessonDaysOpen,
                 LessonDaysBuffer = snapshot.LessonDaysBuffer,
                 Speed = snapshot.Speed,
-                DaysBufferPredicted = snapshot.DaysBufferPredicted,
+                PredictedMissingEstimatedEffortAtEnd = snapshot.PredictedMissingEstimatedEffortAtEnd,
+                PredictedMissingActualDays = snapshot.PredictedMissingActualDays,
                 IsUpToDate = snapshot.IsUpToDate,
 
                 //++++++++++++++++
@@ -142,7 +143,8 @@ namespace TraineeTracker.Services {
             double lessonDaysOpen = await CalculateLessonDaysOpenAsync(traineeId);
             double lessonDaysBuffer = CalculateLessonDaysBuffer(daysPresentTillToday, lessonDaysCompleted);
             double speed = CalculateSpeed(daysPresentTillToday, lessonDaysCompleted);
-            double daysBufferPredicted = await CalculateDaysBufferPredictionAsync(traineeId, daysPresentTotal, lessonDaysOpen, speed);
+            double predictedMissingEstimatedEffortAtEnd = CalculatePredictedMissingEstimatedEffortAtEnd(daysPresentTillToday, daysPresentTotal, lessonDaysOpen, speed);
+            double predictedMissingActualDays = CalculatePredictedMissingActualDays(daysPresentTillToday, daysPresentTotal, lessonDaysOpen, speed);
 
             TraineeStatisticsSnapshot snapshot;
 
@@ -157,7 +159,8 @@ namespace TraineeTracker.Services {
                 snapshot.LessonDaysOpen = lessonDaysOpen;
                 snapshot.LessonDaysBuffer = lessonDaysBuffer;
                 snapshot.Speed = speed;
-                snapshot.DaysBufferPredicted = daysBufferPredicted;
+                snapshot.PredictedMissingEstimatedEffortAtEnd = predictedMissingEstimatedEffortAtEnd;
+                snapshot.PredictedMissingActualDays = predictedMissingActualDays;
                 snapshot.IsUpToDate = true;
 
                 await _traineeStatisticsRepository.UpdateAsync(snapshot);
@@ -175,7 +178,8 @@ namespace TraineeTracker.Services {
                     LessonDaysOpen = lessonDaysOpen,
                     LessonDaysBuffer = lessonDaysBuffer,
                     Speed = speed,
-                    DaysBufferPredicted = daysBufferPredicted,
+                    PredictedMissingEstimatedEffortAtEnd = predictedMissingEstimatedEffortAtEnd,
+                    PredictedMissingActualDays = predictedMissingActualDays,
                     IsUpToDate = true
                 };
 
@@ -291,9 +295,7 @@ namespace TraineeTracker.Services {
         }
 
         // --------------------------------------------------
-        public async Task<double> CalculateEffortDaysBufferPredictionAsync(double daysPresentTillToday, double daysPresentTotal, double estimatedEffortOpen, double speed) {
-            double totalEffort = await CalculateTotalEffort(traineeId);
-
+        public double CalculatePredictedMissingEstimatedEffortAtEnd(double daysPresentTillToday, double daysPresentTotal, double estimatedEffortOpen, double speed) {
             if (speed <= 0)
                 return -1;
 
@@ -306,15 +308,24 @@ namespace TraineeTracker.Services {
             // predicted Buffer in EstimatedEffort: estimatedEffort remaining at EndDate
             double predictedMissingEstimatedEffortAtEnd = estimatedEffortOpen - predictedEstimatedEffortDoneInFuture;
 
-            // predicted Buffer in actual Days:
-            double predictedMissingActualDaysAtEnd = predictedMissingEstimatedEffortAtEnd / speed;
-
-
             return predictedMissingEstimatedEffortAtEnd;
         }
 
         // --------------------------------------------------
-        private async Task<double> CalculateTotalEffort(string traineeId) {
+        public double CalculatePredictedMissingActualDays(double daysPresentTillToday, double daysPresentTotal, double estimatedEffortOpen, double speed)
+        {
+            if (speed <= 0)
+                return -1;
+
+            double predictedMissingEstimatedEffortAtEnd = CalculatePredictedMissingEstimatedEffortAtEnd(daysPresentTillToday, daysPresentTotal, estimatedEffortOpen, speed);
+
+            // predicted Buffer in actual Days:
+            return predictedMissingEstimatedEffortAtEnd / speed;
+        }
+
+        // --------------------------------------------------
+        private async Task<double> CalculateTotalEffort(string traineeId)
+        {
             var lessons = await _traineeLessonRepository.GetAllTraineeLessonsOfTraineeWithLessonAsync(traineeId);
 
             return lessons
