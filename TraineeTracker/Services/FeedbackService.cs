@@ -90,7 +90,7 @@ namespace TraineeTracker.Services
                 var items = source
                 .Skip((pageNumber - 1) * PageSize)
                 .Take(PageSize)
-                .Select(f => new FeedbackDto {
+                .Select(f => new FeedbackDashboardDto {
                     AuthorName = f.Author.UserName,
                     SendDate   = f.CreateTime,
                     Comment    = f.Comment
