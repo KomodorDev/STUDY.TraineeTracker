@@ -90,19 +90,12 @@ namespace TraineeTracker.Services.Admin {
             user.IsClosed = true;
 
             var referenceUpdateTasks = new List<Task>();
-
-            foreach (var feedback in user.ReadFeedbacks.ToList()) {
-                feedback.ReadByUsers.Remove(user);
-                referenceUpdateTasks.Add(_feedbackRepository.UpdateAsync(feedback));
-            }
-            user.ReadFeedbacks.Clear();
-
-            foreach (var pause in user.ProcessingPauses.ToList()) {
-                referenceUpdateTasks.Add(_processingPauseRepository.DeleteAsync(pause));
-            }
-            user.ProcessingPauses.Clear();
-
+            
             if (await _applicationUserRepository.IsInRoleAsync(user, "Trainee")) {
+                foreach (var pause in user.ProcessingPauses.ToList()) {
+                    referenceUpdateTasks.Add(_processingPauseRepository.DeleteAsync(pause));
+                }
+                user.ProcessingPauses.Clear();
 
                 if (user.TeachingPlan == null) {
                     throw new Exception("Trainee requires Teachingplan.");
@@ -113,6 +106,14 @@ namespace TraineeTracker.Services.Admin {
                     referenceUpdateTasks.Add(_traineeStatisticsRepository.DeleteAsync(user.TraineeStatisticsSnapshot));
                     user.TraineeStatisticsSnapshot = null;
                 }
+            } else {
+                foreach (var feedback in user.ReadFeedbacks.ToList()) {
+                    feedback.ReadByUsers.Remove(user);
+                    referenceUpdateTasks.Add(_feedbackRepository.UpdateAsync(feedback));
+                }
+                user.ReadFeedbacks.Clear();
+
+                user.LastSelectedTrainees.Clear();
             }
 
             await Task.WhenAll(referenceUpdateTasks);
