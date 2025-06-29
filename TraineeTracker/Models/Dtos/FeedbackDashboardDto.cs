@@ -1,6 +1,6 @@
 namespace TraineeTracker.Models.Dtos
 {
-    public class FeedbackDto
+    public class FeedbackDashboardDto
     {
         public int FeedbackId { get; set; }
         public string AuthorName { get; set; } = null!;
