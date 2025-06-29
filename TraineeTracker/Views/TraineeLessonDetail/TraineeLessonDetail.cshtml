@@ -5,6 +5,7 @@
     var title = "1. Ruby Basics";
     var link = "https://cd.makandra.de/de";
     var estimation = "10 days";
+    String? started = null;
 
     var statusSteps = new[] { "OPEN", "SKIPPED", "STARTED", "FINISHED", "REJECTED", "ACCEPTED", "RATED" };
     var currentStatus = "OPEN";
@@ -63,9 +64,11 @@
         <div class="comments-section">
             <h4>Comments</h4>
             <ul>
-                @foreach(var comment in comments1)
+                @for (int i = 0; (i < comments1.Length) && (i < comments2.Length); i++)
                 {
-                    <li>@comment</li>
+                    <p>
+                        <strong>@comments1[i]</strong> @comments2[i]
+                    </p>
                 }
             </ul>
         </div>
