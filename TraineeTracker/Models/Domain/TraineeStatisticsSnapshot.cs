@@ -1,5 +1,6 @@
 namespace TraineeTracker.Models.Domain {
-    public class TraineeStatisticsSnapshot {
+    public class TraineeStatisticsSnapshot
+    {
         public int TraineeStatisticsSnapshotId { get; set; }
 
         public required string TraineeId { get; set; }
@@ -9,7 +10,9 @@ namespace TraineeTracker.Models.Domain {
         public DateTime SnapshotDateTime { get; set; }
 
         //entspricht der Kennzahl "Anwesend"
-        public double DaysPresent { get; set; }
+        public double DaysPresentTotal { get; set; }
+
+        public double DaysPresentTillToday { get; set; }
 
         //entspricht der Kennzahl "Geschafft"
         public double LessonDaysCompleted { get; set; }
@@ -25,5 +28,7 @@ namespace TraineeTracker.Models.Domain {
 
         //entspricht der Kennzahl "Puffer Vorhersage"
         public double DaysBufferPredicted { get; set; }
+        
+        public bool IsUpToDate { get; set; }
     }
 }
