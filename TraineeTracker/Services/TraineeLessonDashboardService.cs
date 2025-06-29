@@ -12,7 +12,7 @@ namespace TraineeTracker.Services {
         private TraineeStatisticsService _traineeStatisticsService;
         private IApplicationUserRepository _applicationUserRepository;
 
-        // ++++++++++++++++++++++++++++++++++++++++++++++++++++++
+        // ------------------------------------------------------
 
         public TraineeLessonDashboardService(TraineeStatisticsService traineeStatisticsService,
                                                 IApplicationUserRepository applicationUserRepository) {
@@ -20,7 +20,7 @@ namespace TraineeTracker.Services {
             _applicationUserRepository = applicationUserRepository;
         }
 
-        // ++++++++++++++++++++++++++++++++++++++++++++++++++++++
+        // ------------------------------------------------------
 
         private static void CheckHasAccess(ClaimsPrincipal user, string traineeId) {
             if (user == null || String.IsNullOrWhiteSpace(traineeId))
