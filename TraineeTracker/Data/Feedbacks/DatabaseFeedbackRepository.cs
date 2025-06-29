@@ -41,12 +41,28 @@ namespace TraineeTracker.Data.Feedbacks {
             }
         }
 
+        public async Task<Feedback?> GetFeedbackByIDWithLessonAndAuthorAndReadByUsersAsync(int feedbackId) {
+            return await _context.Feedbacks
+                .Include(f => f.Lesson)
+                .Include(f => f.Author)
+                .Include(f => f.ReadByUsers)
+                .FirstOrDefaultAsync(f => f.FeedbackId == feedbackId);
+        }
+
         public async Task<IEnumerable<Feedback>> GetAllFeedbacksForLessonWithLessonAndAuthorAndReadByUsersAsync(Lesson lesson) {
             return await _context.Feedbacks
                 .Include(f => f.Lesson)
                 .Include(f => f.Author)
                 .Include(f => f.ReadByUsers)
                 .Where(f => f.LessonId == lesson.LessonId)
+                .ToListAsync();
+        }
+
+        public async Task<List<Feedback>> GetAllFeedbacksWithLessonAndAuthorAndReadByUsersAsync() {
+            return await _context.Feedbacks
+                .Include(f => f.Lesson)
+                .Include(f => f.Author)
+                .Include(f => f.ReadByUsers)
                 .ToListAsync();
         }
 
@@ -59,7 +75,7 @@ namespace TraineeTracker.Data.Feedbacks {
                 .ToListAsync();
         }
 
-        public async Task<IEnumerable<Feedback>> GetAllFeedbacksReadByUserWithLessonAndAuthorAndReadByUsersAsync(ApplicationUser user) {
+        public async Task<List<Feedback>> GetAllFeedbacksReadByUserWithLessonAndAuthorAndReadByUsersAsync(ApplicationUser user) {
             return await _context.Feedbacks
                 .Include(f => f.Lesson)
                 .Include(f => f.Author)
@@ -68,7 +84,7 @@ namespace TraineeTracker.Data.Feedbacks {
                 .ToListAsync();
         }
 
-        public async Task<IEnumerable<Feedback>> GetAllFeedbacksUnreadByUserWithLessonAndAuthorAndReadByUsersAsync(ApplicationUser user) {
+        public async Task<List<Feedback>> GetAllFeedbacksUnreadByUserWithLessonAndAuthorAndReadByUsersAsync(ApplicationUser user) {
             return await _context.Feedbacks
                 .Include(f => f.Lesson)
                 .Include(f => f.Author)
