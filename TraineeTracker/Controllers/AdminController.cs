@@ -21,18 +21,18 @@ namespace TraineeTracker.Controllers {
 
         [HttpGet("/ManageUsers")]
         public IActionResult ShowAdminDashboardView() {
-            return View();
+            return View("AdminDashboardView");
         }
 
         [HttpGet("/CreateUser")]
         public IActionResult ShowCreateUserView() {
-            return View();
+            return View("CreateUserView");
         }
 
         [HttpPost]
         public async Task<IActionResult> CreateUserAsync(ApplicationUserDto dto) {
             if (!ModelState.IsValid) {
-                return View(dto);
+                return View("CreateUserView", dto);
             }
             var result = await _adminService.CreateUserAsync(dto);
             if (result.Succeeded) {
@@ -41,7 +41,7 @@ namespace TraineeTracker.Controllers {
             foreach (var message in result.ErrorMessages) {
                 ModelState.AddModelError("", message);
             }
-            return View(dto);
+            return View("CreateUserView", dto);
         }
 
         [HttpPost]
@@ -55,19 +55,19 @@ namespace TraineeTracker.Controllers {
 
         [HttpGet("/CreateProcessingPause")]
         public IActionResult ShowCreateProcessingPauseView(string traineeId) {
-            return View();
+            return View("CreateProcessingPauseView");
         }
 
         [HttpPost]
         public async Task<IActionResult> CreateProcessingPauseAsync(ProcessingPauseDto dto) {
             if (!ModelState.IsValid) {
-                return View(dto);
+                return View("CreateProcessingPauseView", dto);
             }
             var result = await _adminService.CreateProcessingPauseAsync(dto);
             if (!result.Succeeded) {
                 foreach (var message in result.ErrorMessages)
                 ModelState.AddModelError("", message);
-                return View(dto);
+                return View("CreateProcessingPauseView", dto);
             }
             return RedirectToAction("ShowAdminDashboardView");
         }
