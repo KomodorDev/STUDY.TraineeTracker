@@ -121,5 +121,29 @@ namespace TraineeTracker.Services
                 await _feedbackRepo.UpdateAsync(feedback);
             }
         }
+
+
+        public async Task<FeedbackDashboardViewModel> BuildFeedbackDashboardViewModelAsync(
+            ClaimsPrincipal userPrincipal)
+        {
+            const int defaultPage = 1;
+
+            // 1) Gesamte Feedback-Seite
+            var allPage = await GetAllFeedbacksAsync(defaultPage);
+
+            // 2) Ungelesene Feedback-Seite für den User
+            var unreadPage = await GetUnreadFeedbacksAsync(userPrincipal, defaultPage);
+
+            // 3) Gelesene Feedback-Seite für den User
+            var readPage = await GetReadFeedbacksAsync(userPrincipal, defaultPage);
+
+            // 4) ViewModel füllen und zurückgeben
+            return new FeedbackDashboardViewModel
+            {
+                AllFeedbacks    = allPage,
+                UnreadFeedbacks = unreadPage,
+                ReadFeedbacks   = readPage
+            };
+        }
     }
 }
