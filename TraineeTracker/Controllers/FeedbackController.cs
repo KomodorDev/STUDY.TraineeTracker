@@ -17,10 +17,12 @@ namespace TraineeTracker.Controllers
         }
 
         // GET: /Feedback/Dashboard
-        public async Task<IActionResult> Dashboard()
+        [Route("FeedbackDashboard")]
+        [HttpGet]
+        public async Task<IActionResult> ShowFeedbackDashboardView()
         {
             var viewModel = await _feedbackService.BuildFeedbackDashboardViewModelAsync(User);
-            return View(viewModel);
+            return View("FeedbackDashboard",viewModel);
         }
 
         // GET: /Feedback/All?page=1
