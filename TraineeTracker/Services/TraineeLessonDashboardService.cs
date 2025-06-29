@@ -44,6 +44,10 @@ namespace TraineeTracker.Services {
             var mentorId = user.FindFirst(ClaimTypes.NameIdentifier)?.Value
                 ?? throw new Exception("User ID not found");
 
+            // set requested id to user id, so that trainees cannot access any other page other than their own
+            if (user.IsInRole("Trainee"))
+                traineeId = mentorId;
+
             var trainees = await _applicationUserRepository.GetOpenUsersInRoleAsync("Trainee");
 
             if (traineeId == null) {
@@ -109,7 +113,7 @@ namespace TraineeTracker.Services {
 
         // methods by schwepau
         // ------------------------------------------------------
-        public async Task AddLastSelectedTraineeAsync(string mentorId, ApplicationUser trainee) {
+        private async Task AddLastSelectedTraineeAsync(string mentorId, ApplicationUser trainee) {
             var mentor = await _applicationUserRepository.FindByIdAsync(mentorId);
             if (mentor == null) {
                 throw new Exception("Mentor not found.");
@@ -126,8 +130,8 @@ namespace TraineeTracker.Services {
         }
 
         // ------------------------------------------------------
-        public async Task<ApplicationUser?> GetLastSelectedTrainee(string mentorId) {
-            var mentor = await _applicationUserRepository.FindByIdAsync(mentorId);
+        private async Task<ApplicationUser?> GetLastSelectedTrainee(string mentorId) {
+            var mentor = await _applicationUserRepository.FindByIdWithLastSelectedTraineesAsync(mentorId);
             if (mentor == null) {
                 throw new Exception("Mentor not found.");
             }
