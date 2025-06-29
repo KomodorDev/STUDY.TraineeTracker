@@ -25,11 +25,6 @@
             <!-- default nav bar -->
             <nav class="navbar custom-navbar navbar-expand-sm custom-drop-shadow">
                 <div class="container-fluid">
-                    @* <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">TraineeTracker</a> *@
-                    @* <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-                            aria-expanded="false" aria-label="Toggle navigation">
-                        <span class="navbar-toggler-icon"></span>
-                    </button> *@
                     <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
                         <ul class="navbar-nav flex-grow-1">
                             <li class="nav-item">
@@ -49,8 +44,6 @@
                             </li>
                         </ul>
 
-                        @* <partial name="_LoginPartial" /> *@
-
                         <!-- makandra logo -->
                         <a href="https://makandra.de/de" class="navbar-brand">
                             <img src="~/resources/makandra_logo_black.png" alt="logo" />
@@ -66,19 +59,14 @@
             @RenderBody()
         </main>
     </div>
-    @* we dont need a footer
-    <footer class="border-top footer text-muted">
-        <div class="container">
-            &copy; 2025 - TraineeTracker - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
-        </div>
-    </footer> *@
+    @* we dont need a footer *@
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
     @await RenderSectionAsync("Scripts", required: false)
 
     <style>
-        /* NAVBAR ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++*/
+        /* NAVBAR STYLING ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++*/
         /* overall container */
         .navbar.custom-navbar {
             /* !important overrides bootstrap */
@@ -141,12 +129,14 @@
         .nav-link::after {
             content: '';
             position: absolute;
-            left: 0;
+            left: 50%;
             bottom: 3px;
             width: 0%;
             height: 2px; /* Thickness of the underline */
             background-color: black;
             border-radius: 10px;
+            /* animation */
+            transform: translateX(-50%);
             transition: width 0.3s ease-in-out;
         }
 
