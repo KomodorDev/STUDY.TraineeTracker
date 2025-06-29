@@ -20,8 +20,8 @@ public class EmailNotificationController : Controller {
         if (userId == null)
             return Unauthorized();
 
-        var settings = _emailNotificationService.GetNotificationSetting(userId);
-        return View("Dashboard", settings); // assumes Dashboard.cshtml exists
+        var setting = _emailNotificationService.GetNotificationSetting(userId);
+        return View("NotificationSettings", setting);
     }
 
     // ------------------------------------------------------
