@@ -4,9 +4,7 @@ using TraineeTracker.Data.ApplicationUsers;
 using TraineeTracker.Data.TraineeLessons;
 using TraineeTracker.Data.TraineeStatistics;
 using TraineeTracker.Models.Domain;
-using TraineeTracker.Models.Dtos;
-
-namespace TraineeTracker.Services
+unamespace TraineeTracker.Services
 {
     public class FeedbackService
     {
@@ -34,12 +32,6 @@ namespace TraineeTracker.Services
                          ?? throw new InvalidOperationException("Unbekannter Benutzer.");
             var appUser = await _userRepo.FindByIdWithProcessingPausesAndTraineeLessonsAsync(userId)
                           ?? throw new InvalidOperationException("Mentor nicht gefunden.");
-
-            // Nur Mentoren oder Admins dürfen hier anfragen
-            var isMentor = await _userRepo.IsInRoleAsync(appUser, "Mentor");
-            var isAdmin  = await _userRepo.IsInRoleAsync(appUser, "Admin");
-            if (!isMentor && !isAdmin)
-                throw new UnauthorizedAccessException("Zugriff nur für Mentor/Admin.");
 
             // Unread = alle Feedbacks, bei denen der User noch nicht in ReadByUsers steht
             var unread = await _feedbackRepo
