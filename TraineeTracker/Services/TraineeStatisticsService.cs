@@ -54,13 +54,51 @@ namespace TraineeTracker.Services {
 
                 //++++++++++++++++
 
-                FinishedLessons = lessons.Where(l => l.State == TraineeLessonState.Finished).ToList(),
+                FinishedLessons = lessons
+                    .Where(l => l.State == TraineeLessonState.Finished)
+                    .Select(l => new TraineeLessonViewModel
+                    {
+                        Title = l.Lesson.Title,
+                        EstimatedEffort = l.Lesson.EstimatedEffort,
+                        WeightedEffort = l.Lesson.EstimatedEffort * 0.7,
+                        State = l.State
+                    }).ToList(),
                 AcceptedAndRatedLessons = lessons
                     .Where(l => l.State == TraineeLessonState.Accepted || l.State == TraineeLessonState.Rated)
-                    .ToList(),
-                RejectedLessons = lessons.Where(l => l.State == TraineeLessonState.Rejected).ToList(),
-                OpenLessons = lessons.Where(l => l.State == TraineeLessonState.Open).ToList(),
-                StartedLessons = lessons.Where(l => l.State == TraineeLessonState.Started).ToList(),
+                    .Select(l => new TraineeLessonViewModel
+                    {
+                        Title = l.Lesson.Title,
+                        EstimatedEffort = l.Lesson.EstimatedEffort,
+                        WeightedEffort = l.Lesson.EstimatedEffort * 1.0,
+                        State = l.State
+                    }).ToList(),
+                RejectedLessons = lessons
+                    .Where(l => l.State == TraineeLessonState.Rejected)
+                    .Select(l => new TraineeLessonViewModel
+                    {
+                        Title = l.Lesson.Title,
+                        EstimatedEffort = l.Lesson.EstimatedEffort,
+                        WeightedEffort = l.Lesson.EstimatedEffort * 0.8,
+                        State = l.State
+                    }).ToList(),
+                OpenLessons = lessons
+                    .Where(l => l.State == TraineeLessonState.Open)
+                    .Select(l => new TraineeLessonViewModel
+                    {
+                        Title = l.Lesson.Title,
+                        EstimatedEffort = l.Lesson.EstimatedEffort,
+                        WeightedEffort = 0,
+                        State = l.State
+                    }).ToList(),
+                StartedLessons = lessons
+                    .Where(l => l.State == TraineeLessonState.Started)
+                    .Select(l => new TraineeLessonViewModel
+                    {
+                        Title = l.Lesson.Title,
+                        EstimatedEffort = l.Lesson.EstimatedEffort,
+                        WeightedEffort = 0,
+                        State = l.State
+                    }).ToList(),
 
                 //++++++++++++++++
 
@@ -253,16 +291,26 @@ namespace TraineeTracker.Services {
         }
 
         // --------------------------------------------------
-        public async Task<double> CalculateDaysBufferPredictionAsync(string traineeId, double daysPresentTotal, double lessonDaysOpen, double speed) {
+        public async Task<double> CalculateEffortDaysBufferPredictionAsync(double daysPresentTillToday, double daysPresentTotal, double estimatedEffortOpen, double speed) {
             double totalEffort = await CalculateTotalEffort(traineeId);
 
             if (speed <= 0)
                 return -1;
 
-            double daysLeft = totalEffort - daysPresentTotal;
-            double daysNeeded = lessonDaysOpen / speed;
+            // Days from today till EndDate:
+            double daysPresentInFuture = daysPresentTotal - daysPresentTillToday;
 
-            return daysLeft - daysNeeded;
+            // Likey EstimatedEffort completed from today till EndDate:
+            double predictedEstimatedEffortDoneInFuture = daysPresentInFuture * speed;
+
+            // predicted Buffer in EstimatedEffort: estimatedEffort remaining at EndDate
+            double predictedMissingEstimatedEffortAtEnd = estimatedEffortOpen - predictedEstimatedEffortDoneInFuture;
+
+            // predicted Buffer in actual Days:
+            double predictedMissingActualDaysAtEnd = predictedMissingEstimatedEffortAtEnd / speed;
+
+
+            return predictedMissingEstimatedEffortAtEnd;
         }
 
         // --------------------------------------------------
