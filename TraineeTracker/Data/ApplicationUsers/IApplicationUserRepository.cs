@@ -30,6 +30,8 @@ namespace TraineeTracker.Data.ApplicationUsers {
 
         public Task<IEnumerable<ApplicationUser>> GetUsersInRoleWithProcessingPausesAndTraineeLessonsAsync(string roleName);
 
+        public Task<IEnumerable<ApplicationUser>> GetAllAsync();
+
         public Task<bool> IsInRoleAsync(ApplicationUser user, string role);
 
         public Task<IdentityResult> UpdateAsync(ApplicationUser user);
