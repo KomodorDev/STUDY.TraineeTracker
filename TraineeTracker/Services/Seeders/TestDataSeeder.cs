@@ -5,6 +5,7 @@ using TraineeTracker.Data.Lessons;
 using TraineeTracker.Data.TeachingPlans;
 using TraineeTracker.Data.TraineeLessonLog;
 using TraineeTracker.Data.TraineeLessons;
+using TraineeTracker.Data.TraineeStatistics;
 using TraineeTracker.Models.Domain;
 using TraineeTracker.Models.Dtos;
 using TraineeTracker.Services.Admin;
@@ -22,8 +23,10 @@ namespace TraineeTracker.Services.Seeders {
         private readonly IFeedbackRepository _databaseFeedbackRepository;
         private readonly ITraineeLessonLogEntryRepository _databaseTraineeLessonLogEntryRepository;
 
+        private readonly TraineeStatisticsService _traineeStatisticsService;
+
         // ---------------------------------------------------
-        public TestDataSeeder(IApplicationUserRepository databaseApplicationUserRepository, ILessonRepository lessonRepo, ITraineeLessonRepository traineeLessonRepo, ITeachingPlanRepository teachingPlanRepo, AdminService adminService, IFeedbackRepository feedbackRepo, ITraineeLessonLogEntryRepository logEntryRepo) {
+        public TestDataSeeder(IApplicationUserRepository databaseApplicationUserRepository, ILessonRepository lessonRepo, ITraineeLessonRepository traineeLessonRepo, ITeachingPlanRepository teachingPlanRepo, AdminService adminService, IFeedbackRepository feedbackRepo, ITraineeLessonLogEntryRepository logEntryRepo, TraineeStatisticsService statisticsService) {
             _databaseApplicationUserRepository = databaseApplicationUserRepository;
             _databaseLessonRepository = lessonRepo;
             _databaseTeachingPlanRepository = teachingPlanRepo;
@@ -31,6 +34,7 @@ namespace TraineeTracker.Services.Seeders {
             _databaseTraineeLessonRepository = traineeLessonRepo;
             _databaseFeedbackRepository = feedbackRepo;
             _databaseTraineeLessonLogEntryRepository = logEntryRepo;
+            _traineeStatisticsService = statisticsService;
         }
 
 
@@ -161,7 +165,7 @@ namespace TraineeTracker.Services.Seeders {
                 if (dto.Email == "closed.trainee@uni-a.de") {
                     var user = await _databaseApplicationUserRepository.FindByEmailAsync(dto.Email);
                     if (user != null) {
-                        await _adminService.SetIsClosedAsync(user.Id, true);
+                        await _adminService.CloseUserAsync(user.Id);
                     }
                 }
             }
@@ -179,44 +183,45 @@ namespace TraineeTracker.Services.Seeders {
             if (alex != null) {
                 pauseDtos.Add(new ProcessingPauseDto {
                     TraineeId = alex.Id,
-                    StartDate = new DateTime(2025, 5, 5),
-                    EndDate = new DateTime(2025, 5, 10)
+                    StartDate = new DateOnly(2025, 5, 5),
+                    EndDate = new DateOnly(2025, 5, 10)
                 });
 
                 pauseDtos.Add(new ProcessingPauseDto {
                     TraineeId = alex.Id,
-                    StartDate = new DateTime(2025, 6, 1),
-                    EndDate = new DateTime(2025, 6, 3)
+                    StartDate = new DateOnly(2025, 6, 1),
+                    EndDate = new DateOnly(2025, 6, 3)
                 });
             }
 
             if (nikita != null) {
                 pauseDtos.Add(new ProcessingPauseDto {
                     TraineeId = nikita.Id,
-                    StartDate = new DateTime(2025, 5, 20),
-                    EndDate = new DateTime(2025, 5, 25)
+                    StartDate = new DateOnly(2025, 5, 20),
+                    EndDate = new DateOnly(2025, 5, 25)
                 });
             }
             if (stefan != null) {
                 pauseDtos.Add(new ProcessingPauseDto {
                     TraineeId = stefan.Id,
-                    StartDate = new DateTime(2025, 5, 20),
-                    EndDate = new DateTime(2025, 5, 25)
+                    StartDate = new DateOnly(2025, 5, 20),
+                    EndDate = new DateOnly(2025, 5, 25)
                 });
             }
             if (ursula != null) {
                 pauseDtos.Add(new ProcessingPauseDto {
                     TraineeId = ursula.Id,
-                    StartDate = new DateTime(2025, 5, 20),
-                    EndDate = new DateTime(2025, 5, 25)
+                    StartDate = new DateOnly(2025, 5, 20),
+                    EndDate = new DateOnly(2025, 5, 25)
                 });
             }
             foreach (var dto in pauseDtos) {
                 await _adminService.CreateProcessingPauseAsync(dto);
             }
-            // ---------------------------------------------------
+
         }
 
+        // ---------------------------------------------------
         public async Task SeedFeedbackAsync() {
 
             // Get Trainees
@@ -289,7 +294,7 @@ namespace TraineeTracker.Services.Seeders {
                     TraineeLessonId = traineeLesson.TraineeLessonId,
                     LessonName = lesson.Title,
                     UserId = user.Id,
-                    UserName = user.Email!, 
+                    UserName = user.Email!,
                     OldState = "Accepted",
                     NewState = "Rated",
                     Timestamp = DateTime.UtcNow
@@ -298,6 +303,23 @@ namespace TraineeTracker.Services.Seeders {
                 _databaseTraineeLessonLogEntryRepository.Create(logEntry);
             }
         }
+
+        // ---------------------------------------------------
+        public async Task SeedTraineeStatisticsSnapshotAsync() {
+            var stefan = await _databaseApplicationUserRepository.FindByEmailAsync("stefan.schnupfen@makandra.de");
+            var ursula = await _databaseApplicationUserRepository.FindByEmailAsync("ursula.urlaub@makandra.de");
+
+            // Wenn garantiert nicht null, dann direkt:
+            var trainees = new[] { stefan, ursula };
+
+            foreach (var trainee in trainees) {
+
+                await _traineeStatisticsService.BuildLatestTraineeStatisticsSnapshotAsync(trainee!.Id);
+                Console.WriteLine($"✅ Snapshot created/updated for {trainee.Email}");
+            }
+        }
+
+        // ---------------------------------------------------
 
     }
 

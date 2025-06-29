@@ -3,6 +3,9 @@ using TraineeTracker.Data.ProcessingPauses;
 using TraineeTracker.Services.Email;
 using TraineeTracker.Models.Domain;
 using TraineeTracker.Models.Dtos;
+using TraineeTracker.Data.Feedbacks;
+using TraineeTracker.Data.TeachingPlans;
+using TraineeTracker.Data.TraineeStatistics;
 
 namespace TraineeTracker.Services.Admin {
     public class AdminService {
@@ -12,11 +15,24 @@ namespace TraineeTracker.Services.Admin {
         private readonly EmailNotificationService _emailNotificationService;
         private readonly TeachingPlanService _teachingPlanService;
 
-        public AdminService(IApplicationUserRepository applicationUserRepository, IProcessingPauseRepository processingPauseRepository, EmailNotificationService emailNotificationService, TeachingPlanService teachingPlanService) {
+        private readonly IFeedbackRepository _feedbackRepository;
+        private readonly ITeachingPlanRepository _teachingPlanRepository;
+        private readonly ITraineeStatisticsRepository _traineeStatisticsRepository;
+
+        public AdminService(IApplicationUserRepository applicationUserRepository,
+                            IProcessingPauseRepository processingPauseRepository,
+                            EmailNotificationService emailNotificationService,
+                            TeachingPlanService teachingPlanService,
+                            IFeedbackRepository feedbackRepository,
+                            ITeachingPlanRepository teachingPlanRepository,
+                            ITraineeStatisticsRepository traineeStatisticsRepository) {
             _applicationUserRepository = applicationUserRepository;
             _processingPauseRepository = processingPauseRepository;
             _emailNotificationService = emailNotificationService;
             _teachingPlanService = teachingPlanService;
+            _feedbackRepository = feedbackRepository;
+            _teachingPlanRepository = teachingPlanRepository;
+            _traineeStatisticsRepository = traineeStatisticsRepository;
         }
 
         public async Task<ServiceResult> CreateUserAsync(ApplicationUserDto dto) {
@@ -65,13 +81,44 @@ namespace TraineeTracker.Services.Admin {
             return ServiceResult.Success();
         }
 
-        public async Task<bool> SetIsClosedAsync(string userId, bool isClosed) {
+        public async Task<bool> CloseUserAsync(string userId) {
             var user = await _applicationUserRepository.FindByIdAsync(userId);
             if (user == null) {
                 return false;
             }
-            user.IsClosed = isClosed;
+
+            user.IsClosed = true;
+
+            var referenceUpdateTasks = new List<Task>();
+            
+            if (await _applicationUserRepository.IsInRoleAsync(user, "Trainee")) {
+                foreach (var pause in user.ProcessingPauses.ToList()) {
+                    referenceUpdateTasks.Add(_processingPauseRepository.DeleteAsync(pause));
+                }
+                user.ProcessingPauses.Clear();
+
+                if (user.TeachingPlan == null) {
+                    throw new Exception("Trainee requires Teachingplan.");
+                }
+                referenceUpdateTasks.Add(_teachingPlanService.UnassignTeachingPlanFromTraineeAsync(user));
+
+                if (user.TraineeStatisticsSnapshot != null) {
+                    referenceUpdateTasks.Add(_traineeStatisticsRepository.DeleteAsync(user.TraineeStatisticsSnapshot));
+                    user.TraineeStatisticsSnapshot = null;
+                }
+            } else {
+                foreach (var feedback in user.ReadFeedbacks.ToList()) {
+                    feedback.ReadByUsers.Remove(user);
+                    referenceUpdateTasks.Add(_feedbackRepository.UpdateAsync(feedback));
+                }
+                user.ReadFeedbacks.Clear();
+
+                user.LastSelectedTrainees.Clear();
+            }
+
+            await Task.WhenAll(referenceUpdateTasks);
             await _applicationUserRepository.UpdateAsync(user);
+
             return true;
         }
 
@@ -88,10 +135,10 @@ namespace TraineeTracker.Services.Admin {
             };
 
             // Only create processingPause if non-existent
-            if (_processingPauseRepository.Exists(processingPause)) {
+            if (await _processingPauseRepository.ExistsAsync(processingPause)) {
                 return ServiceResult.Failed("A break already exists for this user for this period.");
             }
-            _processingPauseRepository.Create(processingPause);
+            await _processingPauseRepository.CreateAsync(processingPause);
             return ServiceResult.Success();
         }
     }

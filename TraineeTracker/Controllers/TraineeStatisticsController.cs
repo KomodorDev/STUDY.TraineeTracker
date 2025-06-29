@@ -12,7 +12,7 @@ namespace TraineeTracker.Controllers {
         {
             _service = service;
         }
-        public IActionResult ShowTraineeStatisticsDashboardView()
+        public async Task<IActionResult> ShowTraineeStatisticsDashboardView()
         {
             var traineeId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             if (traineeId == null)
@@ -20,7 +20,7 @@ namespace TraineeTracker.Controllers {
                 return Unauthorized();
             }
 
-            var model = _service.BuildTraineeStatisticsViewModel(traineeId);
+            var model = await _service.BuildTraineeStatisticsViewModel(traineeId, User);
             return View(model);
         }
     }
