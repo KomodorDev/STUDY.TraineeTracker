@@ -41,6 +41,14 @@ namespace TraineeTracker.Data.Feedbacks {
             }
         }
 
+        public async Task<IEnumerable<Feedback>> GetFeedbackByIDWithLessonAndAuthorAndReadByUsersAsync(int feedbackId) {
+            return await _context.Feedbacks
+                .Include(f => f.Lesson)
+                .Include(f => f.Author)
+                .Include(f => f.ReadByUsers)
+                .FirstOrDefaultAsync(f => f.FeedbackId == feedbackId)
+        }
+
         public async Task<IEnumerable<Feedback>> GetAllFeedbacksForLessonWithLessonAndAuthorAndReadByUsersAsync(Lesson lesson) {
             return await _context.Feedbacks
                 .Include(f => f.Lesson)

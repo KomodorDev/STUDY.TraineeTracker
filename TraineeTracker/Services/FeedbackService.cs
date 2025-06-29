@@ -54,12 +54,25 @@ namespace TraineeTracker.Services
             var appUser = await GetUserFromPrincipalAsync(userPrincipal);
 
             // Nur unge­lesene Feedbacks für diesen User
-            var unread = await _feedbackRepo
-            .GetUnreadForUserAsync(appUser.Id)
-            .OrderByDescending(f => f.CreateTime)
-            .ToListAsync();
+            var unread = await _feedbackRepo.GetAllFeedbacksUnreadByUserWithLessonAndAuthorAndReadByUsersAsync(appUser);
 
             return CreatePagedResult(unread, pageNumber);
+        }
+
+        public async Task<Page<FeedbackDto>> GetReadFeedbacksAsync(
+            ClaimsPrincipal userPrincipal, int pageNumber)
+        {
+            if (pageNumber < 1)
+                throw new ArgumentOutOfRangeException(nameof(pageNumber));
+
+            // 1) Aktuellen User ermitteln
+            var appUser = await GetUserFromPrincipalAsync(userPrincipal);
+
+            // 2) Gelesene Feedbacks (ReadByUsers enthält den aktuellen User)
+            var read = await _feedbackRepo.GetAllFeedbacksReadByUserWithLessonAndAuthorAndReadByUsersAsync(appUser)
+
+            // 3) Ergebnis paginieren
+            return CreatePagedResult(read, pageNumber);
         }
 
         private Page<FeedbackDto> CreatePagedResult(
@@ -90,19 +103,23 @@ namespace TraineeTracker.Services
                 };
         }
 
-        public async Task MarkFeedbackAsReadAsync(
-            int feedbackId, ClaimsPrincipal userPrincipal)
+        public async Task MarkFeedbackAsReadAsync(ClaimsPrincipal userPrincipal, int feedbackId)
         {
+            // 1) Aktuellen User holen
             var appUser = await GetUserFromPrincipalAsync(userPrincipal);
 
-            // Feedback aus Repo holen
+            // 2) Feedback mit ReadByUsers laden
             var feedback = await _feedbackRepo
-            .GetUnreadForUserAsync(appUser.Id)
-            .FirstOrDefaultAsync(f => f.FeedbackId == feedbackId)
-            ?? throw new InvalidOperationException("Feedback nicht gefunden oder bereits gelesen.");
+            .GetFeedbackByIDWithLessonAndAuthorAndReadByUsersAsync(feedbackId)
+                ?? throw new KeyNotFoundException($"Feedback mit ID {feedbackId} nicht gefunden.");
 
-            feedback.ReadByUsers.Add(appUser);
-            await _feedbackRepo.UpdateAsync(feedback);
+            // 3) Prüfen, ob er es schon gelesen hat
+            if (!feedback.ReadByUsers.Any(u => u.Id == appUser.Id))
+            {
+                // 4) Wenn nicht, zur Liste hinzufügen und speichern
+                feedback.ReadByUsers.Add(appUser);
+                await _feedbackRepo.UpdateAsync(feedback);
+            }
         }
     }
 }
