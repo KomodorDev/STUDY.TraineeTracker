@@ -57,6 +57,12 @@ namespace TraineeTracker.Data.ApplicationUsers {
             return await _userManager.FindByIdAsync(userId);
         }
 
+        public async Task<ApplicationUser?> FindByIdWithLastSelectedTraineesAsync(string userId) {
+            return await _context.Users
+            .Include(u => u.LastSelectedTrainees)
+            .FirstOrDefaultAsync(u => u.Id == userId);
+        }
+
         public async Task<ApplicationUser?> FindByIdWithProcessingPausesAndTraineeLessonsAsync(string userId) {
             return await _context.Users
             .Include(u => u.ProcessingPauses)
