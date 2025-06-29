@@ -1,0 +1,172 @@
+@model TraineeTracker.Models.ViewModels.FeedbackDashboardViewModel
+@{
+    ViewData["Title"] = "Feedback Overview";
+}
+
+<h2>@ViewData["Title"]</h2>
+
+<!-- Tabs -->
+<ul class="nav nav-tabs mb-4" role="tablist">
+    <li class="nav-item">
+        <a class="nav-link active" href="#" data-tab="all">All (@Model.TotalFeedbackCount)</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link" href="#" data-tab="unread">Unread (@Model.UnreadFeedbackCount)</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link" href="#" data-tab="read">Read (@Model.ReadFeedbackCount)</a>
+    </li>
+</ul>
+
+<!-- All Feedbacks Tab -->
+<div id="content-all" class="tab-content">
+    <table class="table table-hover">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Date</th>
+            </tr>
+        </thead>
+        <tbody>
+        @foreach(var fb in Model.AllFeedbacks.Items) {
+            <tr class="feedback-row" style="cursor:pointer;">
+                <td>@fb.AuthorName</td>
+                <td>@fb.SendDate.ToString("dd.MM.yyyy")</td>
+            </tr>
+            <tr class="feedback-detail" style="display:none;">
+                <td colspan="2">@fb.Comment</td>
+            </tr>
+        }
+        </tbody>
+    </table>
+    <nav>
+        <ul class="pagination">
+            @if(Model.AllFeedbacks.HasPrevious) {
+                <li class="page-item">
+                    <a class="page-link" asp-action="Dashboard" asp-route-tab="all" asp-route-pageNumber="@Model.AllFeedbacks.PageNumber-1">Previous</a>
+                </li>
+            }
+            @for(int i = 1; i <= Model.AllFeedbacks.TotalPages; i++) {
+                <li class="page-item @(i == Model.AllFeedbacks.PageNumber ? "active" : "")">
+                    <a class="page-link" asp-action="Dashboard" asp-route-tab="all" asp-route-pageNumber="@i">@i</a>
+                </li>
+            }
+            @if(Model.AllFeedbacks.HasNext) {
+                <li class="page-item">
+                    <a class="page-link" asp-action="Dashboard" asp-route-tab="all" asp-route-pageNumber="@Model.AllFeedbacks.PageNumber+1">Next</a>
+                </li>
+            }
+        </ul>
+    </nav>
+</div>
+
+<!-- Unread Feedbacks Tab -->
+<div id="content-unread" class="tab-content" style="display:none;">
+    <table class="table table-hover">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Date</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+        @foreach(var fb in Model.UnreadFeedbacks.Items) {
+            <tr class="feedback-row" style="cursor:pointer;">
+                <td>@fb.AuthorName</td>
+                <td>@fb.SendDate.ToString("dd.MM.yyyy")</td>
+                <td>
+                    <form asp-action="MarkAsRead" method="post" class="d-inline">
+                        <input type="hidden" name="feedbackId" value="@fb.FeedbackId" />
+                        <button type="submit" class="btn btn-sm btn-danger">Mark as read</button>
+                    </form>
+                </td>
+            </tr>
+            <tr class="feedback-detail" style="display:none;">
+                <td colspan="3">@fb.Comment</td>
+            </tr>
+        }
+        </tbody>
+    </table>
+    <nav>
+        <ul class="pagination">
+            @if(Model.UnreadFeedbacks.HasPrevious) {
+                <li class="page-item">
+                    <a class="page-link" asp-action="Dashboard" asp-route-tab="unread" asp-route-pageNumber="@Model.UnreadFeedbacks.PageNumber-1">Previous</a>
+                </li>
+            }
+            @for(int i = 1; i <= Model.UnreadFeedbacks.TotalPages; i++) {
+                <li class="page-item @(i == Model.UnreadFeedbacks.PageNumber ? "active" : "")">
+                    <a class="page-link" asp-action="Dashboard" asp-route-tab="unread" asp-route-pageNumber="@i">@i</a>
+                </li>
+            }
+            @if(Model.UnreadFeedbacks.HasNext) {
+                <li class="page-item">
+                    <a class="page-link" asp-action="Dashboard" asp-route-tab="unread" asp-route-pageNumber="@Model.UnreadFeedbacks.PageNumber+1">Next</a>
+                </li>
+            }
+        </ul>
+    </nav>
+</div>
+
+<!-- Read Feedbacks Tab -->
+<div id="content-read" class="tab-content" style="display:none;">
+    <table class="table table-hover">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Date</th>
+            </tr>
+        </thead>
+        <tbody>
+        @foreach(var fb in Model.ReadFeedbacks.Items) {
+            <tr class="feedback-row" style="cursor:pointer;">
+                <td>@fb.AuthorName</td>
+                <td>@fb.SendDate.ToString("dd.MM.yyyy")</td>
+            </tr>
+            <tr class="feedback-detail" style="display:none;">
+                <td colspan="2">@fb.Comment</td>
+            </tr>
+        }
+        </tbody>
+    </table>
+    <nav>
+        <ul class="pagination">
+            @if(Model.ReadFeedbacks.HasPrevious) {
+                <li class="page-item">
+                    <a class="page-link" asp-action="Dashboard" asp-route-tab="read" asp-route-pageNumber="@Model.ReadFeedbacks.PageNumber-1">Previous</a>
+                </li>
+            }
+            @for(int i = 1; i <= Model.ReadFeedbacks.TotalPages; i++) {
+                <li class="page-item @(i == Model.ReadFeedbacks.PageNumber ? "active" : "")">
+                    <a class="page-link" asp-action="Dashboard" asp-route-tab="read" asp-route-pageNumber="@i">@i</a>
+                </li>
+            }
+            @if(Model.ReadFeedbacks.HasNext) {
+                <li class="page-item">
+                    <a class="page-link" asp-action="Dashboard" asp-route-tab="read" asp-route-pageNumber="@Model.ReadFeedbacks.PageNumber+1">Next</a>
+                </li>
+            }
+        </ul>
+    </nav>
+</div>
+
+@section Scripts {
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(function() {
+            $('.nav-link').click(function(e) {
+                e.preventDefault();
+                var tab = $(this).data('tab');
+                $('.nav-link').removeClass('active');
+                $(this).addClass('active');
+                $('.tab-content').hide();
+                $('#content-' + tab).show();
+            });
+
+            $('.feedback-row').click(function() {
+                $(this).next('.feedback-detail').toggle();
+            });
+        });
+    </script>
+}
