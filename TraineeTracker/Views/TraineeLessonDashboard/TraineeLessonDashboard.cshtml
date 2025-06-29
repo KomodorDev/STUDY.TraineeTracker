@@ -1,0 +1,89 @@
+@model TraineeTracker.Models.ViewModels.TraineeLessonDashboardViewModel
+@using TraineeTracker.Models.Domain
+
+@{
+    ViewData["Title"] = "Dashboard";
+}
+
+<div class="container my-4 p-3 border rounded">
+    <div class="row g-4">
+        <!-- left column (trainee + statistics) -->
+        <div class="col-md-4 d-flex flex-column gap-3">
+            <div>
+                <h3>@Model.SelectedTrainee?.UserName ?? "No trainee"</h3>
+                <span class="badge bg-secondary">@Model.SelectedTrainee?.TeachingPlan ?? "No teachingplan"</span>
+            </div>
+
+            <div class="card">
+                <div class="card-header text-danger fw-bold">Statistics</div>
+                <div class="card-body"></div>
+                    @{
+                        var stats = Model.TraineeStatisticsSnapshot;
+                    }
+                    <p>Last update: some time ago I guess</p>
+                    <p>
+                        Present: @((stats?.DaysPresent ?? -999).ToString("0.0")) days
+                    </p>
+                    <p>
+                        Open: @((stats?.LessonDaysOpen ?? -999).ToString("0.0")) days
+                    </p>
+                    <p>
+                        Buffer: @((stats?.LessonDaysBuffer ?? -999).ToString("0.0")) days
+                    </p>
+                    <p>
+                        Buffer prediction: @((stats?.DaysBufferPredicted ?? -999).ToString("0.0")) days
+                    </p>
+                    @{
+                        var speed = (stats?.Speed ?? -999).ToString("0.0");
+                    }
+                    <p class="mt-4 mb-1">
+                        Progression: @speed%
+                    </p>
+                    <div class="progress">
+                        <div class="progress-bar bg-danger" role="progressbar" style="width: @speed%" aria-valuenow="50"
+                            aria-valuemin="0" aria-valuemax="100"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right column -->
+        <div class="col-md-8">
+            <!-- Sorting -->
+            <div class="btn-group mb-3 flex-wrap">
+                <button class="btn btn-outline-secondary">All (30)</button>
+                <button class="btn btn-outline-secondary">Open (10)</button>
+                <button class="btn btn-outline-secondary">Started (1)</button>
+                <button class="btn btn-outline-secondary">Finished (3)</button>
+                <button class="btn btn-outline-secondary">Accepted (12)</button>
+                <button class="btn btn-outline-secondary">Rejected (2)</button>
+                <button class="btn btn-outline-secondary">Rated (8)</button>
+                <button class="btn btn-outline-secondary">Deprecated (0)</button>
+            </div>
+
+            <!-- TraineeLessons -->
+            <table class="table table-hover">
+                <thead class="table-light">
+                    <tr>
+                        <th>Name</th>
+                        <th>URL</th>
+                        <th>Est.</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    @foreach (var traineeLesson in (Model.TraineeLessons ?? Enumerable.Empty<TraineeLesson>())) {
+                        <tr>
+                            <td>@traineeLesson.Lesson.LessonId @traineeLesson.Lesson.Title</td>
+                            <td><a href="@traineeLesson.Lesson.LinkUrl" target="_blank">@traineeLesson.Lesson.LinkUrl</a></td>
+                            <td>@traineeLesson.Lesson.EstimatedEffort days</td>
+                            <td>@await Html.PartialAsync("_RoleOrStatus", traineeLesson.State.ToString())</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+
+    </div>
+</div>
