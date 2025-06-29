@@ -102,6 +102,10 @@ namespace TraineeTracker.Data.ApplicationUsers {
             .ToListAsync();
         }
 
+        public async Task<IEnumerable<ApplicationUser>> GetAllAsync() {
+            return await _context.Users.ToListAsync();
+        }
+
         public async Task<bool> IsInRoleAsync(ApplicationUser user, string role) {
             return await _userManager.IsInRoleAsync(user, role);
         }
