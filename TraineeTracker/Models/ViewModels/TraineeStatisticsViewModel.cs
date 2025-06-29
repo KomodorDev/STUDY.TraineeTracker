@@ -10,7 +10,8 @@ namespace TraineeTracker.Models.ViewModels {
         public double LessonDaysOpen { get; set; }
         public double LessonDaysBuffer { get; set; }
         public double Speed { get; set; }
-        public double DaysBufferPredicted { get; set; }
+        public double PredictedMissingEstimatedEffortAtEnd { get; set; }
+        public double PredictedMissingActualDays { get; set; }
         public bool IsUpToDate { get; set; }
         public List<TraineeLessonViewModel>? FinishedLessons { get; set; }
         public List<TraineeLessonViewModel>? AcceptedAndRatedLessons { get; set; }
