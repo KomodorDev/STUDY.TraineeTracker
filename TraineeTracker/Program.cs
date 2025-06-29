@@ -72,7 +72,7 @@ builder.Services.AddScoped<AdminService>();
 builder.Services.AddScoped<TeachingPlanService>();
 builder.Services.AddScoped<TraineeLessonDetailService>();
 builder.Services.AddScoped<TraineeStatisticsService>();
-builder.Services.AddScoped<FeedbackService>();
+// FeedbackService
 // TraineeLessonDashboardService
 
 // ----------------------------------------
@@ -105,6 +105,7 @@ using (var scope = app.Services.CreateScope()) {
     await testDataSeeder.SeedUsersAsync();
     await testDataSeeder.SeedProcessingPausesAsync();
     await testDataSeeder.SeedFeedbackAsync();
+    await testDataSeeder.SeedTraineeStatisticsSnapshotAsync();
 }
 
 // ---------------------------------------------

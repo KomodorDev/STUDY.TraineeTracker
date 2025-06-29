@@ -1,5 +1,8 @@
-﻿<!DOCTYPE html>
+﻿@* by schleale *@
+
+<!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -7,44 +10,150 @@
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/TraineeTracker.styles.css" asp-append-version="true" />
+    @* Open Sans font *@
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans&display=swap" rel="stylesheet"> 
 </head>
+
 <body>
     <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
-            <div class="container-fluid">
-                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">TraineeTracker</a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-                        aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                    <ul class="navbar-nav flex-grow-1">
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
-                        </li>
-                    </ul>
-                    <partial name="_LoginPartial" />
+        @if (IsSectionDefined("Navbar")) {
+            @* redefine @section Navbar {<nav></nav>} to not use default nav bar *@
+            <!-- no nav bar -->
+            @RenderSection("Navbar", required: false)
+        }
+        else {
+            <!-- default nav bar -->
+            <nav class="navbar custom-navbar navbar-expand-sm custom-drop-shadow">
+                <div class="container-fluid">
+                    @* <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">TraineeTracker</a> *@
+                    @* <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
+                            aria-expanded="false" aria-label="Toggle navigation">
+                        <span class="navbar-toggler-icon"></span>
+                    </button> *@
+                    <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
+                        <ul class="navbar-nav flex-grow-1">
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">User</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Dashboard</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Feedback</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Import</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Admin</a>
+                            </li>
+                        </ul>
+
+                        @* <partial name="_LoginPartial" /> *@
+
+                        <!-- makandra logo -->
+                        <a href="https://makandra.de/de" class="navbar-brand">
+                            <img src="~/resources/makandra_logo_black.png" alt="logo" />
+                        </a>
+                    </div>
                 </div>
-            </div>
-        </nav>
+            </nav>
+        }
     </header>
+
     <div class="container">
         <main role="main" class="pb-3">
             @RenderBody()
         </main>
     </div>
-
+    @* we dont need a footer
     <footer class="border-top footer text-muted">
         <div class="container">
             &copy; 2025 - TraineeTracker - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
         </div>
-    </footer>
+    </footer> *@
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
     @await RenderSectionAsync("Scripts", required: false)
+
+    <style>
+        /* NAVBAR ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++*/
+        /* overall container */
+        .navbar.custom-navbar {
+            /* !important overrides bootstrap */
+            background-color: #ffffff !important;
+            color: #000 !important;
+
+            font-family: 'Open Sans', sans-serif;
+            font-weight: bold;
+            font-size: 1.406rem;
+
+            height: 3.516rem !important;
+            padding-left: 1.7rem !important;
+            padding-right: 0 !important;
+            display: flex;
+            align-items: center;
+
+            /* rounded bottom corners */
+            border-bottom-left-radius: 10px !important;
+            border-bottom-right-radius: 10px !important;
+        }
+
+        /* nav links container */
+        .navbar.custom-navbar .navbar-nav {
+            display: flex;
+            gap: 1.7rem !important;
+        }
+
+        /* menu items */
+        .navbar.custom-navbar .nav-link {
+            color: #000 !important;
+            font-weight: bold;
+            font-size: 1.406rem;
+
+            text-decoration: none !important;
+            display: inline-block;
+            position: relative;
+        }
+
+        /* logo/text on the left */
+        .navbar.custom-navbar .navbar-brand {
+            color: #000 !important;
+            font-weight: bold;
+            font-size: 1.406rem;
+            margin-right: 0.5rem;
+        }
+
+        /* makandra logo */
+        .navbar-brand img {
+            max-height: 2.6rem;
+            height: auto;
+            width: auto;
+            vertical-align: middle;
+        }
+
+        nav.navbar .container-fluid {
+            padding-right: 0 !important;
+        }
+
+        /* pseudo element, is the underline animaton */
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            left: 0;
+            bottom: 3px;
+            width: 0%;
+            height: 2px; /* Thickness of the underline */
+            background-color: black;
+            border-radius: 10px;
+            transition: width 0.3s ease-in-out;
+        }
+
+        .nav-link:hover::after {
+            width: 100%;
+        }
+
+    </style>
 </body>
 </html>

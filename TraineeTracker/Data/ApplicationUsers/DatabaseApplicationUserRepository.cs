@@ -57,12 +57,27 @@ namespace TraineeTracker.Data.ApplicationUsers {
             return await _userManager.FindByIdAsync(userId);
         }
 
+        public async Task<ApplicationUser?> FindByIdWithLastSelectedTraineesAsync(string userId) {
+            return await _context.Users
+            .Include(u => u.LastSelectedTrainees)
+            .FirstOrDefaultAsync(u => u.Id == userId);
+        }
+
         public async Task<ApplicationUser?> FindByIdWithProcessingPausesAndTraineeLessonsAsync(string userId) {
             return await _context.Users
             .Include(u => u.ProcessingPauses)
             .Include(u => u.TraineeLessons)
             .FirstOrDefaultAsync(u => u.Id == userId);
         }
+
+        public async Task<ApplicationUser?> FindByIdWithTraineeLessonsWithLessonsAndTeachingPlanAsync(string userId) {
+            return await _context.Users
+                .Include(u => u.TraineeLessons)
+                    .ThenInclude(tl => tl.Lesson)
+                .Include(u => u.TeachingPlan)
+                .FirstOrDefaultAsync(u => u.Id == userId);
+        }
+
 
         public async Task<IEnumerable<ApplicationUser>> GetOpenUsersInRoleAsync(string roleName) {
             var usersInRole = await _userManager.GetUsersInRoleAsync(roleName);

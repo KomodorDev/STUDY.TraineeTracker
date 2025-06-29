@@ -364,10 +364,10 @@ namespace TraineeTracker.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
-                    b.Property<DateTime>("EndDate")
+                    b.Property<DateOnly>("EndDate")
                         .HasColumnType("TEXT");
 
-                    b.Property<DateTime>("StartDate")
+                    b.Property<DateOnly>("StartDate")
                         .HasColumnType("TEXT");
 
                     b.Property<string>("TraineeId")
@@ -492,7 +492,7 @@ namespace TraineeTracker.Migrations
                     b.Property<double>("LessonDaysOpen")
                         .HasColumnType("REAL");
 
-                    b.Property<DateTime>("SnapshotDate")
+                    b.Property<DateTime>("SnapshotDateTime")
                         .HasColumnType("TEXT");
 
                     b.Property<double>("Speed")

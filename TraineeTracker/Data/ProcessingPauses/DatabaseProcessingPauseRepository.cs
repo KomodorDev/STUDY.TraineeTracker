@@ -1,3 +1,5 @@
+using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 using TraineeTracker.Models.Domain;
 
 namespace TraineeTracker.Data.ProcessingPauses {
@@ -8,35 +10,31 @@ namespace TraineeTracker.Data.ProcessingPauses {
             _context = context;
         }
 
-        public bool Exists(int processingPauseId) {
-            return _context.ProcessingPauses.Any(p => p.ProcessingPauseId == processingPauseId);
-        }
-
-        public bool Exists(ProcessingPause processingPause) {
-            return _context.ProcessingPauses.Any(p =>
+        public async Task<bool> ExistsAsync(ProcessingPause processingPause) {
+            return await _context.ProcessingPauses.AnyAsync(p =>
                 p.TraineeId == processingPause.TraineeId &&
                 p.StartDate == processingPause.StartDate &&
                 p.EndDate == processingPause.EndDate
             );
         }
 
-        public void Create(ProcessingPause processingPause) {
-            _context.ProcessingPauses.Add(processingPause);
-            _context.SaveChanges();
+        public async Task CreateAsync(ProcessingPause processingPause) {
+            await _context.ProcessingPauses.AddAsync(processingPause);
+            await _context.SaveChangesAsync();
         }
 
-        public void Update(ProcessingPause processingPause) {
+        public async Task UpdateAsync(ProcessingPause processingPause) {
             _context.ProcessingPauses.Update(processingPause);
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
         }
 
-        public void Delete(ProcessingPause processingPause) {
+        public async Task DeleteAsync(ProcessingPause processingPause) {
             _context.ProcessingPauses.Remove(processingPause);
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
         }
 
-        public IEnumerable<ProcessingPause> GetAllPauses(string traineeId) {
-            return _context.ProcessingPauses.Where(p => p.TraineeId == traineeId).ToList();
+        public async Task<IEnumerable<ProcessingPause>> GetAllPausesAsync(string traineeId) {
+            return await _context.ProcessingPauses.Where(p => p.TraineeId == traineeId).ToListAsync();
         }
     }
 }

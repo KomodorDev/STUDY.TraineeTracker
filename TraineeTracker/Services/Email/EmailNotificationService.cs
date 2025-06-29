@@ -18,7 +18,7 @@ namespace TraineeTracker.Services.Email {
         }
 
         // ------------------------------------------------------
-        public async Task SaveNotificationSettingsChange(string userId, NotificationSettingDto update) {
+        public async Task SaveNotificationSettingChange(string userId, NotificationSettingDto update) {
 
             // Load setting
             var setting = await _databaseEmailNotificationSettingRepository.GetByUserIdAsync(userId);
@@ -38,6 +38,21 @@ namespace TraineeTracker.Services.Email {
             await _databaseEmailNotificationSettingRepository.UpdateAsync(setting);
         }
 
+        // ------------------------------------------------------
+        public async Task<NotificationSettingDto> GetNotificationSetting(string userId) {
+            var setting = await _databaseEmailNotificationSettingRepository.GetByUserIdAsync(userId);
+
+            return new NotificationSettingDto {
+                ReceiveSkippedNotifications = setting.ReceiveSkippedNotifications,
+                ReceiveOpenNotifications = setting.ReceiveOpenNotifications,
+                ReceiveStartedNotifications = setting.ReceiveStartedNotifications,
+                ReceiveFinishedNotifications = setting.ReceiveFinishedNotifications,
+                ReceiveRejectedNotifications = setting.ReceiveRejectedNotifications,
+                ReceiveAcceptedNotifications = setting.ReceiveAcceptedNotifications,
+                ReceiveRatedNotifications = setting.ReceiveRatedNotifications,
+                ReceiveImportChangeNotifications = setting.ReceiveImportChangeNotifications
+            };
+        }
 
         // ------------------------------------------------------
         public async Task NotifyUserAsync(ApplicationUser user, string subject, string message) {
@@ -70,6 +85,12 @@ namespace TraineeTracker.Services.Email {
             string traineeName = trainee.UserName!;
             string lessonTitle = traineeLesson.Lesson.Title;
 
+            string rejectedReason = traineeLesson.RejectionReason!;
+            var rejectionNote = "";
+            if (newState == TraineeLessonState.Rejected && !string.IsNullOrWhiteSpace(traineeLesson.RejectionReason)) {
+                rejectionNote = $"<p><strong>Rejection Reason:</strong> {rejectedReason}</p>";
+            }
+
             // ++++++++++++++++++++++++++++++++++++++++++
             // Notify Mentors and Admins
             var mentors = await _databaseApplicationUserRepository.GetUsersInRoleAsync("Mentor");
@@ -85,7 +106,7 @@ namespace TraineeTracker.Services.Email {
             foreach (var person in thirdPersons) {
                 var setting = person.EmailNotificationSetting!;
 
-                if (!ShouldNotify(setting, newState))
+                if (person.IsClosed || !ShouldNotify(setting, newState))
                     continue;
 
                 var subject = $"TraineeTracker: Trainee '{traineeName}': Lesson '{lessonTitle}' changed from {oldState} to {newState}";
@@ -96,6 +117,7 @@ namespace TraineeTracker.Services.Email {
                     <p>The lesson <strong>“{lessonTitle}”</strong> of trainee <strong>{traineeName}</strong> has changed.</p>
                     <p><strong>Previous:</strong> {oldState}<br/>
                     <strong>New:</strong> {newState}</p>
+                    {rejectionNote}
                     <p>– TraineeTracker Notification System</p>";
 
                 await _emailSender.SendEmailAsync(person.Email!, subject, messageHtml);
@@ -103,7 +125,7 @@ namespace TraineeTracker.Services.Email {
 
             // ++++++++++++++++++++++++++++++++++++++++++
             // Notifiy Trainee
-            if (ShouldNotify(traineeSetting, newState)) {
+            if (!trainee.IsClosed && ShouldNotify(traineeSetting, newState)) {
                 var subject = $"TraineeTracker: Lesson '{lessonTitle}' changed from {oldState} to {newState}";
 
                 var messageHtml = $@"
@@ -111,6 +133,7 @@ namespace TraineeTracker.Services.Email {
                     <p>The status of your lesson <strong>“{lessonTitle}”</strong> has changed.</p>
                     <p><strong>Previous:</strong> {oldState}<br/>
                     <strong>New:</strong> {newState}</p>
+                    {rejectionNote}
                     <p>Best regards,<br/>Your TraineeTracker Team</p>";
 
                 await _emailSender.SendEmailAsync(trainee.Email!, subject, messageHtml);
@@ -134,29 +157,31 @@ namespace TraineeTracker.Services.Email {
 
             // ++++++++++++++++++++++++++++++++++++++++++
             // Notifiy Trainee
-            var setting = trainee.EmailNotificationSetting!;
-            if (setting.ReceiveImportChangeNotifications && (added.Any() || removed.Any())) {
-                var subject = "TraineeTracker: Your lesson plan has been updated";
+            if (!trainee.IsClosed) {
+                var setting = trainee.EmailNotificationSetting!;
+                if (setting.ReceiveImportChangeNotifications && (added.Any() || removed.Any())) {
+                    var subject = "TraineeTracker: Your lesson plan has been updated";
 
-                var changes = "";
+                    var changes = "";
 
-                if (added.Any()) {
-                    changes += "<p><strong>New lessons assigned:</strong><br/>" +
-                            string.Join("<br/>", added.Select(n => $"– {n}")) + "</p>";
-                }
+                    if (added.Any()) {
+                        changes += "<p><strong>New lessons assigned:</strong><br/>" +
+                                string.Join("<br/>", added.Select(n => $"– {n}")) + "</p>";
+                    }
 
-                if (removed.Any()) {
-                    changes += "<p><strong>Lessons removed:</strong><br/>" +
-                            string.Join("<br/>", removed.Select(n => $"– {n}")) + "</p>";
-                }
+                    if (removed.Any()) {
+                        changes += "<p><strong>Lessons removed:</strong><br/>" +
+                                string.Join("<br/>", removed.Select(n => $"– {n}")) + "</p>";
+                    }
 
-                var messageHtml = $@"
+                    var messageHtml = $@"
                     <p>Hello {trainee.UserName},</p>
                     <p>Your lesson plan has been updated. Here is a summary of the changes:</p>
                     {changes}
                     <p>Best regards,<br/>Your TraineeTracker Team</p>";
 
-                await _emailSender.SendEmailAsync(trainee.Email!, subject, messageHtml);
+                    await _emailSender.SendEmailAsync(trainee.Email!, subject, messageHtml);
+                }
             }
 
             // ++++++++++++++++++++++++++++++++++++++++++
@@ -174,7 +199,7 @@ namespace TraineeTracker.Services.Email {
 
                 foreach (var person in thirdPersons) {
                     var s = person.EmailNotificationSetting!;
-                    if (!s.ReceiveImportChangeNotifications)
+                    if (person.IsClosed || !s.ReceiveImportChangeNotifications)
                         continue;
 
                     await _emailSender.SendEmailAsync(person.Email!, subject, messageHtml);
@@ -217,6 +242,7 @@ namespace TraineeTracker.Services.Email {
 
             return setting;
         }
+
         // ------------------------------------------------------
 
     }
