@@ -1,8 +1,5 @@
 using System.Security.Claims;
 using TraineeTracker.Data.ApplicationUsers;
-using TraineeTracker.Data.Lessons;
-using TraineeTracker.Data.TeachingPlans;
-using TraineeTracker.Data.TraineeLessons;
 
 using TraineeTracker.Exceptions;
 using TraineeTracker.Models.ViewModels;
@@ -47,7 +44,6 @@ namespace TraineeTracker.Services {
 
                 return new TraineeLessonDashboardViewModel {
                     TraineeStatisticsSnapshot = await _traineeStatisticsService.BuildLatestTraineeStatisticsSnapshotAsync(traineeId),
-                    Lessons = trainee.TraineeLessons.Lessons,
                     TraineeLessons = trainee.TraineeLessons,
                     TeachingPlan = trainee.TeachingPlan
                 };
