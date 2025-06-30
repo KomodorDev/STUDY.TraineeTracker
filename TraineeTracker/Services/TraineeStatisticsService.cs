@@ -34,11 +34,14 @@ namespace TraineeTracker.Services {
         public async Task<TraineeStatisticsViewModel> BuildTraineeStatisticsViewModel(string traineeId, ClaimsPrincipal user) {
             CheckHasAccess(user, traineeId);
 
+            // ++++++++++++++++
+            // Get Data for ViewModel
             var snapshot = await BuildLatestTraineeStatisticsSnapshotAsync(traineeId);
             var lessons = await _traineeLessonRepository.GetAllTraineeLessonsOfTraineeWithLessonAsync(traineeId);
             var processingPauses = (await _processingPauseRepository.GetAllPausesAsync(traineeId)).ToList();
 
-
+            // ++++++++++++++++
+            // Build and return ViewModel
             return new TraineeStatisticsViewModel {
                 SnapshotDateTime = snapshot.SnapshotDateTime,
                 DaysPresentTotal = snapshot.DaysPresentTotal,
@@ -52,7 +55,7 @@ namespace TraineeTracker.Services {
                 IsUpToDate = snapshot.IsUpToDate,
 
                 // ++++++++++++++++
-
+                // Lesson Lists
                 FinishedLessons = lessons
                     .Where(l => l.State == TraineeLessonState.Finished)
                     .Select(l => new TraineeLessonViewModel {
@@ -95,7 +98,7 @@ namespace TraineeTracker.Services {
                     }).ToList(),
 
                 // ++++++++++++++++
-
+                // ProcessingPauses
                 ProcessingPauses = processingPauses
             };
         }
@@ -118,15 +121,23 @@ namespace TraineeTracker.Services {
 
         // --------------------------------------------------
         public async Task<TraineeStatisticsSnapshot> BuildLatestTraineeStatisticsSnapshotAsync(string traineeId) {
+
+            // ++++++++++++++++
+            // Get Trainee
             var trainee = await _userManager.FindByIdAsync(traineeId);
             if (trainee == null || trainee.TraineeStartDate == null) {
                 throw new Exception("Trainee not found or start date is missing.");
             }
 
+            // ++++++++++++++++
+            // Calculate Data for Trainee
             double daysPresentTotal = await GetEffectivePresentDaysAsync(trainee, trainee.TraineeStartDate!.Value, trainee.TraineeEndDate!.Value);
             double daysPresentTillToday = await GetEffectivePresentDaysAsync(trainee, trainee.TraineeStartDate!.Value, DateOnly.FromDateTime(DateTime.Today));
             if (daysPresentTillToday < 0) {
+
+                // Return Fallback Snapshot if no API Access
                 Console.WriteLine("⚠️ API-Error – use latest snapshot.");
+                // We need to factor in the case that a trainee has no snapshot here yet and need to build one and fill it all with zeros.
                 var fallbackSnapshot = await _traineeStatisticsRepository.GetTraineeStatisticsSnapshotAsync(traineeId);
                 fallbackSnapshot.IsUpToDate = false;
                 return fallbackSnapshot;
@@ -136,14 +147,17 @@ namespace TraineeTracker.Services {
             double lessonDaysBuffer = CalculateLessonDaysBuffer(daysPresentTillToday, lessonDaysCompleted);
             double speed = CalculateSpeed(daysPresentTillToday, lessonDaysCompleted);
             double predictedMissingEstimatedEffortAtEnd = CalculatePredictedMissingEstimatedEffortAtEnd(daysPresentTillToday, daysPresentTotal, lessonDaysOpen, speed);
-            double predictedMissingActualDays = CalculatePredictedMissingActualDays(daysPresentTillToday, daysPresentTotal, lessonDaysOpen, speed);
+            double predictedMissingActualDays = CalculatePredictedMissingActualDaysAtEnd(daysPresentTillToday, daysPresentTotal, lessonDaysOpen, speed);
 
             TraineeStatisticsSnapshot snapshot;
 
+            // ++++++++++++++++
+            // Update or Create Snapshot
             try {
+
+                // Case 1 - Update: Snapshot exisit and we update it
                 snapshot = await _traineeStatisticsRepository.GetTraineeStatisticsSnapshotAsync(traineeId);
 
-                // Fall: Snapshot existiert → wir aktualisieren ihn
                 snapshot.SnapshotDateTime = DateTime.Now;
                 snapshot.DaysPresentTotal = daysPresentTotal;
                 snapshot.DaysPresentTillToday = daysPresentTillToday;
@@ -158,7 +172,8 @@ namespace TraineeTracker.Services {
                 await _traineeStatisticsRepository.UpdateAsync(snapshot);
             }
             catch (InvalidOperationException) {
-                // Fall: Kein Snapshot vorhanden → wir erstellen einen neuen
+
+                // Case 2 - Create: Snapshot does not exist and we create it
                 snapshot = new TraineeStatisticsSnapshot {
                     Trainee = trainee,
                     TraineeId = traineeId,
@@ -177,12 +192,16 @@ namespace TraineeTracker.Services {
                 await _traineeStatisticsRepository.CreateAsync(snapshot);
             }
 
-
+            // ++++++++++++++++
+            // Return Snapshot
             return snapshot;
         }
 
         // --------------------------------------------------
         public async Task<double> GetPresentDaysAsync(DateOnly startDate, DateOnly endDate, string email) {
+
+            // ++++++++++++++++
+            // Build Request
             var baseUrl = "https://api.sopro.makandra.de/api/v1/present_days";
             var url = $"{baseUrl}?email={Uri.EscapeDataString(email)}&start_date={startDate:yyyy-MM-dd}&end_date={endDate:yyyy-MM-dd}";
 
@@ -191,6 +210,8 @@ namespace TraineeTracker.Services {
             var byteArray = System.Text.Encoding.ASCII.GetBytes("sopro:capybara");
             request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Basic", Convert.ToBase64String(byteArray));
 
+            // ++++++++++++++++
+            // Send Request and Wait for Response
             var response = await _httpClient.SendAsync(request);
 
             if (!response.IsSuccessStatusCode) {
@@ -200,6 +221,8 @@ namespace TraineeTracker.Services {
 
             var content = await response.Content.ReadAsStringAsync();
 
+            // ++++++++++++++++
+            // Try to extract and return presentDays from Response
             try {
                 using var json = System.Text.Json.JsonDocument.Parse(content);
                 var root = json.RootElement;
@@ -213,7 +236,6 @@ namespace TraineeTracker.Services {
 
         // --------------------------------------------------
         private async Task<double> GetEffectivePresentDaysAsync(ApplicationUser trainee, DateOnly startDate, DateOnly endDate) {
-
 
             // ++++++++++++++++
             // Checks
@@ -252,7 +274,6 @@ namespace TraineeTracker.Services {
 
             // ++++++++++++++++
             // Calculate effectivePresentDays and return
-
             return totalDays - pauseDaysTotal;
         }
 
@@ -301,10 +322,10 @@ namespace TraineeTracker.Services {
                 return -1;
 
             // Days from today till EndDate:
-            double daysPresentInFuture = daysPresentTotal - daysPresentTillToday;
+            double daysPresentDaysInFuture = daysPresentTotal - daysPresentTillToday;
 
-            // Likey EstimatedEffort completed from today till EndDate:
-            double predictedEstimatedEffortDoneInFuture = daysPresentInFuture * speed;
+            // Predicted EstimatedEffort completed from today till EndDate:
+            double predictedEstimatedEffortDoneInFuture = daysPresentDaysInFuture * speed;
 
             // predicted Buffer in EstimatedEffort: estimatedEffort remaining at EndDate
             double predictedMissingEstimatedEffortAtEnd = estimatedEffortOpen - predictedEstimatedEffortDoneInFuture;
@@ -313,7 +334,7 @@ namespace TraineeTracker.Services {
         }
 
         // --------------------------------------------------
-        public double CalculatePredictedMissingActualDays(double daysPresentTillToday, double daysPresentTotal, double estimatedEffortOpen, double speed) {
+        public double CalculatePredictedMissingActualDaysAtEnd(double daysPresentTillToday, double daysPresentTotal, double estimatedEffortOpen, double speed) {
             if (speed <= 0)
                 return -1;
 
