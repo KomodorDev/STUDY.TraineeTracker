@@ -22,8 +22,7 @@ namespace TraineeTracker.Services {
         private readonly IProcessingPauseRepository _processingPauseRepository;
 
         // --------------------------------------------------
-        public TraineeStatisticsService(ITraineeStatisticsRepository traineeStatisticsRepository, ITraineeLessonRepository traineeLessonRepository, HttpClient httpClient, UserManager<ApplicationUser> userManager, IProcessingPauseRepository processingPauseRepository)
-        {
+        public TraineeStatisticsService(ITraineeStatisticsRepository traineeStatisticsRepository, ITraineeLessonRepository traineeLessonRepository, HttpClient httpClient, UserManager<ApplicationUser> userManager, IProcessingPauseRepository processingPauseRepository) {
             _traineeStatisticsRepository = traineeStatisticsRepository;
             _traineeLessonRepository = traineeLessonRepository;
             _httpClient = httpClient;
@@ -40,8 +39,7 @@ namespace TraineeTracker.Services {
             var processingPauses = (await _processingPauseRepository.GetAllPausesAsync(traineeId)).ToList();
 
 
-            return new TraineeStatisticsViewModel
-            {
+            return new TraineeStatisticsViewModel {
                 SnapshotDateTime = snapshot.SnapshotDateTime,
                 DaysPresentTotal = snapshot.DaysPresentTotal,
                 DaysPresentTillToday = snapshot.DaysPresentTillToday,
@@ -57,8 +55,7 @@ namespace TraineeTracker.Services {
 
                 FinishedLessons = lessons
                     .Where(l => l.State == TraineeLessonState.Finished)
-                    .Select(l => new TraineeLessonViewModel
-                    {
+                    .Select(l => new TraineeLessonViewModel {
                         Title = l.Lesson.Title,
                         EstimatedEffort = l.Lesson.EstimatedEffort,
                         WeightedEffort = l.Lesson.EstimatedEffort * 0.7,
@@ -66,8 +63,7 @@ namespace TraineeTracker.Services {
                     }).ToList(),
                 AcceptedAndRatedLessons = lessons
                     .Where(l => l.State == TraineeLessonState.Accepted || l.State == TraineeLessonState.Rated)
-                    .Select(l => new TraineeLessonViewModel
-                    {
+                    .Select(l => new TraineeLessonViewModel {
                         Title = l.Lesson.Title,
                         EstimatedEffort = l.Lesson.EstimatedEffort,
                         WeightedEffort = l.Lesson.EstimatedEffort * 1.0,
@@ -75,8 +71,7 @@ namespace TraineeTracker.Services {
                     }).ToList(),
                 RejectedLessons = lessons
                     .Where(l => l.State == TraineeLessonState.Rejected)
-                    .Select(l => new TraineeLessonViewModel
-                    {
+                    .Select(l => new TraineeLessonViewModel {
                         Title = l.Lesson.Title,
                         EstimatedEffort = l.Lesson.EstimatedEffort,
                         WeightedEffort = l.Lesson.EstimatedEffort * 0.8,
@@ -84,8 +79,7 @@ namespace TraineeTracker.Services {
                     }).ToList(),
                 OpenLessons = lessons
                     .Where(l => l.State == TraineeLessonState.Open)
-                    .Select(l => new TraineeLessonViewModel
-                    {
+                    .Select(l => new TraineeLessonViewModel {
                         Title = l.Lesson.Title,
                         EstimatedEffort = l.Lesson.EstimatedEffort,
                         WeightedEffort = 0,
@@ -93,8 +87,7 @@ namespace TraineeTracker.Services {
                     }).ToList(),
                 StartedLessons = lessons
                     .Where(l => l.State == TraineeLessonState.Started)
-                    .Select(l => new TraineeLessonViewModel
-                    {
+                    .Select(l => new TraineeLessonViewModel {
                         Title = l.Lesson.Title,
                         EstimatedEffort = l.Lesson.EstimatedEffort,
                         WeightedEffort = 0,
@@ -132,8 +125,7 @@ namespace TraineeTracker.Services {
 
             double daysPresentTotal = await GetEffectivePresentDaysAsync(trainee, trainee.TraineeStartDate!.Value, trainee.TraineeEndDate!.Value);
             double daysPresentTillToday = await GetEffectivePresentDaysAsync(trainee, trainee.TraineeStartDate!.Value, DateOnly.FromDateTime(DateTime.Today));
-            if (daysPresentTillToday < 0)
-            {
+            if (daysPresentTillToday < 0) {
                 Console.WriteLine("⚠️ API-Error – use latest snapshot.");
                 var fallbackSnapshot = await _traineeStatisticsRepository.GetTraineeStatisticsSnapshotAsync(traineeId);
                 fallbackSnapshot.IsUpToDate = false;
@@ -167,8 +159,7 @@ namespace TraineeTracker.Services {
             }
             catch (InvalidOperationException) {
                 // Fall: Kein Snapshot vorhanden → wir erstellen einen neuen
-                snapshot = new TraineeStatisticsSnapshot
-                {
+                snapshot = new TraineeStatisticsSnapshot {
                     Trainee = trainee,
                     TraineeId = traineeId,
                     SnapshotDateTime = DateTime.Now,
@@ -312,8 +303,7 @@ namespace TraineeTracker.Services {
         }
 
         // --------------------------------------------------
-        public double CalculatePredictedMissingActualDays(double daysPresentTillToday, double daysPresentTotal, double estimatedEffortOpen, double speed)
-        {
+        public double CalculatePredictedMissingActualDays(double daysPresentTillToday, double daysPresentTotal, double estimatedEffortOpen, double speed) {
             if (speed <= 0)
                 return -1;
 
@@ -324,8 +314,7 @@ namespace TraineeTracker.Services {
         }
 
         // --------------------------------------------------
-        private async Task<double> CalculateTotalEffort(string traineeId)
-        {
+        private async Task<double> CalculateTotalEffort(string traineeId) {
             var lessons = await _traineeLessonRepository.GetAllTraineeLessonsOfTraineeWithLessonAsync(traineeId);
 
             return lessons
