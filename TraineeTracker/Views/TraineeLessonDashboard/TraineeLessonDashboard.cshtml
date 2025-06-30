@@ -30,9 +30,11 @@
                     <p>
                         Buffer: @((stats?.LessonDaysBuffer ?? -999).ToString("0.0")) days
                     </p>
+                    @* I cant find a variable in statistics
                     <p>
-                        Buffer prediction: @((stats?.DaysBufferPredicted ?? -999).ToString("0.0")) days
+                        Buffer prediction: @((stats?. ?? -999).ToString("0.0")) days
                     </p>
+                    *@
                     @{
                         var speed = (stats?.Speed ?? -999).ToString("0.0");
                     }
