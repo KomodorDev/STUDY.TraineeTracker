@@ -1,8 +1,7 @@
 using TraineeTracker.Models.Domain;
 
 namespace TraineeTracker.Models.ViewModels {
-    public class TraineeStatisticsViewModel
-    {
+    public class TraineeStatisticsViewModel {
         public DateTime SnapshotDateTime { get; set; }
         public double DaysPresentTotal { get; set; }
         public double DaysPresentTillToday { get; set; }
@@ -10,13 +9,14 @@ namespace TraineeTracker.Models.ViewModels {
         public double LessonDaysOpen { get; set; }
         public double LessonDaysBuffer { get; set; }
         public double Speed { get; set; }
-        public double DaysBufferPredicted { get; set; }
+        public double PredictedMissingEstimatedEffortAtEnd { get; set; }
+        public double PredictedMissingActualDays { get; set; }
         public bool IsUpToDate { get; set; }
-        public List<TraineeLesson>? FinishedLessons { get; set; }
-        public List<TraineeLesson>? AcceptedAndRatedLessons { get; set; }
-        public List<TraineeLesson>? RejectedLessons { get; set; }
-        public List<TraineeLesson>? OpenLessons { get; set; }
-        public List<TraineeLesson>? StartedLessons { get; set; }
+        public List<TraineeLessonViewModel>? FinishedLessons { get; set; }
+        public List<TraineeLessonViewModel>? AcceptedAndRatedLessons { get; set; }
+        public List<TraineeLessonViewModel>? RejectedLessons { get; set; }
+        public List<TraineeLessonViewModel>? OpenLessons { get; set; }
+        public List<TraineeLessonViewModel>? StartedLessons { get; set; }
         public List<ProcessingPause>? ProcessingPauses { get; set; }
     }
 }
