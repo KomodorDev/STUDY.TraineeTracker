@@ -51,7 +51,7 @@ namespace TraineeTracker.Services {
                 PredictedMissingActualDays = snapshot.PredictedMissingActualDays,
                 IsUpToDate = snapshot.IsUpToDate,
 
-                //++++++++++++++++
+                // ++++++++++++++++
 
                 FinishedLessons = lessons
                     .Where(l => l.State == TraineeLessonState.Finished)
@@ -94,7 +94,7 @@ namespace TraineeTracker.Services {
                         State = l.State
                     }).ToList(),
 
-                //++++++++++++++++
+                // ++++++++++++++++
 
                 ProcessingPauses = processingPauses
             };
@@ -214,16 +214,23 @@ namespace TraineeTracker.Services {
         // --------------------------------------------------
         private async Task<double> GetEffectivePresentDaysAsync(ApplicationUser trainee, DateOnly startDate, DateOnly endDate) {
 
+
+            // ++++++++++++++++
+            // Checks
             if (trainee.TraineeStartDate is null || trainee.TraineeEndDate is null)
-                throw new Exception("TraineeStartDate or EndDate is missing");
+                throw new Exception("StartDate or EndDate is missing");
 
-            var email = trainee.Email ?? throw new Exception("E-Mail fehlt");
+            var email = trainee.Email ?? throw new Exception("E-Mail is missing");
 
+            // ++++++++++++++++
+            // Get totalDays
             double totalDays = await GetPresentDaysAsync(startDate, endDate, email);
 
             if (totalDays < 0)
                 return -1;
 
+            // ++++++++++++++++
+            // Get pauseDaysTotal
             double pauseDaysTotal = 0;
 
             foreach (var pause in trainee.ProcessingPauses) {
@@ -242,6 +249,9 @@ namespace TraineeTracker.Services {
                     pauseDaysTotal += pauseDays;
                 }
             }
+
+            // ++++++++++++++++
+            // Calculate effectivePresentDays and return
 
             return totalDays - pauseDaysTotal;
         }
