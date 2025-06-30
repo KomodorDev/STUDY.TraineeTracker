@@ -12,7 +12,7 @@ namespace TraineeTracker.Services
 {
     public class FeedbackService
     {
-        private const int PageSize = 20;
+        private const int _pageSize = 20;
         private readonly IFeedbackRepository      _feedbackRepo;
         private readonly IApplicationUserRepository _userRepo;
 
@@ -81,18 +81,18 @@ namespace TraineeTracker.Services
             List<Feedback> source, int pageNumber)
         {
             int totalItems = source.Count;
-            int totalPages = (int)Math.Ceiling(totalItems / (double)PageSize);
+            int totalPages = (int)Math.Ceiling(totalItems / (double)_pageSize);
 
             if (totalPages > 0 && pageNumber > totalPages)
                 throw new ArgumentOutOfRangeException(nameof(pageNumber),
                                                       $"Maximal {totalPages} Seiten vorhanden.");
 
                 var items = source
-                .Skip((pageNumber - 1) * PageSize)
-                .Take(PageSize)
+                .Skip((pageNumber - 1) * _pageSize)
+                .Take(_pageSize)
                 .Select(f => new FeedbackDashboardDto {
                     FeedbackId = f.FeedbackId,
-                    AuthorName = f.Author.UserName,
+                    AuthorName = f.Author.UserName ?? throw new Exception("Author.UserName can't be null"),
                     SendDate   = f.CreateTime,
                     Comment    = f.Comment
                 })
@@ -101,7 +101,7 @@ namespace TraineeTracker.Services
                 return new Page<FeedbackDashboardDto> {
                     Items      = items,
                     PageNumber = pageNumber,
-                    PageSize   = PageSize,
+                    PageSize   = _pageSize,
                     TotalItems = totalItems
                 };
         }
