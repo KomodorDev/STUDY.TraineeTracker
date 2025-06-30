@@ -111,7 +111,7 @@ namespace TraineeTracker.Services {
             }
 
             if (!(currentUserId == traineeId)) {
-                throw new UnauthorizedAccessException("You can only your own statistics.");
+                throw new UnauthorizedAccessException("You can only view your own statistics.");
             }
 
         }
