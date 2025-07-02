@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using TraineeTracker.Data.ApplicationUsers;
+using TraineeTracker.Data.ProcessingPauses;
 using TraineeTracker.Models.Domain;
 using TraineeTracker.Models.Dtos;
 using TraineeTracker.Services.Admin;
@@ -11,27 +12,23 @@ namespace TraineeTracker.Controllers {
     public class AdminController : Controller {
         private readonly AdminService _adminService;
         private readonly IApplicationUserRepository _applicationUserRepository;
+        private readonly IProcessingPauseRepository _processingPauseRepository;
         private readonly ILogger<AdminController> _logger;
 
-        public AdminController(AdminService adminService, IApplicationUserRepository applicationUserRepository, ILogger<AdminController> logger) {
+        public AdminController(AdminService adminService, IApplicationUserRepository applicationUserRepository, IProcessingPauseRepository processingPauseRepository, ILogger<AdminController> logger) {
             _adminService = adminService;
             _applicationUserRepository = applicationUserRepository;
+            _processingPauseRepository = processingPauseRepository;
             _logger = logger;
         }
 
         [HttpGet("/ManageUsers")]
         public async Task<IActionResult> ShowAdminDashboardView() {
-            var users = await _applicationUserRepository.GetAllAsync();
-            var userRoles = new Dictionary<string, string>();
-            foreach (var user in users) {
-                var roles = await _applicationUserRepository.GetRolesAsync(user);
-                if (roles.Contains("Admin")) {
-                    userRoles[user.Id] = "Admin";
-                } else {
-                    userRoles[user.Id] = roles.First();
-                }
-            }
-            ViewBag.UserRoles = userRoles;
+            var usersTask = _applicationUserRepository.GetAllAsync();
+            var rolesTask = _adminService.GetUserRoles();
+            await Task.WhenAll(usersTask, rolesTask);
+            var users = await usersTask;
+            ViewBag.UserRoles = await rolesTask;
             return View("AdminDashboard", users);
         }
 
@@ -64,12 +61,18 @@ namespace TraineeTracker.Controllers {
             return RedirectToAction("ShowAdminDashboard");
         }
 
+        [HttpGet("/ProcessingBreaks")]
+        public IActionResult ShowManageProcessingPausesView(string traineeId) {
+            var pauses = _processingPauseRepository.GetAllPausesAsync(traineeId);
+            return View("ManageProcessingPauses", pauses);
+        }
+
         [HttpGet("/CreateProcessingPause")]
         public IActionResult ShowCreateProcessingPauseView(string traineeId) {
             return View("CreateProcessingPause");
         }
 
-        [HttpPost]
+        [HttpPost("/CreateProcessingBreak")]
         public async Task<IActionResult> CreateProcessingPauseAsync(ProcessingPauseDto dto) {
             if (!ModelState.IsValid) {
                 return View("CreateProcessingPause", dto);
@@ -77,7 +80,7 @@ namespace TraineeTracker.Controllers {
             var result = await _adminService.CreateProcessingPauseAsync(dto);
             if (!result.Succeeded) {
                 foreach (var message in result.ErrorMessages)
-                ModelState.AddModelError("", message);
+                    ModelState.AddModelError("", message);
                 return View("CreateProcessingPause", dto);
             }
             return RedirectToAction("ShowAdminDashboard");
