@@ -20,19 +20,30 @@ namespace TraineeTracker.Controllers {
         }
 
         [HttpGet("/ManageUsers")]
-        public IActionResult ShowAdminDashboardView() {
-            return View();
+        public async Task<IActionResult> ShowAdminDashboardView() {
+            var users = await _applicationUserRepository.GetAllAsync();
+            var userRoles = new Dictionary<string, string>();
+            foreach (var user in users) {
+                var roles = await _applicationUserRepository.GetRolesAsync(user);
+                if (roles.Contains("Admin")) {
+                    userRoles[user.Id] = "Admin";
+                } else {
+                    userRoles[user.Id] = roles.First();
+                }
+            }
+            ViewBag.UserRoles = userRoles;
+            return View("AdminDashboard", users);
         }
 
         [HttpGet("/CreateUser")]
         public IActionResult ShowCreateUserView() {
-            return View();
+            return View("CreateUser");
         }
 
         [HttpPost]
         public async Task<IActionResult> CreateUserAsync(ApplicationUserDto dto) {
             if (!ModelState.IsValid) {
-                return View(dto);
+                return View("CreateUser", dto);
             }
             var result = await _adminService.CreateUserAsync(dto);
             if (result.Succeeded) {
@@ -41,7 +52,7 @@ namespace TraineeTracker.Controllers {
             foreach (var message in result.ErrorMessages) {
                 ModelState.AddModelError("", message);
             }
-            return View(dto);
+            return View("CreateUser", dto);
         }
 
         [HttpPost]
@@ -50,26 +61,26 @@ namespace TraineeTracker.Controllers {
             if (!success) {
                 return NotFound();
             }
-            return RedirectToAction("ShowAdminDashboardView");
+            return RedirectToAction("ShowAdminDashboard");
         }
 
         [HttpGet("/CreateProcessingPause")]
         public IActionResult ShowCreateProcessingPauseView(string traineeId) {
-            return View();
+            return View("CreateProcessingPause");
         }
 
         [HttpPost]
         public async Task<IActionResult> CreateProcessingPauseAsync(ProcessingPauseDto dto) {
             if (!ModelState.IsValid) {
-                return View(dto);
+                return View("CreateProcessingPause", dto);
             }
             var result = await _adminService.CreateProcessingPauseAsync(dto);
             if (!result.Succeeded) {
                 foreach (var message in result.ErrorMessages)
                 ModelState.AddModelError("", message);
-                return View(dto);
+                return View("CreateProcessingPause", dto);
             }
-            return RedirectToAction("ShowAdminDashboardView");
+            return RedirectToAction("ShowAdminDashboard");
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
