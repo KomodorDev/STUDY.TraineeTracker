@@ -26,7 +26,7 @@
                 <td>@pause.EndDate</td>
                 <td>
                     <form asp-action="DeleteProcessingPause" asp-route-processingPauseId="@pause.ProcessingPauseId"
-                        method="post">
+                        method="post" onsubmit="return confirm('Are you sure you want to delete this Processing Pause?');">
                         <button type="submit" class="btn btn-danger">Delete</button>
                     </form>
                 </td>

@@ -32,7 +32,8 @@
                         @if (ViewBag.UserRoles[user.Id] == "Trainee")
                         {
                             <td>@user.TraineeStartDate - @user.TraineeEndDate</td>
-                            <td><a class="btn btn-primary" asp-action="ShowManageProcessingPausesView" asp-route-traineeId="@user.Id">Manage Processing Breaks</a></td>
+                            <td><a class="btn btn-primary" asp-action="ShowManageProcessingPausesView"
+                                    asp-route-traineeId="@user.Id">Manage Processing Breaks</a></td>
                         }
                         else
                         {
@@ -42,7 +43,8 @@
                         @if (!user.IsClosed)
                         {
                             <td>
-                                <form asp-action="CloseUser" asp-route-userId="@user.Id" method="post">
+                                <form asp-action="CloseUser" asp-route-userId="@user.Id" method="post"
+                                    onsubmit="return confirm('Are you sure you want to close @user.UserName? Processing Pauses, Teachingplans and Statistics will be lost.');">
                                     <button type="submit" class="btn btn-danger">Close User</button>
                                 </form>
                             </td>
