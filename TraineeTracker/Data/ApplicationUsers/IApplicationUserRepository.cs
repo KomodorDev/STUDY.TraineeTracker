@@ -26,6 +26,8 @@ namespace TraineeTracker.Data.ApplicationUsers {
 
         public Task<IEnumerable<ApplicationUser>> GetOpenUsersInRoleAsync(string roleName);
 
+        public Task<IEnumerable<string>> GetRolesAsync(ApplicationUser user);
+
         public Task<ApplicationUser?> GetUserAsync(ClaimsPrincipal principal);
 
         public Task<IEnumerable<ApplicationUser>> GetUsersInRoleAsync(string roleName);

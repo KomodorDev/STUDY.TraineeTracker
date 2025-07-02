@@ -89,6 +89,10 @@ namespace TraineeTracker.Data.ApplicationUsers {
             .ToListAsync();
         }
 
+        public async Task<IEnumerable<string>> GetRolesAsync(ApplicationUser user) {
+            return await _userManager.GetRolesAsync(user);
+        }
+
         public async Task<ApplicationUser?> GetUserAsync(ClaimsPrincipal principal) {
             return await _userManager.GetUserAsync(principal);
         }
