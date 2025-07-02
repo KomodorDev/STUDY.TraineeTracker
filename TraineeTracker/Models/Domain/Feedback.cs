@@ -10,7 +10,8 @@ namespace TraineeTracker.Models.Domain {
             get; set;
         }
 
-        public DateTime CreateTime = DateTime.UtcNow;
+        public DateTime CreateTime { get; set; } = DateTime.UtcNow;
+
 
         public required string PreviousKnowledge { get; set; }
 
