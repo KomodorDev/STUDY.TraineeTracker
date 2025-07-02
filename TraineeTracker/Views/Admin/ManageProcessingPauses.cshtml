@@ -12,6 +12,7 @@
         <tr>
             <th>Start</th>
             <th>End</th>
+            <th></th>
         </tr>
     </thead>
     <tbody>
@@ -19,6 +20,11 @@
             <tr>
                 <td>@pause.StartDate</td>
                 <td>@pause.EndDate</td>
+                <td>
+                    <form asp-action="DeleteProcessingPause" asp-route-processingPauseId="@pause.ProcessingPauseId" method="post">
+                        <button type="submit" class="btn btn-danger">Delete</button>
+                    </form>
+                </td>
             </tr>
         }
     </tbody>
