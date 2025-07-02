@@ -150,7 +150,7 @@ namespace TraineeTracker.Services.Admin {
 
             // Only create processingPause if non-existent
             if (await _processingPauseRepository.ExistsAsync(processingPause)) {
-                return ServiceResult.Failed("A break already exists for this user for this period.");
+                return ServiceResult.Failed("A pause already exists for this user for this period.");
             }
             await _processingPauseRepository.CreateAsync(processingPause);
             return ServiceResult.Success();
