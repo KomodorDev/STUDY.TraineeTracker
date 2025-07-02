@@ -116,7 +116,7 @@ p {
   row-gap: 1.172rem;    /* "25" px */
 }
 
-/* splis the "100"px bar at the top */
+/* splits the "100"px bar at the top */
 .sopro-grid-management .split-header {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -166,7 +166,7 @@ p {
     background-color: #ffffff !important;
     color: #000 !important;
 
-    font-weight: bold;
+    font-weight: 900;
     font-size: 1.406rem; /* "30" px */
 
     height: 3.516rem !important; /* "75" px */
