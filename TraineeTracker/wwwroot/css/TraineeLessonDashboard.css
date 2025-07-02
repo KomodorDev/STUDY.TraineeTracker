@@ -41,12 +41,20 @@
 
 .sopro-card.lesson {
     width: 100%;
-    height: 2.344rem !important; /* "50" px */
+    height: 2.344rem; /* "50" px */
 
-    display: flex;
+    display: grid;
+    grid-template-columns: 1fr 100px 100px 100px; /* "25"px*/
+    gap: 0;
+
     align-items: center;
     flex-shrink: 0;
 
     padding-left: 1.172rem; /* "25" px */
     padding-right: 1.172rem; /* "25" px */
+}
+.sopro-card.lesson > * {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
