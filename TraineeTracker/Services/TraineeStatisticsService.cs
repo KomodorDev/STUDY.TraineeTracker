@@ -145,7 +145,7 @@ namespace TraineeTracker.Services {
                 }
                 catch (InvalidOperationException) {
                     // Case 2: Snapshot does not exist in DB. We create one, store it in DB, and return it
-                    return new TraineeStatisticsSnapshot {
+                    var newSnapshot = new TraineeStatisticsSnapshot {
                         Trainee = trainee,
                         TraineeId = traineeId,
                         SnapshotDateTime = DateTime.Now,
@@ -159,6 +159,9 @@ namespace TraineeTracker.Services {
                         PredictedMissingActualDays = null,
                         IsUpToDate = false
                     };
+
+                    await _traineeStatisticsRepository.CreateAsync(newSnapshot);
+                    return newSnapshot;
                 }
             }
             double lessonDaysCompleted = await CalculateLessonDaysCompletedAsync(traineeId);
