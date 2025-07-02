@@ -29,16 +29,21 @@ body {
   font-family: 'Open Sans', sans-serif;
 }
 
+p {
+  margin: 0;
+}
+
 /* custom drop shadow + round corners */
 .sopro-card {
   box-shadow: 3px 3px 11px 0 rgba(0, 0, 0, 0.2) !important;
   border-radius: 11px;
-
   background-color: white;
+  min-height: 0;  /* to allow scrollbars */
+  height: 100%;
 }
 .sopro-card.big-header {
   display: grid;
-  grid-template-rows: 4.688rem, 1fr; /* "100" px header bar */
+  grid-template-rows: 4.688rem 1fr; /* "100" px header bar */
 }
 .sopro-card.small-header {
   display: grid;
@@ -71,9 +76,20 @@ body {
     flex-direction: column; /* only vertically */
     align-items: flex-start;  /* align left */
 
-    row-gap: 1.172rem;    /* "25" px */
+    row-gap: 1.172rem;  /* "25" px */
+    padding: 1.172rem;  /* "25" px */
+    padding-right: calc(1.172rem + 11px);
 
-    padding: 1.172rem; /* "25" px in every direction */
+    /* scrollability */
+    height: 100%;
+    overflow-y: auto;
+}
+.sopro-inner-card.flex::-webkit-scrollbar {
+  width: 8px;
+}
+.sopro-inner-card.flex::-webkit-scrollbar-thumb {
+  background-color: rgba(0, 0, 0, 0.2);
+  border-radius: 4px;
 }
 
 .sopro-grid-management {
