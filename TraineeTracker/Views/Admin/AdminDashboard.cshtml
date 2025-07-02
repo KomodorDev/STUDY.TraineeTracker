@@ -32,7 +32,7 @@
                         @if (ViewBag.UserRoles[user.Id] == "Trainee")
                         {
                             <td>@user.TraineeStartDate - @user.TraineeEndDate</td>
-                            <td><a class="btn btn-primary" asp-action="ProcessingPauses">Manage Processing Breaks</a></td>
+                            <td><a class="btn btn-primary" asp-action="ShowManageProcessingPausesView" asp-route-traineeId="@user.Id">Manage Processing Breaks</a></td>
                         }
                         else
                         {
