@@ -61,7 +61,7 @@ namespace TraineeTracker.Controllers {
             return RedirectToAction("ShowAdminDashboardView");
         }
 
-        [HttpGet("/ProcessingBreaks")]
+        [HttpGet("/ProcessingPauses")]
         public async Task<IActionResult> ShowManageProcessingPausesView(string traineeId) {
             var userTask = _applicationUserRepository.FindByIdAsync(traineeId);
             var pausesTask = _processingPauseRepository.GetAllPausesAsync(traineeId);
@@ -76,7 +76,7 @@ namespace TraineeTracker.Controllers {
             return View("CreateProcessingPause");
         }
 
-        [HttpPost("/CreateProcessingBreak")]
+        [HttpPost("/CreateProcessingPause")]
         public async Task<IActionResult> CreateProcessingPauseAsync(ProcessingPauseDto dto) {
             if (!ModelState.IsValid) {
                 return View("CreateProcessingPause", dto);
@@ -88,6 +88,17 @@ namespace TraineeTracker.Controllers {
                 return View("CreateProcessingPause", dto);
             }
             return RedirectToAction("ShowAdminDashboard");
+        }
+
+        [HttpPost("/DeleteProcessingPause")]
+        public async Task<IActionResult> DeleteProcessingPauseAsync(int processingPauseId) {
+            var pause = await _processingPauseRepository.FindById(processingPauseId);
+            if (pause == null) {
+                return NotFound();
+            }
+            var traineeId = pause.TraineeId;
+            await _processingPauseRepository.DeleteAsync(pause);
+            return RedirectToAction("ShowManageProcessingPausesView", new { TraineeId = traineeId});
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
