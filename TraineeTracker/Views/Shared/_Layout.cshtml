@@ -1,4 +1,4 @@
-@* by schleale *@
+@* by blaskale & schleale with help from schwepau *@
 
 <!DOCTYPE html>
 <html lang="en">
@@ -10,6 +10,8 @@
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/TraineeTracker.styles.css" asp-append-version="true" />
+
+    @RenderSection("Styles", required: false)
 </head>
 
 <body>
@@ -21,7 +23,7 @@
         }
         else {
             <!-- default nav bar -->
-            <nav class="navbar sopro-navbar navbar-expand-sm sopro-drop-shadow">
+            <nav class="navbar sopro-navbar navbar-expand-sm">
                 <div class="container-fluid">
                     <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
                         <ul class="navbar-nav flex-grow-1">
@@ -55,13 +57,16 @@
             </nav>
         }
     </header>
+    <!-- navbar end -->
 
-    <div class="container">
-        <main role="main" class="pb-3">
+    <div>
+        <main role="main">
             @RenderBody()
         </main>
     </div>
-    @* we dont need a footer *@
+
+    <!-- here could be a footer -->
+
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
