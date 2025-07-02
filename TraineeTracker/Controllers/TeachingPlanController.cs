@@ -34,8 +34,19 @@ namespace TraineeTracker.Controllers
                 return View("ImportDashboard", vm);
             }
 
-            await _teachingPlanService.ImportNewTeachingPlan(model.NewPlanFile, model.NewPlanName);
-            return RedirectToAction(nameof(ImportDashboard));
+            try
+            {
+                await _teachingPlanService.ImportNewTeachingPlan(model.NewPlanFile, model.NewPlanName);
+                return RedirectToAction(nameof(ImportDashboard));
+            }
+            catch (Exception dex)
+            {
+                // nur die Business-Fehler hier behandeln
+                ModelState.AddModelError(nameof(model.NewPlanName), dex.Message);
+                var vm = await _teachingPlanService.BuildImportDashboardAsync();
+                vm.NewPlanName = model.NewPlanName;
+                return View("ImportDashboard", vm);
+            }
         }
 
         [HttpPost]
