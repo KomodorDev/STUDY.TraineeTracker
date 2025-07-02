@@ -104,7 +104,7 @@ namespace TraineeTracker.Services.Admin {
             user.IsClosed = true;
 
             var referenceUpdateTasks = new List<Task>();
-            
+
             if (await _applicationUserRepository.IsInRoleAsync(user, "Trainee")) {
                 foreach (var pause in user.ProcessingPauses.ToList()) {
                     referenceUpdateTasks.Add(_processingPauseRepository.DeleteAsync(pause));
@@ -154,6 +154,38 @@ namespace TraineeTracker.Services.Admin {
             }
             await _processingPauseRepository.CreateAsync(processingPause);
             return ServiceResult.Success();
+        }
+
+        public async Task UpdateProcessingPauseAsync(ProcessingPauseDto dto) {
+            if (!dto.ProcessingPauseId.HasValue) {
+                throw new Exception($"Missing {nameof(dto.ProcessingPauseId)} in {nameof(dto)}");
+            }
+            var pause = await _processingPauseRepository.FindByIdAsync(dto.ProcessingPauseId.Value);
+            if (pause == null) {
+                throw new Exception($"{nameof(dto)} not found.");
+            }
+            var trainee = await _applicationUserRepository.FindByIdAsync(dto.TraineeId);
+            if (trainee == null) {
+                throw new Exception($"{nameof(trainee)} not found.");
+            }
+            pause.TraineeId = dto.TraineeId;
+            pause.Trainee = trainee;
+            pause.StartDate = dto.StartDate;
+            pause.EndDate = dto.EndDate;
+            await _processingPauseRepository.UpdateAsync(pause);
+        }
+
+        public async Task<ProcessingPauseDto> GetProcessingPauseDtoAsync(int processingPauseId) {
+            var pause = await _processingPauseRepository.FindByIdAsync(processingPauseId);
+            if (pause == null) {
+                throw new Exception($"{nameof(pause)} not found.");
+            }
+            return new ProcessingPauseDto {
+                ProcessingPauseId = pause.ProcessingPauseId,
+                TraineeId = pause.TraineeId,
+                StartDate = pause.StartDate,
+                EndDate = pause.EndDate
+            };
         }
     }
 }
