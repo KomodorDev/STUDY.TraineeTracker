@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using TraineeTracker.Data.ApplicationUsers;
 using TraineeTracker.Data.TeachingPlans;
@@ -41,7 +42,7 @@ namespace TraineeTracker.Controllers {
         [HttpGet("/CreateUser")]
         public async Task<IActionResult> ShowCreateUserView() {
             var plans = await _teachingPlanRepository.GetAllTeachingPlansAsync();
-            ViewBag.TeachingPlans = plans;
+            ViewBag.TeachingPlans = new SelectList(plans, "TeachingPlanId", "Name");
             return View("CreateUser", new ApplicationUserDto());
         }
 
