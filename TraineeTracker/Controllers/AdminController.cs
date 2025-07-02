@@ -22,7 +22,7 @@ namespace TraineeTracker.Controllers {
             _logger = logger;
         }
 
-        [HttpGet("/ManageUsers")]
+        [HttpGet("/AdminDashboard")]
         public async Task<IActionResult> ShowAdminDashboardView() {
             var usersTask = _applicationUserRepository.GetAllAsync();
             var rolesTask = _adminService.GetUserRoles();
@@ -94,7 +94,7 @@ namespace TraineeTracker.Controllers {
                     ModelState.AddModelError("", message);
                 return View("CreateProcessingPause", dto);
             }
-            return RedirectToAction("ShowAdminDashboardView");
+            return RedirectToAction("ShowManageProcessingPausesView", new { traineeId = dto.TraineeId });
         }
 
         [HttpPost("/DeleteProcessingPause")]
