@@ -80,7 +80,7 @@
                             <td>@traineeLesson.Lesson.LessonId @traineeLesson.Lesson.Title</td>
                             <td><a href="@traineeLesson.Lesson.LinkUrl" target="_blank">@traineeLesson.Lesson.LinkUrl</a></td>
                             <td>@traineeLesson.Lesson.EstimatedEffort days</td>
-                            <td>@await Html.PartialAsync("_RoleOrStatus", traineeLesson.State.ToString())</td>
+                            <td>@await Html.PartialAsync("Components/_RoleOrStatus", traineeLesson.State.ToString())</td>
                         </tr>
                     }
                 </tbody>
