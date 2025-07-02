@@ -67,6 +67,9 @@ namespace TraineeTracker.Controllers {
             var pausesTask = _processingPauseRepository.GetAllPausesAsync(traineeId);
             await Task.WhenAll(userTask, pausesTask);
             var user = await userTask;
+            if (user == null) {
+                return NotFound();
+            }
             ViewBag.Pauses = await pausesTask;
             return View("ManageProcessingPauses", user);
         }
@@ -74,6 +77,9 @@ namespace TraineeTracker.Controllers {
         [HttpGet("/CreateProcessingPause")]
         public async Task<IActionResult> ShowCreateProcessingPauseView(string traineeId) {
             ViewBag.User = await _applicationUserRepository.FindByIdAsync(traineeId);
+            if (ViewBag.User == null) {
+                return NotFound();
+            }
             return View("CreateProcessingPause", new ProcessingPauseDto { TraineeId = traineeId });
         }
 
@@ -88,7 +94,7 @@ namespace TraineeTracker.Controllers {
                     ModelState.AddModelError("", message);
                 return View("CreateProcessingPause", dto);
             }
-            return RedirectToAction("ShowAdminDashboard");
+            return RedirectToAction("ShowAdminDashboardView");
         }
 
         [HttpPost("/DeleteProcessingPause")]
