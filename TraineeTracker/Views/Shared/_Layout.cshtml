@@ -1,4 +1,4 @@
-﻿@* by schleale *@
+@* by schleale *@
 
 <!DOCTYPE html>
 <html lang="en">
@@ -10,8 +10,6 @@
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/TraineeTracker.styles.css" asp-append-version="true" />
-    @* Open Sans font *@
-    <link href="https://fonts.googleapis.com/css2?family=Open+Sans&display=swap" rel="stylesheet"> 
 </head>
 
 <body>
@@ -23,7 +21,7 @@
         }
         else {
             <!-- default nav bar -->
-            <nav class="navbar custom-navbar navbar-expand-sm custom-drop-shadow">
+            <nav class="navbar sopro-navbar navbar-expand-sm sopro-drop-shadow">
                 <div class="container-fluid">
                     <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
                         <ul class="navbar-nav flex-grow-1">
@@ -69,85 +67,5 @@
     <script src="~/js/site.js" asp-append-version="true"></script>
     @await RenderSectionAsync("Scripts", required: false)
 
-    <style>
-        /* NAVBAR STYLING ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++*/
-        /* overall container */
-        .navbar.custom-navbar {
-            /* !important overrides bootstrap */
-            background-color: #ffffff !important;
-            color: #000 !important;
-
-            font-family: 'Open Sans', sans-serif;
-            font-weight: bold;
-            font-size: 1.406rem;
-
-            height: 3.516rem !important;
-            padding-left: 1.7rem !important;
-            padding-right: 0 !important;
-            display: flex;
-            align-items: center;
-
-            /* rounded bottom corners */
-            border-bottom-left-radius: 10px !important;
-            border-bottom-right-radius: 10px !important;
-        }
-
-        /* nav links container */
-        .navbar.custom-navbar .navbar-nav {
-            display: flex;
-            gap: 1.7rem !important;
-        }
-
-        /* menu items */
-        .navbar.custom-navbar .nav-link {
-            color: #000 !important;
-            font-weight: bold;
-            font-size: 1.406rem;
-
-            text-decoration: none !important;
-            display: inline-block;
-            position: relative;
-        }
-
-        /* logo/text on the left */
-        .navbar.custom-navbar .navbar-brand {
-            color: #000 !important;
-            font-weight: bold;
-            font-size: 1.406rem;
-            margin-right: 0.5rem;
-        }
-
-        /* makandra logo */
-        .navbar-brand img {
-            max-height: 2.6rem;
-            height: auto;
-            width: auto;
-            vertical-align: middle;
-        }
-
-        nav.navbar .container-fluid {
-            padding-right: 0 !important;
-        }
-
-        /* pseudo element, is the underline animaton */
-        .nav-link::after {
-            content: '';
-            position: absolute;
-            left: 50%;
-            bottom: 3px;
-            width: 0%;
-            height: 2px; /* Thickness of the underline */
-            background-color: black;
-            border-radius: 10px;
-            /* animation */
-            transform: translateX(-50%);
-            transition: width 0.3s ease-in-out;
-        }
-
-        .nav-link:hover::after {
-            width: 100%;
-        }
-
-    </style>
 </body>
 </html>

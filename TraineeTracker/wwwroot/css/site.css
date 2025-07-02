@@ -1,3 +1,6 @@
+/* Open Sans font */
+@import url('https://fonts.googleapis.com/css2?family=Open+Sans&display=swap');
+
 html {
   font-size: 14px;
 }
@@ -19,10 +22,151 @@ html {
 }
 
 body {
-  margin-bottom: 60px;
+  /* set font globally */
+  font-family: 'Open Sans', sans-serif;
 }
 
 /* our custom drop shadow, used for navbar and all white elements */
-.custom-drop-shadow {
+.sopro-drop-shadow {
   box-shadow: 4px 4px 15px 0 rgba(0, 0, 0, 0.2) !important;
 }
+
+.sopro-inner-shadow {
+  box-shadow: inset 4px 4px 10px 0 rgba(0, 0, 0, 0.07) !important;
+}
+
+.sopro-grid-management {
+  display: grid;
+  grid-template-columns: 30% 70%;
+  grid-template-rows: 1fr;
+
+  padding: 4.688rem;
+  gap: 3.125rem;
+}
+
+.sopro-grid-lessons {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: 6.25rem 1fr;
+
+  padding: 4.688rem;
+  column-gap: 3.125rem;
+  row-gap: 1.563rem;
+}
+
+.sopro-grid-lessons .full-width-header {
+  grid-column: 1 / -1;
+}
+
+.sopro-button-content {
+  height: 3.125rem;
+  min-width: 7.813rem;
+  cursor: pointer;
+  
+  font-size: 1.25rem;
+  font-weight: 600;
+
+  border-radius: 15px;
+  background-color: #e61d47;
+  transition: background-color 0.2s ease;
+}
+
+.sopro-button-content:hover {
+  filter: brightness(0.9);
+}
+
+.sopro-button-header {
+  height: 3.75rem;
+  min-width: 9.375;
+  cursor: pointer;
+
+  font-size: 1.875;
+  font-weight: 600;
+
+  border-radius: 15px;
+  background-color: #e61d47;
+  transition: background-color 0.2s ease;
+}
+
+.sopro-button-header:hover {
+  filter: brightness(0.9);
+}
+
+/* NAVBAR STYLING ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++*/
+/* overall container */
+.navbar.sopro-navbar {
+    /* !important overrides bootstrap */
+    background-color: #ffffff !important;
+    color: #000 !important;
+
+    font-weight: bold;
+    font-size: 1.406rem;
+
+    height: 3.516rem !important;
+    padding-left: 1.7rem !important;
+    padding-right: 0 !important;
+    display: flex;
+    align-items: center;
+
+    /* rounded bottom corners */
+    border-bottom-left-radius: 15px !important;
+    border-bottom-right-radius: 15px !important;
+}
+
+/* nav links container */
+.navbar.sopro-navbar .navbar-nav {
+    display: flex;
+    gap: 1.7rem !important;
+}
+
+/* menu items */
+.navbar.sopro-navbar .nav-link {
+    color: #000 !important;
+    font-weight: bold;
+    font-size: 1.406rem;
+
+    text-decoration: none !important;
+    display: inline-block;
+    position: relative;
+}
+
+/* logo/text on the left */
+.navbar.sopro-navbar .navbar-brand {
+    color: #000 !important;
+    font-weight: bold;
+    font-size: 1.406rem;
+    margin-right: 0.5rem;
+}
+
+/* makandra logo */
+.navbar-brand img {
+    max-height: 2.6rem;
+    height: auto;
+    width: auto;
+    vertical-align: middle;
+}
+
+nav.navbar .container-fluid {
+    padding-right: 0 !important;
+}
+
+/* pseudo element, is the underline animaton */
+.nav-link::after {
+    content: '';
+    position: absolute;
+    left: 50%;
+    bottom: 3px;
+    width: 0%;
+    height: 2px; /* Thickness of the underline */
+    background-color: black;
+    border-radius: 15px;
+
+    /* animation */
+    transform: translateX(-50%);
+    transition: width 0.3s ease-in-out;
+}
+
+.nav-link:hover::after {
+    width: 100%;
+}
+
