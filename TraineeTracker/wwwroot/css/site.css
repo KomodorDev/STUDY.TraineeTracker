@@ -170,3 +170,41 @@ nav.navbar .container-fluid {
     width: 100%;
 }
 
+/* STATUS AND ROLE TAGS ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ */
+.sopro-tag {
+  height: 25px;
+  width: 110px;
+
+  font-size: 20px;
+  font-weight: 600;
+  color: white;
+  user-select: none; /* prevents text selection */
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 15px;
+}
+.sopro-tag-open {
+  background-color: #626262;
+}
+.sopro-tag-skipped {
+  background-color: #dbdbdb;
+}
+.sopro-tag-started {
+  background-color: #ffb199;
+}
+.sopro-tag-finished {
+  background-color: #fb6770;
+}
+.sopro-tag-rejected {
+  background-color: #e61d47;
+}
+.sopro-tag-accepted {
+  background-image: linear-gradient(to right, #e61d47, #ffb199);
+}
+.sopro-tag-rated {
+  background-color: #dbdbdb;
+  color: #000000;
+}
