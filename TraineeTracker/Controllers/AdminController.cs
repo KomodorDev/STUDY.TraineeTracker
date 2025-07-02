@@ -72,8 +72,9 @@ namespace TraineeTracker.Controllers {
         }
 
         [HttpGet("/CreateProcessingPause")]
-        public IActionResult ShowCreateProcessingPauseView(string traineeId) {
-            return View("CreateProcessingPause");
+        public async Task<IActionResult> ShowCreateProcessingPauseView(string traineeId) {
+            ViewBag.User = await _applicationUserRepository.FindByIdAsync(traineeId);
+            return View("CreateProcessingPause", new ProcessingPauseDto { TraineeId = traineeId });
         }
 
         [HttpPost("/CreateProcessingPause")]
@@ -98,7 +99,7 @@ namespace TraineeTracker.Controllers {
             }
             var traineeId = pause.TraineeId;
             await _processingPauseRepository.DeleteAsync(pause);
-            return RedirectToAction("ShowManageProcessingPausesView", new { TraineeId = traineeId});
+            return RedirectToAction("ShowManageProcessingPausesView", new { TraineeId = traineeId });
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
