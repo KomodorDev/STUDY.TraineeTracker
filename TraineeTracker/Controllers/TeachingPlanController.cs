@@ -1,7 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
+using TraineeTracker.Models.ViewModels;
 using TraineeTracker.Services;
-using TraineeTracker.Models.Domain;
-using TraineeTracker.Data.TeachingPlans;
 
 namespace TraineeTracker.Controllers
 {
@@ -14,57 +13,52 @@ namespace TraineeTracker.Controllers
             _teachingPlanService = teachingPlanService;
         }
 
-        [Route("ImportDashboard")]
         [HttpGet]
-        public async Task<IActionResult> ShowTeachingplanDashboardView()
+        [Route("ImportDashboard")]
+        public async Task<IActionResult> ImportDashboard()
         {
-            var teachingPlans = await _teachingPlanService.GetAllTeachingPlansAsync();
-            return View("ImportDashboard", teachingPlans);
+            // Baut das ViewModel mit allen bestehenden Plänen
+            var vm = await _teachingPlanService.BuildImportDashboardAsync();  // :contentReference[oaicite:0]{index=0}
+            return View("ImportDashboard", vm);
         }
 
-        [HttpPost("import")]
-        public async Task<IActionResult> ImportNewTeachingPlan(IFormFile file, string name)
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ImportNewTeachingPlan(ImportDashboardViewModel model)
         {
-            try
+            if (!ModelState.IsValid)
             {
-                await _teachingPlanService.ImportNewTeachingPlan(file, name);
-                return RedirectToAction("ShowTeachingplanDashboardView");
+                // Bei Validierungsfehlern die Liste neu laden und zurück zur View
+                var vm = await _teachingPlanService.BuildImportDashboardAsync();
+                vm.NewPlanName = model.NewPlanName;
+                return View("ImportDashboard", vm);
             }
-            catch (Exception ex)
-            {
-                ModelState.AddModelError(string.Empty, ex.Message);
-                return View("Error");
-            }
+
+            await _teachingPlanService.ImportNewTeachingPlan(model.NewPlanFile, model.NewPlanName);
+            return RedirectToAction(nameof(ImportDashboard));
         }
 
-        [HttpPost("update")]
-        public async Task<IActionResult> UpdateTeachingPlan(IFormFile file, int teachingPlanId)
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> UpdateTeachingPlan(int teachingPlanId, IFormFile file)
         {
-            try
+            if (file == null)
             {
-                await _teachingPlanService.UpdateTeachingPlan(file, teachingPlanId);
-                return RedirectToAction("ShowTeachingplanDashboardView");
+                ModelState.AddModelError(nameof(file), "Bitte eine Datei auswählen");
+                var vm = await _teachingPlanService.BuildImportDashboardAsync();
+                return View("ImportDashboard", vm);
             }
-            catch (Exception ex)
-            {
-                ModelState.AddModelError(string.Empty, ex.Message);
-                return View("Error");
-            }
+
+            await _teachingPlanService.UpdateTeachingPlan(file, teachingPlanId);
+            return RedirectToAction(nameof(ImportDashboard));
         }
 
-        [HttpPost("delete")]
+        [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteTeachingPlan(int teachingPlanId)
         {
-            try
-            {
-                await _teachingPlanService.DeleteTeachingPlan(teachingPlanId);
-                return RedirectToAction("ShowTeachingplanDashboardView");
-            }
-            catch (Exception ex)
-            {
-                ModelState.AddModelError(string.Empty, ex.Message);
-                return View("Error");
-            }
+            await _teachingPlanService.DeleteTeachingPlan(teachingPlanId);
+            return RedirectToAction(nameof(ImportDashboard));
         }
     }
 }
