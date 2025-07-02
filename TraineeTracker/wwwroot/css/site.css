@@ -1,8 +1,16 @@
+/* mostly by schleale 
+Notes:  .name         for class="name"
+        .name.name2    for class="name name2"
+        .name .name2   for class="name" ... (sub)class="name2"*/
+
 /* Open Sans font */
 @import url('https://fonts.googleapis.com/css2?family=Open+Sans&display=swap');
 
 html {
   font-size: 14px;
+
+  position: relative;
+  min-height: 100%;
 }
 
 @media (min-width: 768px) {
@@ -16,57 +24,88 @@ html {
   box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
 }
 
-html {
-  position: relative;
-  min-height: 100%;
-}
-
 body {
   /* set font globally */
   font-family: 'Open Sans', sans-serif;
 }
 
-/* our custom drop shadow, used for navbar and all white elements */
-.sopro-drop-shadow {
-  box-shadow: 4px 4px 15px 0 rgba(0, 0, 0, 0.2) !important;
+/* custom drop shadow + round corners */
+.sopro-card {
+  box-shadow: 3px 3px 11px 0 rgba(0, 0, 0, 0.2) !important;
+  border-radius: 11px;
+
+  background-color: white;
+}
+.sopro-card.big-header {
+  display: grid;
+  grid-template-rows: 4.688rem, 1fr; /* "100" px header bar */
+}
+.sopro-card.small-header {
+  display: grid;
+  grid-template-rows: 3.516rem 1fr; /* "75" px header bar */
+}
+.sopro-card .header {
+  display: flex;
+  align-items: center;
+  padding-left: 1.172rem; /* "25" px */
+
+  width: 100%;
+  height: 100%;
+}
+.sopro-card .header.thiccboi {
+  color: #e61d47;
+  font-weight: 900;  /* oh boi he thicc */
+  font-size: 1.406rem;  /* "30" px */
 }
 
-.sopro-inner-shadow {
-  box-shadow: inset 4px 4px 10px 0 rgba(0, 0, 0, 0.07) !important;
+.sopro-inner-card {
+  box-shadow: inset 3px 3px 7px 0 rgba(0, 0, 0, 0.07) !important;
+  border-bottom-left-radius: 11px;
+  border-bottom-right-radius: 11px;
+
+  background-color: #f2f2f2;
+}
+.sopro-inner-card.flex {
+    /* alignment */
+    display: flex;
+    flex-direction: column; /* only vertically */
+    align-items: flex-start;  /* align left */
+
+    row-gap: 1.172rem;    /* "25" px */
+
+    padding: 1.172rem; /* "25" px in every direction */
 }
 
 .sopro-grid-management {
   display: grid;
-  grid-template-columns: 30% 70%;
-  grid-template-rows: 1fr;
+  grid-template-columns: 1fr;
+  grid-template-rows: 75px 1fr;  /* "100" px header, fill rest */
 
-  padding: 4.688rem;
-  gap: 3.125rem;
+  padding: 3.516rem;    /* "75" px distance to screen edges and navbar*/
+  column-gap: 2.344rem; /* "50" px */
+  row-gap: 1.172rem;    /* "25" px */
+
+  background-image: linear-gradient(to right, #f9f6f6, #dccfd3);
 }
 
-.sopro-grid-lessons {
+/* splis the "100"px bar at the top */
+.sopro-grid-management .split-header {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  grid-template-rows: 6.25rem 1fr;
+  grid-template-rows: 1fr;
 
-  padding: 4.688rem;
-  column-gap: 3.125rem;
-  row-gap: 1.563rem;
-}
-
-.sopro-grid-lessons .full-width-header {
-  grid-column: 1 / -1;
+  column-gap: 2.344rem; /* "50" px */
 }
 
 .sopro-button-content {
-  height: 3.125rem;
-  min-width: 7.813rem;
+  height: 2.813rem; /* "60" px */
+  min-width: 5.859rem; /* "125" px */
   cursor: pointer;
   
-  font-size: 1.25rem;
-  font-weight: 600;
+  font-size: 1rem; /* "20" px */
+  font-weight: 450;
 
-  border-radius: 15px;
+  border-radius: 11px;
   background-color: #e61d47;
   transition: background-color 0.2s ease;
 }
@@ -76,14 +115,14 @@ body {
 }
 
 .sopro-button-header {
-  height: 3.75rem;
-  min-width: 9.375;
+  height: 2.813rem;  /* "60" px */
+  min-width: 7.031rem; /* "150" px */
   cursor: pointer;
 
-  font-size: 1.875;
-  font-weight: 600;
+  font-size: 1.406; /* "30" px */
+  font-weight: 450;
 
-  border-radius: 15px;
+  border-radius: 11px;
   background-color: #e61d47;
   transition: background-color 0.2s ease;
 }
@@ -95,22 +134,24 @@ body {
 /* NAVBAR STYLING ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++*/
 /* overall container */
 .navbar.sopro-navbar {
-    /* !important overrides bootstrap */
+    /* !important overrides bootstrap or anything really */
     background-color: #ffffff !important;
     color: #000 !important;
 
     font-weight: bold;
-    font-size: 1.406rem;
+    font-size: 1.406rem; /* "30" px */
 
-    height: 3.516rem !important;
+    height: 3.516rem !important; /* "75" px */
     padding-left: 1.7rem !important;
     padding-right: 0 !important;
     display: flex;
     align-items: center;
 
+    box-shadow: 3px 3px 11px 0 rgba(0, 0, 0, 0.2) !important;
+
     /* rounded bottom corners */
-    border-bottom-left-radius: 15px !important;
-    border-bottom-right-radius: 15px !important;
+    border-bottom-left-radius: 11px !important;
+    border-bottom-right-radius: 11px !important;
 }
 
 /* nav links container */
@@ -159,7 +200,7 @@ nav.navbar .container-fluid {
     width: 0%;
     height: 2px; /* Thickness of the underline */
     background-color: black;
-    border-radius: 15px;
+    border-radius: 11px;
 
     /* animation */
     transform: translateX(-50%);
@@ -172,11 +213,11 @@ nav.navbar .container-fluid {
 
 /* STATUS AND ROLE TAGS ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ */
 .sopro-tag {
-  height: 25px;
-  width: 110px;
+  height: 18,75px; /* "25" px */
+  width: 82.5px;   /* "110" px */
 
-  font-size: 20px;
-  font-weight: 600;
+  font-size: 16px;  /* "20" px */
+  font-weight: 450;
   color: white;
   user-select: none; /* prevents text selection */
 
@@ -184,7 +225,7 @@ nav.navbar .container-fluid {
   align-items: center;
   justify-content: center;
 
-  border-radius: 15px;
+  border-radius: 11px;
 }
 .sopro-tag-open {
   background-color: #626262;

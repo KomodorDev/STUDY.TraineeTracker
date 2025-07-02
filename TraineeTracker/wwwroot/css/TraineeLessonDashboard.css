@@ -1,0 +1,48 @@
+/* by schleale */
+
+.sopro-grid-lessons {
+  display: grid;
+  grid-template-columns: 25% 1fr;
+  grid-template-rows: 1fr;
+
+  padding: 3.516rem;    /* "75" px */    
+  column-gap: 2.344rem; /* "50" px */
+
+  height: calc(100vh - 3.516rem);   /* 100% of viewport height - navbar height */
+  width: 100vw;
+
+  background-image: linear-gradient(to right, #f9f6f6, #dccfd3);
+}
+
+.sopro-grid-lessons-left {
+    display: grid;
+    grid-template-columns: 1fr;
+    grid-template-rows: 7.031rem 1fr;   /* "150" px, fill remainder */
+
+    height: 100%;
+
+    row-gap: 1.172rem;    /* "25" px */
+
+    background-color: transparent;
+}
+
+.sopro-grid-lessons-right {
+    display: grid;
+    grid-template-columns: 1fr;
+    grid-template-rows: 3.516rem 1fr;   /* "75" px, fr */
+    
+    height: 100%;
+
+    row-gap: 1.172rem;    /* "25" px */
+
+    background-color: transparent;
+}
+
+.sopro-lesson {
+    width: 100%;
+    height: 2.344rem; /* "50" px */
+
+    display: flex;
+    align-items: center;
+    padding-left: 1.172rem; /* "25" px */
+}
