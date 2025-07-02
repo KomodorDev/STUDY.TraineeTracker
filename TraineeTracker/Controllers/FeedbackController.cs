@@ -6,6 +6,7 @@ using TraineeTracker.Services;
 
 namespace TraineeTracker.Controllers {
     [Authorize]
+    [Route("Feedback")]
     public class FeedbackController : Controller {
         private readonly FeedbackService _feedbackService;
 
@@ -15,39 +16,33 @@ namespace TraineeTracker.Controllers {
         }
 
         // ------------------------------------------------------
-        // GET: /Feedback/Dashboard
-        [Route("FeedbackDashboard")]
-        [HttpGet]
-        public async Task<IActionResult> ShowFeedbackDashboardView() {
-            var viewModel = await _feedbackService.BuildFeedbackDashboardViewModelAsync(User);
+        [Authorize(Roles = "Admin,Mentor")]
+
+        [HttpGet("Dashboard")]
+        public async Task<IActionResult> ShowFeedbackDashboardView(
+                    string filter = "all",
+                    int page = 1,
+                    string sortBy = "date",
+                    bool ascending = false,
+                    string? selectedTraineeId = null,
+                    int? selectedLessonId = null) {
+            var viewModel = await _feedbackService.BuildFeedbackDashboardViewModelAsync(
+                User, filter, page, sortBy, ascending, selectedTraineeId, selectedLessonId);
+
             return View("FeedbackDashboard", viewModel);
         }
 
         // ------------------------------------------------------
-        // GET: /Feedback/All?page=1
-        public async Task<IActionResult> All(int page = 1) {
-            var allPage = await _feedbackService.GetAllFeedbacksAsync(page);
-            return View(allPage);
-        }
-
-        // ------------------------------------------------------
-        // GET: /Feedback/Unread?page=1
-        public async Task<IActionResult> Unread(int page = 1) {
-            var unreadPage = await _feedbackService.GetUnreadFeedbacksAsync(User, page);
-            return View(unreadPage);
-        }
-        // ------------------------------------------------------
-        // GET: /Feedback/Read?page=1
-        public async Task<IActionResult> Read(int page = 1) {
-            var readPage = await _feedbackService.GetReadFeedbacksAsync(User, page);
-            return View(readPage);
-        }
-
-        // ------------------------------------------------------
         // POST: /Feedback/MarkAsRead
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> MarkAsRead(int feedbackId, int page = 1) {
+        [HttpPost("MarkAsRead")]
+        public async Task<IActionResult> MarkAsRead(
+            int feedbackId,
+            string filter = "all",
+            int page = 1,
+            string sortBy = "date",
+            bool ascending = false,
+            string? selectedTraineeId = null,
+            int? selectedLessonId = null) {
             await _feedbackService.MarkFeedbackAsReadAsync(User, feedbackId);
 
             // 1) Referer-Header auslesen
@@ -58,7 +53,47 @@ namespace TraineeTracker.Controllers {
                 return Redirect(referer);
 
             // Fallback: Dashboard
-            return RedirectToAction(nameof(ShowFeedbackDashboardView));
+            return RedirectToAction(
+                actionName: "Dashboard",
+                controllerName: "Feedback",
+                routeValues: new {
+                    filter,
+                    page,
+                    sortBy,
+                    ascending,
+                    selectedTraineeId,
+                    selectedLessonId
+                });
+        }
+
+        // ------------------------------------------------------
+        [HttpPost("MarkAsUnread")]
+        public async Task<IActionResult> MarkAsUnread(
+            int feedbackId,
+            string filter = "all",
+            int page = 1,
+            string sortBy = "date",
+            bool ascending = false,
+            string? selectedTraineeId = null,
+            int? selectedLessonId = null) {
+            await _feedbackService.MarkFeedbackAsUnreadAsync(User, feedbackId);
+
+            var referer = Request.Headers["Referer"].ToString();
+
+            if (!string.IsNullOrEmpty(referer) && Url.IsLocalUrl(referer))
+                return Redirect(referer);
+
+            return RedirectToAction(
+                actionName: "Dashboard",
+                controllerName: "Feedback",
+                routeValues: new {
+                    filter,
+                    page,
+                    sortBy,
+                    ascending,
+                    selectedTraineeId,
+                    selectedLessonId
+                });
         }
 
         // ------------------------------------------------------
