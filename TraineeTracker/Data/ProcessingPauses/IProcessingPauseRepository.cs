@@ -5,9 +5,11 @@ namespace TraineeTracker.Data.ProcessingPauses
 {
     public interface IProcessingPauseRepository
     {
+        public Task CreateAsync(ProcessingPause processingPause);
+
         public Task<bool> ExistsAsync(ProcessingPause processingPause);
 
-        public Task CreateAsync(ProcessingPause processingPause);
+        public Task<ProcessingPause?> FindById(int processingPauseId);
 
         public Task UpdateAsync(ProcessingPause processingPause);
 
