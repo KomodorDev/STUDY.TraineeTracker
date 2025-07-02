@@ -11,26 +11,15 @@ using TraineeTracker.Models.ViewModels;
 namespace TraineeTracker.Services {
     public class FeedbackService {
         private const int _pageSize = 20;
-        private readonly IFeedbackRepository _feedbackRepo;
-        private readonly IApplicationUserRepository _userRepo;
+        private readonly IFeedbackRepository _databaseFeedbackRepository;
+        private readonly IApplicationUserRepository _databaseApplicaionUserRepository;
 
         // ------------------------------------------------------
         public FeedbackService(
             IFeedbackRepository feedbackRepo,
             IApplicationUserRepository userRepo) {
-            _feedbackRepo = feedbackRepo;
-            _userRepo = userRepo;
-        }
-
-        // ------------------------------------------------------
-        private async Task<ApplicationUser> GetUserFromPrincipalAsync(ClaimsPrincipal userPrincipal) {
-            var userId = userPrincipal
-            .FindFirstValue(ClaimTypes.NameIdentifier)
-            ?? throw new UnauthorizedAccessException("User nicht authentifiziert.");
-
-            return await _userRepo
-            .FindByIdAsync(userId)
-            ?? throw new UnauthorizedAccessException("User nicht gefunden.");
+            _databaseFeedbackRepository = feedbackRepo;
+            _databaseApplicaionUserRepository = userRepo;
         }
 
         // ------------------------------------------------------
@@ -39,45 +28,42 @@ namespace TraineeTracker.Services {
                 throw new ArgumentOutOfRangeException(nameof(pageNumber));
 
             // Alle Feedbacks laden und sortieren
-            var all = await _feedbackRepo.GetAllFeedbacksWithLessonAndAuthorAndReadByUsersAsync();
+            var all = await _databaseFeedbackRepository.GetAllFeedbacksWithLessonAndAuthorAndReadByUsersAsync();
 
 
             return CreatePagedResult(all, pageNumber);
         }
 
         // ------------------------------------------------------
-        public async Task<Page<FeedbackDashboardDto>> GetUnreadFeedbacksAsync(
-            ClaimsPrincipal userPrincipal, int pageNumber) {
+        public async Task<Page<FeedbackDashboardDto>> GetUnreadFeedbacksAsync(ClaimsPrincipal userPrincipal, int pageNumber) {
             if (pageNumber < 1)
                 throw new ArgumentOutOfRangeException(nameof(pageNumber));
 
-            var appUser = await GetUserFromPrincipalAsync(userPrincipal);
+            var appUser = await _databaseApplicaionUserRepository.GetUserAsync(userPrincipal);
 
             // Nur unge­lesene Feedbacks für diesen User
-            var unread = await _feedbackRepo.GetAllFeedbacksUnreadByUserWithLessonAndAuthorAndReadByUsersAsync(appUser);
+            var unread = await _databaseFeedbackRepository.GetAllFeedbacksUnreadByUserWithLessonAndAuthorAndReadByUsersAsync(appUser!);
 
             return CreatePagedResult(unread, pageNumber);
         }
 
         // ------------------------------------------------------
-        public async Task<Page<FeedbackDashboardDto>> GetReadFeedbacksAsync(
-            ClaimsPrincipal userPrincipal, int pageNumber) {
+        public async Task<Page<FeedbackDashboardDto>> GetReadFeedbacksAsync(ClaimsPrincipal userPrincipal, int pageNumber) {
             if (pageNumber < 1)
                 throw new ArgumentOutOfRangeException(nameof(pageNumber));
 
             // 1) Aktuellen User ermitteln
-            var appUser = await GetUserFromPrincipalAsync(userPrincipal);
+            var appUser = await _databaseApplicaionUserRepository.GetUserAsync(userPrincipal);
 
             // 2) Gelesene Feedbacks (ReadByUsers enthält den aktuellen User)
-            var read = await _feedbackRepo.GetAllFeedbacksReadByUserWithLessonAndAuthorAndReadByUsersAsync(appUser);
+            var read = await _databaseFeedbackRepository.GetAllFeedbacksReadByUserWithLessonAndAuthorAndReadByUsersAsync(appUser!);
 
             // 3) Ergebnis paginieren
             return CreatePagedResult(read, pageNumber);
         }
 
         // ------------------------------------------------------
-        private Page<FeedbackDashboardDto> CreatePagedResult(
-            List<Feedback> source, int pageNumber) {
+        private Page<FeedbackDashboardDto> CreatePagedResult(List<Feedback> source, int pageNumber) {
             int totalItems = source.Count;
             int totalPages = (int)Math.Ceiling(totalItems / (double)_pageSize);
 
@@ -107,18 +93,18 @@ namespace TraineeTracker.Services {
         // ------------------------------------------------------
         public async Task MarkFeedbackAsReadAsync(ClaimsPrincipal userPrincipal, int feedbackId) {
             // 1) Aktuellen User holen
-            var appUser = await GetUserFromPrincipalAsync(userPrincipal);
+            var appUser = await _databaseApplicaionUserRepository.GetUserAsync(userPrincipal);
 
             // 2) Feedback mit ReadByUsers laden
-            var feedback = await _feedbackRepo
+            var feedback = await _databaseFeedbackRepository
             .GetFeedbackByIDWithLessonAndAuthorAndReadByUsersAsync(feedbackId)
                 ?? throw new KeyNotFoundException($"Feedback mit ID {feedbackId} nicht gefunden.");
 
             // 3) Prüfen, ob er es schon gelesen hat
-            if (!feedback.ReadByUsers.Any(u => u.Id == appUser.Id)) {
+            if (!feedback.ReadByUsers.Any(u => u.Id == appUser!.Id)) {
                 // 4) Wenn nicht, zur Liste hinzufügen und speichern
-                feedback.ReadByUsers.Add(appUser);
-                await _feedbackRepo.UpdateAsync(feedback);
+                feedback.ReadByUsers.Add(appUser!);
+                await _databaseFeedbackRepository.UpdateAsync(feedback);
             }
         }
 
