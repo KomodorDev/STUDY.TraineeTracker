@@ -137,10 +137,32 @@ namespace TraineeTracker.Services {
 
                 // Return Fallback Snapshot if no API Access
                 Console.WriteLine("⚠️ API-Error – use latest snapshot.");
-                // We need to factor in the case that a trainee has no snapshot here yet and need to build one and fill it all with zeros.
-                var fallbackSnapshot = await _traineeStatisticsRepository.GetTraineeStatisticsSnapshotAsync(traineeId);
-                fallbackSnapshot.IsUpToDate = false;
-                return fallbackSnapshot;
+                try {
+                    // Case 1: Snapshot in DB exists and is returned
+                    var fallbackSnapshot = await _traineeStatisticsRepository.GetTraineeStatisticsSnapshotAsync(traineeId);
+                    fallbackSnapshot.IsUpToDate = false;
+                    return fallbackSnapshot;
+                }
+                catch (InvalidOperationException) {
+                    // Case 2: Snapshot does not exist in DB. We create one, store it in DB, and return it
+                    var newSnapshot = new TraineeStatisticsSnapshot {
+                        Trainee = trainee,
+                        TraineeId = traineeId,
+                        SnapshotDateTime = DateTime.Now,
+                        DaysPresentTotal = null,
+                        DaysPresentTillToday = null,
+                        LessonDaysCompleted = null,
+                        LessonDaysOpen = null,
+                        LessonDaysBuffer = null,
+                        Speed = null,
+                        PredictedMissingEstimatedEffortAtEnd = null,
+                        PredictedMissingActualDays = null,
+                        IsUpToDate = false
+                    };
+
+                    await _traineeStatisticsRepository.CreateAsync(newSnapshot);
+                    return newSnapshot;
+                }
             }
             double lessonDaysCompleted = await CalculateLessonDaysCompletedAsync(traineeId);
             double lessonDaysOpen = await CalculateLessonDaysOpenAsync(traineeId);
