@@ -10,6 +10,11 @@ namespace TraineeTracker.Data.ProcessingPauses {
             _context = context;
         }
 
+        public async Task CreateAsync(ProcessingPause processingPause) {
+            await _context.ProcessingPauses.AddAsync(processingPause);
+            await _context.SaveChangesAsync();
+        }
+
         public async Task<bool> ExistsAsync(ProcessingPause processingPause) {
             return await _context.ProcessingPauses.AnyAsync(p =>
                 p.TraineeId == processingPause.TraineeId &&
@@ -18,9 +23,8 @@ namespace TraineeTracker.Data.ProcessingPauses {
             );
         }
 
-        public async Task CreateAsync(ProcessingPause processingPause) {
-            await _context.ProcessingPauses.AddAsync(processingPause);
-            await _context.SaveChangesAsync();
+        public async Task<ProcessingPause?> FindById(int processingPauseId) {
+            return await _context.ProcessingPauses.FirstOrDefaultAsync(p => p.ProcessingPauseId == processingPauseId);
         }
 
         public async Task UpdateAsync(ProcessingPause processingPause) {
