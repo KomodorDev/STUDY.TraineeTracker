@@ -23,7 +23,7 @@ namespace TraineeTracker.Data.ProcessingPauses {
             );
         }
 
-        public async Task<ProcessingPause?> FindById(int processingPauseId) {
+        public async Task<ProcessingPause?> FindByIdAsync(int processingPauseId) {
             return await _context.ProcessingPauses.FirstOrDefaultAsync(p => p.ProcessingPauseId == processingPauseId);
         }
 

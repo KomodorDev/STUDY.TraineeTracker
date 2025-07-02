@@ -9,7 +9,7 @@ namespace TraineeTracker.Data.ProcessingPauses
 
         public Task<bool> ExistsAsync(ProcessingPause processingPause);
 
-        public Task<ProcessingPause?> FindById(int processingPauseId);
+        public Task<ProcessingPause?> FindByIdAsync(int processingPauseId);
 
         public Task UpdateAsync(ProcessingPause processingPause);
 
