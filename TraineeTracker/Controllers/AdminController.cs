@@ -46,7 +46,7 @@ namespace TraineeTracker.Controllers {
             return View("CreateUser", new ApplicationUserDto());
         }
 
-        [HttpPost]
+        [HttpPost("/CreateUser")]
         public async Task<IActionResult> CreateUserAsync(ApplicationUserDto dto) {
             if (!ModelState.IsValid) {
                 return View("CreateUser", dto);
