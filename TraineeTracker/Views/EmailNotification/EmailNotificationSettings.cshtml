@@ -4,67 +4,116 @@
     ViewData["Title"] = "Notification Settings";
 }
 
-<link rel="stylesheet" href="~/css/notification_temp.css" />
+<link rel="stylesheet" href="~/css/EmailNotificationSettings_temp
+.css" />
 
-<h2>@ViewData["Title"]</h2>
+<div class="card">
+    <div class="card-header">@ViewData["Title"]</div>
 
-<form asp-action="SaveEmailNotificationSettingChange" method="post" class="notification-settings-form">
+    <form asp-action="SaveEmailNotificationSettingChange" method="post" class="notification-settings-form">
 
-    <div>
-        <label>
-            <input type="checkbox" asp-for="ReceiveSkippedNotifications" />
-            Notify when lesson is marked as "Skipped"
-        </label>
-    </div>
+        <div class="notification-setting">
+            <label class="status-label">
+                <input type="checkbox" asp-for="ReceiveSkippedNotifications" />
+                Notify when lesson is marked as
+                <span class="state-tag state-skipped">Skipped</span>
+            </label>
+        </div>
 
-    <div>
-        <label>
-            <input type="checkbox" asp-for="ReceiveOpenNotifications" />
-            Notify when lesson is marked as "Open"
-        </label>
-    </div>
+        <div class="notification-setting">
+            <label class="status-label">
+                <input type="checkbox" asp-for="ReceiveOpenNotifications" />
+                Notify when lesson is marked as
+                <span class="state-tag state-open">Open</span>
+            </label>
+        </div>
 
-    <div>
-        <label>
-            <input type="checkbox" asp-for="ReceiveStartedNotifications" />
-            Notify when lesson is marked as "Started"
-        </label>
-    </div>
+        <div class="notification-setting">
+            <label class="status-label">
+                <input type="checkbox" asp-for="ReceiveStartedNotifications" />
+                Notify when lesson is marked as
+                <span class="state-tag state-started">Started</span>
+            </label>
+        </div>
 
-    <div>
-        <label>
-            <input type="checkbox" asp-for="ReceiveFinishedNotifications" />
-            Notify when lesson is marked as "Finished"
-        </label>
-    </div>
+        <div class="notification-setting">
+            <label class="status-label">
+                <input type="checkbox" asp-for="ReceiveFinishedNotifications" />
+                Notify when lesson is marked as
+                <span class="state-tag state-finished">Finished</span>
+            </label>
+        </div>
 
-    <div>
-        <label>
-            <input type="checkbox" asp-for="ReceiveRejectedNotifications" />
-            Notify when lesson is marked as "Rejected"
-        </label>
-    </div>
+        <div class="notification-setting">
+            <label class="status-label">
+                <input type="checkbox" asp-for="ReceiveRejectedNotifications" />
+                Notify when lesson is marked as
+                <span class="state-tag state-rejected">Rejected</span>
+            </label>
+        </div>
 
-    <div>
-        <label>
-            <input type="checkbox" asp-for="ReceiveAcceptedNotifications" />
-            Notify when lesson is marked as"Accepted"
-        </label>
-    </div>
+        <div class="notification-setting">
+            <label class="status-label">
+                <input type="checkbox" asp-for="ReceiveAcceptedNotifications" />
+                Notify when lesson is marked as
+                <span class="state-tag state-accepted">Accepted</span>
+            </label>
+        </div>
 
-    <div>
-        <label>
-            <input type="checkbox" asp-for="ReceiveRatedNotifications" />
-            Notify when lesson is marked as "Rated"
-        </label>
-    </div>
+        <div class="notification-setting">
+            <label class="status-label">
+                <input type="checkbox" asp-for="ReceiveRatedNotifications" />
+                Notify when lesson is marked as
+                <span class="state-tag state-rated">Rated</span>
+            </label>
+        </div>
 
-    <div>
-        <label>
-            <input type="checkbox" asp-for="ReceiveImportChangeNotifications" />
-            Notify when teaching plan is updated
-        </label>
-    </div>
+        <div class="notification-setting">
+            <label>
+                <input type="checkbox" asp-for="ReceiveImportChangeNotifications" />
+                Notify when teaching plan is updated
+            </label>
+        </div>
 
-    <button type="submit">Save Settings</button>
-</form>
+        <button type="submit" class="button">Save Settings</button>
+    </form>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const form = document.querySelector("form");
+    const saveButton = form.querySelector("button[type='submit']");
+
+    form.addEventListener("submit", function (event) {
+      event.preventDefault(); // ⛔ stop immediate submit
+
+      // Drehung starten
+      saveButton.classList.add("animate-spin");
+
+      // Button-Position im Viewport
+      const rect = saveButton.getBoundingClientRect();
+      const x = (rect.left + rect.width / 2) / window.innerWidth;
+      const y = (rect.top + rect.height / 2) / window.innerHeight;
+
+      // Konfetti mehrfach feuern
+      for (let i = 0; i < 3; i++) {
+        setTimeout(() => {
+          confetti({
+            particleCount: 50,
+            spread: 60,
+            startVelocity: 35,
+            origin: { x, y }
+          });
+        }, i * 150);
+      }
+
+      // Nach Effekt: Animation zurücksetzen + Submit absenden
+      setTimeout(() => {
+        saveButton.classList.remove("animate-spin");
+        form.submit(); // ✅ jetzt tatsächlich absenden
+      }, 1200);
+    });
+  });
+</script>
