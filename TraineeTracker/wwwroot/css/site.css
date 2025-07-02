@@ -1,3 +1,6 @@
+/* Open Sans font */
+@import url('https://fonts.googleapis.com/css2?family=Open+Sans&display=swap');
+
 html {
   font-size: 14px;
 }
@@ -19,7 +22,8 @@ html {
 }
 
 body {
-  margin-bottom: 60px;
+  /* set font globally */
+  font-family: 'Open Sans', sans-serif;
 }
 
 /* our custom drop shadow, used for navbar and all white elements */
@@ -75,7 +79,7 @@ body {
   height: 3.75rem;
   min-width: 9.375;
   cursor: pointer;
-  
+
   font-size: 1.875;
   font-weight: 600;
 
