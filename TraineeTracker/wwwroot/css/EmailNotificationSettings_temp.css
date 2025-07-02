@@ -1,22 +1,224 @@
-.notification-settings-form {
-    max-width: 600px;
-    margin: 2rem auto;
-    padding: 1.5rem;
-    border: 1px solid #ccc;
-    border-radius: 8px;
-    background-color: #fdfdfd;
-}
-
-.notification-settings-form div {
-    margin-bottom: 0.8rem;
-}
-
-.notification-settings-form label {
+html {
+    font-size: 14px;
+  }
+  
+  @media (min-width: 768px) {
+    /* size for screens >768px wide, aka basically standard size*/
+    html {
+      font-size: 16px;
+    }
+  }
+  
+  .btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
+    box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
+  }
+  
+  html {
+    position: relative;
+    min-height: 100%;
+  }
+  
+  body {
+    margin-bottom: 60px;
+  }
+  
+  /* our custom drop shadow, used for navbar and all white elements */
+  .custom-drop-shadow {
+    box-shadow: 4px 4px 15px 0 rgba(0, 0, 0, 0.2) !important;
+  }
+  
+  /* === STATUS TAGS === */
+  .status-tag {
+    display: inline-block;
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 0.85rem;
     font-weight: 500;
-}
-
-.notification-settings-form button {
-    margin-top: 1rem;
-    padding: 0.5rem 1rem;
+    color: #fff;
+    text-align: center;
+    min-width: 80px;
+  }
+  
+  .status-open       { background-color: #626262; }
+  .status-skipped    { background-color: #dbdbdb; color: #000; }
+  .status-started    { background-color: #ffb199; }
+  .status-finished   { background-color: #fb6770; }
+  .status-rejected   { background-color: #e61d47; }
+  .status-accepted   {
+    background-image: linear-gradient(to right, #e61d47, #ffb199);
+  }
+  .status-rated      { background-color: #dbdbdb; color: #000; }
+  
+  /* === BUTTONS === */
+  .button {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 8px;
+    background-color: #fb6770;
+    color: white;
     font-size: 1rem;
-}
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+  }
+  
+  .button:hover {
+    background-color: #e35050;
+    transform: scale(1.02);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+  }
+  
+  .button:active {
+    transform: scale(0.98);
+    background-color: #d03c3c;
+  }
+
+  .button.animate-spin {
+    animation: spin 0.6s ease-in-out;
+  }
+  
+  @keyframes spin {
+    0%   { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+  
+/*   .button {
+    padding: 6px 16px;
+    border: none;
+    border-radius: 6px;
+    background-color: #fb6770;
+    color: #fff;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+  }
+  
+  .button:hover {
+    background-color: #e35050;
+  }
+  
+  .button-secondary {
+    background-color: #dbdbdb;
+    color: #000;
+  }
+  
+  .button-secondary:hover {
+    background-color: #c0c0c0;
+  } */
+  
+  /* === INPUT FIELDS === */
+  .input-field {
+    width: 100%;
+    padding: 8px 12px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 1rem;
+    margin-bottom: 12px;
+  }
+  
+  .input-field:focus {
+    outline: none;
+    border-color: #fb6770;
+    box-shadow: 0 0 3px rgba(251, 103, 112, 0.5);
+  }
+  
+  /* === CARDS === */
+  .card {
+    background-color: #fff;
+    border-radius: 12px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+    padding: 16px;
+    margin-top: 32px; /* oder mehr, z. B. 48px */
+    margin-bottom: 16px;
+  }
+  
+  .card-header {
+    font-size: 1.2rem;
+    font-weight: 600;
+    margin-bottom: 8px;
+  }
+  
+  .card-content {
+    font-size: 0.95rem;
+    color: #444;
+  }
+  
+
+/* === BASIS-STYLING FÃœR STATUS-TAGS === */
+.state-tag {
+    width: 110px;
+    height: 25px;
+    border: none;
+    cursor: default;
+    border-radius: 15px;
+    font-size: 0.85rem;
+    font-weight: 500;
+    text-align: center;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  /* === HINTERGRUNDFARBEN === */
+  .state-open {
+    background-color: #626262;
+    color: #ffffff;
+  }
+  
+  .state-skipped {
+    background-color: #dbdbdb;
+    color: #000000;
+  }
+  
+  .state-started {
+    background-color: #ffb199;
+    color: #ffffff;
+  }
+  
+  .state-finished {
+    background-color: #fb6770;
+    color: #ffffff;
+  }
+  
+  .state-rejected {
+    background-color: #e61d47;
+    color: #ffffff;
+  }
+  
+  .state-accepted {
+    background-image: linear-gradient(to right, #e61d47, #ffb199);
+    color: #ffffff;
+  }
+  
+  .state-rated {
+    background-color: #dbdbdb;
+    color: #000000;
+  }
+  .filter-button.active {
+    background-color: #fb6770;
+    color: white;
+  }
+  
+  /* === CARD GRID === */
+  .card-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+  }
+  
+  .card-grid .card {
+    flex: 1 1 300px;
+  }
+  
+  .notification-settings-form {
+    max-width: 600px;
+  }
+  
+  .notification-setting {
+    margin-bottom: 16px;
+    font-size: 1rem;
+  }
+  
+  .status-label span.status-tag {
+    margin-left: 8px;
+  }
