@@ -73,7 +73,7 @@
         <!-- Lessons -->
         <table class="sopro-card small-header">
             <thead class="header thiccboi">
-                <tr>
+                <tr class="sopro-table-format">
                     <th>Name</th>
                     <th>URL</th>
                     <th>Est.</th>
@@ -82,7 +82,7 @@
             </thead>
             <tbody class="sopro-inner-card flex">
                 @foreach (var traineeLesson in (Model.TraineeLessons ?? throw new Exception("Empty Traineelesson ...somehow"))) {
-                    <tr class="sopro-card lesson"
+                    <tr class="sopro-card sopro-table-format"
                         data-lesson-id="@traineeLesson.TraineeLessonId"     @* inserts id *@
                         data-bs-toggle="modal"                              @* click -> modal window *@
                         data-bs-target="#lessonDetailModal"                 @* points to modal with id lessonDetailModal *@
@@ -99,17 +99,64 @@
                         </td>
                     </tr>
                 }
-                <tr class="sopro-card lesson"><td>Lesson</td></tr>
-                <tr class="sopro-card lesson"><td>Lesson</td></tr>
-                <tr class="sopro-card lesson"><td>Lesson</td></tr>
-                <tr class="sopro-card lesson"><td>Lesson</td></tr>
-                <tr class="sopro-card lesson"><td>Lesson</td></tr>
-                <tr class="sopro-card lesson"><td>Lesson</td></tr>
-                <tr class="sopro-card lesson"><td>Lesson</td></tr>
-                <tr class="sopro-card lesson"><td>Lesson</td></tr>
-                <tr class="sopro-card lesson"><td>Lesson</td></tr>
-                <tr class="sopro-card lesson"><td>Lesson</td></tr>
+                <tr class="sopro-card sopro-table-format"><td>Lesson</td></tr>
+                <tr class="sopro-card sopro-table-format"><td>Lesson</td></tr>
+                <tr class="sopro-card sopro-table-format"><td>Lesson</td></tr>
+                <tr class="sopro-card sopro-table-format"><td>Lesson</td></tr>
+                <tr class="sopro-card sopro-table-format"><td>Lesson</td></tr>
+                <tr class="sopro-card sopro-table-format"><td>Lesson</td></tr>
+                <tr class="sopro-card sopro-table-format"><td>Lesson</td></tr>
+                <tr class="sopro-card sopro-table-format"><td>Lesson</td></tr>
+                <tr class="sopro-card sopro-table-format"><td>Lesson</td></tr>
+                <tr class="sopro-card sopro-table-format"><td>Lesson</td></tr>
+                <tr class="sopro-card sopro-table-format"><td>Lesson</td></tr>
             </tbody>
         </table>
     </section>
+
+    <!-- Bootstrap stuff, dont really understand -->
+    <div class="modal fade" id="lessonDetailModal" tabindex="-1" aria-labelledby="lessonDetailModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-scrollable">
+            <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="lessonDetailModalLabel">Lesson Details</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body" id="lessonDetailModalBody">
+                <div class="text-center p-5">
+                <div class="spinner-border text-primary" role="status"></div>
+                <p class="mt-3">Loading...</p>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const rows = document.querySelectorAll(".lesson-row");
+
+        rows.forEach(row => {
+            row.addEventListener("click", function () {
+                const lessonId = this.dataset.lessonId;
+                const modalBody = document.getElementById("lessonDetailModalBody");
+
+                modalBody.innerHTML = `
+                    <div class="text-center p-5">
+                        <div class="spinner-border text-primary" role="status"></div>
+                        <p class="mt-3">Loading...</p>
+                    </div>`;
+
+                fetch(`/TraineeLessonDetailController/ShowTraineeLessonDetailView?traineeLessonId=${lessonId}`)
+                    .then(response => response.text())
+                    .then(html => {
+                        modalBody.innerHTML = html;
+                    })
+                    .catch(err => {
+                        modalBody.innerHTML = `<p class="text-danger">Failed to load lesson details.</p>`;
+                        console.error(err);
+                    });
+            });
+        });
+    });
+</script>
