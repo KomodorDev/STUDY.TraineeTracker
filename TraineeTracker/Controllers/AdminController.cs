@@ -22,6 +22,16 @@ namespace TraineeTracker.Controllers {
         [HttpGet("/ManageUsers")]
         public async Task<IActionResult> ShowAdminDashboardView() {
             var users = await _applicationUserRepository.GetAllAsync();
+            var userRoles = new Dictionary<string, string>();
+            foreach (var user in users) {
+                var roles = await _applicationUserRepository.GetRolesAsync(user);
+                if (roles.Contains("Admin")) {
+                    userRoles[user.Id] = "Admin";
+                } else {
+                    userRoles[user.Id] = roles.First();
+                }
+            }
+            ViewBag.UserRoles = userRoles;
             return View("AdminDashboardView", users);
         }
 
