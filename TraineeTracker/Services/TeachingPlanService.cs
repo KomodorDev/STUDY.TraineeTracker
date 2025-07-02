@@ -53,6 +53,7 @@ namespace TraineeTracker.Services {
             var lessons = MapDtosToLessons(dtos);
 
             foreach(var lesson in lessons) {
+                await ValidateLesson(lesson);
                 await _lessonRepo.CreateAsync(lesson);
             }
 
@@ -137,6 +138,12 @@ namespace TraineeTracker.Services {
         private void ValidateName(string name) {
             if (string.IsNullOrWhiteSpace(name))
                 throw new ArgumentException("Ungültiger Name!");
+        }
+
+        private async Task ValidateLesson(Lesson l) {
+            bool exists = await _lessonRepo.ExistsAsync(l);
+            if(exists)
+                throw new ArgumentException("Dieser Teachingplan existiert schon!");
         }
 
         private async Task<string> ReadJsonAsync(IFormFile file) {
