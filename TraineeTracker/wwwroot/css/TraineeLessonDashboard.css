@@ -10,8 +10,6 @@
 
   height: calc(100vh - 3.516rem);   /* 100% of viewport height - navbar height */
   width: 100vw;
-
-  background-image: linear-gradient(to right, #f9f6f6, #dccfd3);
 }
 
 .sopro-grid-lessons-left {
