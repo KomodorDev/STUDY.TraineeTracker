@@ -27,6 +27,10 @@ html {
 body {
   /* set font globally */
   font-family: 'Open Sans', sans-serif;
+  background-image: linear-gradient(to right, #f9f6f6, #dccfd3);
+}
+body.sopro-special-bg {
+  background-image: linear-gradient(to right, #ff0844, #ffb199);
 }
 
 p {
@@ -110,8 +114,6 @@ p {
   padding: 3.516rem;    /* "75" px distance to screen edges and navbar*/
   column-gap: 2.344rem; /* "50" px */
   row-gap: 1.172rem;    /* "25" px */
-
-  background-image: linear-gradient(to right, #f9f6f6, #dccfd3);
 }
 
 /* splis the "100"px bar at the top */
