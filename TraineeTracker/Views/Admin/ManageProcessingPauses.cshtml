@@ -16,6 +16,7 @@
             <th>Start</th>
             <th>End</th>
             <th></th>
+            <th></th>
         </tr>
     </thead>
     <tbody>
@@ -24,6 +25,8 @@
             <tr>
                 <td>@pause.StartDate</td>
                 <td>@pause.EndDate</td>
+                <td><a class="btn btn-secondary" asp-action="ShowEditProcessingPauseView" asp-route-processingPauseId="@pause.ProcessingPauseId"
+                        asp-route-processingPauseId="@pause.ProcessingPauseId">Edit</a> </td>
                 <td>
                     <form asp-action="DeleteProcessingPause" asp-route-processingPauseId="@pause.ProcessingPauseId"
                         method="post" onsubmit="return confirm('Are you sure you want to delete this Processing Pause?');">
