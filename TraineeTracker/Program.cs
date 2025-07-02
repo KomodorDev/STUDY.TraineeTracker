@@ -72,7 +72,7 @@ builder.Services.AddScoped<AdminService>();
 builder.Services.AddScoped<TeachingPlanService>();
 builder.Services.AddScoped<TraineeLessonDetailService>();
 builder.Services.AddScoped<TraineeStatisticsService>();
-// FeedbackService
+builder.Services.AddScoped<FeedbackService>();
 // TraineeLessonDashboardService
 
 // ----------------------------------------

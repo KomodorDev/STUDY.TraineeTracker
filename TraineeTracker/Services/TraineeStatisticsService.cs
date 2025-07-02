@@ -22,8 +22,7 @@ namespace TraineeTracker.Services {
         private readonly IProcessingPauseRepository _processingPauseRepository;
 
         // --------------------------------------------------
-        public TraineeStatisticsService(ITraineeStatisticsRepository traineeStatisticsRepository, ITraineeLessonRepository traineeLessonRepository, HttpClient httpClient, UserManager<ApplicationUser> userManager, IProcessingPauseRepository processingPauseRepository)
-        {
+        public TraineeStatisticsService(ITraineeStatisticsRepository traineeStatisticsRepository, ITraineeLessonRepository traineeLessonRepository, HttpClient httpClient, UserManager<ApplicationUser> userManager, IProcessingPauseRepository processingPauseRepository) {
             _traineeStatisticsRepository = traineeStatisticsRepository;
             _traineeLessonRepository = traineeLessonRepository;
             _httpClient = httpClient;
@@ -35,13 +34,15 @@ namespace TraineeTracker.Services {
         public async Task<TraineeStatisticsViewModel> BuildTraineeStatisticsViewModel(string traineeId, ClaimsPrincipal user) {
             CheckHasAccess(user, traineeId);
 
+            // ++++++++++++++++
+            // Get Data for ViewModel
             var snapshot = await BuildLatestTraineeStatisticsSnapshotAsync(traineeId);
             var lessons = await _traineeLessonRepository.GetAllTraineeLessonsOfTraineeWithLessonAsync(traineeId);
             var processingPauses = (await _processingPauseRepository.GetAllPausesAsync(traineeId)).ToList();
 
-
-            return new TraineeStatisticsViewModel
-            {
+            // ++++++++++++++++
+            // Build and return ViewModel
+            return new TraineeStatisticsViewModel {
                 SnapshotDateTime = snapshot.SnapshotDateTime,
                 DaysPresentTotal = snapshot.DaysPresentTotal,
                 DaysPresentTillToday = snapshot.DaysPresentTillToday,
@@ -49,21 +50,55 @@ namespace TraineeTracker.Services {
                 LessonDaysOpen = snapshot.LessonDaysOpen,
                 LessonDaysBuffer = snapshot.LessonDaysBuffer,
                 Speed = snapshot.Speed,
-                DaysBufferPredicted = snapshot.DaysBufferPredicted,
+                PredictedMissingEstimatedEffortAtEnd = snapshot.PredictedMissingEstimatedEffortAtEnd,
+                PredictedMissingActualDays = snapshot.PredictedMissingActualDays,
                 IsUpToDate = snapshot.IsUpToDate,
 
-                //++++++++++++++++
-
-                FinishedLessons = lessons.Where(l => l.State == TraineeLessonState.Finished).ToList(),
+                // ++++++++++++++++
+                // Lesson Lists
+                FinishedLessons = lessons
+                    .Where(l => l.State == TraineeLessonState.Finished)
+                    .Select(l => new TraineeLessonViewModel {
+                        Title = l.Lesson.Title,
+                        EstimatedEffort = l.Lesson.EstimatedEffort,
+                        WeightedEffort = l.Lesson.EstimatedEffort * 0.7,
+                        State = l.State
+                    }).ToList(),
                 AcceptedAndRatedLessons = lessons
                     .Where(l => l.State == TraineeLessonState.Accepted || l.State == TraineeLessonState.Rated)
-                    .ToList(),
-                RejectedLessons = lessons.Where(l => l.State == TraineeLessonState.Rejected).ToList(),
-                OpenLessons = lessons.Where(l => l.State == TraineeLessonState.Open).ToList(),
-                StartedLessons = lessons.Where(l => l.State == TraineeLessonState.Started).ToList(),
+                    .Select(l => new TraineeLessonViewModel {
+                        Title = l.Lesson.Title,
+                        EstimatedEffort = l.Lesson.EstimatedEffort,
+                        WeightedEffort = l.Lesson.EstimatedEffort * 1.0,
+                        State = l.State
+                    }).ToList(),
+                RejectedLessons = lessons
+                    .Where(l => l.State == TraineeLessonState.Rejected)
+                    .Select(l => new TraineeLessonViewModel {
+                        Title = l.Lesson.Title,
+                        EstimatedEffort = l.Lesson.EstimatedEffort,
+                        WeightedEffort = l.Lesson.EstimatedEffort * 0.8,
+                        State = l.State
+                    }).ToList(),
+                OpenLessons = lessons
+                    .Where(l => l.State == TraineeLessonState.Open)
+                    .Select(l => new TraineeLessonViewModel {
+                        Title = l.Lesson.Title,
+                        EstimatedEffort = l.Lesson.EstimatedEffort,
+                        WeightedEffort = 0,
+                        State = l.State
+                    }).ToList(),
+                StartedLessons = lessons
+                    .Where(l => l.State == TraineeLessonState.Started)
+                    .Select(l => new TraineeLessonViewModel {
+                        Title = l.Lesson.Title,
+                        EstimatedEffort = l.Lesson.EstimatedEffort,
+                        WeightedEffort = 0,
+                        State = l.State
+                    }).ToList(),
 
-                //++++++++++++++++
-
+                // ++++++++++++++++
+                // ProcessingPauses
                 ProcessingPauses = processingPauses
             };
         }
@@ -79,23 +114,30 @@ namespace TraineeTracker.Services {
             }
 
             if (!(currentUserId == traineeId)) {
-                throw new UnauthorizedAccessException("You can only your own statistics.");
+                throw new UnauthorizedAccessException("You can only view your own statistics.");
             }
 
         }
 
         // --------------------------------------------------
         public async Task<TraineeStatisticsSnapshot> BuildLatestTraineeStatisticsSnapshotAsync(string traineeId) {
+
+            // ++++++++++++++++
+            // Get Trainee
             var trainee = await _userManager.FindByIdAsync(traineeId);
             if (trainee == null || trainee.TraineeStartDate == null) {
                 throw new Exception("Trainee not found or start date is missing.");
             }
 
+            // ++++++++++++++++
+            // Calculate Data for Trainee
             double daysPresentTotal = await GetEffectivePresentDaysAsync(trainee, trainee.TraineeStartDate!.Value, trainee.TraineeEndDate!.Value);
             double daysPresentTillToday = await GetEffectivePresentDaysAsync(trainee, trainee.TraineeStartDate!.Value, DateOnly.FromDateTime(DateTime.Today));
-            if (daysPresentTillToday < 0)
-            {
+            if (daysPresentTillToday < 0) {
+
+                // Return Fallback Snapshot if no API Access
                 Console.WriteLine("⚠️ API-Error – use latest snapshot.");
+                // We need to factor in the case that a trainee has no snapshot here yet and need to build one and fill it all with zeros.
                 var fallbackSnapshot = await _traineeStatisticsRepository.GetTraineeStatisticsSnapshotAsync(traineeId);
                 fallbackSnapshot.IsUpToDate = false;
                 return fallbackSnapshot;
@@ -104,14 +146,18 @@ namespace TraineeTracker.Services {
             double lessonDaysOpen = await CalculateLessonDaysOpenAsync(traineeId);
             double lessonDaysBuffer = CalculateLessonDaysBuffer(daysPresentTillToday, lessonDaysCompleted);
             double speed = CalculateSpeed(daysPresentTillToday, lessonDaysCompleted);
-            double daysBufferPredicted = await CalculateDaysBufferPredictionAsync(traineeId, daysPresentTotal, lessonDaysOpen, speed);
+            double predictedMissingEstimatedEffortAtEnd = CalculatePredictedMissingEstimatedEffortAtEnd(daysPresentTillToday, daysPresentTotal, lessonDaysOpen, speed);
+            double predictedMissingActualDays = CalculatePredictedMissingActualDaysAtEnd(daysPresentTillToday, daysPresentTotal, lessonDaysOpen, speed);
 
             TraineeStatisticsSnapshot snapshot;
 
+            // ++++++++++++++++
+            // Update or Create Snapshot
             try {
+
+                // Case 1 - Update: Snapshot exisit and we update it
                 snapshot = await _traineeStatisticsRepository.GetTraineeStatisticsSnapshotAsync(traineeId);
 
-                // Fall: Snapshot existiert → wir aktualisieren ihn
                 snapshot.SnapshotDateTime = DateTime.Now;
                 snapshot.DaysPresentTotal = daysPresentTotal;
                 snapshot.DaysPresentTillToday = daysPresentTillToday;
@@ -119,15 +165,16 @@ namespace TraineeTracker.Services {
                 snapshot.LessonDaysOpen = lessonDaysOpen;
                 snapshot.LessonDaysBuffer = lessonDaysBuffer;
                 snapshot.Speed = speed;
-                snapshot.DaysBufferPredicted = daysBufferPredicted;
+                snapshot.PredictedMissingEstimatedEffortAtEnd = predictedMissingEstimatedEffortAtEnd;
+                snapshot.PredictedMissingActualDays = predictedMissingActualDays;
                 snapshot.IsUpToDate = true;
 
                 await _traineeStatisticsRepository.UpdateAsync(snapshot);
             }
             catch (InvalidOperationException) {
-                // Fall: Kein Snapshot vorhanden → wir erstellen einen neuen
-                snapshot = new TraineeStatisticsSnapshot
-                {
+
+                // Case 2 - Create: Snapshot does not exist and we create it
+                snapshot = new TraineeStatisticsSnapshot {
                     Trainee = trainee,
                     TraineeId = traineeId,
                     SnapshotDateTime = DateTime.Now,
@@ -137,19 +184,24 @@ namespace TraineeTracker.Services {
                     LessonDaysOpen = lessonDaysOpen,
                     LessonDaysBuffer = lessonDaysBuffer,
                     Speed = speed,
-                    DaysBufferPredicted = daysBufferPredicted,
+                    PredictedMissingEstimatedEffortAtEnd = predictedMissingEstimatedEffortAtEnd,
+                    PredictedMissingActualDays = predictedMissingActualDays,
                     IsUpToDate = true
                 };
 
                 await _traineeStatisticsRepository.CreateAsync(snapshot);
             }
 
-
+            // ++++++++++++++++
+            // Return Snapshot
             return snapshot;
         }
 
         // --------------------------------------------------
         public async Task<double> GetPresentDaysAsync(DateOnly startDate, DateOnly endDate, string email) {
+
+            // ++++++++++++++++
+            // Build Request
             var baseUrl = "https://api.sopro.makandra.de/api/v1/present_days";
             var url = $"{baseUrl}?email={Uri.EscapeDataString(email)}&start_date={startDate:yyyy-MM-dd}&end_date={endDate:yyyy-MM-dd}";
 
@@ -158,6 +210,8 @@ namespace TraineeTracker.Services {
             var byteArray = System.Text.Encoding.ASCII.GetBytes("sopro:capybara");
             request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Basic", Convert.ToBase64String(byteArray));
 
+            // ++++++++++++++++
+            // Send Request and Wait for Response
             var response = await _httpClient.SendAsync(request);
 
             if (!response.IsSuccessStatusCode) {
@@ -167,6 +221,8 @@ namespace TraineeTracker.Services {
 
             var content = await response.Content.ReadAsStringAsync();
 
+            // ++++++++++++++++
+            // Try to extract and return presentDays from Response
             try {
                 using var json = System.Text.Json.JsonDocument.Parse(content);
                 var root = json.RootElement;
@@ -181,16 +237,22 @@ namespace TraineeTracker.Services {
         // --------------------------------------------------
         private async Task<double> GetEffectivePresentDaysAsync(ApplicationUser trainee, DateOnly startDate, DateOnly endDate) {
 
+            // ++++++++++++++++
+            // Checks
             if (trainee.TraineeStartDate is null || trainee.TraineeEndDate is null)
-                throw new Exception("TraineeStartDate or EndDate is missing");
+                throw new Exception("StartDate or EndDate is missing");
 
-            var email = trainee.Email ?? throw new Exception("E-Mail fehlt");
+            var email = trainee.Email ?? throw new Exception("E-Mail is missing");
 
+            // ++++++++++++++++
+            // Get totalDays
             double totalDays = await GetPresentDaysAsync(startDate, endDate, email);
 
             if (totalDays < 0)
                 return -1;
 
+            // ++++++++++++++++
+            // Get pauseDaysTotal
             double pauseDaysTotal = 0;
 
             foreach (var pause in trainee.ProcessingPauses) {
@@ -210,6 +272,8 @@ namespace TraineeTracker.Services {
                 }
             }
 
+            // ++++++++++++++++
+            // Calculate effectivePresentDays and return
             return totalDays - pauseDaysTotal;
         }
 
@@ -253,16 +317,31 @@ namespace TraineeTracker.Services {
         }
 
         // --------------------------------------------------
-        public async Task<double> CalculateDaysBufferPredictionAsync(string traineeId, double daysPresentTotal, double lessonDaysOpen, double speed) {
-            double totalEffort = await CalculateTotalEffort(traineeId);
-
+        public double CalculatePredictedMissingEstimatedEffortAtEnd(double daysPresentTillToday, double daysPresentTotal, double estimatedEffortOpen, double speed) {
             if (speed <= 0)
                 return -1;
 
-            double daysLeft = totalEffort - daysPresentTotal;
-            double daysNeeded = lessonDaysOpen / speed;
+            // Days from today till EndDate:
+            double daysPresentDaysInFuture = daysPresentTotal - daysPresentTillToday;
 
-            return daysLeft - daysNeeded;
+            // Predicted EstimatedEffort completed from today till EndDate:
+            double predictedEstimatedEffortDoneInFuture = daysPresentDaysInFuture * speed;
+
+            // predicted Buffer in EstimatedEffort: estimatedEffort remaining at EndDate
+            double predictedMissingEstimatedEffortAtEnd = estimatedEffortOpen - predictedEstimatedEffortDoneInFuture;
+
+            return predictedMissingEstimatedEffortAtEnd;
+        }
+
+        // --------------------------------------------------
+        public double CalculatePredictedMissingActualDaysAtEnd(double daysPresentTillToday, double daysPresentTotal, double estimatedEffortOpen, double speed) {
+            if (speed <= 0)
+                return -1;
+
+            double predictedMissingEstimatedEffortAtEnd = CalculatePredictedMissingEstimatedEffortAtEnd(daysPresentTillToday, daysPresentTotal, estimatedEffortOpen, speed);
+
+            // predicted Buffer in actual Days:
+            return predictedMissingEstimatedEffortAtEnd / speed;
         }
 
         // --------------------------------------------------
