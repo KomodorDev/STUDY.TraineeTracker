@@ -40,6 +40,9 @@ p {
   background-color: white;
   min-height: 0;  /* to allow scrollbars */
   height: 100%;
+
+  /* hide scrollbar overflow */
+  overflow: hidden;
 }
 .sopro-card.big-header {
   display: grid;
@@ -69,6 +72,7 @@ p {
   border-bottom-right-radius: 11px;
 
   background-color: #f2f2f2;
+  overflow: hidden;
 }
 .sopro-inner-card.flex {
     /* alignment */
@@ -78,18 +82,23 @@ p {
 
     row-gap: 1.172rem;  /* "25" px */
     padding: 1.172rem;  /* "25" px */
-    padding-right: calc(1.172rem + 11px);
 
     /* scrollability */
     height: 100%;
     overflow-y: auto;
+    scrollbar-width: auto;
+    scrollbar-color: #626262 transparent;
 }
-.sopro-inner-card.flex::-webkit-scrollbar {
-  width: 8px;
+/* other scrollbar stuff, for chromw, safari & edge */
+.sopro-inner-card::-webkit-scrollbar {
+  width: 20px;
 }
-.sopro-inner-card.flex::-webkit-scrollbar-thumb {
-  background-color: rgba(0, 0, 0, 0.2);
-  border-radius: 4px;
+.sopro-inner-card::-webkit-scrollbar-thumb {
+  background-color: #626262;
+  border-radius: 11px;
+}
+.sopro-inner-card::-webkit-scrollbar-track {
+  background-color: transparent;
 }
 
 .sopro-grid-management {
