@@ -25,7 +25,7 @@
     <input type="hidden" asp-for="TraineeId" />
 
     <button type="submit" class="btn btn-primary">Create</button>
-    <a asp-action="ShowAdminDashboardView" class="btn btn-secondary">Cancel</a>
+    <a asp-action="ShowManageProcessingPausesView" asp-route-traineeId="@Model.TraineeId" class="btn btn-secondary">Cancel</a>
 </form>
 
 @section Scripts {
