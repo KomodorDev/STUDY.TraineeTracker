@@ -1,7 +1,5 @@
-namespace TraineeTracker.Models
-{
-    public class Page<T>
-    {
+namespace TraineeTracker.Models {
+    public class Page<T> {
         public IReadOnlyList<T> Items { get; set; } = Array.Empty<T>();
         public int PageNumber { get; set; }
         public int PageSize { get; set; }
