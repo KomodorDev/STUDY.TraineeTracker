@@ -6,7 +6,7 @@
 <h2>@ViewData["Title"]</h2>
 
 <!-- Tabs -->
-<ul class="nav nav-tabs mb-4" role="tablist">
+<ul id="feedbackTabs" class="nav nav-tabs mb-4" role="tablist">
     <li class="nav-item">
         <a class="nav-link active" href="#" data-tab="all">All (@Model.TotalFeedbackCount)</a>
     </li>
@@ -152,21 +152,31 @@
 </div>
 
 @section Scripts {
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>
-        $(function() {
-            $('.nav-link').click(function(e) {
-                e.preventDefault();
-                var tab = $(this).data('tab');
-                $('.nav-link').removeClass('active');
-                $(this).addClass('active');
-                $('.tab-content').hide();
-                $('#content-' + tab).show();
-            });
+  $(function() {
+    // 1) Alle Tab-Links in #feedbackTabs
+    var $tabs = $('#feedbackTabs .nav-link');
+    // 2) Alle Panels, die direkt nach #feedbackTabs kommen und die Klasse .tab-content tragen
+    var $panes = $('#feedbackTabs').nextAll('.tab-content');
 
-            $('.feedback-row').click(function() {
-                $(this).next('.feedback-detail').toggle();
-            });
-        });
-    </script>
+    // Initialisierung: nur den "all"-Tab anzeigen
+    $panes.hide();
+    $('#content-all').show();
+
+    // Klick-Handler nur für Feedback-Tabs
+    $tabs.on('click', function(e) {
+      e.preventDefault();
+      var tab = $(this).data('tab');     // "all", "unread", "read" …
+
+      // active-Klasse umschalten
+      $tabs.removeClass('active');
+      $(this).addClass('active');
+
+      // Panels umschalten
+      $panes.hide();
+      $('#content-' + tab).show();
+    });
+  });
+</script>
+
 }

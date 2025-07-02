@@ -73,7 +73,7 @@ builder.Services.AddScoped<TeachingPlanService>();
 builder.Services.AddScoped<TraineeLessonDetailService>();
 builder.Services.AddScoped<TraineeStatisticsService>();
 builder.Services.AddScoped<FeedbackService>();
-// TraineeLessonDashboardService
+builder.Services.AddScoped<TraineeLessonDashboardService>();
 
 // ----------------------------------------
 // Register Email Service
