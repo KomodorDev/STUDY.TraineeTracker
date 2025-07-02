@@ -30,3 +30,26 @@ body {
 .sopro-inner-shadow {
   box-shadow: inset 4px 4px 10px 0 rgba(0, 0, 0, 0.07) !important;
 }
+
+.sopro-grid-management {
+  display: grid;
+  grid-template-columns: 30% 70%;
+  grid-template-rows: 1fr;
+
+  padding: 4.688rem;
+  gap: 3.125rem;
+}
+
+.sopro-grid-lessons {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: 6.25rem 1fr;
+
+  padding: 4.688rem;
+  column-gap: 3.125rem;
+  row-gap: 1.563rem;
+}
+
+.sopro-grid-lessons .full-width-header {
+  grid-column: 1 / -1;
+}
