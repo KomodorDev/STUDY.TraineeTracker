@@ -15,8 +15,8 @@ namespace TraineeTracker.Controllers {
 
         [HttpGet]
         [Route("Dashboard")]
-        public IActionResult ShowTraineeLessonDashboardView(string? traineeId) {
-            var model = _traineeLessonDashboardService.BuildTraineeLessonDashboardViewModel(User, traineeId);
+        public async Task<IActionResult> ShowTraineeLessonDashboardView(string? traineeId) {
+            var model = await _traineeLessonDashboardService.BuildTraineeLessonDashboardViewModel(User, traineeId);
 
             return View("TraineeLessonDashboard", model);
         }
