@@ -52,13 +52,13 @@ namespace TraineeTracker.Controllers {
             return View("CreateUser", dto);
         }
 
-        [HttpPost]
+        [HttpPost("/CloseUser")]
         public async Task<IActionResult> CloseUserAsync(string userId) {
             var success = await _adminService.CloseUserAsync(userId);
             if (!success) {
                 return NotFound();
             }
-            return RedirectToAction("ShowAdminDashboard");
+            return RedirectToAction("ShowAdminDashboardView");
         }
 
         [HttpGet("/ProcessingBreaks")]
