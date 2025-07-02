@@ -8,7 +8,7 @@
 
 <form asp-action="CreateUser" method="post">
     <hr />
-    <div asp-validation-summary="ModelOnly"></div>
+    <span asp-validation-summary="ModelOnly" class="text-danger"></span>
 
     <div class="form-group">
         <label asp-for="Email"></label>
