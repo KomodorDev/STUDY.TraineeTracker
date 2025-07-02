@@ -1,0 +1,23 @@
+.grid-container {
+    display: grid;
+    grid-template-areas:
+        'createUser filters'
+        'users users';
+    background-color: dodgerblue;
+}
+
+.grid-container > div {
+    background-color: #f1f1f1;
+}
+
+.createUser {
+    grid-area: createUser;
+}
+
+.filters {
+    grid-area: filters;
+}
+
+.users {
+    grid-area: users;
+}
