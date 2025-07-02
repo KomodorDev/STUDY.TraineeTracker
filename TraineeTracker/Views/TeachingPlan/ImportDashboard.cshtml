@@ -1,80 +1,63 @@
-@model IEnumerable<TraineeTracker.Models.Domain.TeachingPlan>
-@{
-    ViewData["Title"] = "Teaching Plan Dashboard";
-}
+@model TraineeTracker.Models.ViewModels.ImportDashboardViewModel
 
-<h2>@ViewData["Title"]</h2>
+<h1>Import Dashboard</h1>
 
-<!-- Import new TeachingPlan -->
-<div class="mb-4 p-3 bg-white rounded shadow-sm">
-    <form asp-controller="TeachingPlan" asp-action="ImportNewTeachingPlan" method="post" enctype="multipart/form-data">
-        @Html.AntiForgeryToken()
-        <div class="form-inline">
-            <label class="mr-2" for="name">Name:</label>
-            <input type="text" name="name" id="name" placeholder="Plan Name" class="form-control mr-2" required />
-            <input type="file" name="file" class="form-control-file mr-2" required />
-            <button type="submit" class="btn btn-danger">Import</button>
-        </div>
-    </form>
-</div>
+<!-- 1) Import-Form -->
+<form asp-action="ImportNewTeachingPlan"
+      method="post"
+      enctype="multipart/form-data">
+  @Html.AntiForgeryToken()
+  <input asp-for="NewPlanName" />
+  <span asp-validation-for="NewPlanName"></span>
+  <input asp-for="NewPlanFile" type="file" />
+  <span asp-validation-for="NewPlanFile"></span>
+  <button type="submit">Importieren</button>
+</form>
 
-<!-- Select existing TeachingPlan -->
-<div class="p-3 bg-white rounded shadow-sm">
-    <div class="form-inline mb-3">
-        <label class="mr-2" for="planSelect">Select plan:</label>
-        <select id="planSelect" class="form-control mr-3">
-            <option value="">-- choose plan --</option>
-            @foreach(var plan in Model) {
-                <option value="@plan.TeachingPlanId">
-                    @plan.Name (@plan.LastUpdated.ToString("dd.MM.yyyy"))
-                </option>
-            }
-        </select>
-        <button id="updateBtn" class="btn btn-warning mr-2" disabled>Update</button>
-        <button id="deleteBtn" class="btn btn-danger" disabled>Delete</button>
-    </div>
-</div>
+<hr />
+
+<h2>Vorhandene Lehrpläne</h2>
+<table>
+  <thead>
+    <tr>
+      <th>Name</th><th>Last Updated</th><th>Lektionen</th><th>Azubis</th><th>Aktionen</th>
+    </tr>
+  </thead>
+  <tbody>
+  @foreach(var plan in Model.ExistingTeachingPlans)
+  {
+    <tr>
+      <td>@plan.Name</td>
+      <td>@plan.LastUpdated</td>
+      <td>@plan.LessonCount</td>
+      <td>@plan.TraineeCount</td>
+      <td>
+        <!-- Update -->
+        <form asp-action="UpdateTeachingPlan"
+              method="post"
+              enctype="multipart/form-data" class="d-inline">
+          @Html.AntiForgeryToken()
+          <input type="hidden" name="teachingPlanId" value="@plan.TeachingPlanId" />
+          <input type="file" name="file" required />
+          <button type="submit">Update</button>
+        </form>
+
+        <!-- Delete -->
+        <form asp-action="DeleteTeachingPlan"
+              method="post" class="d-inline">
+          @Html.AntiForgeryToken()
+          <input type="hidden" name="teachingPlanId" value="@plan.TeachingPlanId" />
+          <button type="submit"
+                  onclick="return confirm('Löschen?');">
+            Delete
+          </button>
+        </form>
+      </td>
+    </tr>
+  }
+  </tbody>
+</table>
 
 @section Scripts {
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script>
-    $(function() {
-        $('#planSelect').change(function() {
-            var id = $(this).val();
-            $('#updateBtn, #deleteBtn').prop('disabled', !id);
-        });
-
-        $('#updateBtn').click(function() {
-            var planId = $('#planSelect').val();
-            if (!planId) return;
-            // create a file input form dynamically
-            var form = $('<form/>', {
-                action: '/teachingplans/update', method: 'post', enctype: 'multipart/form-data'
-            });
-            form.append($('<input/>', { type: 'hidden', name: 'teachingPlanId', value: planId }));
-            form.append($('<input/>', { type: 'file', name: 'file', required: true }));
-            form.append('@Html.AntiForgeryToken()');
-            form.appendTo('body').submit();
-        });// 1) Referer-Header auslesen
-    var referer = Request.Headers["Referer"].ToString();
-
-    // 2) Nur lokale URLs zulassen
-    if (!string.IsNullOrEmpty(referer) && Url.IsLocalUrl(referer))
-        return Redirect(referer);
-
-    // Fallback: Dashboard
-    return RedirectToAction(nameof(ShowFeedbackDashboardView));
-
-        $('#deleteBtn').click(function() {
-            if (!confirm('Are you sure you want to delete this teaching plan?')) return;
-            var planId = $('#planSelect').val();
-            $.post('/teachingplans/delete', {
-                teachingPlanId: planId,
-                __RequestVerificationToken: $('input[name="__RequestVerificationToken"]').val()
-            }, function() {
-                location.reload();
-            });
-        });
-    });
-    </script>
+  @await Html.PartialAsync("_ValidationScriptsPartial")
 }

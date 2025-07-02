@@ -1,9 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
 using Newtonsoft.Json;
 using TraineeTracker.Data.ApplicationUsers;
 using TraineeTracker.Data.Lessons;
@@ -11,6 +5,7 @@ using TraineeTracker.Data.TraineeLessons;
 using TraineeTracker.Data.TeachingPlans;
 using TraineeTracker.Models.Domain;
 using TraineeTracker.Models.Dtos;
+using TraineeTracker.Models.ViewModels;
 
 namespace TraineeTracker.Services {
     public class TeachingPlanService {
@@ -30,6 +25,23 @@ namespace TraineeTracker.Services {
             _applicationUserRepo = applicationUserRepo;
         }
 
+        public async Task<ImportDashboardViewModel> BuildImportDashboardAsync()
+        {
+            var allPlans = await _teachingPlanRepo.GetAllTeachingPlansAsync();
+            var vm = new ImportDashboardViewModel
+            {
+            ExistingTeachingPlans = allPlans.Select(tp => new ImportDashboardViewModel.ExistingPlan
+            {
+                TeachingPlanId = tp.TeachingPlanId,
+                Name           = tp.Name,
+                LastUpdated    = tp.LastUpdated,
+                LessonCount    = tp.Lessons?.Count ?? 0,
+                TraineeCount   = tp.Trainees?.Count ?? 0
+            }).ToList()
+            };
+            return vm;
+        }
+        
         public async Task ImportNewTeachingPlan(IFormFile file, string name) {
             ValidateFile(file);
             ValidateName(name);
@@ -39,6 +51,11 @@ namespace TraineeTracker.Services {
             ValidateDtos(dtos);
 
             var lessons = MapDtosToLessons(dtos);
+
+            foreach(var lesson in lessons) {
+                await _lessonRepo.CreateAsync(lesson);
+            }
+
             var teachingPlan = new TeachingPlan {
                 Name = name,
                 LastUpdated = DateTime.UtcNow,
@@ -66,13 +83,18 @@ namespace TraineeTracker.Services {
         }
 
         public async Task DeleteTeachingPlan(int id) {
-            var plan = await _teachingPlanRepo.GetTeachingPlanByIdAsync(id)
+            var plan = await _teachingPlanRepo.GetTeachingPlanByIdWithLessonsAndTraineesAsync(id)
                        ?? throw new InvalidOperationException("TeachingPlan nicht gefunden.");
 
             if (plan.Trainees != null && plan.Trainees.Any())
                 throw new InvalidOperationException("Dieser TeachingPlan wird noch verwendet!");
 
-            await RemovePlanFromLessonsAsync(plan);
+            var lessonsCopy = plan.Lessons.ToList();
+
+            foreach(var lesson in lessonsCopy){
+                await _lessonRepo.DeleteAsync(lesson);
+            }
+
             await _teachingPlanRepo.DeleteAsync(plan);
         }
 
@@ -107,8 +129,6 @@ namespace TraineeTracker.Services {
         public Task<IEnumerable<TeachingPlan>> GetAllTeachingPlansAsync()
             => _teachingPlanRepo.GetAllTeachingPlansAsync();
 
-        // Helpers
-
         private void ValidateFile(IFormFile file) {
             if (file == null || file.Length == 0)
                 throw new ArgumentException("Die Datei ist leer!");
@@ -125,7 +145,8 @@ namespace TraineeTracker.Services {
         }
 
         private List<LessonDto> DeserializeLessonDtos(string json) {
-            return JsonConvert.DeserializeObject<List<LessonDto>>(json) ?? throw new Exception("LessonDtos could not be deserialized.");
+            return JsonConvert.DeserializeObject<List<LessonDto>>(json) 
+                ?? throw new Exception("LessonDtos could not be deserialized.");
         }
 
         private void ValidateDtos(List<LessonDto> dtos) {
@@ -203,21 +224,6 @@ namespace TraineeTracker.Services {
 
             foreach (var tl in traineeLessons.Where(t => t.State == TraineeLessonState.Open)) {
                 await _traineeLessonRepo.DeleteAsync(tl.TraineeLessonId);
-            }
-        }
-
-        private async Task RemovePlanFromLessonsAsync(TeachingPlan plan) {
-            var allLessons = await _lessonRepo.GetAllLessonsAsync();
-            foreach (var lesson in allLessons) {
-                if (!lesson.TeachingPlans.Contains(plan))
-                    continue;
-
-                if (lesson.TeachingPlans.Count == 1) {
-                    await _lessonRepo.DeleteAsync(lesson);
-                } else {
-                    lesson.TeachingPlans.Remove(plan);
-                    await _lessonRepo.UpdateAsync(lesson);
-                }
             }
         }
 
