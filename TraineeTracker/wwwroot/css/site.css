@@ -128,7 +128,7 @@ p {
   cursor: pointer;
   
   font-size: 1rem; /* "20" px */
-  font-weight: 450;
+  font-weight: 900;
 
   border-radius: 11px;
   background-color: #e61d47;
@@ -145,7 +145,7 @@ p {
   cursor: pointer;
 
   font-size: 1.406; /* "30" px */
-  font-weight: 450;
+  font-weight: 900;
 
   border-radius: 11px;
   background-color: #e61d47;
@@ -236,15 +236,17 @@ nav.navbar .container-fluid {
     width: 100%;
 }
 
-/* STATUS AND ROLE TAGS ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ */
+/* STATUS AND ROLE TAGS ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ */
 .sopro-tag {
-  height: 18,75px; /* "25" px */
+  height: 18.75px; /* "25" px */
   width: 82.5px;   /* "110" px */
 
   font-size: 16px;  /* "20" px */
-  font-weight: 450;
+  font-weight: 900;
   color: white;
   user-select: none; /* prevents text selection */
+
+  background-color: blue;
 
   display: inline-flex;
   align-items: center;
@@ -252,25 +254,25 @@ nav.navbar .container-fluid {
 
   border-radius: 11px;
 }
-.sopro-tag-open {
+.sopro-tag.open {
   background-color: #626262;
 }
-.sopro-tag-skipped {
+.sopro-tag.skipped {
   background-color: #dbdbdb;
 }
-.sopro-tag-started {
+.sopro-tag.started {
   background-color: #ffb199;
 }
-.sopro-tag-finished {
+.sopro-tag.finished {
   background-color: #fb6770;
 }
-.sopro-tag-rejected {
+.sopro-tag.rejected {
   background-color: #e61d47;
 }
-.sopro-tag-accepted {
+.sopro-tag.accepted {
   background-image: linear-gradient(to right, #e61d47, #ffb199);
 }
-.sopro-tag-rated {
+.sopro-tag.rated {
   background-color: #dbdbdb;
   color: #000000;
 }
