@@ -8,7 +8,7 @@
 
 <div class="grid-container">
     <div class="createUser">
-        <a class="btn btn-primary" asp-controller="Admin" asp-action="ShowCreateUserView">Create</a>
+        <a class="btn btn-primary" asp-controller="Admin" asp-action="ShowCreateUserView">Create User</a>
     </div>
     <div class="filters">filters</div>
     <div class="users">
@@ -19,12 +19,23 @@
                     <th>Role</th>
                     <th>Name</th>
                     <th>Startdate - Enddate</th>
+                    <th></th>
+                    <th></th>
                 </tr>
             </thead>
             <tbody>
                 @foreach (var user in Model) {
                     <tr>
+                        <td>@ViewBag.UserRoles[user.Id]</td>
                         <td>@user.Email</td>
+                        @if (ViewBag.UserRoles[user.Id] == "Trainee") {
+                            <td>@user.TraineeStartDate - @user.TraineeEndDate</td>
+                            <td><a class="btn btn-primary" asp-controller="Admin" asp-action="ShowManageProcessingPausesView">Manage Processing Breaks</a></td>
+                        } else {
+                            <td></td>
+                            <td></td>
+                        }
+                        <td><a class="btn btn-danger" asp-controller="Admin" asp-action="ShowManageProcessingPausesView">Close User</a></td>
                     </tr>
                 }
             </tbody>
