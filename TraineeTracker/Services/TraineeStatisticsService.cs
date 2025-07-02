@@ -41,8 +41,21 @@ namespace TraineeTracker.Services {
             var processingPauses = (await _processingPauseRepository.GetAllPausesAsync(traineeId)).ToList();
 
             // ++++++++++++++++
+            // all lessons for chart
+            var allLessons = new List<TraineeLessonViewModel>();
+
+            void AddWithStatus(List<TraineeLessonViewModel>? lessons, string status) {
+                if (lessons == null)
+                    return;
+                foreach (var lesson in lessons) {
+                    lesson.Status = status;
+                    allLessons.Add(lesson);
+                }
+            }
+
+            // ++++++++++++++++
             // Build and return ViewModel
-            return new TraineeStatisticsViewModel {
+            var model = new TraineeStatisticsViewModel {
                 SnapshotDateTime = snapshot.SnapshotDateTime,
                 DaysPresentTotal = snapshot.DaysPresentTotal,
                 DaysPresentTillToday = snapshot.DaysPresentTillToday,
@@ -101,10 +114,28 @@ namespace TraineeTracker.Services {
                 // ProcessingPauses
                 ProcessingPauses = processingPauses
             };
+
+
+            AddWithStatus(model.FinishedLessons, "finished");
+            AddWithStatus(model.AcceptedAndRatedLessons, "accepted");
+            AddWithStatus(model.RejectedLessons, "rejected");
+            AddWithStatus(model.StartedLessons, "started");
+            AddWithStatus(model.OpenLessons, "open");
+
+            model.AllLessons = allLessons;
+
+            model.TodayPosition = (
+                (model.FinishedLessons?.Sum(l => l.WeightedEffort) ?? 0) +
+                (model.AcceptedAndRatedLessons?.Sum(l => l.WeightedEffort) ?? 0) +
+                (model.RejectedLessons?.Sum(l => l.WeightedEffort) ?? 0)
+            );
+
+            return model;
         }
 
         // --------------------------------------------------
         public void CheckHasAccess(ClaimsPrincipal user, string traineeId) {
+            Console.WriteLine("funktioniert auch");
             if (user == null)
                 throw new UserNotFoundException();
 
