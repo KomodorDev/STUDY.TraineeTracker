@@ -4,26 +4,30 @@
     ViewData["Title"] = "Create User";
 }
 
-<h2>Create User</h2>
+<h2>@ViewData["Title"]</h2>
 
 <form asp-action="CreateUserAsync" method="post">
-    <div asp-validation-summary="All"></div>
+    <h2>Create a new account."></h2>
+    <hr />
+    <div asp-validation-summary="ModelOnly"></div>
 
     <div class="form-group">
         <label asp-for="Email"></label>
-        <input asp-for="Email" class="form-control" />
+        <input asp-for="Email" class="form-control" autocomplete="username" aria-required="true"
+            placeholder="firstname.lastname@makandra.de" />
         <span asp-validation-for="Email" class="text-danger"></span>
     </div>
 
     <div class="form-group">
         <label asp-for="Password"></label>
-        <input asp-for="Password" type="password" class="form-control" />
+        <input asp-for="Password" type="password" class="form-control" autocomplete="new-password" aria-required="true"
+            placeholder="password" />
         <span asp-validation-for="Password" class="text-danger"></span>
     </div>
 
     <div class="form-group">
         <label asp-for="Role"></label>
-        <select asp-for="Role" class="form-control">
+        <select asp-for="Role" class="form-control" aria-required="true">
             <option value="">Select role...</option>
             <option value="Trainee">Admin</option>
             <option value="Mentor">Mentor</option>
@@ -35,17 +39,17 @@
     <!-- Optional for trainees -->
     <div class="form-group">
         <label asp-for="TraineeStartDate"></label>
-        <input asp-for="TraineeStartDate" type="date" class="form-control" />
+        <input asp-for="TraineeStartDate" type="date" class="form-control" aria-required="true" />
         <span asp-validation-for="TraineeStartDate" class="text-danger"></span>
     </div>
     <div class="form-group">
         <label asp-for="TraineeEndDate"></label>
-        <input asp-for="TraineeEndDate" type="date" class="form-control" />
+        <input asp-for="TraineeEndDate" type="date" class="form-control" aria-required="true" />
         <span asp-validation-for="TraineeEndDate" class="text-danger"></span>
     </div>
     <div class="form-group">
         <label asp-for="TeachingPlanId"></label>
-        <select asp-for="TeachingPlanId" class="form-control" asp-items="ViewBag.TeachingPlans">
+        <select asp-for="TeachingPlanId" class="form-control" aria-required="true" asp-items="ViewBag.TeachingPlans">
             <option value="">Select Teachingplan...</option>
         </select>
         <span asp-validation-for="TeachingPlanId" class="text-danger"></span>
