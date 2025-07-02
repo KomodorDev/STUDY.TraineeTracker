@@ -97,9 +97,23 @@ namespace TraineeTracker.Controllers {
             return RedirectToAction("ShowManageProcessingPausesView", new { traineeId = dto.TraineeId });
         }
 
+        [HttpGet("/EditProcessingPause")]
+        public async Task<IActionResult> ShowEditProcessingPauseView(int processingPauseId) {
+            return View("EditProcessingPause", await _adminService.GetProcessingPauseDtoAsync(processingPauseId));
+        }
+
+        [HttpPost("/EditProcessingPause")]
+        public async Task<IActionResult> EditProcessingPauseAsync(ProcessingPauseDto dto) {
+            if (!ModelState.IsValid) {
+                return View("EditProcessingPause", dto);
+            }
+            await _adminService.UpdateProcessingPauseAsync(dto);
+            return RedirectToAction("ShowManageProcessingPausesView", new { traineeId = dto.TraineeId });
+        }
+
         [HttpPost("/DeleteProcessingPause")]
         public async Task<IActionResult> DeleteProcessingPauseAsync(int processingPauseId) {
-            var pause = await _processingPauseRepository.FindById(processingPauseId);
+            var pause = await _processingPauseRepository.FindByIdAsync(processingPauseId);
             if (pause == null) {
                 return NotFound();
             }
