@@ -35,6 +35,20 @@ namespace TraineeTracker.Services.Admin {
             _traineeStatisticsRepository = traineeStatisticsRepository;
         }
 
+        public async Task<Dictionary<string, string>> GetUserRoles() {
+            var users = await _applicationUserRepository.GetAllAsync();
+            var userRoles = new Dictionary<string, string>();
+            foreach (var user in users) {
+                var roles = await _applicationUserRepository.GetRolesAsync(user);
+                if (roles.Contains("Admin")) {
+                    userRoles[user.Id] = "Admin";
+                } else {
+                    userRoles[user.Id] = roles.First();
+                }
+            }
+            return userRoles;
+        }
+
         public async Task<ServiceResult> CreateUserAsync(ApplicationUserDto dto) {
             var user = new ApplicationUser {
                 UserName = dto.Email,
