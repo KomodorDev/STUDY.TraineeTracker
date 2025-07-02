@@ -1,3 +1,5 @@
+@* by schleale *@
+
 @model TraineeTracker.Models.ViewModels.TraineeLessonDashboardViewModel
 @using TraineeTracker.Models.Domain
 
@@ -5,133 +7,58 @@
     ViewData["Title"] = "Dashboard";
 }
 
-<div class="container my-4 p-3 border rounded">
-    <div class="row g-4">
-        <!-- left column (trainee + statistics) -->
-        <div class="col-md-4 d-flex flex-column gap-3">
-            <div>
-                <h3>@Model.SelectedTrainee?.UserName ?? "No trainee"</h3>
-                <span class="badge bg-secondary">@Model.SelectedTrainee?.TeachingPlan ?? "No teachingplan"</span>
-            </div>
+@section Styles {
+    <link rel="stylesheet" href="~/css/TraineeLessonDashboard.css" asp-append-version="true" />
+}
+@**@
 
-            <div class="card">
-                <div class="card-header text-danger fw-bold">Statistics</div>
-                <div class="card-body">
-                    @{
-                        var stats = Model.TraineeStatisticsSnapshot;
-                    }
-                    <p>Last update: some time ago I guess</p>
-                    <p>
-                        Present: @((stats?.DaysPresentTillToday ?? -999).ToString("0.0")) days
-                    </p>
-                    <p>
-                        Open: @((stats?.LessonDaysOpen ?? -999).ToString("0.0")) days
-                    </p>
-                    <p>
-                        Buffer: @((stats?.LessonDaysBuffer ?? -999).ToString("0.0")) days
-                    </p>
-                    @* I cant find a variable in statistics
-                    <p>
-                        Buffer prediction: @((stats?. ?? -999).ToString("0.0")) days
-                    </p>
-                    *@
-                    @{
-                        var speed = (stats?.Speed ?? -999).ToString("0.0");
-                    }
-                    <p class="mt-4 mb-1">
-                        Progression: @speed%
-                    </p>
-                    <div class="progress">
-                        <div class="progress-bar bg-danger" role="progressbar" style="width: @speed%" aria-valuenow="50"
-                            aria-valuemin="0" aria-valuemax="100"></div>
-                    </div>
+<div class="sopro-grid-lessons">
+    <!-- Name + Statisticss -->
+    <div class="sopro-grid-lessons-left">
+        <!-- Name -->
+        <div class="sopro-card small-header">
+            <div class="header thiccboi">
+                <div>Name</div>
+            </div>
+            <div class="sopro-inner-card">
+                <div class="header" style="font-size: 1.406rem;">
+                    <div>Teachingplan</div>
                 </div>
             </div>
         </div>
 
-        <!-- Right column -->
-        <div class="col-md-8">
-            <!-- Sorting -->
-            <div class="btn-group mb-3 flex-wrap">
-                <button class="btn btn-outline-secondary">All (30)</button>
-                <button class="btn btn-outline-secondary">Open (10)</button>
-                <button class="btn btn-outline-secondary">Started (1)</button>
-                <button class="btn btn-outline-secondary">Finished (3)</button>
-                <button class="btn btn-outline-secondary">Accepted (12)</button>
-                <button class="btn btn-outline-secondary">Rejected (2)</button>
-                <button class="btn btn-outline-secondary">Rated (8)</button>
-                <button class="btn btn-outline-secondary">Deprecated (0)</button>
+        <!-- Statistics-->
+        <div class="sopro-card small-header">
+            <div class="header thiccboi">
+                Statistics
             </div>
-
-            <!-- TraineeLessons -->
-            <table class="table table-hover">
-                <thead class="table-light">
-                    <tr>
-                        <th>Name</th>
-                        <th>URL</th>
-                        <th>Est.</th>
-                        <th>Status</th>
-                    </tr>
-                </thead>
-
-                <tbody>
-                    @foreach (var traineeLesson in (Model.TraineeLessons ?? Enumerable.Empty<TraineeLesson>())) {
-                        <tr class="lesson-row" data-lesson-id="@traineeLesson.TraineeLessonId" data-bs-toggle="modal" data-bs-target="#lessonDetailModal" style="cursor: pointer;">
-                            <td>@traineeLesson.Lesson.LessonId @traineeLesson.Lesson.Title</td>
-                            <td><a href="@traineeLesson.Lesson.LinkUrl" target="_blank">@traineeLesson.Lesson.LinkUrl</a></td>
-                            <td>@traineeLesson.Lesson.EstimatedEffort days</td>
-                            <td>@await Html.PartialAsync("Components/_RoleOrStatus", traineeLesson.State.ToString())</td>
-                        </tr>
-                    }
-                </tbody>
-            </table>
+            <div class="sopro-inner-card flex">
+                <div>Row1</div>
+                <div>Row2</div>
+            </div>
         </div>
-
     </div>
 
-    <!-- Bootstrap stuff, dont really understand -->
-    <div class="modal fade" id="lessonDetailModal" tabindex="-1" aria-labelledby="lessonDetailModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-lg modal-dialog-scrollable">
-            <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="lessonDetailModalLabel">Lesson Details</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+    <!-- Selector + Lessons -->
+    <div class="sopro-grid-lessons-right">
+        <!-- Selector -->
+        <div class="sopro-card">
+            <div class="header thiccboi">
+                Stuff to filter lessons
             </div>
-            <div class="modal-body" id="lessonDetailModalBody">
-                <div class="text-center p-5">
-                <div class="spinner-border text-primary" role="status"></div>
-                <p class="mt-3">Loading...</p>
-                </div>
+        </div>
+
+        <!-- Lessons -->
+        <div class="sopro-card small-header">
+            <div class="header thiccboi">
+                Lektionen
+            </div>
+            <div class="sopro-inner-card flex">
+                <div class="sopro-card sopro-lesson ">Lesson</div>
+                <div class="sopro-card sopro-lesson ">Lesson</div>
+                <div class="sopro-card sopro-lesson ">Lesson</div>
+                <div class="sopro-card sopro-lesson ">Lesson</div>
             </div>
         </div>
     </div>
 </div>
-
-<script>
-    document.addEventListener("DOMContentLoaded", function () {
-        const rows = document.querySelectorAll(".lesson-row");
-
-        rows.forEach(row => {
-            row.addEventListener("click", function () {
-                const lessonId = this.dataset.lessonId;
-                const modalBody = document.getElementById("lessonDetailModalBody");
-
-                modalBody.innerHTML = `
-                    <div class="text-center p-5">
-                        <div class="spinner-border text-primary" role="status"></div>
-                        <p class="mt-3">Loading...</p>
-                    </div>`;
-
-                fetch(`/TraineeLessonDetailController/ShowTraineeLessonDetailView?traineeLessonId=${lessonId}`)
-                    .then(response => response.text())
-                    .then(html => {
-                        modalBody.innerHTML = html;
-                    })
-                    .catch(err => {
-                        modalBody.innerHTML = `<p class="text-danger">Failed to load lesson details.</p>`;
-                        console.error(err);
-                    });
-            });
-        });
-    });
-</script>
