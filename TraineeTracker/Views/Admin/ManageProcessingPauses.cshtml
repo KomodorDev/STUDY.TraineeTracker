@@ -1,0 +1,25 @@
+@using TraineeTracker.Models.Domain
+@model TraineeTracker.Models.Domain.ApplicationUser
+
+@{
+    ViewData["Title"] = $"Processing Pauses of {Model.UserName}";
+}
+
+<h2>@ViewData["Title"]</h2>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Start</th>
+            <th>End</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var pause in (IEnumerable<ProcessingPause>)ViewBag.Pauses) {
+            <tr>
+                <td>@pause.StartDate</td>
+                <td>@pause.EndDate</td>
+            </tr>
+        }
+    </tbody>
+</table>
