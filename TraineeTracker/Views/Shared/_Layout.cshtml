@@ -14,7 +14,15 @@
     @RenderSection("Styles", required: false)
 </head>
 
-<body>
+@*
+change background: add
+@{
+    ViewData["BodyClass"] = "sopro-special-bg";
+}
+
+*@
+
+<body class="@ViewData["BodyClass"]">
     <header>
         @if (IsSectionDefined("Navbar")) {
             @* redefine @section Navbar {<nav></nav>} to not use default nav bar *@
@@ -31,19 +39,19 @@
                                 <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">User</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="Dashboard" asp-action="Index">Dashboard</a>
+                                <a class="nav-link text-dark" asp-area="" asp-controller="Dashboard" asp-action="Dashboard">Dashboard</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="FeedbackDashboard" asp-action="Index">Feedback</a>
+                                <a class="nav-link text-dark" asp-area="" asp-controller="Feedback" asp-action="Dashboard">Feedback</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="ImportDashboard" asp-action="Index">Import</a>
+                                <a class="nav-link text-dark" asp-area="" asp-controller="Import" asp-action="Dashboard">Import</a>
                             </li>
                             <li class="nav-item">
                                 <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Admin</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="NotificationSettings" asp-action="Index">Notificationsettings</a>
+                                <a class="nav-link text-dark" asp-area="" asp-controller="Notification" asp-action="Dashboard">Notificationsettings</a>
                             </li>
 
                         </ul>
