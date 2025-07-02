@@ -137,25 +137,26 @@ namespace TraineeTracker.Services {
 
                 // Return Fallback Snapshot if no API Access
                 Console.WriteLine("⚠️ API-Error – use latest snapshot.");
-                // We need to factor in the case that a trainee has no snapshot here yet and need to build one and fill it all with zeros.
                 try {
+                    // Case 1: Snapshot in DB exists and is returned
                     var fallbackSnapshot = await _traineeStatisticsRepository.GetTraineeStatisticsSnapshotAsync(traineeId);
                     fallbackSnapshot.IsUpToDate = false;
                     return fallbackSnapshot;
                 }
                 catch (InvalidOperationException) {
+                    // Case 2: Snapshot does not exist in DB. We create one, store it in DB, and return it
                     return new TraineeStatisticsSnapshot {
                         Trainee = trainee,
                         TraineeId = traineeId,
                         SnapshotDateTime = DateTime.Now,
-                        DaysPresentTotal = 0,
-                        DaysPresentTillToday = 0,
-                        LessonDaysCompleted = 0,
-                        LessonDaysOpen = 0,
-                        LessonDaysBuffer = 0,
-                        Speed = 0,
-                        PredictedMissingEstimatedEffortAtEnd = 0,
-                        PredictedMissingActualDays = 0,
+                        DaysPresentTotal = null,
+                        DaysPresentTillToday = null,
+                        LessonDaysCompleted = null,
+                        LessonDaysOpen = null,
+                        LessonDaysBuffer = null,
+                        Speed = null,
+                        PredictedMissingEstimatedEffortAtEnd = null,
+                        PredictedMissingActualDays = null,
                         IsUpToDate = false
                     };
                 }
