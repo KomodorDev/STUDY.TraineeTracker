@@ -43,11 +43,15 @@ namespace TraineeTracker.Controllers {
         public async Task<IActionResult> ShowCreateUserView() {
             var plans = await _teachingPlanRepository.GetAllTeachingPlansAsync();
             ViewBag.TeachingPlans = new SelectList(plans, "TeachingPlanId", "Name");
+
             return View("CreateUser", new ApplicationUserDto());
         }
 
         [HttpPost("/CreateUser")]
         public async Task<IActionResult> CreateUserAsync(ApplicationUserDto dto) {
+            var plans = await _teachingPlanRepository.GetAllTeachingPlansAsync();
+            ViewBag.TeachingPlans = new SelectList(plans, "TeachingPlanId", "Name");
+
             if (!ModelState.IsValid) {
                 return View("CreateUser", dto);
             }
