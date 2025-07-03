@@ -1,7 +1,5 @@
-using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using TraineeTracker.Models.ViewModels;
 using TraineeTracker.Services;
 
 namespace TraineeTracker.Controllers {
