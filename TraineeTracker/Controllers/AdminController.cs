@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using TraineeTracker.Data.ApplicationUsers;
+using TraineeTracker.Data.ProcessingPauses;
 using TraineeTracker.Data.TeachingPlans;
 using TraineeTracker.Models.Domain;
 using TraineeTracker.Models.Dtos;
@@ -13,29 +14,26 @@ namespace TraineeTracker.Controllers {
     public class AdminController : Controller {
         private readonly AdminService _adminService;
         private readonly IApplicationUserRepository _applicationUserRepository;
+        private readonly IProcessingPauseRepository _processingPauseRepository;
         private readonly ITeachingPlanRepository _teachingPlanRepository;
         private readonly ILogger<AdminController> _logger;
 
-        public AdminController(AdminService adminService, IApplicationUserRepository applicationUserRepository, ITeachingPlanRepository teachingPlanRepository, ILogger<AdminController> logger) {
+        public AdminController(AdminService adminService, IApplicationUserRepository applicationUserRepository, IProcessingPauseRepository processingPauseRepository, ITeachingPlanRepository teachingPlanRepository, ILogger<AdminController> logger) {
             _adminService = adminService;
             _applicationUserRepository = applicationUserRepository;
+            _processingPauseRepository = processingPauseRepository;
+
             _teachingPlanRepository = teachingPlanRepository;
             _logger = logger;
         }
 
-        [HttpGet("/ManageUsers")]
+        [HttpGet("/AdminDashboard")]
         public async Task<IActionResult> ShowAdminDashboardView() {
-            var users = await _applicationUserRepository.GetAllAsync();
-            var userRoles = new Dictionary<string, string>();
-            foreach (var user in users) {
-                var roles = await _applicationUserRepository.GetRolesAsync(user);
-                if (roles.Contains("Admin")) {
-                    userRoles[user.Id] = "Admin";
-                } else {
-                    userRoles[user.Id] = roles.First();
-                }
-            }
-            ViewBag.UserRoles = userRoles;
+            var usersTask = _applicationUserRepository.GetAllAsync();
+            var rolesTask = _adminService.GetUserRoles();
+            await Task.WhenAll(usersTask, rolesTask);
+            var users = await usersTask;
+            ViewBag.UserRoles = await rolesTask;
             return View("AdminDashboard", users);
         }
 
@@ -65,21 +63,38 @@ namespace TraineeTracker.Controllers {
             return View("CreateUser", dto);
         }
 
-        [HttpPost]
+        [HttpPost("/CloseUser")]
         public async Task<IActionResult> CloseUserAsync(string userId) {
             var success = await _adminService.CloseUserAsync(userId);
             if (!success) {
                 return NotFound();
             }
-            return RedirectToAction("ShowAdminDashboard");
+            return RedirectToAction("ShowAdminDashboardView");
+        }
+
+        [HttpGet("/ProcessingPauses")]
+        public async Task<IActionResult> ShowManageProcessingPausesView(string traineeId) {
+            var userTask = _applicationUserRepository.FindByIdAsync(traineeId);
+            var pausesTask = _processingPauseRepository.GetAllPausesAsync(traineeId);
+            await Task.WhenAll(userTask, pausesTask);
+            var user = await userTask;
+            if (user == null) {
+                return NotFound();
+            }
+            ViewBag.Pauses = await pausesTask;
+            return View("ManageProcessingPauses", user);
         }
 
         [HttpGet("/CreateProcessingPause")]
-        public IActionResult ShowCreateProcessingPauseView(string traineeId) {
-            return View("CreateProcessingPause");
+        public async Task<IActionResult> ShowCreateProcessingPauseView(string traineeId) {
+            ViewBag.User = await _applicationUserRepository.FindByIdAsync(traineeId);
+            if (ViewBag.User == null) {
+                return NotFound();
+            }
+            return View("CreateProcessingPause", new ProcessingPauseDto { TraineeId = traineeId });
         }
 
-        [HttpPost]
+        [HttpPost("/CreateProcessingPause")]
         public async Task<IActionResult> CreateProcessingPauseAsync(ProcessingPauseDto dto) {
             if (!ModelState.IsValid) {
                 return View("CreateProcessingPause", dto);
@@ -90,7 +105,32 @@ namespace TraineeTracker.Controllers {
                     ModelState.AddModelError("", message);
                 return View("CreateProcessingPause", dto);
             }
-            return RedirectToAction("ShowAdminDashboard");
+            return RedirectToAction("ShowManageProcessingPausesView", new { traineeId = dto.TraineeId });
+        }
+
+        [HttpGet("/EditProcessingPause")]
+        public async Task<IActionResult> ShowEditProcessingPauseView(int processingPauseId) {
+            return View("EditProcessingPause", await _adminService.GetProcessingPauseDtoAsync(processingPauseId));
+        }
+
+        [HttpPost("/EditProcessingPause")]
+        public async Task<IActionResult> EditProcessingPauseAsync(ProcessingPauseDto dto) {
+            if (!ModelState.IsValid) {
+                return View("EditProcessingPause", dto);
+            }
+            await _adminService.UpdateProcessingPauseAsync(dto);
+            return RedirectToAction("ShowManageProcessingPausesView", new { traineeId = dto.TraineeId });
+        }
+
+        [HttpPost("/DeleteProcessingPause")]
+        public async Task<IActionResult> DeleteProcessingPauseAsync(int processingPauseId) {
+            var pause = await _processingPauseRepository.FindByIdAsync(processingPauseId);
+            if (pause == null) {
+                return NotFound();
+            }
+            var traineeId = pause.TraineeId;
+            await _processingPauseRepository.DeleteAsync(pause);
+            return RedirectToAction("ShowManageProcessingPausesView", new { TraineeId = traineeId });
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
