@@ -57,6 +57,15 @@ namespace TraineeTracker.Services.Admin {
                 EmailNotificationSetting = _emailNotificationService.CreateDefaultEmailNotificationSetting(dto.Role)
             };
 
+            if (dto.Role == "Trainee") {
+                if (dto.TraineeStartDate == null || dto.TraineeEndDate == null) {
+                    return ServiceResult.Failed("Trainee requires start- and end-date.");
+                }
+                if (dto.TeachingPlanId == null) {
+                    return ServiceResult.Failed("Trainee requires Teachingplan.");
+                }
+            }
+
             var result = await _applicationUserRepository.CreateAsync(user, dto.Password);
             if (!result.Succeeded) {
                 return ServiceResult.Failed(result.Errors.Select(e => e.Description).ToArray());
@@ -69,12 +78,6 @@ namespace TraineeTracker.Services.Admin {
             }
 
             if (dto.Role == "Trainee") {
-                if (dto.TraineeStartDate == null || dto.TraineeEndDate == null) {
-                    return ServiceResult.Failed("Trainee requires start- and end-date.");
-                }
-                if (dto.TeachingPlanId == null) {
-                    return ServiceResult.Failed("Trainee requires Teachingplan.");
-                }
 
                 user.TraineeStartDate = dto.TraineeStartDate;
                 user.TraineeEndDate = dto.TraineeEndDate;
