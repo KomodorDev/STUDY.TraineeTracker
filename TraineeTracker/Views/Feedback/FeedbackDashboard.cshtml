@@ -4,7 +4,9 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<link rel="stylesheet" href="~/css/FeedbackDashboard_temp.css" />
+<link rel="stylesheet" href="~/css/FeedbackDashboard_temp.css?v=@DateTime.Now.Ticks" />
+
+@* <link rel="stylesheet" href="~/css/FeedbackDashboard_temp.css" /> *@
 
 <div class="feedback-header">
     <h2>@ViewData["Title"]</h2>
@@ -125,11 +127,13 @@
                 @if (!feedback.IsReadByCurrentUser)
                 {
                     <form asp-action="MarkAsRead" method="post">
-                        <input type="hidden" name="feedbackId" value="@feedback.FeedbackId" />
-                        <input type="hidden" name="filter" value="@Model.ActiveFilter" />
-                        <input type="hidden" name="page" value="@Model.Feedbacks.PageNumber" />
-                        <input type="hidden" name="sortBy" value="@Model.ActiveSortBy" />
-                        <input type="hidden" name="ascending" value="@Model.Ascending" />
+                            <input type="hidden" name="feedbackId" value="@feedback.FeedbackId" />
+                            <input type="hidden" name="filter" value="@Model.ActiveFilter" />
+                            <input type="hidden" name="page" value="@Model.Feedbacks.PageNumber" />
+                            <input type="hidden" name="sortBy" value="@Model.ActiveSortBy" />
+                            <input type="hidden" name="ascending" value="@Model.Ascending" />
+                            <input type="hidden" name="selectedTraineeId" value="@Model.SelectedTraineeId" />
+                            <input type="hidden" name="selectedLessonId" value="@Model.SelectedLessonId" />
                         <button class="mark-read-btn" type="submit">Mark as read</button>
                     </form>
                 }
@@ -141,6 +145,8 @@
                         <input type="hidden" name="page" value="@Model.Feedbacks.PageNumber" />
                         <input type="hidden" name="sortBy" value="@Model.ActiveSortBy" />
                         <input type="hidden" name="ascending" value="@Model.Ascending" />
+                        <input type="hidden" name="selectedTraineeId" value="@Model.SelectedTraineeId" />
+                        <input type="hidden" name="selectedLessonId" value="@Model.SelectedLessonId" />
                         <button class="mark-unread-btn" type="submit">Mark as unread</button>
                     </form>
                 }
@@ -160,11 +166,18 @@
 </table>
 
 <!--------------------------------------------------->
-<!-- Script to Show Feedback Details -->
+<!-- Scripts -->
 @section Scripts {
+
+    <!-- Script to Show Feedback Details -->
     <script>
         document.querySelectorAll('.feedback-summary').forEach(row => {
-            row.addEventListener('click', () => {
+            row.addEventListener('click', (event) => {
+                // Ignore if the clicked element is inside a form or button
+                if (event.target.closest('form') || event.target.closest('button')) {
+                    return;
+                }
+
                 const id = row.getAttribute('data-toggle-id');
                 const detailRow = document.getElementById(`detail-${id}`);
                 const visible = detailRow.style.display === 'table-row';
@@ -173,6 +186,7 @@
         });
     </script>
 
+    <!-- Confetti 1 -->
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 
     <script>
@@ -212,6 +226,7 @@
 
     </script>
 
+    <!-- Confetti 2 -->
     <script>
         // 🔥 Mark as UNREAD – Feuer-Konfetti
         document.querySelectorAll("form[action*='MarkAsUnread']").forEach(form => {
@@ -248,7 +263,6 @@
     </script>
 
 }
-
 
 
 <!--------------------------------------------------->
