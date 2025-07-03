@@ -1,5 +1,3 @@
-using System.Collections.Generic;
-using System.Threading.Tasks;
 using TraineeTracker.Models.Domain;
 
 namespace TraineeTracker.Data.Lessons {
@@ -19,6 +17,9 @@ namespace TraineeTracker.Data.Lessons {
         Task<Lesson?> GetLessonByTitleAsync(string title);
 
         Task<IEnumerable<Lesson>> GetAllLessonsAsync();
+
+        Task<IEnumerable<Lesson>> GetAllLessonsWithFeedbacksAsync();
+
     }
 }
 

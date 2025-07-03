@@ -1,5 +1,3 @@
-using System.Collections.Generic;
-using System.Linq;
 using TraineeTracker.Models.Domain;
 using Microsoft.EntityFrameworkCore;
 
@@ -52,6 +50,11 @@ namespace TraineeTracker.Data.Lessons {
             return await _context.Lessons
             .Include(l => l.Feedbacks)
             .ToListAsync();
+        }
+        public async Task<IEnumerable<Lesson>> GetAllLessonsWithFeedbacksAsync() {
+            return await _context.Lessons
+                .Include(l => l.Feedbacks)
+                .ToListAsync();
         }
     }
 }
