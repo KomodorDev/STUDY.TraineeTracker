@@ -50,23 +50,21 @@ namespace TraineeTracker.Services {
 
                 Console.WriteLine($"[DEBUG] selectedTraineeId: {selectedTraineeId}");
 
-                // Get Trainee and its lessons
-                ApplicationUser? traineeNullable = await _databaseApplicaionUserRepository.FindByIdWithTraineeLessonsWithLessonsAndTeachingPlanAsync(selectedTraineeId!);
+                // Get Trainee and the Lessons they wrote feedback for
+                ApplicationUser? traineeNullable = await _databaseApplicaionUserRepository.FindByIdWithWrittenFeedbacksWithLessonAsync(selectedTraineeId!);
 
                 ApplicationUser trainee = traineeNullable ?? throw new InvalidOperationException("User not found.");
 
-
-                lessons = trainee.TraineeLessons
-                    .Where(tl => tl.Lesson is not null)
-                    .Select(tl => tl.Lesson!)
-                    .Distinct()
-                    .ToList();
-            } else {
-                // Get all active Lessons
-                lessons = (await _databaseLessonRepository.GetAllLessonsAsync())
+                lessons = trainee.WrittenFeedbacks
+                    .Select(f => f.Lesson)
                     .OrderBy(l => l.LessonId)
                     .ToList();
-
+            } else {
+                // Get all Lessons that have at least one feedback
+                lessons = (await _databaseLessonRepository.GetAllLessonsWithFeedbacksAsync())
+                    .Where(l => l.Feedbacks != null && l.Feedbacks.Any())
+                    .OrderBy(l => l.LessonId)
+                    .ToList();
             }
 
             // +++++++++++++++
