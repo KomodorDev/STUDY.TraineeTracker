@@ -34,19 +34,18 @@ namespace TraineeTracker.Services {
             string? selectedTraineeId = null,
             int? selectedLessonId = null) {
 
-
+            // +++++++++++++++
             // Get current user
             ApplicationUser? appUserNullable = await _databaseApplicaionUserRepository.GetUserAsync(user);
             ApplicationUser appUser = appUserNullable ?? throw new InvalidOperationException("User not found.");
 
-            // Get data for FeedbackDashboard
-
+            // +++++++++++++++
             // Get all activeTrainees
             var activeTrainees = await _databaseApplicaionUserRepository.GetOpenUsersInRoleAsync("Trainee");
 
-            // Get all active lessons by trainee or total
+            // +++++++++++++++
+            // Get all active lessons by trainee or all lessons
             List<Lesson> lessons;
-
             if (!string.IsNullOrEmpty(selectedTraineeId)) {
 
                 Console.WriteLine($"[DEBUG] selectedTraineeId: {selectedTraineeId}");
@@ -70,16 +69,32 @@ namespace TraineeTracker.Services {
 
             }
 
+            // +++++++++++++++
+            // Get Pages
             Page<FeedbackDashboardDto> feedbackPage = filter switch {
                 "unread" => await GetUnreadFeedbacksAsync(appUser, page, sortBy, ascending, selectedTraineeId, selectedLessonId),
                 "read" => await GetReadFeedbacksAsync(appUser, page, sortBy, ascending, selectedTraineeId, selectedLessonId),
                 _ => await GetAllFeedbacksAsync(appUser, page, sortBy, ascending, selectedTraineeId, selectedLessonId)
             };
 
-            var totalCount = await _databaseFeedbackRepository.GetAllFeedbacksWithLessonAndAuthor().CountAsync();
-            var readCount = await _databaseFeedbackRepository.GetAllFeedbacksReadByUserWithLessonAndAuthor(appUser).CountAsync();
+            // +++++++++++++++
+            // Get Count Numbers
+            var query = _databaseFeedbackRepository.GetAllFeedbacksWithLessonAndAuthorAndReadByUsers();
+
+            if (!string.IsNullOrEmpty(selectedTraineeId)) {
+                query = query.Where(f => f.Author.Id == selectedTraineeId);
+            }
+
+            if (selectedLessonId.HasValue) {
+                query = query.Where(f => f.Lesson.LessonId == selectedLessonId.Value);
+            }
+
+            var totalCount = await query.CountAsync();
+            var readCount = await query.CountAsync(f => f.ReadByUsers.Contains(appUser));
             var unreadCount = totalCount - readCount;
 
+            // +++++++++++++++
+            // Return ViewModel
             return new FeedbackDashboardViewModel {
                 Feedbacks = feedbackPage,
                 ActiveFilter = filter,
@@ -250,7 +265,6 @@ namespace TraineeTracker.Services {
                 TotalItems = totalItems
             };
         }
-
 
         // ------------------------------------------------------
         // ------------------------------------------------------
