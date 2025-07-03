@@ -51,7 +51,7 @@
     padding-left: 1.172rem; /* "25" px */
     padding-right: 1.172rem; /* "25" px */
 }
-.sopro-card.lesson > * {
+.sopro-table-format > * {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
