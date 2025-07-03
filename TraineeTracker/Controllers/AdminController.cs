@@ -1,7 +1,9 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using TraineeTracker.Data.ApplicationUsers;
+using TraineeTracker.Data.TeachingPlans;
 using TraineeTracker.Models.Domain;
 using TraineeTracker.Models.Dtos;
 using TraineeTracker.Services.Admin;
@@ -11,11 +13,13 @@ namespace TraineeTracker.Controllers {
     public class AdminController : Controller {
         private readonly AdminService _adminService;
         private readonly IApplicationUserRepository _applicationUserRepository;
+        private readonly ITeachingPlanRepository _teachingPlanRepository;
         private readonly ILogger<AdminController> _logger;
 
-        public AdminController(AdminService adminService, IApplicationUserRepository applicationUserRepository, ILogger<AdminController> logger) {
+        public AdminController(AdminService adminService, IApplicationUserRepository applicationUserRepository, ITeachingPlanRepository teachingPlanRepository, ILogger<AdminController> logger) {
             _adminService = adminService;
             _applicationUserRepository = applicationUserRepository;
+            _teachingPlanRepository = teachingPlanRepository;
             _logger = logger;
         }
 
@@ -36,12 +40,18 @@ namespace TraineeTracker.Controllers {
         }
 
         [HttpGet("/CreateUser")]
-        public IActionResult ShowCreateUserView() {
-            return View("CreateUser");
+        public async Task<IActionResult> ShowCreateUserView() {
+            var plans = await _teachingPlanRepository.GetAllTeachingPlansAsync();
+            ViewBag.TeachingPlans = new SelectList(plans, "TeachingPlanId", "Name");
+
+            return View("CreateUser", new ApplicationUserDto());
         }
 
-        [HttpPost]
+        [HttpPost("/CreateUser")]
         public async Task<IActionResult> CreateUserAsync(ApplicationUserDto dto) {
+            var plans = await _teachingPlanRepository.GetAllTeachingPlansAsync();
+            ViewBag.TeachingPlans = new SelectList(plans, "TeachingPlanId", "Name");
+
             if (!ModelState.IsValid) {
                 return View("CreateUser", dto);
             }
@@ -77,7 +87,7 @@ namespace TraineeTracker.Controllers {
             var result = await _adminService.CreateProcessingPauseAsync(dto);
             if (!result.Succeeded) {
                 foreach (var message in result.ErrorMessages)
-                ModelState.AddModelError("", message);
+                    ModelState.AddModelError("", message);
                 return View("CreateProcessingPause", dto);
             }
             return RedirectToAction("ShowAdminDashboard");
