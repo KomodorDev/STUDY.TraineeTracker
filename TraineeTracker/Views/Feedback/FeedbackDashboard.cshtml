@@ -59,7 +59,7 @@
 
     <!-- Trainee Dropdown -->
     <select name="selectedTraineeId" onchange="this.form.submit()">
-        <option value="">All Trainees</option>
+        <option value="">All active Trainees</option>
         @foreach (var trainee in Model.ActiveTrainees)
         {
             <option value="@trainee.Id"
@@ -71,7 +71,7 @@
 
     <!-- Lesson Dropdown -->
     <select name="selectedLessonId" onchange="this.form.submit()">
-        <option value="">All Lessons</option>
+        <option value="">All rated Lessons</option>
         @foreach (var lesson in Model.Lessons)
         {
             <option value="@lesson.LessonId"
