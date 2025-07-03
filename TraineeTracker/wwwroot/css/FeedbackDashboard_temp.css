@@ -80,6 +80,7 @@
     padding: 0.4rem 0.7rem;
     border-radius: 4px;
     cursor: pointer;
+    width: 80px; /* ensures equal width */
     font-size: 0.85rem;
 }
 
@@ -94,6 +95,7 @@
     padding: 0.4rem 0.7rem;
     border-radius: 4px;
     cursor: pointer;
+    width: 80px; /* ensures equal width */
     font-size: 0.85rem;
 }
 
