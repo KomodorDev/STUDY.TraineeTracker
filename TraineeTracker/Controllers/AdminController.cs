@@ -15,6 +15,7 @@ namespace TraineeTracker.Controllers {
         private readonly AdminService _adminService;
         private readonly IApplicationUserRepository _applicationUserRepository;
         private readonly IProcessingPauseRepository _processingPauseRepository;
+        private readonly ITeachingPlanRepository _teachingPlanRepository;
         private readonly ILogger<AdminController> _logger;
 
         public AdminController(AdminService adminService, IApplicationUserRepository applicationUserRepository, IProcessingPauseRepository processingPauseRepository, ITeachingPlanRepository teachingPlanRepository, ILogger<AdminController> logger) {
