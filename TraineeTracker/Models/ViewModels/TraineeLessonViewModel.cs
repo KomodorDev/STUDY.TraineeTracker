@@ -7,6 +7,7 @@ namespace TraineeTracker.Models.ViewModels {
         public double EstimatedEffort { get; set; }
         public double WeightedEffort { get; set; }
         public TraineeLessonState State { get; set; }
+        public string Status { get; set; } = string.Empty;
     }
 }
 
