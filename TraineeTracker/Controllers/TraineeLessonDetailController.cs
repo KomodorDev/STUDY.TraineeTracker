@@ -4,8 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 
 using TraineeTracker.Services;
 using TraineeTracker.Models.Dtos;
-using TraineeTracker.Models.Domain;
-using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 
 namespace TraineeTracker.Controllers {
     [ApiController]
@@ -41,6 +40,7 @@ namespace TraineeTracker.Controllers {
             return RedirectToAction("ShowTraineeLessonDetailView", "TraineeLessonDetailController", new { traineeLessonId = feedback.TraineeLessonId });
         }
 
+        [Authorize(Roles = "Admin,Mentor")]
         [HttpDelete("delete-feedback")]
         public async Task<IActionResult> DeleteFeedback(int feedbackId, int traineeLessonIdForReturn) {
             await _traineeLessonDetailService.DeleteFeedback(User, feedbackId);
