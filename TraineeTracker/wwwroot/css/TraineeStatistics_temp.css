@@ -7,7 +7,6 @@ body {
     overflow-y: auto;
     margin-bottom: 2rem;
     position: relative;
-    border: 2px solid red;
 }
 
 #lessonChart {
