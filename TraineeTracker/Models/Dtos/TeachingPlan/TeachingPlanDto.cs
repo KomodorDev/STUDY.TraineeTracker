@@ -1,7 +1,11 @@
+using System.ComponentModel.DataAnnotations;
+
 namespace TraineeTracker.Models.Dtos {
     public class TeachingPlanDto {
 
         // All caes:
+
+        [Required]
         public required IFormFile NewPlanFile { get; set; }
 
         // Update Case:
