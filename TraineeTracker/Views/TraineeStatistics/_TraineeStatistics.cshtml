@@ -1,0 +1,126 @@
+@using System.Text.Json
+@model TraineeTracker.Models.ViewModels.TraineeStatisticsViewModel
+
+<link rel="stylesheet" href="~/css/TraineeStatistics_temp.css" />
+
+<h2>Fortschritt der Lektionen</h2>
+
+<!-- Chart Container -->
+<div class="chart-container">
+    <canvas id="lessonChart"></canvas>
+</div>
+
+<!-- Metric Tiles -->
+<div class="metrics-grid">
+    <div class="metric-tile"><strong>LessonDaysCompleted:</strong> @(Model.LessonDaysCompleted?.ToString("0.0") ?? "N/A")</div>
+    <div class="metric-tile"><strong>LessonDaysOpen:</strong> @(Model.LessonDaysOpen?.ToString("0.0") ?? "N/A")</div>
+    <div class="metric-tile"><strong>LessonDaysBuffer:</strong> @(Model.LessonDaysBuffer?.ToString("0.0") ?? "N/A")</div>
+    <div class="metric-tile"><strong>Speed:</strong> @(Model.Speed?.ToString("0.00") ?? "N/A")</div>
+    <div class="metric-tile"><strong>PredictedMissingEstimatedEffortAtEnd:</strong> @(Model.PredictedMissingEstimatedEffortAtEnd?.ToString("0.0") ?? "N/A")</div>
+    <div class="metric-tile"><strong>PredictedMissingActualDays:</strong> @(Model.PredictedMissingActualDays?.ToString("0.0") ?? "N/A")</div>
+    <div class="metric-tile">
+        <strong>Status:</strong>
+        @if (Model.IsUpToDate)
+        {
+            <span class="text-success">✔ Up to date</span>
+        }
+        else
+        {
+            <span class="text-danger">✘ Not up to date</span>
+        }
+    </div>
+</div>
+
+<!-- Chart.js and plugin -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-annotation@1.1.0"></script>
+
+<script>
+window.addEventListener('DOMContentLoaded', () => {
+    const ctx = document.getElementById('lessonChart')?.getContext('2d');
+    if (!ctx) return;
+
+    const labels = @Html.Raw(JsonSerializer.Serialize(Model.AllLessons.Select(l => l.Title)));
+    const data = @Html.Raw(JsonSerializer.Serialize(Model.AllLessons.Select(l =>
+        l.WeightedEffort > 0 ? l.WeightedEffort : l.EstimatedEffort
+    )));
+    const colors = @Html.Raw(JsonSerializer.Serialize(Model.AllLessons.Select(l =>
+        l.Status == "finished" ? "rgba(40, 167, 69, 0.8)" :
+        l.Status == "accepted" ? "rgba(0, 123, 255, 0.8)" :
+        l.Status == "rejected" ? "rgba(220, 53, 69, 0.8)" :
+        l.Status == "started" ? "rgba(255, 193, 7, 0.8)" :
+        "rgba(108, 117, 125, 0.8)"
+    )));
+
+    const annotations = {
+        today: {
+            type: 'line',
+            xMin: @Model.TodayPosition,
+            xMax: @Model.TodayPosition,
+            borderColor: 'black',
+            borderWidth: 2,
+            label: {
+                content: 'Today',
+                enabled: true,
+                position: 'start'
+            }
+        }
+    };
+
+    @if (Model.PredictedMissingEstimatedEffortAtEnd.HasValue)
+    {
+        <text>
+        annotations.predicted = {
+            type: 'line',
+            xMin: @(Model.TodayPosition + Model.PredictedMissingEstimatedEffortAtEnd.Value),
+            xMax: @(Model.TodayPosition + Model.PredictedMissingEstimatedEffortAtEnd.Value),
+            borderColor: 'orange',
+            borderWidth: 2,
+            label: {
+                content: 'Predicted Effort',
+                enabled: true,
+                position: 'start'
+            }
+        };
+        </text>
+    }
+
+    new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: labels,
+            datasets: [{
+                label: 'Aufwand (Tage)',
+                data: data,
+                backgroundColor: colors,
+                borderRadius: 4,
+                barThickness: 20,
+                maxBarThickness: 25
+            }]
+        },
+        options: {
+            indexAxis: 'y',
+            responsive: true,
+            maintainAspectRatio: false,
+            animation: false,
+            scales: {
+                x: {
+                    beginAtZero: true,
+                    title: { display: true, text: 'Tage' }
+                },
+                y: {
+                    reverse: true,
+                    ticks: { autoSkip: false }
+                }
+            },
+            plugins: {
+                legend: { display: false },
+                tooltip: { enabled: true },
+                annotation: {
+                    annotations: annotations
+                }
+            }
+        }
+    });
+});
+</script>
