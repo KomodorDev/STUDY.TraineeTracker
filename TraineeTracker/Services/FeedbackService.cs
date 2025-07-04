@@ -29,8 +29,7 @@ namespace TraineeTracker.Services {
             ClaimsPrincipal user,
             string filter = "all",
             int page = 1,
-            string sortBy = "date",
-            bool ascending = false,
+            string sortBy = "date_asc",
             string? selectedTraineeId = null,
             int? selectedLessonId = null) {
 
@@ -44,11 +43,15 @@ namespace TraineeTracker.Services {
             var activeTrainees = await _databaseApplicaionUserRepository.GetOpenUsersInRoleAsync("Trainee");
 
             // +++++++++++++++
-            // Get all active lessons by trainee or all lessons
+            // Get (all active lessons by trainee) OR (all lessons for all teachingPlans)
             List<Lesson> lessons;
             if (!string.IsNullOrEmpty(selectedTraineeId)) {
 
+                /* 
                 Console.WriteLine($"[DEBUG] selectedTraineeId: {selectedTraineeId}");
+                */
+
+                Console.WriteLine($"[DEBUG] sortBy: {sortBy}");
 
                 // Get Trainee and the Lessons they wrote feedback for
                 ApplicationUser? traineeNullable = await _databaseApplicaionUserRepository.FindByIdWithWrittenFeedbacksWithLessonAsync(selectedTraineeId!);
@@ -68,11 +71,11 @@ namespace TraineeTracker.Services {
             }
 
             // +++++++++++++++
-            // Get Pages
+            // Get Pages for "Unread", "Read", and "All":
             Page<FeedbackDashboardDto> feedbackPage = filter switch {
-                "unread" => await GetUnreadFeedbacksAsync(appUser, page, sortBy, ascending, selectedTraineeId, selectedLessonId),
-                "read" => await GetReadFeedbacksAsync(appUser, page, sortBy, ascending, selectedTraineeId, selectedLessonId),
-                _ => await GetAllFeedbacksAsync(appUser, page, sortBy, ascending, selectedTraineeId, selectedLessonId)
+                "unread" => await GetUnreadFeedbacksAsync(appUser, page, sortBy, selectedTraineeId, selectedLessonId),
+                "read" => await GetReadFeedbacksAsync(appUser, page, sortBy, selectedTraineeId, selectedLessonId),
+                _ => await GetAllFeedbacksAsync(appUser, page, sortBy, selectedTraineeId, selectedLessonId)
             };
 
             // +++++++++++++++
@@ -96,8 +99,7 @@ namespace TraineeTracker.Services {
             return new FeedbackDashboardViewModel {
                 Feedbacks = feedbackPage,
                 ActiveFilter = filter,
-                ActiveSortBy = sortBy,
-                Ascending = ascending,
+                SortBy = sortBy,
 
                 Lessons = lessons,
                 ActiveTrainees = activeTrainees,
@@ -111,17 +113,28 @@ namespace TraineeTracker.Services {
         }
 
         // ------------------------------------------------------
-        private static IQueryable<Feedback> ApplySorting(IQueryable<Feedback> query, string sortBy, bool ascending) {
-            return sortBy switch {
-                "author" => ascending
-                    ? query.OrderBy(f => f.Author.UserName)
-                    : query.OrderByDescending(f => f.Author.UserName),
-                "lesson" => ascending
-                    ? query.OrderBy(f => f.Lesson.Title)
-                    : query.OrderByDescending(f => f.Lesson.Title),
-                _ => ascending
-                    ? query.OrderBy(f => f.CreateTime)
-                    : query.OrderByDescending(f => f.CreateTime)
+        private static IQueryable<Feedback> ApplySortingAndFiltering(
+            IQueryable<Feedback> query,
+            string sortBy,
+            string? selectedTraineeId = null,
+            int? selectedLessonId = null) {
+
+            // Filter by Author (Trainee)
+            if (!string.IsNullOrEmpty(selectedTraineeId))
+                query = query.Where(f => f.Author.Id == selectedTraineeId);
+
+            // +++++++++++++++
+            // Filter by Lesson
+            if (selectedLessonId.HasValue)
+                query = query.Where(f => f.Lesson.LessonId == selectedLessonId);
+
+            return sortBy.ToLower() switch {
+                "author_asc" => query.OrderBy(f => f.Author.UserName),
+                "author_desc" => query.OrderByDescending(f => f.Author.UserName),
+                "lesson_asc" => query.OrderBy(f => f.Lesson.Title),
+                "lesson_desc" => query.OrderByDescending(f => f.Lesson.Title),
+                "date_asc" => query.OrderBy(f => f.CreateTime),
+                _ => query.OrderByDescending(f => f.CreateTime) // default fallback
             };
         }
 
@@ -130,32 +143,41 @@ namespace TraineeTracker.Services {
             ApplicationUser currentUser,
             int page,
             string sortBy,
-            bool ascending,
             string? selectedTraineeId = null,
             int? selectedLessonId = null) {
+
+            // +++++++++++++++
+            // Get current userId
             var currentUserId = currentUser.Id;
+
+            // +++++++++++++++
+            // Buld query to get all Feedbacks
             var query = _databaseFeedbackRepository.GetAllFeedbacksWithLessonAndAuthorAndReadByUsers();
 
+            /* 
             Console.WriteLine($"[DEBUG] GetAllFeedbacksAsync is called");
             Console.WriteLine($"[DEBUG] selectedTraineeId: {selectedTraineeId}");
             Console.WriteLine($"[DEBUG] selectedLessonId: {selectedLessonId}");
-            // Filter nach Trainee (Author)
-            if (!string.IsNullOrEmpty(selectedTraineeId))
-                query = query.Where(f => f.Author.Id == selectedTraineeId);
 
-            // Filter nach Lesson
-            if (selectedLessonId.HasValue)
-                query = query.Where(f => f.Lesson.LessonId == selectedLessonId);
+            */
 
-            query = ApplySorting(query, sortBy, ascending);
+            // +++++++++++++++
+            // Apply Sorting and Filtering
+            query = ApplySortingAndFiltering(query, sortBy, selectedTraineeId, selectedLessonId);
 
+            // +++++++++++++++
+            // Get Count of all Feedbacks in Query
             var totalItems = await query.CountAsync();
 
+            // +++++++++++++++
+            // Only get actual Feedbacks for current page
             var items = await query
                 .Skip((page - 1) * _pageSize)
                 .Take(_pageSize)
                 .ToListAsync();
 
+            // +++++++++++++++
+            // Build dtoItems out of Feedbacks
             var dtoItems = items.Select(f => new FeedbackDashboardDto {
                 FeedbackId = f.FeedbackId,
                 AuthorName = f.Author.UserName!,
@@ -168,6 +190,8 @@ namespace TraineeTracker.Services {
                 IsReadByCurrentUser = f.ReadByUsers != null && f.ReadByUsers.Any(u => u.Id == currentUserId)
             }).ToList();
 
+            // +++++++++++++++
+            // Build Page with dtoItems and return
             return new Page<FeedbackDashboardDto> {
                 Items = dtoItems,
                 PageNumber = page,
@@ -176,31 +200,35 @@ namespace TraineeTracker.Services {
             };
         }
 
-
         // ------------------------------------------------------
         public async Task<Page<FeedbackDashboardDto>> GetReadFeedbacksAsync(
-            ApplicationUser user, int page, string sortBy, bool ascending, string? selectedTraineeId = null,
+            ApplicationUser currentUser,
+            int page,
+            string sortBy,
+            string? selectedTraineeId = null,
             int? selectedLessonId = null) {
-            var query = _databaseFeedbackRepository.GetAllFeedbacksReadByUserWithLessonAndAuthor(user);
 
+            // +++++++++++++++
+            // Get all Feedbacks read by currentUser
+            var query = _databaseFeedbackRepository.GetAllFeedbacksReadByUserWithLessonAndAuthor(currentUser);
 
-            // Filter nach Trainee (Author)
-            if (!string.IsNullOrEmpty(selectedTraineeId))
-                query = query.Where(f => f.Author.Id == selectedTraineeId);
+            // +++++++++++++++
+            // Apply Sorting and Filtering
+            query = ApplySortingAndFiltering(query, sortBy, selectedTraineeId, selectedLessonId);
 
-            // Filter nach Lesson
-            if (selectedLessonId.HasValue)
-                query = query.Where(f => f.Lesson.LessonId == selectedLessonId);
-
-            query = ApplySorting(query, sortBy, ascending);
-
+            // +++++++++++++++
+            // Get Count of all Feedbacks in Query
             var totalItems = await query.CountAsync();
 
+            // +++++++++++++++
+            // Only get actual Feedbacks for current page
             var items = await query
                 .Skip((page - 1) * _pageSize)
                 .Take(_pageSize)
                 .ToListAsync();
 
+            // +++++++++++++++
+            // Build dtoItems out of Feedbacks
             var dtoItems = items.Select(f => new FeedbackDashboardDto {
                 FeedbackId = f.FeedbackId,
                 IsReadByCurrentUser = true,  // Alle sind gelesen
@@ -213,6 +241,8 @@ namespace TraineeTracker.Services {
                 CreateTime = f.CreateTime
             }).ToList();
 
+            // +++++++++++++++
+            // Build Page with dtoItems and return
             return new Page<FeedbackDashboardDto> {
                 Items = dtoItems,
                 PageNumber = page,
@@ -223,30 +253,36 @@ namespace TraineeTracker.Services {
 
         // ------------------------------------------------------
         public async Task<Page<FeedbackDashboardDto>> GetUnreadFeedbacksAsync(
-            ApplicationUser user, int page, string sortBy, bool ascending, string? selectedTraineeId = null,
+            ApplicationUser currentUser,
+            int page,
+            string sortBy,
+            string? selectedTraineeId = null,
             int? selectedLessonId = null) {
-            var query = _databaseFeedbackRepository.GetAllFeedbacksUnreadByUserWithLessonAndAuthorAndReadByUsers(user);
 
-            // Filter nach Trainee (Author)
-            if (!string.IsNullOrEmpty(selectedTraineeId))
-                query = query.Where(f => f.Author.Id == selectedTraineeId);
+            // +++++++++++++++
+            // Get all Feedbacks unread by currentUser
+            var query = _databaseFeedbackRepository.GetAllFeedbacksUnreadByUserWithLessonAndAuthorAndReadByUsers(currentUser);
 
-            // Filter nach Lesson
-            if (selectedLessonId.HasValue)
-                query = query.Where(f => f.Lesson.LessonId == selectedLessonId);
+            // +++++++++++++++
+            // Apply Sorting and Filtering
+            query = ApplySortingAndFiltering(query, sortBy, selectedTraineeId, selectedLessonId);
 
-            query = ApplySorting(query, sortBy, ascending);
-
+            // +++++++++++++++
+            // Get Count of all Feedbacks in Query
             var totalItems = await query.CountAsync();
 
+            // +++++++++++++++
+            // Only get actual Feedbacks for current page
             var items = await query
                 .Skip((page - 1) * _pageSize)
                 .Take(_pageSize)
                 .ToListAsync();
 
+            // +++++++++++++++
+            // Build dtoItems out of Feedbacks
             var dtoItems = items.Select(f => new FeedbackDashboardDto {
                 FeedbackId = f.FeedbackId,
-                IsReadByCurrentUser = false, // Alle sind ungelesen
+                IsReadByCurrentUser = false, // All all unread
                 AuthorName = f.Author.UserName!,
                 LessonTitle = f.Lesson.Title,
                 Comment = f.Comment,
@@ -256,6 +292,8 @@ namespace TraineeTracker.Services {
                 CreateTime = f.CreateTime
             }).ToList();
 
+            // +++++++++++++++
+            // Build Page with dtoItems and return
             return new Page<FeedbackDashboardDto> {
                 Items = dtoItems,
                 PageNumber = page,
@@ -271,39 +309,49 @@ namespace TraineeTracker.Services {
         // ------------------------------------------------------                         
         // ------------------------------------------------------
         public async Task MarkFeedbackAsReadAsync(ClaimsPrincipal userPrincipal, int feedbackId) {
-            // 1) Aktuellen User holen
-            var appUser = await _databaseApplicaionUserRepository.GetUserAsync(userPrincipal);
 
-            // 2) Feedback mit ReadByUsers laden
+            // +++++++++++++++
+            // 1. Get currentUser
+            var currentUser = await _databaseApplicaionUserRepository.GetUserAsync(userPrincipal);
+
+            // +++++++++++++++
+            // 2. Get Feedback with ReadByUsers
             var feedback = await _databaseFeedbackRepository
             .GetFeedbackByIDWithLessonAndAuthorAndReadByUsersAsync(feedbackId)
                 ?? throw new KeyNotFoundException($"Feedback mit ID {feedbackId} nicht gefunden.");
 
-            // 3) Prüfen, ob er es schon gelesen hat
-            if (!feedback.ReadByUsers.Any(u => u.Id == appUser!.Id)) {
-                // 4) Wenn nicht, zur Liste hinzufügen und speichern
-                feedback.ReadByUsers.Add(appUser!);
+            // +++++++++++++++
+            // 3. Check if currentUser has already read the Feedback
+            if (!feedback.ReadByUsers.Any(u => u.Id == currentUser!.Id)) {
+                // If not, add the currentUser and save
+                feedback.ReadByUsers.Add(currentUser!);
                 await _databaseFeedbackRepository.UpdateAsync(feedback);
             }
         }
 
         // ------------------------------------------------------
         public async Task MarkFeedbackAsUnreadAsync(ClaimsPrincipal userPrincipal, int feedbackId) {
-            // 1) Aktuellen User holen
-            var appUser = await _databaseApplicaionUserRepository.GetUserAsync(userPrincipal);
 
-            // 2) Feedback mit ReadByUsers laden
+            // +++++++++++++++
+            // 1. Get currentUser
+            var currentUser = await _databaseApplicaionUserRepository.GetUserAsync(userPrincipal);
+
+            // +++++++++++++++
+            // 2. Get Feedback with ReadByUsers
             var feedback = await _databaseFeedbackRepository
                 .GetFeedbackByIDWithLessonAndAuthorAndReadByUsersAsync(feedbackId)
                 ?? throw new KeyNotFoundException($"Feedback mit ID {feedbackId} nicht gefunden.");
 
-            // 3) Prüfen, ob der User in der Liste ist
-            var userToRemove = feedback.ReadByUsers.FirstOrDefault(u => u.Id == appUser!.Id);
+            // +++++++++++++++
+            // 3. Check if currentUser has already read the Feedback
+            var userToRemove = feedback.ReadByUsers.FirstOrDefault(u => u.Id == currentUser!.Id);
             if (userToRemove != null) {
+                // If currentUser has read the Feedback, remove him
                 feedback.ReadByUsers.Remove(userToRemove);
                 await _databaseFeedbackRepository.UpdateAsync(feedback);
             }
         }
+
         // ------------------------------------------------------
     }
 }
