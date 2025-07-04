@@ -3,8 +3,7 @@ using System.ComponentModel.DataAnnotations;
 namespace TraineeTracker.Models.Dtos {
     public class TeachingPlanDto {
 
-        // All caes:
-
+        // All cases:
         [Required]
         public required IFormFile NewPlanFile { get; set; }
 
