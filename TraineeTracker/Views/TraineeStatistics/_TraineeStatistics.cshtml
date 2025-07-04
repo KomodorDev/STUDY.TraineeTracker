@@ -1,5 +1,38 @@
 @using System.Text.Json
+@using System.Globalization
 @model TraineeTracker.Models.ViewModels.TraineeStatisticsViewModel
+
+@{
+    var basePos = 0.0;
+    var stackedLessons = Model.AllLessons.Select((l, index) =>
+    {
+        var value = l.WeightedEffort > 0 ? l.WeightedEffort : l.EstimatedEffort;
+        if (value <= 0) value = 0.1;
+        var start = basePos;
+        basePos += value;
+        return new {
+            Title = l.Title,
+            Start = start,
+            End = start + value,
+            Status = l.Status
+        };
+    }).ToList();
+
+    var chartData = stackedLessons.Select(l => new {
+        x = new[] { l.Start, l.End },
+        y = l.Title
+    });
+
+    var colors = stackedLessons.Select(l =>
+        l.Status == "finished" ? "rgba(40, 167, 69, 0.8)" :
+        l.Status == "accepted" ? "rgba(0, 123, 255, 0.8)" :
+        l.Status == "rejected" ? "rgba(220, 53, 69, 0.8)" :
+        l.Status == "started" ? "rgba(255, 193, 7, 0.8)" :
+        "rgba(108, 117, 125, 0.8)"
+    );
+
+    var predictedX = (Model.TodayPosition + Model.PredictedMissingEstimatedEffortAtEnd.GetValueOrDefault()).ToString(CultureInfo.InvariantCulture);
+}
 
 <link rel="stylesheet" href="~/css/TraineeStatistics_temp.css" />
 
@@ -12,6 +45,9 @@
 
 <!-- Metric Tiles -->
 <div class="metrics-grid">
+    <div class="metric-tile"><strong>Snapshot Date:</strong> @(Model.SnapshotDateTime.ToString("dd.MM.yyyy HH:mm"))</div>
+    <div class="metric-tile"><strong>DaysPresentTotal:</strong> @(Model.DaysPresentTotal?.ToString("0.0") ?? "N/A")</div>
+    <div class="metric-tile"><strong>DaysPresentTillToday:</strong> @(Model.DaysPresentTillToday?.ToString("0.0") ?? "N/A")</div>
     <div class="metric-tile"><strong>LessonDaysCompleted:</strong> @(Model.LessonDaysCompleted?.ToString("0.0") ?? "N/A")</div>
     <div class="metric-tile"><strong>LessonDaysOpen:</strong> @(Model.LessonDaysOpen?.ToString("0.0") ?? "N/A")</div>
     <div class="metric-tile"><strong>LessonDaysBuffer:</strong> @(Model.LessonDaysBuffer?.ToString("0.0") ?? "N/A")</div>
@@ -31,26 +67,22 @@
     </div>
 </div>
 
-<!-- Chart.js and plugin -->
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-annotation@1.1.0"></script>
+@if (!Model.AllLessons.Any())
+{
+    <div class="alert alert-warning">Keine Lektionsdaten verfügbar.</div>
+}
+
+<!-- Chart.js und Plugin -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-annotation@1.1.0/dist/chartjs-plugin-annotation.min.js"></script>
 
 <script>
 window.addEventListener('DOMContentLoaded', () => {
     const ctx = document.getElementById('lessonChart')?.getContext('2d');
     if (!ctx) return;
 
-    const labels = @Html.Raw(JsonSerializer.Serialize(Model.AllLessons.Select(l => l.Title)));
-    const data = @Html.Raw(JsonSerializer.Serialize(Model.AllLessons.Select(l =>
-        l.WeightedEffort > 0 ? l.WeightedEffort : l.EstimatedEffort
-    )));
-    const colors = @Html.Raw(JsonSerializer.Serialize(Model.AllLessons.Select(l =>
-        l.Status == "finished" ? "rgba(40, 167, 69, 0.8)" :
-        l.Status == "accepted" ? "rgba(0, 123, 255, 0.8)" :
-        l.Status == "rejected" ? "rgba(220, 53, 69, 0.8)" :
-        l.Status == "started" ? "rgba(255, 193, 7, 0.8)" :
-        "rgba(108, 117, 125, 0.8)"
-    )));
+    const data = @Html.Raw(JsonSerializer.Serialize(chartData));
+    const colors = @Html.Raw(JsonSerializer.Serialize(colors));
 
     const annotations = {
         today: {
@@ -65,37 +97,41 @@ window.addEventListener('DOMContentLoaded', () => {
                 position: 'start'
             }
         }
+        @if (Model.PredictedMissingEstimatedEffortAtEnd.HasValue)
+        {
+            <text>,
+            predicted: {
+                type: 'line',
+                xMin: @predictedX,
+                xMax: @predictedX,
+                borderColor: 'orange',
+                borderWidth: 2,
+                label: {
+                    content: 'Predicted Effort',
+                    enabled: true,
+                    position: 'start'
+                }
+            }</text>
+        }
     };
 
-    @if (Model.PredictedMissingEstimatedEffortAtEnd.HasValue)
-    {
-        <text>
-        annotations.predicted = {
-            type: 'line',
-            xMin: @(Model.TodayPosition + Model.PredictedMissingEstimatedEffortAtEnd.Value),
-            xMax: @(Model.TodayPosition + Model.PredictedMissingEstimatedEffortAtEnd.Value),
-            borderColor: 'orange',
-            borderWidth: 2,
-            label: {
-                content: 'Predicted Effort',
-                enabled: true,
-                position: 'start'
-            }
-        };
-        </text>
-    }
+    console.log("Chart-Daten:", data);
+    console.log("Farben:", colors);
 
     new Chart(ctx, {
         type: 'bar',
         data: {
-            labels: labels,
             datasets: [{
                 label: 'Aufwand (Tage)',
                 data: data,
                 backgroundColor: colors,
                 borderRadius: 4,
                 barThickness: 20,
-                maxBarThickness: 25
+                maxBarThickness: 25,
+                parsing: {
+                    xAxisKey: 'x',
+                    yAxisKey: 'y'
+                }
             }]
         },
         options: {
@@ -109,8 +145,13 @@ window.addEventListener('DOMContentLoaded', () => {
                     title: { display: true, text: 'Tage' }
                 },
                 y: {
-                    reverse: true,
-                    ticks: { autoSkip: false }
+                    type: 'category',
+                    ticks: {
+                        display: false
+                    },
+                    grid: {
+                        drawTicks: false 
+                    }
                 }
             },
             plugins: {
