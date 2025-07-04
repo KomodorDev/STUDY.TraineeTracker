@@ -11,7 +11,6 @@ namespace TraineeTracker.Models.ViewModels {
         public double? Speed { get; set; }
         public double? PredictedMissingEstimatedEffortAtEnd { get; set; }
         public double? PredictedMissingActualDays { get; set; }
-        public double? PredictedEffortEndX { get; set; }
         public bool IsUpToDate { get; set; }
         public List<TraineeLessonViewModel>? FinishedLessons { get; set; }
         public List<TraineeLessonViewModel>? AcceptedAndRatedLessons { get; set; }
