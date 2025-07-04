@@ -5,7 +5,7 @@
 <!-- Vertically centered scrollable modal -->
 @* source: https://getbootstrap.com/docs/5.0/components/modal/ *@
 
-<div id="lessonDetailModal" class="modal" tabindex="-1" role="dialog">
+<div id="lessonDetailModal" class="modal fade" tabindex="-1" role="dialog">
     <div class="modal-dialog modal-dialog-centered sopro-lesson-modal-size">
         <div class="modal-content sopro-card" style="box-shadow: none;">
             <div class="modal-header">
@@ -19,11 +19,11 @@
                     <!-- Section 1: lesson info -->
                     <div class="accordion-item">
                         <p class="accordion-header" id="info">
-                            <button class="accordion-button collapsed sopro-accordion-text" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-info" aria-expanded="true" aria-controls="collapse-info">
+                            <button class="accordion-button sopro-accordion-text" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-info" aria-expanded="true" aria-controls="collapse-info">
                                 Info
                             </button>
                         </p>
-                        <div id="collapse-info" class="accordion-collapse collapse" aria-labelledby="info" data-bs-parent="#lessonAccordion">
+                        <div id="collapse-info" class="accordion-collapse collapse show" aria-labelledby="info" data-bs-parent="#lessonAccordion">
                             <div class="accordion-body sopro-accordion-truncate">
                                 <p>Link: <a href="@Model.Lesson.LinkUrl" target="_blank">@Model.Lesson.LinkUrl</a></p>
                                 <p>Estimation: @Model.Lesson.EstimatedEffort days</p>
