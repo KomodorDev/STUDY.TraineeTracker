@@ -1,6 +1,39 @@
 @using System.Text.Json
 @model TraineeTracker.Models.ViewModels.TraineeStatisticsViewModel
 
+@{
+    var basePos = 0.0;
+    var stackedLessons = Model.AllLessons.Select((l, index) =>
+    {
+        var value = l.WeightedEffort > 0 ? l.WeightedEffort : l.EstimatedEffort;
+        if (value <= 0) value = 0.1;
+        var start = basePos;
+        basePos += value;
+        return new {
+            Title = l.Title,
+            Start = start,
+            End = start + value,
+            Status = l.Status
+        };
+    }).ToList();
+
+    var chartData = stackedLessons.Select(l => new {
+        x = l.Start,
+        x2 = l.End,
+        y = l.Title
+    });
+
+    var labels = stackedLessons.Select(l => l.Title).ToList();
+    var colors = stackedLessons.Select(l =>
+        l.Status == "finished" ? "rgba(40, 167, 69, 0.8)" :
+        l.Status == "accepted" ? "rgba(0, 123, 255, 0.8)" :
+        l.Status == "rejected" ? "rgba(220, 53, 69, 0.8)" :
+        l.Status == "started" ? "rgba(255, 193, 7, 0.8)" :
+        "rgba(108, 117, 125, 0.8)"
+    );
+}
+
+
 <link rel="stylesheet" href="~/css/TraineeStatistics_temp.css" />
 
 <h2>Fortschritt der Lektionen</h2>
@@ -12,6 +45,9 @@
 
 <!-- Metric Tiles -->
 <div class="metrics-grid">
+    <div class="metric-tile"><strong>Snapshot Date:</strong> @(Model.SnapshotDateTime.ToString("dd.MM.yyyy HH:mm"))</div>
+    <div class="metric-tile"><strong>DaysPresentTotal:</strong> @(Model.DaysPresentTotal?.ToString("0.0") ?? "N/A")</div>
+    <div class="metric-tile"><strong>DaysPresentTillToday:</strong> @(Model.DaysPresentTillToday?.ToString("0.0") ?? "N/A")</div>
     <div class="metric-tile"><strong>LessonDaysCompleted:</strong> @(Model.LessonDaysCompleted?.ToString("0.0") ?? "N/A")</div>
     <div class="metric-tile"><strong>LessonDaysOpen:</strong> @(Model.LessonDaysOpen?.ToString("0.0") ?? "N/A")</div>
     <div class="metric-tile"><strong>LessonDaysBuffer:</strong> @(Model.LessonDaysBuffer?.ToString("0.0") ?? "N/A")</div>
@@ -32,25 +68,21 @@
 </div>
 
 <!-- Chart.js and plugin -->
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-annotation@1.1.0"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-chart-bar@4.4.0/dist/chartjs-chart-bar.umd.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-annotation@1.1.0/dist/chartjs-plugin-annotation.min.js"></script>
+
 
 <script>
 window.addEventListener('DOMContentLoaded', () => {
     const ctx = document.getElementById('lessonChart')?.getContext('2d');
     if (!ctx) return;
 
-    const labels = @Html.Raw(JsonSerializer.Serialize(Model.AllLessons.Select(l => l.Title)));
-    const data = @Html.Raw(JsonSerializer.Serialize(Model.AllLessons.Select(l =>
-        l.WeightedEffort > 0 ? l.WeightedEffort : l.EstimatedEffort
-    )));
-    const colors = @Html.Raw(JsonSerializer.Serialize(Model.AllLessons.Select(l =>
-        l.Status == "finished" ? "rgba(40, 167, 69, 0.8)" :
-        l.Status == "accepted" ? "rgba(0, 123, 255, 0.8)" :
-        l.Status == "rejected" ? "rgba(220, 53, 69, 0.8)" :
-        l.Status == "started" ? "rgba(255, 193, 7, 0.8)" :
-        "rgba(108, 117, 125, 0.8)"
-    )));
+    const data = @Html.Raw(JsonSerializer.Serialize(chartData));
+
+    const labels = @Html.Raw(JsonSerializer.Serialize(stackedLessons.Select(l => l.Title)));
+
+    const colors = @Html.Raw(JsonSerializer.Serialize(colors));
 
     const annotations = {
         today: {
@@ -88,7 +120,6 @@ window.addEventListener('DOMContentLoaded', () => {
     new Chart(ctx, {
         type: 'bar',
         data: {
-            labels: labels,
             datasets: [{
                 label: 'Aufwand (Tage)',
                 data: data,
@@ -96,21 +127,28 @@ window.addEventListener('DOMContentLoaded', () => {
                 borderRadius: 4,
                 barThickness: 20,
                 maxBarThickness: 25
-            }]
+            })]
         },
         options: {
             indexAxis: 'y',
             responsive: true,
             maintainAspectRatio: false,
             animation: false,
+            parsing: false,
             scales: {
                 x: {
                     beginAtZero: true,
                     title: { display: true, text: 'Tage' }
                 },
                 y: {
+                    type: 'category',
                     reverse: true,
-                    ticks: { autoSkip: false }
+                    ticks: {
+                        display: false 
+                    },
+                    grid: {
+                        drawTicks: false 
+                    }
                 }
             },
             plugins: {
