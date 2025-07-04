@@ -3,6 +3,8 @@ using Microsoft.AspNetCore.Identity;
 namespace TraineeTracker.Models.Domain {
     public class ApplicationUser : IdentityUser {
         public bool IsClosed { get; set; } = false; // to be implemented
+    
+        public ICollection<IdentityUserRole<string>>? UserRoles { get; set; }
         public required EmailNotificationSetting EmailNotificationSetting { get; set; }
 
 

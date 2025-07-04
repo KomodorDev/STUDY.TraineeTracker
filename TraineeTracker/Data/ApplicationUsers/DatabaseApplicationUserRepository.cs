@@ -58,6 +58,13 @@ namespace TraineeTracker.Data.ApplicationUsers {
             return await _userManager.FindByIdAsync(userId);
         }
 
+        public async Task<ApplicationUser?> FindByIdWithNotificationSettingAsync(string userId)
+        {
+            return await _context.Users
+                .Include(u => u.EmailNotificationSetting)
+                .FirstOrDefaultAsync(u => u.Id == userId);
+        }
+
         public async Task<ApplicationUser?> FindByIdWithLastSelectedTraineesAsync(string userId) {
             return await _context.Users
             .Include(u => u.LastSelectedTrainees)
@@ -93,6 +100,26 @@ namespace TraineeTracker.Data.ApplicationUsers {
             .Where(u => userIds.Contains(u.Id))
             .Where(u => !u.IsClosed)
             .ToListAsync();
+        }
+
+        public async Task<IEnumerable<ApplicationUser>> GetOpenUsersInRoleWithEmailNotificationSettingAsync(string roleName) {
+
+            // Get roleId
+            var roleId = await _context.Roles
+                .Where(r => r.Name == roleName)
+                .Select(r => r.Id)
+                .FirstOrDefaultAsync();
+
+            if (roleId == null) {
+                return Enumerable.Empty<ApplicationUser>();
+            }
+            // Get users with that roleId
+            return await _context.Users
+                .Include(u => u.UserRoles) // Damit EF die UserRoles lädt
+                .Where(u => u.UserRoles!.Any(r => r.RoleId == roleId))
+                .Where(u => !u.IsClosed)
+                .Include(u => u.EmailNotificationSetting)
+                .ToListAsync();
         }
 
         public async Task<IEnumerable<string>> GetRolesAsync(ApplicationUser user) {
