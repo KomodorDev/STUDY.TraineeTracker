@@ -30,6 +30,8 @@ namespace TraineeTracker.Models.Domain {
         public double? PredictedMissingEstimatedEffortAtEnd { get; set; }
 
         public double? PredictedMissingActualDays { get; set; }
+
+        public double? PredictedEffortEndX { get; set; }
         
         public bool IsUpToDate { get; set; }
     }
