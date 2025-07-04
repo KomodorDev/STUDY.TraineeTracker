@@ -13,8 +13,5 @@ namespace TraineeTracker.Models.Domain {
         public ICollection<Feedback> Feedbacks { get; set; } = new List<Feedback>();
 
         public ICollection<TraineeLesson> TraineeLessons { get; set; } = new List<TraineeLesson>();
-
-        public ICollection<TeachingPlan> TeachingPlans { get; set; } = new List<TeachingPlan>();
-
     }
 }
