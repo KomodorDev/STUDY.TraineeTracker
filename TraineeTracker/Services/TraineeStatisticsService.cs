@@ -253,6 +253,9 @@ namespace TraineeTracker.Services {
         // --------------------------------------------------
         public async Task<double> GetPresentDaysAsync(DateOnly startDate, DateOnly endDate, string email) {
 
+            double totalDays = endDate.DayNumber - startDate.DayNumber;
+            return totalDays * 0.7;
+            
             // ++++++++++++++++
             // Build Request
             var baseUrl = "https://api.sopro.makandra.de/api/v1/present_days";
