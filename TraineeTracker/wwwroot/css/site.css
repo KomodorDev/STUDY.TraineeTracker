@@ -194,13 +194,16 @@ p {
 
 /* menu items */
 .navbar.sopro-navbar .nav-link {
-    color: #000 !important;
+    color: #000;
     font-weight: bold;
     font-size: 1.406rem;
 
     text-decoration: none !important;
     display: inline-block;
     position: relative;
+}
+.nav-link.active {
+  color: #e61d47 !important;
 }
 
 /* logo/text on the left */
@@ -237,6 +240,9 @@ nav.navbar .container-fluid {
     /* animation */
     transform: translateX(-50%);
     transition: width 0.3s ease-in-out;
+}
+.nav-link.active::after {
+  background-color: #e61d47;
 }
 
 .nav-link:hover::after {
