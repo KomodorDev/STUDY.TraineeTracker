@@ -18,8 +18,7 @@
     }).ToList();
 
     var chartData = stackedLessons.Select(l => new {
-        x = l.Start,
-        x2 = l.End,
+        x = new[] { l.Start, l.End },
         y = l.Title
     });
 
@@ -69,7 +68,6 @@
 
 <!-- Chart.js and plugin -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/chartjs-chart-bar@4.4.0/dist/chartjs-chart-bar.umd.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-annotation@1.1.0/dist/chartjs-plugin-annotation.min.js"></script>
 
 
