@@ -6,6 +6,7 @@ using TraineeTracker.Data.TeachingPlans;
 using TraineeTracker.Models.Domain;
 using TraineeTracker.Models.Dtos;
 using TraineeTracker.Models.ViewModels;
+using TraineeTracker.Services.Email;
 
 namespace TraineeTracker.Services {
     public class TeachingPlanService {
@@ -14,15 +15,19 @@ namespace TraineeTracker.Services {
         private readonly ITraineeLessonRepository _traineeLessonRepo;
         private readonly IApplicationUserRepository _applicationUserRepo;
 
+        private readonly EmailNotificationService _emailNotificationService;
+
         public TeachingPlanService(
             ITeachingPlanRepository teachingPlanRepo,
             ILessonRepository lessonRepo,
             ITraineeLessonRepository traineeLessonRepo,
-            IApplicationUserRepository applicationUserRepo) {
+            IApplicationUserRepository applicationUserRepo,
+            EmailNotificationService emailNotificationService) {
             _teachingPlanRepo = teachingPlanRepo;
             _lessonRepo = lessonRepo;
             _traineeLessonRepo = traineeLessonRepo;
             _applicationUserRepo = applicationUserRepo;
+            _emailNotificationService = emailNotificationService;
         }
 
         public async Task<ImportDashboardViewModel> BuildImportDashboardAsync()
@@ -66,22 +71,114 @@ namespace TraineeTracker.Services {
             await _teachingPlanRepo.CreateAsync(teachingPlan);
         }
 
-        public async Task UpdateTeachingPlan(IFormFile file, int teachingPlanId) {
+        public async Task UpdateTeachingPlan(IFormFile file, int teachingPlanId)
+        {
+            // 1) Datei einlesen, DTOs validieren
             ValidateFile(file);
-
             var json = await ReadJsonAsync(file);
             var dtos = DeserializeLessonDtos(json);
             ValidateDtos(dtos);
 
+            // 2) Bestehenden TeachingPlan inkl. Lessons & Trainees laden
             var teachingPlan = await GetExistingPlanWithDetails(teachingPlanId);
-            var dtoIds = dtos.Select(d => d.Id).ToHashSet();
 
-            await RemoveDeprecatedLessonsAsync(teachingPlan, dtoIds);
-            await UpsertLessonsAsync(teachingPlan, dtos);
+            // Hilfslisten für diff
+            var existingLessons   = teachingPlan.Lessons.ToList();
+            var dtoIds            = dtos.Select(d => d.Id).ToHashSet();
+            var removedLessons    = new List<Lesson>();
+            var addedLessons      = new List<Lesson>();
+
+            // 3) Lessons entfernen, die im DTO fehlen → "removed"
+            var toRemove = existingLessons
+                .Where(l => !dtoIds.Contains(l.LessonId))
+                .ToList();
+            removedLessons.AddRange(toRemove);
+            foreach (var lesson in toRemove)
+            {
+                teachingPlan.Lessons.Remove(lesson);
+                await _lessonRepo.DeleteAsync(lesson);
+            }
+
+            // 4) DTOs upserten und zusätzlich:
+            //    - Deprecated = true → nur Open-TraineeLessons sollen gelöscht werden ("removed")
+            //    - ganz neue Lessons → in teachingPlan einfügen und als "added" markieren
+            foreach (var dto in dtos)
+            {
+                var lesson = teachingPlan.Lessons.FirstOrDefault(l => l.LessonId == dto.Id);
+                if (lesson != null)
+                {
+                    ApplyDtoToLesson(dto, lesson);
+
+                    if (dto.Deprecated)
+                    {
+                        // nur Open-TraineeLessons davon als removed zählen
+                        removedLessons.Add(lesson);
+                    }
+
+                    await _lessonRepo.UpdateAsync(lesson);
+                }
+                else
+                {
+                    var newLesson = MapDtoToLesson(dto);
+                    await ValidateLesson(newLesson);
+                    await _lessonRepo.CreateAsync(newLesson);
+
+                    teachingPlan.Lessons.Add(newLesson);
+                    addedLessons.Add(newLesson);
+                }
+            }
 
             teachingPlan.LastUpdated = DateTime.UtcNow;
             await _teachingPlanRepo.UpdateAsync(teachingPlan);
+
+            // 5) Für jeden zugewiesenen Trainee:
+            //    - Open-TraineeLessons der removedLessons löschen und sammeln
+            //    - für addedLessons neue TraineeLesson anlegen und sammeln
+            //    - NotifyAboutImportChangeAsync aufrufen
+            foreach (var trainee in teachingPlan.Trainees)
+            {
+                var removedTraineeLessons = new List<TraineeLesson>();
+                var addedTraineeLessons   = new List<TraineeLesson>();
+
+                // a) Entfernen
+                foreach (var lesson in removedLessons)
+                {
+                    var tls = await _traineeLessonRepo
+                        .GetAllTraineeLessonsOfLessonWithLessonAsync(lesson.LessonId);
+
+                    var toDelete = tls
+                        .Where(tl => tl.TraineeId == trainee.Id
+                                && tl.State     == TraineeLessonState.Open)
+                        .ToList();
+
+                    foreach (var tl in toDelete)
+                    {
+                        await _traineeLessonRepo.DeleteAsync(tl.TraineeLessonId);
+                    }
+
+                    removedTraineeLessons.AddRange(toDelete);
+                }
+
+                // b) Hinzufügen
+                foreach (var lesson in addedLessons)
+                {
+                    var tl = new TraineeLesson
+                    {
+                        TraineeId = trainee.Id,
+                        Trainee   = trainee,
+                        LessonId  = lesson.LessonId,
+                        Lesson    = lesson
+                    };
+                    await _traineeLessonRepo.CreateAsync(tl);
+                    addedTraineeLessons.Add(tl);
+                }
+
+                // c) Benachrichtigung
+                await _emailNotificationService
+                    .NotifyAboutImportChangeAsync(trainee, removedTraineeLessons, addedTraineeLessons);
+            }
         }
+
 
         public async Task DeleteTeachingPlan(int id) {
             var plan = await _teachingPlanRepo.GetTeachingPlanByIdWithLessonsAndTraineesAsync(id)
@@ -177,35 +274,6 @@ namespace TraineeTracker.Services {
             if (plan == null)
                 throw new InvalidOperationException("TeachingPlan nicht gefunden.");
             return plan;
-        }
-
-        private async Task RemoveDeprecatedLessonsAsync(TeachingPlan plan, HashSet<int> dtoIds) {
-            var toRemove = plan.Lessons
-                .Where(l => !dtoIds.Contains(l.LessonId))
-                .ToList();
-
-            foreach (var lesson in toRemove) {
-                await DeleteOpenTraineeLessonsAsync(lesson.LessonId);
-                plan.Lessons.Remove(lesson);
-                await _lessonRepo.DeleteAsync(lesson);
-            }
-        }
-
-        private async Task UpsertLessonsAsync(TeachingPlan plan, IEnumerable<LessonDto> dtos) {
-            foreach (var dto in dtos) {
-                var lesson = plan.Lessons.FirstOrDefault(l => l.LessonId == dto.Id);
-                if (lesson != null) {
-                    ApplyDtoToLesson(dto, lesson);
-                    if (dto.Deprecated)
-                        await DeleteOpenTraineeLessonsAsync(lesson.LessonId);
-
-                    await _lessonRepo.UpdateAsync(lesson);
-                } else {
-                    var newLesson = MapDtoToLesson(dto);
-                    await _lessonRepo.CreateAsync(newLesson);
-                    plan.Lessons.Add(newLesson);
-                }
-            }
         }
 
         private void ApplyDtoToLesson(LessonDto dto, Lesson lesson) {

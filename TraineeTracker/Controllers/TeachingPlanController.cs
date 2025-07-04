@@ -17,8 +17,7 @@ namespace TraineeTracker.Controllers
         [Route("ImportDashboard")]
         public async Task<IActionResult> ImportDashboard()
         {
-            // Baut das ViewModel mit allen bestehenden Plänen
-            var vm = await _teachingPlanService.BuildImportDashboardAsync();  // :contentReference[oaicite:0]{index=0}
+            var vm = await _teachingPlanService.BuildImportDashboardAsync();
             return View("ImportDashboard", vm);
         }
 

@@ -20,17 +20,21 @@
 <table>
   <thead>
     <tr>
-      <th>Name</th><th>Last Updated</th><th>Lektionen</th><th>Azubis</th><th>Aktionen</th>
+      <th>Name</th>
+      <th>Datei</th>
+      <th>Lektionen</th>
+      <th>Azubis</th>
+      <th>Aktionen</th>
     </tr>
   </thead>
   <tbody>
   @foreach(var plan in Model.ExistingTeachingPlans)
   {
     <tr>
-      <td>@plan.Name</td>
-      <td>@plan.LastUpdated</td>
-      <td>@plan.LessonCount</td>
-      <td>@plan.TraineeCount</td>
+    <td>@plan.Name</td>
+    <td>@plan.LastUpdated.ToString("g")</td>
+    <td>@plan.LessonCount</td>    @* Anzahl der Lektionen *@
+    <td>@plan.TraineeCount</td>   @* Anzahl der Azubis *@
       <td>
         <!-- Update -->
         <form asp-action="UpdateTeachingPlan"
