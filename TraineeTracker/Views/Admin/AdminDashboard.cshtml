@@ -4,7 +4,7 @@
     ViewData["Title"] = "Manage Users";
 }
 
-<link rel="stylesheet" href="~/css/AdminDashboardStyles.css">
+<link rel="stylesheet" href="~/css/AdminDashboard_temp.css">
 
 <div class="grid-container">
     <div class="createUser">
@@ -24,18 +24,39 @@
                 </tr>
             </thead>
             <tbody>
-                @foreach (var user in Model) {
+                @foreach (var user in Model)
+                {
                     <tr>
                         <td>@ViewBag.UserRoles[user.Id]</td>
                         <td>@user.Email</td>
-                        @if (ViewBag.UserRoles[user.Id] == "Trainee") {
+                        @if (ViewBag.UserRoles[user.Id] == "Trainee")
+                        {
                             <td>@user.TraineeStartDate - @user.TraineeEndDate</td>
-                            <td><a class="btn btn-primary" asp-controller="Admin" asp-action="ShowManageProcessingPausesView">Manage Processing Breaks</a></td>
-                        } else {
+                            <td><a class="btn btn-primary" asp-action="ShowManageProcessingPausesView"
+                                    asp-route-traineeId="@user.Id">Manage Processing Pauses</a></td>
+                        }
+                        else
+                        {
                             <td></td>
                             <td></td>
                         }
-                        <td><a class="btn btn-danger" asp-controller="Admin" asp-action="CloseUserAsync" asp-route-userId="@user.Id">Close User</a></td>
+                        @if (!user.IsClosed)
+                        {
+                            <td>
+                                <form asp-action="CloseUser" asp-route-userId="@user.Id" method="post"
+                                    onsubmit="return confirm('Are you sure you want to close @user.UserName? Processing Pauses, Teachingplans and Statistics will be lost. Feedbacks written by this user will remain preserved.');">
+                                    <button type="submit" class="btn btn-danger">Close User</button>
+                                </form>
+                            </td>
+                        }
+                        else
+                        {
+                            <td>
+                                <form asp-action="CloseUser" asp-route-userId="@user.Id" method="post">
+                                    <button type="submit" class="btn btn-secondary" disabled>Closed</button>
+                                </form>
+                            </td>
+                        }
                     </tr>
                 }
             </tbody>

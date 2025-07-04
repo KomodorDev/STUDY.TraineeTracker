@@ -41,8 +41,21 @@ namespace TraineeTracker.Services {
             var processingPauses = (await _processingPauseRepository.GetAllPausesAsync(traineeId)).ToList();
 
             // ++++++++++++++++
+            // all lessons for chart
+            var allLessons = new List<TraineeLessonViewModel>();
+
+            void AddWithStatus(List<TraineeLessonViewModel>? lessons, string status) {
+                if (lessons == null)
+                    return;
+                foreach (var lesson in lessons) {
+                    lesson.Status = status;
+                    allLessons.Add(lesson);
+                }
+            }
+
+            // ++++++++++++++++
             // Build and return ViewModel
-            return new TraineeStatisticsViewModel {
+            var model = new TraineeStatisticsViewModel {
                 SnapshotDateTime = snapshot.SnapshotDateTime,
                 DaysPresentTotal = snapshot.DaysPresentTotal,
                 DaysPresentTillToday = snapshot.DaysPresentTillToday,
@@ -101,10 +114,28 @@ namespace TraineeTracker.Services {
                 // ProcessingPauses
                 ProcessingPauses = processingPauses
             };
+
+
+            AddWithStatus(model.FinishedLessons, "finished");
+            AddWithStatus(model.AcceptedAndRatedLessons, "accepted");
+            AddWithStatus(model.RejectedLessons, "rejected");
+            AddWithStatus(model.StartedLessons, "started");
+            AddWithStatus(model.OpenLessons, "open");
+
+            model.AllLessons = allLessons;
+
+            model.TodayPosition = (
+                (model.FinishedLessons?.Sum(l => l.WeightedEffort) ?? 0) +
+                (model.AcceptedAndRatedLessons?.Sum(l => l.WeightedEffort) ?? 0) +
+                (model.RejectedLessons?.Sum(l => l.WeightedEffort) ?? 0)
+            );
+
+            return model;
         }
 
         // --------------------------------------------------
         public void CheckHasAccess(ClaimsPrincipal user, string traineeId) {
+            Console.WriteLine("funktioniert auch");
             if (user == null)
                 throw new UserNotFoundException();
 
@@ -137,10 +168,32 @@ namespace TraineeTracker.Services {
 
                 // Return Fallback Snapshot if no API Access
                 Console.WriteLine("⚠️ API-Error – use latest snapshot.");
-                // We need to factor in the case that a trainee has no snapshot here yet and need to build one and fill it all with zeros.
-                var fallbackSnapshot = await _traineeStatisticsRepository.GetTraineeStatisticsSnapshotAsync(traineeId);
-                fallbackSnapshot.IsUpToDate = false;
-                return fallbackSnapshot;
+                try {
+                    // Case 1: Snapshot in DB exists and is returned
+                    var fallbackSnapshot = await _traineeStatisticsRepository.GetTraineeStatisticsSnapshotAsync(traineeId);
+                    fallbackSnapshot.IsUpToDate = false;
+                    return fallbackSnapshot;
+                }
+                catch (InvalidOperationException) {
+                    // Case 2: Snapshot does not exist in DB. We create one, store it in DB, and return it
+                    var newSnapshot = new TraineeStatisticsSnapshot {
+                        Trainee = trainee,
+                        TraineeId = traineeId,
+                        SnapshotDateTime = DateTime.Now,
+                        DaysPresentTotal = null,
+                        DaysPresentTillToday = null,
+                        LessonDaysCompleted = null,
+                        LessonDaysOpen = null,
+                        LessonDaysBuffer = null,
+                        Speed = null,
+                        PredictedMissingEstimatedEffortAtEnd = null,
+                        PredictedMissingActualDays = null,
+                        IsUpToDate = false
+                    };
+
+                    await _traineeStatisticsRepository.CreateAsync(newSnapshot);
+                    return newSnapshot;
+                }
             }
             double lessonDaysCompleted = await CalculateLessonDaysCompletedAsync(traineeId);
             double lessonDaysOpen = await CalculateLessonDaysOpenAsync(traineeId);
