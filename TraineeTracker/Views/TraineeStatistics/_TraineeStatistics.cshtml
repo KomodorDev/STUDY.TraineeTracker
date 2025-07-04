@@ -1,4 +1,5 @@
 @using System.Text.Json
+@using System.Globalization
 @model TraineeTracker.Models.ViewModels.TraineeStatisticsViewModel
 
 @{
@@ -22,7 +23,6 @@
         y = l.Title
     });
 
-    var labels = stackedLessons.Select(l => l.Title).ToList();
     var colors = stackedLessons.Select(l =>
         l.Status == "finished" ? "rgba(40, 167, 69, 0.8)" :
         l.Status == "accepted" ? "rgba(0, 123, 255, 0.8)" :
@@ -30,8 +30,9 @@
         l.Status == "started" ? "rgba(255, 193, 7, 0.8)" :
         "rgba(108, 117, 125, 0.8)"
     );
-}
 
+    var predictedX = (Model.TodayPosition + Model.PredictedMissingEstimatedEffortAtEnd.GetValueOrDefault()).ToString(CultureInfo.InvariantCulture);
+}
 
 <link rel="stylesheet" href="~/css/TraineeStatistics_temp.css" />
 
@@ -66,10 +67,15 @@
     </div>
 </div>
 
-<!-- Chart.js and plugin -->
+<!-- Optional: Kein Daten-Hinweis -->
+@if (!Model.AllLessons.Any())
+{
+    <div class="alert alert-warning">Keine Lektionsdaten verfügbar.</div>
+}
+
+<!-- Chart.js und Plugin -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-annotation@1.1.0/dist/chartjs-plugin-annotation.min.js"></script>
-
 
 <script>
 window.addEventListener('DOMContentLoaded', () => {
@@ -77,9 +83,6 @@ window.addEventListener('DOMContentLoaded', () => {
     if (!ctx) return;
 
     const data = @Html.Raw(JsonSerializer.Serialize(chartData));
-
-    const labels = @Html.Raw(JsonSerializer.Serialize(stackedLessons.Select(l => l.Title)));
-
     const colors = @Html.Raw(JsonSerializer.Serialize(colors));
 
     const annotations = {
@@ -95,25 +98,26 @@ window.addEventListener('DOMContentLoaded', () => {
                 position: 'start'
             }
         }
+        @if (Model.PredictedMissingEstimatedEffortAtEnd.HasValue)
+        {
+            <text>,
+            predicted: {
+                type: 'line',
+                xMin: @predictedX,
+                xMax: @predictedX,
+                borderColor: 'orange',
+                borderWidth: 2,
+                label: {
+                    content: 'Predicted Effort',
+                    enabled: true,
+                    position: 'start'
+                }
+            }</text>
+        }
     };
 
-    @if (Model.PredictedMissingEstimatedEffortAtEnd.HasValue)
-    {
-        <text>
-        annotations.predicted = {
-            type: 'line',
-            xMin: @(Model.TodayPosition + Model.PredictedMissingEstimatedEffortAtEnd.Value),
-            xMax: @(Model.TodayPosition + Model.PredictedMissingEstimatedEffortAtEnd.Value),
-            borderColor: 'orange',
-            borderWidth: 2,
-            label: {
-                content: 'Predicted Effort',
-                enabled: true,
-                position: 'start'
-            }
-        };
-        </text>
-    }
+    console.log("Chart-Daten:", data);
+    console.log("Farben:", colors);
 
     new Chart(ctx, {
         type: 'bar',
@@ -124,15 +128,18 @@ window.addEventListener('DOMContentLoaded', () => {
                 backgroundColor: colors,
                 borderRadius: 4,
                 barThickness: 20,
-                maxBarThickness: 25
-            })]
+                maxBarThickness: 25,
+                parsing: {
+                    xAxisKey: 'x',
+                    yAxisKey: 'y'
+                }
+            }]
         },
         options: {
             indexAxis: 'y',
             responsive: true,
             maintainAspectRatio: false,
             animation: false,
-            parsing: false,
             scales: {
                 x: {
                     beginAtZero: true,
@@ -142,7 +149,9 @@ window.addEventListener('DOMContentLoaded', () => {
                     type: 'category',
                     reverse: true,
                     ticks: {
-                        display: false 
+                        display: true,
+                        autoSkip: false,
+                        font: { size: 12 }
                     },
                     grid: {
                         drawTicks: false 
