@@ -10,7 +10,8 @@
 @section Styles {
     <link rel="stylesheet" href="~/css/TraineeLessonDashboard.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/css/TraineeLessonDetail.css" asp-append-version="true" />
-    <link rel="stylesheet" href="~/css/TraineeStatistics_temp.css" asp-append-version="true" />
+    @* that file is not fixed yet <link rel="stylesheet" href="~/css/TraineeStatistics_temp.css" asp-append-version="true" />
+    *@
 }
 
 <button class="button open-button">Open Modal</button>
@@ -123,7 +124,7 @@
         </table>
     </section>
 
-    <!-- TraineeLessonDetail modal -->
+    <!-- load TraineeLessonDetail modal -->
     @await Html.PartialAsync("_TraineeLessonDetailModal")
 
     <!-- Bootstrap modal stuff, dont really understand 
