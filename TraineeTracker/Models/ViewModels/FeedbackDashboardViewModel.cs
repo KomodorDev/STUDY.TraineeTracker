@@ -8,8 +8,8 @@ namespace TraineeTracker.Models.ViewModels {
 
         // Filter und Sortierung
         public string ActiveFilter { get; set; } = "all";
-        public string ActiveSortBy { get; set; } = "date";
-        public bool Ascending { get; set; } = false;
+        public string SortBy { get; set; } = "date_asc";
+
 
         // Dropdown data
         public IEnumerable<ApplicationUser> ActiveTrainees { get; set; } = [];
@@ -24,7 +24,5 @@ namespace TraineeTracker.Models.ViewModels {
         public int ReadFeedbackCount { get; set; }
         public int UnreadFeedbackCount { get; set; }
 
-        // Convenience: Pfeil für Sortierung
-        public string SortDirectionSymbol => Ascending ? "↑" : "↓";
     }
 }
