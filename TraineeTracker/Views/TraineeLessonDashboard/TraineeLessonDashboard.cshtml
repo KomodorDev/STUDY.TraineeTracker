@@ -20,7 +20,7 @@
         <!-- Trainee -->
         <section class="sopro-card small-header">
             <!-- Name -->
-            <p class="header thiccboi">
+            <p class="header thiccboi" style="border-bottom: 2px solid #e6e6e6;">
                 <span style="overflow: hidden; text-overflow: ellipsis;">@(Model.SelectedTrainee?.UserName?.Split('@')[0] ?? "No trainee")</span>
             </p>
 
@@ -83,7 +83,7 @@
                     <th>Status</th>
                 </tr>
             </thead>
-            <tbody class="sopro-inner-card flex">
+            <tbody class="sopro-inner-card flex" style="border-bottom: 1px solid #afafaf;">
                 @foreach (var traineeLesson in (Model.TraineeLessons ?? throw new Exception("Empty Traineelesson ...somehow"))) {
                     <tr class="sopro-card sopro-table-format"
                         data-lesson-id="@traineeLesson.TraineeLessonId"     @* the ID that is given to the modal *@
