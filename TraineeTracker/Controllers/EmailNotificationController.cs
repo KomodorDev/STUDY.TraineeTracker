@@ -16,7 +16,7 @@ public class EmailNotificationController : Controller {
 
     // ------------------------------------------------------
     // http://localhost:5079/NotificationSettings
-    [Route("NotificationSettings")]
+    [Route("Notifications")]
     [HttpGet]
     public async Task<IActionResult> ShowEmailNotificationDashboardView() {
         var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
