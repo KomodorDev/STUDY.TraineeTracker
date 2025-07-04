@@ -19,7 +19,6 @@ change background: add
 @{
     ViewData["BodyClass"] = "sopro-special-bg";
 }
-
 *@
 
 <body class="@ViewData["BodyClass"]">
@@ -60,7 +59,7 @@ change background: add
                         </ul>
 
                         <!-- makandra logo -->
-                        <a href="https://makandra.de/de" class="navbar-brand">
+                        <a href="https://makandra.de/de" target="_blank" class="navbar-brand">
                             <img src="~/resources/makandra_logo_black.png" alt="logo" />
                         </a>
                     </div>
@@ -81,6 +80,7 @@ change background: add
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
+
     @await RenderSectionAsync("Scripts", required: false)
 
 </body>

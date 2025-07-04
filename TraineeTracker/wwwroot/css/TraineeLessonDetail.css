@@ -1,0 +1,126 @@
+/* by schleale */
+
+.sopro-lesson-modal-size {
+    width: 56rem;
+    max-width: 80vw;
+
+    height: 34.61rem;
+
+    overflow: hidden;
+}
+
+.sopro-lesson-modal-size .modal-content {
+    height: 100%;
+    max-height: 80vh;
+    width: 100%;
+
+    border: none;
+
+    display: flex;
+    flex-direction: column;
+}
+
+.sopro-lesson-modal-size .modal-title {
+    /* long title styling */
+    text-wrap: nowrap;
+    max-width: 90%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.sopro-lesson-modal-size .modal-header {
+    padding: 0;  /* overwrite bootstrap */
+    padding-left: 1.172rem; /* "25" px */
+    padding-right: 1.172rem; /* "25" px */
+
+    border-bottom: none;
+    
+    height: 4.688rem;   /* "100" px height */
+
+    color: #e61d47;
+    font-weight: 900;  /* oh boi he thicc */
+    font-size: 1.406rem;  /* "30" px */
+}
+
+.sopro-lesson-modal-size .modal-body {
+    overflow-y: auto; /* Scroll if content is too tall */
+    flex-grow: 1; /* Take remaining space */
+
+    padding: 1.172rem; /* "25" px */
+
+    /* scrollbar styling */
+    scrollbar-width: auto;
+    scrollbar-color: #626262 transparent;
+}
+.modal-body::-webkit-scrollbar {
+  width: 20px;
+}
+.modal-body::-webkit-scrollbar-thumb {
+  background-color: #626262;
+  border-radius: 11px;
+}
+.modal-body::-webkit-scrollbar-track {
+  background-color: transparent;
+}
+
+.btn-close:focus {
+    /* remove the keyboard navigation outline */
+    outline: none;
+    box-shadow: none;
+}
+
+/* ACCORDION ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ */
+
+#lessonDetailModal .accordion-item {
+    /* text background */
+    background-color: transparent;
+
+    /* divider when closed */
+    border-bottom: 1px solid #626262;
+}
+
+#lessonDetailModal .accordion-button {
+    /* header background & font color */
+    background-color: transparent;
+    color: #626262;
+
+    /* override goofy bootstrap things */
+    box-shadow: none !important;
+    outline: none !important;
+}
+
+#lessonDetailModal .accordion-button:not(.collapsed) {
+    /* when accordion is open */
+    background-color: transparent;
+    color: #e61d47;
+
+    /* divider when open */
+    border-bottom: 1px solid #e61d47;
+}
+
+#lessonDetailModal .accordion-button::after {
+    /* closed tab arrow changed to 626262 gray */
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='%23626262' viewBox='0 0 16 16'%3e%3cpath fill-rule='evenodd' d='M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z'/%3e%3c/svg%3e");
+}
+#lessonDetailModal .accordion-button:not(.collapsed)::after {
+    /* openend tab arrow changed to red */
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='%23e61d47' viewBox='0 0 16 16'%3e%3cpath fill-rule='evenodd' d='M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z'/%3e%3c/svg%3e");
+}
+
+#lessonDetailModal .accordion-button:focus {
+    /* remove blue outline and other highlighting when selected */
+    outline: none !important;
+    box-shadow: none !important;
+}
+
+.sopro-accordion-text {
+    padding: 0;
+    padding-bottom: 6px;
+    padding-top: 6px;
+}
+
+.sopro-accordion-truncate {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    text-wrap: nowrap;
+}
