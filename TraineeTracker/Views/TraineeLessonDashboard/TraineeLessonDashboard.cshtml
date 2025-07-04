@@ -9,6 +9,9 @@
 
 @section Styles {
     <link rel="stylesheet" href="~/css/TraineeLessonDashboard.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/TraineeLessonDetail.css" asp-append-version="true" />
+    @* that file is not fixed yet <link rel="stylesheet" href="~/css/TraineeStatistics_temp.css" asp-append-version="true" />
+    *@
 }
 
 <div class="sopro-grid-lessons">
@@ -18,7 +21,7 @@
         <section class="sopro-card small-header">
             <!-- Name -->
             <p class="header thiccboi">
-                @(Model.SelectedTrainee?.UserName?.Split('@')[0] ?? "No trainee")
+                <span style="overflow: hidden; text-overflow: ellipsis;">@(Model.SelectedTrainee?.UserName?.Split('@')[0] ?? "No trainee")</span>
             </p>
 
             <!-- Teachinplan-->
@@ -72,7 +75,7 @@
 
         <!-- Lessons -->
         <table class="sopro-card small-header">
-            <thead class="header thiccboi">
+            <thead class="header thiccboi" style="border-bottom: 2px solid #e6e6e6;">
                 <tr class="sopro-table-format">
                     <th>Name</th>
                     <th>URL</th>
@@ -83,12 +86,10 @@
             <tbody class="sopro-inner-card flex">
                 @foreach (var traineeLesson in (Model.TraineeLessons ?? throw new Exception("Empty Traineelesson ...somehow"))) {
                     <tr class="sopro-card sopro-table-format"
-                        data-lesson-id="@traineeLesson.TraineeLessonId"     @* inserts id *@
-                        data-bs-toggle="modal"                              @* click -> modal window *@
-                        data-bs-target="#lessonDetailModal"                 @* points to modal with id lessonDetailModal *@
+                        data-lesson-id="@traineeLesson.TraineeLessonId"     @* the ID that is given to the modal *@
                         style="cursor: pointer;">                           @* mouse cursor when hovering *@
                         <td>@traineeLesson.Lesson.LessonId | @traineeLesson.Lesson.Title</td>
-                        <td><a href="@traineeLesson.Lesson.LinkUrl" target="_blank">Link>></a></td>
+                        <td><a href="@traineeLesson.Lesson.LinkUrl" target="_blank">Link↗</a></td>
                         <td>@traineeLesson.Lesson.EstimatedEffort days</td>
                         <td>
                             @{
@@ -99,7 +100,13 @@
                         </td>
                     </tr>
                 }
-                <tr class="sopro-card sopro-table-format"><td>Lesson</td></tr>
+                <tr class="sopro-card sopro-table-format"><td>Lesson</td><td></td><td></td><td><span class="sopro-tag open">Open</span></td></tr>
+                <tr class="sopro-card sopro-table-format"><td>Lesson</td><td></td><td></td><td><span class="sopro-tag skipped">Skipped</span></td></tr>
+                <tr class="sopro-card sopro-table-format"><td>Lesson</td><td></td><td></td><td><span class="sopro-tag started">Started</span></td></tr>
+                <tr class="sopro-card sopro-table-format"><td>Lesson</td><td></td><td></td><td><span class="sopro-tag finished">Finished</span></td></tr>
+                <tr class="sopro-card sopro-table-format"><td>Lesson</td><td></td><td></td><td><span class="sopro-tag rejected">Rejected</span></td></tr>
+                <tr class="sopro-card sopro-table-format"><td>Lesson</td><td></td><td></td><td><span class="sopro-tag accepted">Accepted</span></td></tr>
+                <tr class="sopro-card sopro-table-format"><td>Lesson</td><td></td><td></td><td><span class="sopro-tag rated">Rated</span></td></tr>
                 <tr class="sopro-card sopro-table-format"><td>Lesson</td></tr>
                 <tr class="sopro-card sopro-table-format"><td>Lesson</td></tr>
                 <tr class="sopro-card sopro-table-format"><td>Lesson</td></tr>
@@ -113,50 +120,28 @@
             </tbody>
         </table>
     </section>
-
-    <!-- Bootstrap stuff, dont really understand -->
-    <div class="modal fade" id="lessonDetailModal" tabindex="-1" aria-labelledby="lessonDetailModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-lg modal-dialog-scrollable">
-            <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="lessonDetailModalLabel">Lesson Details</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body" id="lessonDetailModalBody">
-                <div class="text-center p-5">
-                <div class="spinner-border text-primary" role="status"></div>
-                <p class="mt-3">Loading...</p>
-                </div>
-            </div>
-        </div>
-    </div>
 </div>
 
-<script>
-    document.addEventListener("DOMContentLoaded", function () {
-        const rows = document.querySelectorAll(".lesson-row");
+<!-- usually, you would load the modal here, but we need extra data for the detailed view -->
+<div id="modalPlaceholder"></div>
 
-        rows.forEach(row => {
-            row.addEventListener("click", function () {
-                const lessonId = this.dataset.lessonId;
-                const modalBody = document.getElementById("lessonDetailModalBody");
+@section Scripts {
+    <script>
+        document.querySelectorAll('tr[data-lesson-id]').forEach(row => {
+            row.addEventListener('click', function () {
+                const lessonId = this.getAttribute('data-lesson-id');
 
-                modalBody.innerHTML = `
-                    <div class="text-center p-5">
-                        <div class="spinner-border text-primary" role="status"></div>
-                        <p class="mt-3">Loading...</p>
-                    </div>`;
-
-                fetch(`/TraineeLessonDetailController/ShowTraineeLessonDetailView?traineeLessonId=${lessonId}`)
+                fetch(`/TraineeLessonDetail/${lessonId}`)
                     .then(response => response.text())
                     .then(html => {
-                        modalBody.innerHTML = html;
+                        document.getElementById('modalPlaceholder').innerHTML = html;
+                        const modalElement = document.getElementById('lessonDetailModal');
+                        const modal = new bootstrap.Modal(modalElement);
+                        modal.show();
                     })
-                    .catch(err => {
-                        modalBody.innerHTML = `<p class="text-danger">Failed to load lesson details.</p>`;
-                        console.error(err);
-                    });
+                    .catch(err => console.error("Failed to load modal", err));
             });
         });
-    });
-</script>
+    </script>
+}
+
