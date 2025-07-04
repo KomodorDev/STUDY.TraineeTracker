@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 
 using TraineeTracker.Services;
 using TraineeTracker.Models.Dtos;
+using TraineeTracker.Models.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 
 namespace TraineeTracker.Controllers {
