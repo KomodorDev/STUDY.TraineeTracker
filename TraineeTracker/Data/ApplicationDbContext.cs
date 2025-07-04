@@ -1,19 +1,19 @@
-﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using TraineeTracker.Models.Domain;
 
 namespace TraineeTracker.Data;
 
-public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
-{
+public class ApplicationDbContext : IdentityDbContext<ApplicationUser> {
     public DbSet<ProcessingPause> ProcessingPauses { get; set; }
-    
+
     public DbSet<TraineeLessonLogEntry> TraineeLessonLogEntries { get; set; }
-    
+
     public DbSet<TraineeLesson> TraineeLessons {
         get; set;
     }
-    
+
     public DbSet<TraineeStatisticsSnapshot> TraineeStatisticsSnapshots {
         get; set;
     }
@@ -34,8 +34,7 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
     }
 
 
-    protected override void OnModelCreating(ModelBuilder modelBuilder)
-    {
+    protected override void OnModelCreating(ModelBuilder modelBuilder) {
         base.OnModelCreating(modelBuilder);
 
         // ApplicationUser and Feedback
