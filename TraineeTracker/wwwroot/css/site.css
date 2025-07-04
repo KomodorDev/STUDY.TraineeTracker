@@ -285,7 +285,10 @@ nav.navbar .container-fluid {
   color: #dbdbdb;
 }
 .sopro-tag.started {
+  /* striped pattern instead of split
   background-image: repeating-linear-gradient(135deg, white, white 7px, #afafaf 7px, #afafaf 14px);
+  */
+  background-image: linear-gradient(to right, white 50%, #afafaf 50%);
 
   border-style: solid;
   border-color: black;
