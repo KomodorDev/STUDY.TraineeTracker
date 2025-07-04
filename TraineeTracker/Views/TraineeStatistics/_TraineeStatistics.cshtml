@@ -31,7 +31,10 @@
         "rgba(108, 117, 125, 0.8)"
     );
 
-    var predictedX = (Model.TodayPosition + Model.PredictedMissingEstimatedEffortAtEnd.GetValueOrDefault()).ToString(CultureInfo.InvariantCulture);
+    var predictedX = (
+        Model.DaysPresentTillToday.GetValueOrDefault() +
+        (Model.LessonDaysOpen.GetValueOrDefault() / Model.Speed.GetValueOrDefault())
+    ).ToString(CultureInfo.InvariantCulture);
 }
 
 <link rel="stylesheet" href="~/css/TraineeStatistics_temp.css" />
