@@ -253,7 +253,7 @@ namespace TraineeTracker.Services {
         // --------------------------------------------------
         public async Task<double> GetPresentDaysAsync(DateOnly startDate, DateOnly endDate, string email) {
 
-            int totalDays = endDate.DayNumber - startDate.DayNumber;
+            double totalDays = endDate.DayNumber - startDate.DayNumber;
             return totalDays * 0.7;
             
             // ++++++++++++++++
