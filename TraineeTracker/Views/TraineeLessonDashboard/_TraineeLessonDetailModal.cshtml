@@ -1,14 +1,17 @@
 @* This is a modal popup, by schleale *@
 
-@*@model TraineeTracker.Models.ViewModels.TraineeLessonDetailViewModel*@
+@model TraineeTracker.Models.ViewModels.TraineeLessonDetailViewModel
 
 <!-- Vertically centered scrollable modal -->
 @* source: https://getbootstrap.com/docs/5.0/components/modal/ *@
+
 <div id="lessonDetailModal" class="modal" tabindex="-1" role="dialog">
     <div class="modal-dialog modal-dialog-centered sopro-lesson-modal-size">
         <div class="modal-content sopro-card" style="box-shadow: none;">
             <div class="modal-header">
-                <p class="modal-title">1. Test</p>
+                <p class="modal-title">
+                    @Model.Lesson.LessonId | @Model.Lesson.Title
+                </p>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body sopro-inner-card">
