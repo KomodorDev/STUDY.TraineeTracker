@@ -224,6 +224,7 @@ p {
 
 nav.navbar .container-fluid {
     padding-right: 0 !important;
+    padding-left: 0 !important;
 }
 
 /* pseudo element, is the underline animaton */
