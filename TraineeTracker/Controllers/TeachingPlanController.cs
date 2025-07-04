@@ -14,7 +14,7 @@ namespace TraineeTracker.Controllers
             _teachingPlanService = teachingPlanService;
         }
 
-        [Route("ImportDashboard")]
+        [Route("Import")]
         [HttpGet]
         public async Task<IActionResult> ShowTeachingplanDashboardView()
         {
