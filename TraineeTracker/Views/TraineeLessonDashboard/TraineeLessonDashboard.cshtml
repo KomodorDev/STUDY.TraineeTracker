@@ -21,7 +21,7 @@
         <section class="sopro-card small-header">
             <!-- Name -->
             <p class="header thiccboi">
-                @(Model.SelectedTrainee?.UserName?.Split('@')[0] ?? "No trainee")
+                <span style="overflow: hidden; text-overflow: ellipsis;">@(Model.SelectedTrainee?.UserName?.Split('@')[0] ?? "No trainee")</span>
             </p>
 
             <!-- Teachinplan-->

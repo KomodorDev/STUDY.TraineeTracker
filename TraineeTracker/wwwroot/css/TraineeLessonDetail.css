@@ -20,6 +20,14 @@
     flex-direction: column;
 }
 
+.sopro-lesson-modal-size .modal-title {
+    /* long title styling */
+    text-wrap: nowrap;
+    max-width: 90%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
 .sopro-lesson-modal-size .modal-header {
     padding: 0;  /* overwrite bootstrap */
     padding-left: 1.172rem; /* "25" px */

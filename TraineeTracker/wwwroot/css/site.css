@@ -71,6 +71,7 @@ p {
   color: #e61d47;
   font-weight: 900;  /* oh boi he thicc */
   font-size: 1.406rem;  /* "30" px */
+  overflow: hidden;
 }
 
 .sopro-inner-card {
