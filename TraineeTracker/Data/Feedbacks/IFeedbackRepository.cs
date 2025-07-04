@@ -23,5 +23,17 @@ namespace TraineeTracker.Data.Feedbacks {
         Task<List<Feedback>> GetAllFeedbacksUnreadByUserWithLessonAndAuthorAndReadByUsersAsync(ApplicationUser user);
 
         Task<Feedback?> GetFeedbackOfTraineeLessonWithLessonAndAuthorAndReadByUsersAsync(TraineeLesson traineeLesson);
+
+        IQueryable<Feedback> GetAllFeedbacksWithLessonAndAuthor();
+
+        IQueryable<Feedback> GetAllFeedbacksReadByUserWithLessonAndAuthor(ApplicationUser user);
+
+        IQueryable<Feedback> GetAllFeedbacksUnreadByUserWithLessonAndAuthor(ApplicationUser user);
+
+        IQueryable<Feedback> GetAllFeedbacksUnreadByUserWithLessonAndAuthorAndReadByUsers(ApplicationUser user);
+
+        IQueryable<Feedback> GetAllFeedbacksWithLessonAndAuthorAndReadByUsers();
+
+
     }
 }

@@ -109,13 +109,15 @@ namespace TraineeTracker.Areas.Identity.Pages.Account {
         }
 
 
-        public async Task OnGetAsync(string returnUrl = null) {
-            ReturnUrl = returnUrl;
-            ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
+        public IActionResult OnGet(string returnUrl = null) {
+            return NotFound();
+            /* ReturnUrl = returnUrl;
+            ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList(); */
         }
 
-        public async Task<IActionResult> OnPostAsync(string returnUrl = null) {
-            returnUrl ??= Url.Content("~/");
+        public IActionResult OnPost(string returnUrl = null) {
+            return NotFound();
+            /* returnUrl ??= Url.Content("~/");
             ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
             if (ModelState.IsValid) {
                 var user = CreateUser();
@@ -161,6 +163,7 @@ namespace TraineeTracker.Areas.Identity.Pages.Account {
 
             // If we got this far, something failed, redisplay form
             return Page();
+            */
         }
 
         private ApplicationUser CreateUser() {

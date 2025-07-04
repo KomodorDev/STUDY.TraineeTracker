@@ -51,5 +51,10 @@ namespace TraineeTracker.Data.Lessons {
             .Include(l => l.Feedbacks)
             .ToListAsync();
         }
+        public async Task<IEnumerable<Lesson>> GetAllLessonsWithFeedbacksAsync() {
+            return await _context.Lessons
+                .Include(l => l.Feedbacks)
+                .ToListAsync();
+        }
     }
 }

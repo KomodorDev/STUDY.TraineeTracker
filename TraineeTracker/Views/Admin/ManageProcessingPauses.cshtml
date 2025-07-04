@@ -1,0 +1,39 @@
+@using TraineeTracker.Models.Domain
+@model TraineeTracker.Models.Domain.ApplicationUser
+
+@{
+    ViewData["Title"] = $"Processing Pauses of {Model.UserName}";
+}
+
+<h2>@ViewData["Title"]</h2>
+
+<a class="btn btn-primary" asp-action="ShowCreateProcessingPauseView" asp-route-traineeId="@Model.Id">Add Processing
+    Pause</a>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Start</th>
+            <th>End</th>
+            <th></th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var pause in (IEnumerable<ProcessingPause>)ViewBag.Pauses)
+        {
+            <tr>
+                <td>@pause.StartDate</td>
+                <td>@pause.EndDate</td>
+                <td><a class="btn btn-secondary" asp-action="ShowEditProcessingPauseView" asp-route-processingPauseId="@pause.ProcessingPauseId"
+                        asp-route-processingPauseId="@pause.ProcessingPauseId">Edit</a> </td>
+                <td>
+                    <form asp-action="DeleteProcessingPause" asp-route-processingPauseId="@pause.ProcessingPauseId"
+                        method="post" onsubmit="return confirm('Are you sure you want to delete this Processing Pause?');">
+                        <button type="submit" class="btn btn-danger">Delete</button>
+                    </form>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

@@ -1,3 +1,4 @@
+using System.Security.Claims;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using TraineeTracker.Models.Domain;
@@ -78,6 +79,12 @@ namespace TraineeTracker.Data.ApplicationUsers {
                 .FirstOrDefaultAsync(u => u.Id == userId);
         }
 
+        public async Task<ApplicationUser?> FindByIdWithWrittenFeedbacksWithLessonAsync(string userId) {
+            return await _context.Users
+                .Include(u => u.WrittenFeedbacks)
+                    .ThenInclude(f => f.Lesson)
+                .FirstOrDefaultAsync(u => u.Id == userId);
+        }
 
         public async Task<IEnumerable<ApplicationUser>> GetOpenUsersInRoleAsync(string roleName) {
             var usersInRole = await _userManager.GetUsersInRoleAsync(roleName);
@@ -86,6 +93,14 @@ namespace TraineeTracker.Data.ApplicationUsers {
             .Where(u => userIds.Contains(u.Id))
             .Where(u => !u.IsClosed)
             .ToListAsync();
+        }
+
+        public async Task<IEnumerable<string>> GetRolesAsync(ApplicationUser user) {
+            return await _userManager.GetRolesAsync(user);
+        }
+
+        public async Task<ApplicationUser?> GetUserAsync(ClaimsPrincipal principal) {
+            return await _userManager.GetUserAsync(principal);
         }
 
         public async Task<IEnumerable<ApplicationUser>> GetUsersInRoleAsync(string roleName) {
@@ -100,6 +115,10 @@ namespace TraineeTracker.Data.ApplicationUsers {
             .Include(u => u.ProcessingPauses)
             .Include(u => u.TraineeLessons)
             .ToListAsync();
+        }
+
+        public async Task<IEnumerable<ApplicationUser>> GetAllAsync() {
+            return await _context.Users.ToListAsync();
         }
 
         public async Task<bool> IsInRoleAsync(ApplicationUser user, string role) {

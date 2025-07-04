@@ -1,0 +1,58 @@
+/* by schleale */
+
+.sopro-grid-lessons {
+  display: grid;
+  grid-template-columns: 25% 1fr;
+  grid-template-rows: 1fr;
+
+  padding: 3.516rem;    /* "75" px */    
+  column-gap: 2.344rem; /* "50" px */
+
+  height: calc(100vh - 3.516rem);   /* 100% of viewport height - navbar height */
+  width: 100vw;
+}
+
+.sopro-grid-lessons-left {
+    display: grid;
+    grid-template-columns: 1fr;
+    grid-template-rows: 7.031rem 1fr;   /* "150" px, fill remainder */
+
+    height: 100%;
+
+    row-gap: 1.172rem;    /* "25" px */
+
+    background-color: transparent;
+}
+
+.sopro-grid-lessons-right {
+    display: grid;
+    grid-template-columns: 1fr;
+    grid-template-rows: 3.516rem 1fr;   /* "75" px, fr */
+    
+    height: 100%;
+    min-height: 0;  /* apparently min height auto (the default) prevents scaling down / enabling scrolling for some fucking reason, only took an hour to find out */
+
+    row-gap: 1.172rem;    /* "25" px */
+
+    background-color: transparent;
+}
+
+.sopro-table-format {
+    width: 100%;
+    height: 2.344rem; /* "50" px */
+
+    display: grid;
+    grid-template-columns: 1fr 6.25rem 6.25rem 6.25rem; /* "25"px*/
+    gap: 0;
+
+    align-items: center;
+    flex-shrink: 0;
+
+    padding-left: 1.172rem; /* "25" px */
+    padding-right: 1.172rem; /* "25" px */
+}
+.sopro-table-format > * {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
