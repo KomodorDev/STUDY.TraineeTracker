@@ -1,182 +1,314 @@
 @model TraineeTracker.Models.ViewModels.FeedbackDashboardViewModel
 @{
-    ViewData["Title"] = "Feedback Overview";
+    ViewData["Title"] = "Feedback Dashboard";
+    Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h2>@ViewData["Title"]</h2>
+<link rel="stylesheet" href="~/css/FeedbackDashboard_temp.css?v=@DateTime.Now.Ticks" />
 
-<!-- Tabs -->
-<ul id="feedbackTabs" class="nav nav-tabs mb-4" role="tablist">
-    <li class="nav-item">
-        <a class="nav-link active" href="#" data-tab="all">All (@Model.TotalFeedbackCount)</a>
-    </li>
-    <li class="nav-item">
-        <a class="nav-link" href="#" data-tab="unread">Unread (@Model.UnreadFeedbackCount)</a>
-    </li>
-    <li class="nav-item">
-        <a class="nav-link" href="#" data-tab="read">Read (@Model.ReadFeedbackCount)</a>
-    </li>
-</ul>
+@* <link rel="stylesheet" href="~/css/FeedbackDashboard_temp.css" /> *@
 
-<!-- All Feedbacks Tab -->
-<div id="content-all" class="tab-content">
-    <table class="table table-hover">
-        <thead>
-            <tr>
-                <th>Name</th>
-                <th>Date</th>
-            </tr>
-        </thead>
-        <tbody>
-        @foreach(var fb in Model.AllFeedbacks.Items) {
-            <tr class="feedback-row" style="cursor:pointer;">
-                <td>@fb.AuthorName</td>
-                <td>@fb.SendDate.ToString("dd.MM.yyyy")</td>
-            </tr>
-            <tr class="feedback-detail" style="display:none;">
-                <td colspan="2">@fb.Comment</td>
-            </tr>
-        }
-        </tbody>
-    </table>
-    <nav>
-        <ul class="pagination">
-            @if(Model.AllFeedbacks.HasPrevious) {
-                <li class="page-item">
-                    <a class="page-link" asp-action="Dashboard" asp-route-tab="all" asp-route-pageNumber="@Model.AllFeedbacks.PageNumber-1">Previous</a>
-                </li>
-            }
-            @for(int i = 1; i <= Model.AllFeedbacks.TotalPages; i++) {
-                <li class="page-item @(i == Model.AllFeedbacks.PageNumber ? "active" : "")">
-                    <a class="page-link" asp-action="Dashboard" asp-route-tab="all" asp-route-pageNumber="@i">@i</a>
-                </li>
-            }
-            @if(Model.AllFeedbacks.HasNext) {
-                <li class="page-item">
-                    <a class="page-link" asp-action="Dashboard" asp-route-tab="all" asp-route-pageNumber="@Model.AllFeedbacks.PageNumber+1">Next</a>
-                </li>
-            }
-        </ul>
-    </nav>
+<div class="feedback-header">
+    <h2>@ViewData["Title"]</h2>
 </div>
 
-<!-- Unread Feedbacks Tab -->
-<div id="content-unread" class="tab-content" style="display:none;">
-    <table class="table table-hover">
-        <thead>
-            <tr>
-                <th>Name</th>
-                <th>Date</th>
-                <th>Action</th>
-            </tr>
-        </thead>
-        <tbody>
-        @foreach(var fb in Model.UnreadFeedbacks.Items) {
-            <tr class="feedback-row" style="cursor:pointer;">
-                <td>@fb.AuthorName</td>
-                <td>@fb.SendDate.ToString("dd.MM.yyyy")</td>
-                <td>
-                    <form asp-action="MarkAsRead" method="post" class="d-inline">
-                        <input type="hidden" name="feedbackId" value="@fb.FeedbackId" />
-                        <button type="submit" class="btn btn-sm btn-danger">Mark as read</button>
+<!--------------------------------------------------->
+<!-- Toolbar -->
+<div class="feedback-toolbar">
+    <div class="filter-buttons">
+        <a class="filter-btn @(Model.ActiveFilter == "all" ? "active" : "")"
+           asp-controller="Feedback"
+           asp-action="Dashboard"
+           asp-route-filter="all"
+           asp-route-selectedTraineeId="@Model.SelectedTraineeId"
+           asp-route-selectedLessonId="@Model.SelectedLessonId"
+           asp-route-sortBy="@Model.SortBy"
+           asp-route-page="1">
+           All (@Model.TotalFeedbackCount)
+        </a>
+
+        <a class="filter-btn @(Model.ActiveFilter == "unread" ? "active" : "")"
+           asp-controller="Feedback"
+           asp-action="Dashboard"
+           asp-route-filter="unread"
+           asp-route-selectedTraineeId="@Model.SelectedTraineeId"
+           asp-route-selectedLessonId="@Model.SelectedLessonId"
+           asp-route-sortBy="@Model.SortBy"
+           asp-route-page="1">
+           Unread (@Model.UnreadFeedbackCount)
+        </a>
+
+        <a class="filter-btn @(Model.ActiveFilter == "read" ? "active" : "")"
+           asp-controller="Feedback"
+           asp-action="Dashboard"
+           asp-route-filter="read"
+           asp-route-selectedTraineeId="@Model.SelectedTraineeId"
+           asp-route-selectedLessonId="@Model.SelectedLessonId"
+           asp-route-sortBy="@Model.SortBy"
+           asp-route-page="1">
+           Read (@Model.ReadFeedbackCount)
+        </a>
+
+    </div>
+
+
+<form method="get" asp-controller="Feedback" asp-action="Dashboard" class="filter-selects">
+
+    <!-- Trainee Dropdown -->
+    <select name="selectedTraineeId" class="select-wide" onchange="this.form.submit()">
+        <option value="">All active Trainees</option>
+        @foreach (var trainee in Model.ActiveTrainees)
+        {
+            <option value="@trainee.Id"
+                    selected="@(trainee.Id == Model.SelectedTraineeId ? "selected" : null)">
+                @trainee.UserName
+            </option>
+        }
+    </select>
+
+    <!-- Lesson Dropdown -->
+    <select name="selectedLessonId" class="select-wide" onchange="this.form.submit()">
+        <option value="">All rated Lessons</option>
+        @foreach (var lesson in Model.Lessons)
+        {
+            <option value="@lesson.LessonId"
+                    selected="@(Model.SelectedLessonId == lesson.LessonId ? "selected" : null)">
+                @lesson.Title
+            </option>
+        }
+    </select>
+
+    <!-- Combined Sort Dropdown -->
+    <select name="SortBy" class="select-small" onchange="this.form.submit()">
+        <option value="date_desc" selected="@(Model.SortBy == "date_desc" ? "selected" : null)">Date ↓</option>
+        <option value="date_asc" selected="@(Model.SortBy == "date_asc" ? "selected" : null)">Date ↑</option>
+        <option value="author_desc" selected="@(Model.SortBy == "author_desc" ? "selected" : null)">Author ↓</option>
+        <option value="author_asc" selected="@(Model.SortBy == "author_asc" ? "selected" : null)">Author ↑</option>
+        <option value="lesson_desc" selected="@(Model.SortBy == "lesson_desc" ? "selected" : null)">Lesson ↓</option>
+        <option value="lesson_asc" selected="@(Model.SortBy == "lesson_asc" ? "selected" : null)">Lesson ↑</option>
+    </select>
+
+
+
+    <input type="hidden" name="filter" value="@Model.ActiveFilter" />
+    <input type="hidden" name="sortBy" value="@Model.SortBy" />
+    <input type="hidden" name="page" value="1" />
+
+</form>
+
+<!--------------------------------------------------->
+<!-- Feedback Table -->
+<table class="feedback-table">
+    <thead>
+        <tr>
+            <th>Lesson</th>
+            <th>Name</th>
+            <th>Date</th>
+            <th>Options</th>
+        </tr>
+    </thead>
+    <tbody>
+    @foreach (var feedback in Model.Feedbacks.Items)
+    {
+        var feedbackId = feedback.FeedbackId;
+        <tr class="feedback-summary" data-toggle-id="@feedbackId">
+            <td>@feedback.LessonTitle</td>
+            <td>@feedback.AuthorName</td>
+            <td>@feedback.CreateTime.ToString("dd. MM. yyyy")</td>
+            <td>
+                @if (!feedback.IsReadByCurrentUser)
+                {
+                    <form asp-action="MarkAsRead" method="post">
+                            <input type="hidden" name="feedbackId" value="@feedback.FeedbackId" />
+                            <input type="hidden" name="filter" value="@Model.ActiveFilter" />
+                            <input type="hidden" name="page" value="@Model.Feedbacks.PageNumber" />
+                            <input type="hidden" name="sortBy" value="@Model.SortBy" />
+                            <input type="hidden" name="selectedTraineeId" value="@Model.SelectedTraineeId" />
+                            <input type="hidden" name="selectedLessonId" value="@Model.SelectedLessonId" />
+                        <button class="mark-read-btn" type="submit">Mark as read</button>
                     </form>
-                </td>
-            </tr>
-            <tr class="feedback-detail" style="display:none;">
-                <td colspan="3">@fb.Comment</td>
-            </tr>
-        }
-        </tbody>
-    </table>
-    <nav>
-        <ul class="pagination">
-            @if(Model.UnreadFeedbacks.HasPrevious) {
-                <li class="page-item">
-                    <a class="page-link" asp-action="Dashboard" asp-route-tab="unread" asp-route-pageNumber="@Model.UnreadFeedbacks.PageNumber-1">Previous</a>
-                </li>
-            }
-            @for(int i = 1; i <= Model.UnreadFeedbacks.TotalPages; i++) {
-                <li class="page-item @(i == Model.UnreadFeedbacks.PageNumber ? "active" : "")">
-                    <a class="page-link" asp-action="Dashboard" asp-route-tab="unread" asp-route-pageNumber="@i">@i</a>
-                </li>
-            }
-            @if(Model.UnreadFeedbacks.HasNext) {
-                <li class="page-item">
-                    <a class="page-link" asp-action="Dashboard" asp-route-tab="unread" asp-route-pageNumber="@Model.UnreadFeedbacks.PageNumber+1">Next</a>
-                </li>
-            }
-        </ul>
-    </nav>
-</div>
+                }
+                else
+                {
+                    <form asp-action="MarkAsUnread" method="post">
+                        <input type="hidden" name="feedbackId" value="@feedback.FeedbackId" />
+                        <input type="hidden" name="filter" value="@Model.ActiveFilter" />
+                        <input type="hidden" name="page" value="@Model.Feedbacks.PageNumber" />
+                        <input type="hidden" name="sortBy" value="@Model.SortBy" />
+                        <input type="hidden" name="selectedTraineeId" value="@Model.SelectedTraineeId" />
+                        <input type="hidden" name="selectedLessonId" value="@Model.SelectedLessonId" />
+                        <button class="mark-unread-btn" type="submit">Mark as unread</button>
+                    </form>
+                }
+            </td>
 
-<!-- Read Feedbacks Tab -->
-<div id="content-read" class="tab-content" style="display:none;">
-    <table class="table table-hover">
-        <thead>
-            <tr>
-                <th>Name</th>
-                <th>Date</th>
-            </tr>
-        </thead>
-        <tbody>
-        @foreach(var fb in Model.ReadFeedbacks.Items) {
-            <tr class="feedback-row" style="cursor:pointer;">
-                <td>@fb.AuthorName</td>
-                <td>@fb.SendDate.ToString("dd.MM.yyyy")</td>
-            </tr>
-            <tr class="feedback-detail" style="display:none;">
-                <td colspan="2">@fb.Comment</td>
-            </tr>
-        }
-        </tbody>
-    </table>
-    <nav>
-        <ul class="pagination">
-            @if(Model.ReadFeedbacks.HasPrevious) {
-                <li class="page-item">
-                    <a class="page-link" asp-action="Dashboard" asp-route-tab="read" asp-route-pageNumber="@Model.ReadFeedbacks.PageNumber-1">Previous</a>
-                </li>
-            }
-            @for(int i = 1; i <= Model.ReadFeedbacks.TotalPages; i++) {
-                <li class="page-item @(i == Model.ReadFeedbacks.PageNumber ? "active" : "")">
-                    <a class="page-link" asp-action="Dashboard" asp-route-tab="read" asp-route-pageNumber="@i">@i</a>
-                </li>
-            }
-            @if(Model.ReadFeedbacks.HasNext) {
-                <li class="page-item">
-                    <a class="page-link" asp-action="Dashboard" asp-route-tab="read" asp-route-pageNumber="@Model.ReadFeedbacks.PageNumber+1">Next</a>
-                </li>
-            }
-        </ul>
-    </nav>
-</div>
+        </tr>
+        <tr class="feedback-detail" id="detail-@feedbackId" style="display:none">
+            <td colspan="4">
+                <p><strong>Difficulty:</strong> @feedback.Difficulty</p>
+                <p><strong>Previous knowledge:</strong> @feedback.PreviousKnowledge</p>
+                <p><strong>Effort:</strong> @feedback.HoursOfEffort hours</p>
+                <p><strong>Comments:</strong> @feedback.Comment</p>
+            </td>
+        </tr>
+    }
+    </tbody>
+</table>
 
+<!--------------------------------------------------->
+<!-- Scripts -->
 @section Scripts {
+
+    <!-- Script to Show Feedback Details -->
     <script>
-  $(function() {
-    // 1) Alle Tab-Links in #feedbackTabs
-    var $tabs = $('#feedbackTabs .nav-link');
-    // 2) Alle Panels, die direkt nach #feedbackTabs kommen und die Klasse .tab-content tragen
-    var $panes = $('#feedbackTabs').nextAll('.tab-content');
+        document.querySelectorAll('.feedback-summary').forEach(row => {
+            row.addEventListener('click', (event) => {
+                // Ignore if the clicked element is inside a form or button
+                if (event.target.closest('form') || event.target.closest('button')) {
+                    return;
+                }
 
-    // Initialisierung: nur den "all"-Tab anzeigen
-    $panes.hide();
-    $('#content-all').show();
+                const id = row.getAttribute('data-toggle-id');
+                const detailRow = document.getElementById(`detail-${id}`);
+                const visible = detailRow.style.display === 'table-row';
+                detailRow.style.display = visible ? 'none' : 'table-row';
+            });
+        });
+    </script>
 
-    // Klick-Handler nur für Feedback-Tabs
-    $tabs.on('click', function(e) {
-      e.preventDefault();
-      var tab = $(this).data('tab');     // "all", "unread", "read" …
+    <!-- Confetti 1 -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 
-      // active-Klasse umschalten
-      $tabs.removeClass('active');
-      $(this).addClass('active');
+    <script>
+        document.querySelectorAll("form").forEach(form => {
+            const button = form.querySelector("button.mark-read-btn");
+            if (!button) return;
 
-      // Panels umschalten
-      $panes.hide();
-      $('#content-' + tab).show();
-    });
-  });
-</script>
+            form.addEventListener("submit", function (event) {
+                event.preventDefault();
+
+                // ✅ SPIN START
+                button.classList.add("animate-spin");
+
+                // Konfetti
+                const rect = button.getBoundingClientRect();
+                const x = (rect.left + rect.width / 2) / window.innerWidth;
+                const y = (rect.top + rect.height / 2) / window.innerHeight;
+
+                for (let i = 0; i < 3; i++) {
+                    setTimeout(() => {
+                        confetti({
+                            particleCount: 50,
+                            spread: 60,
+                            startVelocity: 35,
+                            origin: { x, y }
+                        });
+                    }, i * 150);
+                }
+
+                // ✅ SPIN ENDE & Submit
+                setTimeout(() => {
+                    button.classList.remove("animate-spin");
+                    form.submit();
+                }, 1200);
+            });
+        });
+
+    </script>
+
+    <!-- Confetti 2 -->
+    <script>
+        // 🔥 Mark as UNREAD – Feuer-Konfetti
+        document.querySelectorAll("form[action*='MarkAsUnread']").forEach(form => {
+            const button = form.querySelector("button.mark-unread-btn");
+            if (!button) return;
+
+            form.addEventListener("submit", function (event) {
+                event.preventDefault();
+
+                button.classList.add("animate-spin");
+
+                const rect = button.getBoundingClientRect();
+                const x = (rect.left + rect.width / 2) / window.innerWidth;
+                const y = (rect.top + rect.height / 2) / window.innerHeight;
+
+                for (let i = 0; i < 3; i++) {
+                    setTimeout(() => {
+                        confetti({
+                            particleCount: 50,
+                            spread: 50,
+                            startVelocity: 40,
+                            origin: { x, y },
+                            colors: ['#ff4500', '#ff9900', '#ffd700'] // rot-orange-gelb
+                        });
+                    }, i * 150);
+                }
+
+                setTimeout(() => {
+                    button.classList.remove("animate-spin");
+                    form.submit();
+                }, 1200);
+            });
+        });
+    </script>
 
 }
+
+
+<!--------------------------------------------------->
+<!-- Pagination -->
+<nav aria-label="Page navigation">
+    <ul class="pagination">
+
+        @if (Model.Feedbacks.HasPrevious)
+        {
+            <li class="page-item">
+                <a class="page-link"
+                   asp-controller="Feedback"
+                   asp-action="Dashboard"
+                   asp-route-filter="@Model.ActiveFilter"
+                   asp-route-selectedTraineeId="@Model.SelectedTraineeId"
+                   asp-route-selectedLessonId="@Model.SelectedLessonId"
+                   asp-route-sortBy="@Model.SortBy"
+                   asp-route-page="@(Model.Feedbacks.PageNumber - 1)">
+                   Previous
+                </a>
+            </li>
+        }
+
+        @for (int i = 1; i <= Model.Feedbacks.TotalPages; i++)
+        {
+            <li class="page-item @(i == Model.Feedbacks.PageNumber ? "active" : "")">
+                <a class="page-link"
+                   asp-controller="Feedback"
+                   asp-action="Dashboard"
+                   asp-route-filter="@Model.ActiveFilter"
+                   asp-route-selectedTraineeId="@Model.SelectedTraineeId"
+                   asp-route-selectedLessonId="@Model.SelectedLessonId"
+                   asp-route-sortBy="@Model.SortBy"
+                   asp-route-page="@i">
+                   @i
+                </a>
+            </li>
+        }
+
+        @if (Model.Feedbacks.HasNext)
+        {
+            <li class="page-item">
+                <a class="page-link"
+                   asp-controller="Feedback"
+                   asp-action="Dashboard"
+                   asp-route-filter="@Model.ActiveFilter"
+                   asp-route-selectedTraineeId="@Model.SelectedTraineeId"
+                   asp-route-selectedLessonId="@Model.SelectedLessonId"
+                   asp-route-sortBy="@Model.SortBy"
+                   asp-route-page="@(Model.Feedbacks.PageNumber + 1)">
+                   Next
+                </a>
+            </li>
+        }
+
+    </ul>
+</nav>
+
+<!--------------------------------------------------->

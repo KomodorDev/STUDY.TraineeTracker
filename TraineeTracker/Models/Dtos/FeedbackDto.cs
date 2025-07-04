@@ -1,7 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace TraineeTracker.Models.Dtos
-{
+namespace TraineeTracker.Models.Dtos {
     public class FeedbackDto {
         [Range(1, 10)]
         public int? Difficulty {
