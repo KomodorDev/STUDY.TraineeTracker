@@ -6,11 +6,14 @@ body {
     max-height: 600px;
     overflow-y: auto;
     margin-bottom: 2rem;
+    position: relative;
 }
 
 #lessonChart {
-    width: 100%;
+    width: 100% !important;
+    height: auto !important;
     display: block;
+    background-color: #fff;
 }
 
 .metrics-grid {
