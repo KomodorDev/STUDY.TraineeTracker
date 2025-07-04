@@ -130,8 +130,6 @@ namespace TraineeTracker.Services {
                 (model.RejectedLessons?.Sum(l => l.WeightedEffort) ?? 0)
             );
 
-            model.PredictedEffortEndX = snapshot.PredictedEffortEndX;
-
             return model;
         }
 
@@ -190,7 +188,6 @@ namespace TraineeTracker.Services {
                         Speed = null,
                         PredictedMissingEstimatedEffortAtEnd = null,
                         PredictedMissingActualDays = null,
-                        PredictedEffortEndX = null,
                         IsUpToDate = false
                     };
 
@@ -204,7 +201,6 @@ namespace TraineeTracker.Services {
             double speed = CalculateSpeed(daysPresentTillToday, lessonDaysCompleted);
             double predictedMissingEstimatedEffortAtEnd = CalculatePredictedMissingEstimatedEffortAtEnd(daysPresentTillToday, daysPresentTotal, lessonDaysOpen, speed);
             double predictedMissingActualDays = CalculatePredictedMissingActualDaysAtEnd(daysPresentTillToday, daysPresentTotal, lessonDaysOpen, speed);
-            double predictedEffortEndX = daysPresentTillToday + (lessonDaysOpen / speed);
 
             TraineeStatisticsSnapshot snapshot;
 
@@ -224,7 +220,6 @@ namespace TraineeTracker.Services {
                 snapshot.Speed = speed;
                 snapshot.PredictedMissingEstimatedEffortAtEnd = predictedMissingEstimatedEffortAtEnd;
                 snapshot.PredictedMissingActualDays = predictedMissingActualDays;
-                snapshot.PredictedEffortEndX = predictedEffortEndX;
                 snapshot.IsUpToDate = true;
 
                 await _traineeStatisticsRepository.UpdateAsync(snapshot);
@@ -244,7 +239,6 @@ namespace TraineeTracker.Services {
                     Speed = speed,
                     PredictedMissingEstimatedEffortAtEnd = predictedMissingEstimatedEffortAtEnd,
                     PredictedMissingActualDays = predictedMissingActualDays,
-                    PredictedEffortEndX = predictedEffortEndX,
                     IsUpToDate = true
                 };
 
@@ -260,6 +254,7 @@ namespace TraineeTracker.Services {
         public async Task<double> GetPresentDaysAsync(DateOnly startDate, DateOnly endDate, string email) {
 
             double totalDays = endDate.DayNumber - startDate.DayNumber;
+            Console.WriteLine("TotalDays:" + totalDays + " for " + email);
             return totalDays * 0.7;
             
             // ++++++++++++++++
@@ -390,7 +385,7 @@ namespace TraineeTracker.Services {
             double predictedEstimatedEffortDoneInFuture = daysPresentDaysInFuture * speed;
 
             // predicted Buffer in EstimatedEffort: estimatedEffort remaining at EndDate
-            double predictedMissingEstimatedEffortAtEnd = estimatedEffortOpen - predictedEstimatedEffortDoneInFuture;
+            double predictedMissingEstimatedEffortAtEnd = predictedEstimatedEffortDoneInFuture - estimatedEffortOpen;
 
             return predictedMissingEstimatedEffortAtEnd;
         }
