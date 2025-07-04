@@ -22,8 +22,7 @@ namespace TraineeTracker.Data.Feedbacks {
             await _context.SaveChangesAsync();
         }
 
-        public async Task UpdateAsync(Feedback feedback)
-        {
+        public async Task UpdateAsync(Feedback feedback) {
             _context.Feedbacks.Update(feedback);
             await _context.SaveChangesAsync();
         }
@@ -84,6 +83,7 @@ namespace TraineeTracker.Data.Feedbacks {
                 .ToListAsync();
         }
 
+
         public async Task<List<Feedback>> GetAllFeedbacksUnreadByUserWithLessonAndAuthorAndReadByUsersAsync(ApplicationUser user) {
             return await _context.Feedbacks
                 .Include(f => f.Lesson)
@@ -92,7 +92,13 @@ namespace TraineeTracker.Data.Feedbacks {
                 .Where(f => !f.ReadByUsers.Any(u => u.Id == user.Id))
                 .ToListAsync();
         }
-
+        public IQueryable<Feedback> GetAllFeedbacksUnreadByUserWithLessonAndAuthorAndReadByUsers(ApplicationUser user) {
+            return _context.Feedbacks
+                .Include(f => f.Lesson)
+                .Include(f => f.Author)
+                .Include(f => f.ReadByUsers)
+                .Where(f => !f.ReadByUsers.Any(u => u.Id == user.Id));
+        }
         public async Task<Feedback?> GetFeedbackOfTraineeLessonWithLessonAndAuthorAndReadByUsersAsync(TraineeLesson traineeLesson) {
             return await _context.Feedbacks
                 .Include(f => f.Lesson)
@@ -100,5 +106,35 @@ namespace TraineeTracker.Data.Feedbacks {
                 .Include(f => f.ReadByUsers)
                 .FirstOrDefaultAsync(f => f.AuthorId == traineeLesson.TraineeId && f.LessonId == traineeLesson.LessonId);
         }
+
+        public IQueryable<Feedback> GetAllFeedbacksWithLessonAndAuthor() {
+            return _context.Feedbacks
+                .Include(f => f.Lesson)
+                .Include(f => f.Author);
+
+        }
+
+        public IQueryable<Feedback> GetAllFeedbacksReadByUserWithLessonAndAuthor(ApplicationUser user) {
+            return _context.Feedbacks
+                .Include(f => f.Lesson)
+                .Include(f => f.Author)
+                .Where(f => f.ReadByUsers.Any(u => u.Id == user.Id));
+        }
+
+        public IQueryable<Feedback> GetAllFeedbacksUnreadByUserWithLessonAndAuthor(ApplicationUser user) {
+            return _context.Feedbacks
+                .Include(f => f.Lesson)
+                .Include(f => f.Author)
+                .Where(f => f.ReadByUsers.All(u => u.Id != user.Id));
+        }
+        public IQueryable<Feedback> GetAllFeedbacksWithLessonAndAuthorAndReadByUsers() {
+            return _context.Feedbacks
+                .Include(f => f.Lesson)
+                .Include(f => f.Author)
+                .Include(f => f.ReadByUsers);
+
+
+        }
     }
+
 }

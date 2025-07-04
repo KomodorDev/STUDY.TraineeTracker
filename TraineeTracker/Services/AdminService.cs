@@ -35,6 +35,20 @@ namespace TraineeTracker.Services.Admin {
             _traineeStatisticsRepository = traineeStatisticsRepository;
         }
 
+        public async Task<Dictionary<string, string>> GetUserRoles() {
+            var users = await _applicationUserRepository.GetAllAsync();
+            var userRoles = new Dictionary<string, string>();
+            foreach (var user in users) {
+                var roles = await _applicationUserRepository.GetRolesAsync(user);
+                if (roles.Contains("Admin")) {
+                    userRoles[user.Id] = "Admin";
+                } else {
+                    userRoles[user.Id] = roles.First();
+                }
+            }
+            return userRoles;
+        }
+
         public async Task<ServiceResult> CreateUserAsync(ApplicationUserDto dto) {
             var user = new ApplicationUser {
                 UserName = dto.Email,
@@ -42,6 +56,15 @@ namespace TraineeTracker.Services.Admin {
                 EmailConfirmed = true,
                 EmailNotificationSetting = _emailNotificationService.CreateDefaultEmailNotificationSetting(dto.Role)
             };
+
+            if (dto.Role == "Trainee") {
+                if (dto.TraineeStartDate == null || dto.TraineeEndDate == null) {
+                    return ServiceResult.Failed("Trainee requires start- and end-date.");
+                }
+                if (dto.TeachingPlanId == null) {
+                    return ServiceResult.Failed("Trainee requires Teachingplan.");
+                }
+            }
 
             var result = await _applicationUserRepository.CreateAsync(user, dto.Password);
             if (!result.Succeeded) {
@@ -55,12 +78,6 @@ namespace TraineeTracker.Services.Admin {
             }
 
             if (dto.Role == "Trainee") {
-                if (dto.TraineeStartDate == null || dto.TraineeEndDate == null) {
-                    return ServiceResult.Failed("Trainee requires start- and end-date.");
-                }
-                if (dto.TeachingPlanId == null) {
-                    return ServiceResult.Failed("Trainee requires Teachingplan.");
-                }
 
                 user.TraineeStartDate = dto.TraineeStartDate;
                 user.TraineeEndDate = dto.TraineeEndDate;
@@ -90,7 +107,7 @@ namespace TraineeTracker.Services.Admin {
             user.IsClosed = true;
 
             var referenceUpdateTasks = new List<Task>();
-            
+
             if (await _applicationUserRepository.IsInRoleAsync(user, "Trainee")) {
                 foreach (var pause in user.ProcessingPauses.ToList()) {
                     referenceUpdateTasks.Add(_processingPauseRepository.DeleteAsync(pause));
@@ -136,10 +153,42 @@ namespace TraineeTracker.Services.Admin {
 
             // Only create processingPause if non-existent
             if (await _processingPauseRepository.ExistsAsync(processingPause)) {
-                return ServiceResult.Failed("A break already exists for this user for this period.");
+                return ServiceResult.Failed("A pause already exists for this user for this period.");
             }
             await _processingPauseRepository.CreateAsync(processingPause);
             return ServiceResult.Success();
+        }
+
+        public async Task UpdateProcessingPauseAsync(ProcessingPauseDto dto) {
+            if (!dto.ProcessingPauseId.HasValue) {
+                throw new Exception($"Missing {nameof(dto.ProcessingPauseId)} in {nameof(dto)}");
+            }
+            var pause = await _processingPauseRepository.FindByIdAsync(dto.ProcessingPauseId.Value);
+            if (pause == null) {
+                throw new Exception($"{nameof(dto)} not found.");
+            }
+            var trainee = await _applicationUserRepository.FindByIdAsync(dto.TraineeId);
+            if (trainee == null) {
+                throw new Exception($"{nameof(trainee)} not found.");
+            }
+            pause.TraineeId = dto.TraineeId;
+            pause.Trainee = trainee;
+            pause.StartDate = dto.StartDate;
+            pause.EndDate = dto.EndDate;
+            await _processingPauseRepository.UpdateAsync(pause);
+        }
+
+        public async Task<ProcessingPauseDto> GetProcessingPauseDtoAsync(int processingPauseId) {
+            var pause = await _processingPauseRepository.FindByIdAsync(processingPauseId);
+            if (pause == null) {
+                throw new Exception($"{nameof(pause)} not found.");
+            }
+            return new ProcessingPauseDto {
+                ProcessingPauseId = pause.ProcessingPauseId,
+                TraineeId = pause.TraineeId,
+                StartDate = pause.StartDate,
+                EndDate = pause.EndDate
+            };
         }
     }
 }

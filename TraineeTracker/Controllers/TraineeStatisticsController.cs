@@ -12,16 +12,32 @@ namespace TraineeTracker.Controllers {
         {
             _service = service;
         }
-        public async Task<IActionResult> ShowTraineeStatisticsDashboardView()
-        {
-            var traineeId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            if (traineeId == null)
-            {
+        [Route("TraineeStatistics/{traineeId}")]
+        [HttpGet]
+        public async Task<IActionResult> ShowTraineeStatisticsDashboardView(string traineeId) {
+            Console.WriteLine("View aufrufen");
+            var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            Console.WriteLine(traineeId);
+            Console.WriteLine(currentUserId);
+
+            if (currentUserId == null) {
+                Console.WriteLine("UserId = null");
                 return Unauthorized();
             }
 
+            var isAdmin = User.IsInRole("Admin");
+            var isMentor = User.IsInRole("Mentor");
+            var isTraineeSelf = currentUserId == traineeId;
+
+            if (!(isAdmin || isMentor || isTraineeSelf)) {
+                Console.WriteLine("falscher User");
+                return Forbid();
+            }
+            Console.WriteLine("ViewModel bauen und View final anzeigen");
+
             var model = await _service.BuildTraineeStatisticsViewModel(traineeId, User);
-            return View(model);
+            return PartialView("_TraineeStatistics", model);
         }
     }
 }

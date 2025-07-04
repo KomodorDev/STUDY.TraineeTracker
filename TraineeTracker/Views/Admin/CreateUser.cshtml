@@ -1,0 +1,65 @@
+@model TraineeTracker.Models.Dtos.ApplicationUserDto
+
+@{
+    ViewData["Title"] = "Create User";
+}
+
+<h2>@ViewData["Title"]</h2>
+
+<form asp-action="CreateUser" method="post">
+    <hr />
+    <div asp-validation-summary="ModelOnly"></div>
+
+    <div class="form-group">
+        <label asp-for="Email"></label>
+        <input asp-for="Email" class="form-control" autocomplete="username" aria-required="true"
+            placeholder="firstname.lastname@makandra.de" />
+        <span asp-validation-for="Email" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="Password"></label>
+        <input asp-for="Password" type="password" class="form-control" autocomplete="new-password" aria-required="true"
+            placeholder="Password" />
+        <span asp-validation-for="Password" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="Role"></label>
+        <select asp-for="Role" class="form-control" aria-required="true">
+            <option value="">Select role...</option>
+            <option value="Admin">Admin</option>
+            <option value="Mentor">Mentor</option>
+            <option value="Trainee">Trainee</option>
+        </select>
+        <span asp-validation-for="Role" class="text-danger"></span>
+    </div>
+
+    <!-- Optional for trainees -->
+    <div class="form-group">
+        <label asp-for="TraineeStartDate"></label>
+        <input asp-for="TraineeStartDate" type="date" class="form-control" aria-required="true" />
+        <span asp-validation-for="TraineeStartDate" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="TraineeEndDate"></label>
+        <input asp-for="TraineeEndDate" type="date" class="form-control" aria-required="true" />
+        <span asp-validation-for="TraineeEndDate" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="TeachingPlanId"></label>
+        <select asp-for="TeachingPlanId" class="form-control" aria-required="true" asp-items="ViewBag.TeachingPlans">
+            <option value="">Select Teachingplan...</option>
+        </select>
+        <span asp-validation-for="TeachingPlanId" class="text-danger"></span>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Create</button>
+    <a asp-action="ShowAdminDashboardView" class="btn btn-secondary">Cancel</a>
+</form>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

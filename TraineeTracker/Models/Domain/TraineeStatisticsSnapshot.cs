@@ -10,26 +10,26 @@ namespace TraineeTracker.Models.Domain {
         public DateTime SnapshotDateTime { get; set; }
 
         //entspricht der Kennzahl "Anwesend"
-        public double DaysPresentTotal { get; set; }
+        public double? DaysPresentTotal { get; set; }
 
-        public double DaysPresentTillToday { get; set; }
+        public double? DaysPresentTillToday { get; set; }
 
         //entspricht der Kennzahl "Geschafft"
-        public double LessonDaysCompleted { get; set; }
+        public double? LessonDaysCompleted { get; set; }
 
         //entspricht der Kennzahl "Offen"
-        public double LessonDaysOpen { get; set; }
+        public double? LessonDaysOpen { get; set; }
 
         //entspricht der Kennzahl "Puffer"
-        public double LessonDaysBuffer { get; set; }
+        public double? LessonDaysBuffer { get; set; }
 
         //entspricht der Kennzahl "Geschwindigkeit"
-        public double Speed { get; set; }
+        public double? Speed { get; set; }
 
         //entspricht der Kennzahl "Puffer Vorhersage"
-        public double PredictedMissingEstimatedEffortAtEnd { get; set; }
+        public double? PredictedMissingEstimatedEffortAtEnd { get; set; }
 
-        public double PredictedMissingActualDays { get; set; }
+        public double? PredictedMissingActualDays { get; set; }
         
         public bool IsUpToDate { get; set; }
     }
