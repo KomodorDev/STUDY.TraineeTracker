@@ -137,3 +137,14 @@
     100% { transform: rotate(360deg); }
   }
   
+.select-wide {
+    width: 250px;
+}
+
+.select-medium {
+    width: 180px;
+}
+
+.select-small {
+    width: 120px;
+}
