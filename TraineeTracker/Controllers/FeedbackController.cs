@@ -17,7 +17,7 @@ namespace TraineeTracker.Controllers
         }
 
         // GET: /Feedback/Dashboard
-        [Route("FeedbackDashboard")]
+        [Route("Feedback")]
         [HttpGet]
         public async Task<IActionResult> ShowFeedbackDashboardView()
         {
