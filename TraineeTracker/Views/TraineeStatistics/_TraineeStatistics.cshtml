@@ -31,15 +31,15 @@
         "rgba(108, 117, 125, 0.8)"
     );
 
-    var predictedX = (
-        Model.DaysPresentTillToday.GetValueOrDefault() +
-        (Model.LessonDaysOpen.GetValueOrDefault() / Model.Speed.GetValueOrDefault())
-    ).ToString(CultureInfo.InvariantCulture);
+    var effortStart = basePos;
+    var effortEnd = basePos + Model.PredictedMissingEstimatedEffortAtEnd.GetValueOrDefault();
+    var effortOverlayMin = Math.Min(effortStart, effortEnd).ToString(CultureInfo.InvariantCulture);
+    var effortOverlayMax = Math.Max(effortStart, effortEnd).ToString(CultureInfo.InvariantCulture);
 }
 
 <link rel="stylesheet" href="~/css/TraineeStatistics_temp.css" />
 
-<h2>Fortschritt der Lektionen</h2>
+<h2>Lessonprogress</h2>
 
 <!-- Chart Container -->
 <div class="chart-container">
@@ -48,17 +48,17 @@
 
 <!-- Metric Tiles -->
 <div class="metrics-grid">
-    <div class="metric-tile"><strong>Snapshot Date:</strong> @(Model.SnapshotDateTime.ToString("dd.MM.yyyy HH:mm"))</div>
+    <div class="metric-tile"><strong>SnapshotDate:</strong> @(Model.SnapshotDateTime.ToString("dd.MM.yyyy HH:mm"))</div>
     <div class="metric-tile"><strong>DaysPresentTotal:</strong> @(Model.DaysPresentTotal?.ToString("0.0") ?? "N/A")</div>
     <div class="metric-tile"><strong>DaysPresentTillToday:</strong> @(Model.DaysPresentTillToday?.ToString("0.0") ?? "N/A")</div>
     <div class="metric-tile"><strong>LessonDaysCompleted:</strong> @(Model.LessonDaysCompleted?.ToString("0.0") ?? "N/A")</div>
     <div class="metric-tile"><strong>LessonDaysOpen:</strong> @(Model.LessonDaysOpen?.ToString("0.0") ?? "N/A")</div>
     <div class="metric-tile"><strong>LessonDaysBuffer:</strong> @(Model.LessonDaysBuffer?.ToString("0.0") ?? "N/A")</div>
     <div class="metric-tile"><strong>Speed:</strong> @(Model.Speed?.ToString("0.00") ?? "N/A")</div>
-    <div class="metric-tile"><strong>PredictedMissingEstimatedEffortAtEnd:</strong> @(Model.PredictedMissingEstimatedEffortAtEnd?.ToString("0.0") ?? "N/A")</div>
-    <div class="metric-tile"><strong>PredictedMissingActualDays:</strong> @(Model.PredictedMissingActualDays?.ToString("0.0") ?? "N/A")</div>
+    <div class="metric-tile"><strong>PredictedEstimatedEffortBuffer:</strong> @(Model.PredictedMissingEstimatedEffortAtEnd?.ToString("0.0") ?? "N/A")</div>
+    <div class="metric-tile"><strong>PredictedActualDaysBuffer:</strong> @(Model.PredictedMissingActualDays?.ToString("0.0") ?? "N/A")</div>
     <div class="metric-tile">
-        <strong>Status:</strong>
+        <strong>State:</strong>
         @if (Model.IsUpToDate)
         {
             <span class="text-success">✔ Up to date</span>
@@ -72,7 +72,7 @@
 
 @if (!Model.AllLessons.Any())
 {
-    <div class="alert alert-warning">Keine Lektionsdaten verfügbar.</div>
+    <div class="alert alert-warning">No lesson data available."</div>
 }
 
 <!-- Chart.js und Plugin -->
@@ -95,47 +95,47 @@ window.addEventListener('DOMContentLoaded', () => {
             borderColor: 'black',
             borderWidth: 2,
             label: {
-                content: 'Today',
+                content: 'current progress',
                 enabled: true,
                 position: 'start'
             }
         }
-        @if (Model.PredictedMissingEstimatedEffortAtEnd.HasValue)
-        {
-            <text>,
-            predicted: {
-                type: 'line',
-                xMin: @predictedX,
-                xMax: @predictedX,
-                borderColor: 'orange',
-                borderWidth: 2,
-                label: {
-                    content: 'Predicted Effort',
-                    enabled: true,
-                    position: 'start'
-                }
-            }</text>
-        }
     };
-
-    console.log("Chart-Daten:", data);
-    console.log("Farben:", colors);
 
     new Chart(ctx, {
         type: 'bar',
         data: {
-            datasets: [{
-                label: 'Aufwand (Tage)',
-                data: data,
-                backgroundColor: colors,
-                borderRadius: 4,
-                barThickness: 20,
-                maxBarThickness: 25,
-                parsing: {
-                    xAxisKey: 'x',
-                    yAxisKey: 'y'
+            datasets: [
+                {
+                    label: 'Predicted Effort Range',
+                    data: data.map(d => ({
+                        x: [@effortOverlayMin, @effortOverlayMax],
+                        y: d.y
+                    })),
+                    backgroundColor: 'rgba(255, 165, 0, 0.25)',
+                    borderRadius: 0,
+                    barThickness: 14,
+                    maxBarThickness: 16,
+                    parsing: {
+                        xAxisKey: 'x',
+                        yAxisKey: 'y'
+                    },
+                    order: 0
+                },
+                {
+                    label: 'Effort (days)',
+                    data: data,
+                    backgroundColor: colors,
+                    borderRadius: 0,
+                    barThickness: 14,
+                    maxBarThickness: 16,
+                    parsing: {
+                        xAxisKey: 'x',
+                        yAxisKey: 'y'
+                    },
+                    order: 1 
                 }
-            }]
+            ]
         },
         options: {
             indexAxis: 'y',
@@ -145,7 +145,7 @@ window.addEventListener('DOMContentLoaded', () => {
             scales: {
                 x: {
                     beginAtZero: true,
-                    title: { display: true, text: 'Tage' }
+                    title: { display: true, text: 'Effort' }
                 },
                 y: {
                     type: 'category',
