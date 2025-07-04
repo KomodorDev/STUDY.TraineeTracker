@@ -17,6 +17,7 @@ namespace TraineeTracker.Services {
 
         private readonly EmailNotificationService _emailNotificationService;
 
+        // ---------------------------------------------------
         public TeachingPlanService(
             ITeachingPlanRepository teachingPlanRepo,
             ILessonRepository lessonRepo,
@@ -30,6 +31,7 @@ namespace TraineeTracker.Services {
             _emailNotificationService = emailNotificationService;
         }
 
+        // ---------------------------------------------------
         public async Task<ImportDashboardViewModel> BuildImportDashboardAsync()
         {
             var allPlans = await _teachingPlanRepo.GetAllTeachingPlansAsync();
@@ -47,6 +49,7 @@ namespace TraineeTracker.Services {
             return vm;
         }
         
+        // ---------------------------------------------------
         public async Task ImportNewTeachingPlan(IFormFile file, string name) {
             ValidateFile(file);
             ValidateName(name);
@@ -71,6 +74,7 @@ namespace TraineeTracker.Services {
             await _teachingPlanRepo.CreateAsync(teachingPlan);
         }
 
+        // ---------------------------------------------------
         public async Task UpdateTeachingPlan(IFormFile file, int teachingPlanId)
         {
             // 1) Datei einlesen, DTOs validieren
@@ -180,6 +184,7 @@ namespace TraineeTracker.Services {
         }
 
 
+        // ---------------------------------------------------
         public async Task DeleteTeachingPlan(int id) {
             var plan = await _teachingPlanRepo.GetTeachingPlanByIdWithLessonsAndTraineesAsync(id)
                        ?? throw new InvalidOperationException("TeachingPlan nicht gefunden.");
@@ -196,6 +201,7 @@ namespace TraineeTracker.Services {
             await _teachingPlanRepo.DeleteAsync(plan);
         }
 
+        // ---------------------------------------------------
         public async Task AssignTeachingPlanToTraineeAsync(ApplicationUser trainee, int teachingPlanId) {
             var plan = await _teachingPlanRepo.GetTeachingPlanByIdWithLessonsAndTraineesAsync(teachingPlanId)
                        ?? throw new InvalidOperationException("TeachingPlan nicht gefunden.");
@@ -208,6 +214,7 @@ namespace TraineeTracker.Services {
             await _teachingPlanRepo.UpdateAsync(plan);
         }
 
+        // ---------------------------------------------------
         public async Task UnassignTeachingPlanFromTraineeAsync(ApplicationUser trainee) {
             var traineeLessons = await _traineeLessonRepo.GetAllTraineeLessonsOfTraineeWithLessonAsync(trainee.Id);
             foreach (var traineeLesson in traineeLessons) {
@@ -224,40 +231,48 @@ namespace TraineeTracker.Services {
             await _applicationUserRepo.UpdateAsync(trainee);
         }
 
+        // ---------------------------------------------------
         public Task<IEnumerable<TeachingPlan>> GetAllTeachingPlansAsync()
             => _teachingPlanRepo.GetAllTeachingPlansAsync();
 
+        // ---------------------------------------------------
         private void ValidateFile(IFormFile file) {
             if (file == null || file.Length == 0)
                 throw new ArgumentException("Die Datei ist leer!");
         }
 
+        // ---------------------------------------------------
         private void ValidateName(string name) {
             if (string.IsNullOrWhiteSpace(name))
                 throw new ArgumentException("Ungültiger Name!");
         }
 
+        // ---------------------------------------------------
         private async Task ValidateLesson(Lesson l) {
             bool exists = await _lessonRepo.ExistsAsync(l);
             if(exists)
                 throw new ArgumentException("Dieser Teachingplan existiert schon!");
         }
 
+        // ---------------------------------------------------
         private async Task<string> ReadJsonAsync(IFormFile file) {
             using var reader = new StreamReader(file.OpenReadStream());
             return await reader.ReadToEndAsync();
         }
 
+        // ---------------------------------------------------
         private List<LessonDto> DeserializeLessonDtos(string json) {
             return JsonConvert.DeserializeObject<List<LessonDto>>(json) 
                 ?? throw new Exception("LessonDtos could not be deserialized.");
         }
 
+        // ---------------------------------------------------
         private void ValidateDtos(List<LessonDto> dtos) {
             if (dtos == null || !dtos.Any())
                 throw new InvalidOperationException("Keine gültigen Lektionen im JSON gefunden!");
         }
 
+        // ---------------------------------------------------
         private List<Lesson> MapDtosToLessons(IEnumerable<LessonDto> dtos) {
             return dtos.Select(dto => new Lesson {
                 LessonId = dto.Id,
@@ -268,6 +283,7 @@ namespace TraineeTracker.Services {
             }).ToList();
         }
 
+        // ---------------------------------------------------
         private async Task<TeachingPlan> GetExistingPlanWithDetails(int id) {
             var plan = await _teachingPlanRepo
                 .GetTeachingPlanByIdWithLessonsAndTraineesAsync(id);
@@ -276,6 +292,7 @@ namespace TraineeTracker.Services {
             return plan;
         }
 
+        // ---------------------------------------------------
         private void ApplyDtoToLesson(LessonDto dto, Lesson lesson) {
             lesson.Title = dto.Title;
             lesson.LinkUrl = dto.Url;
@@ -283,6 +300,7 @@ namespace TraineeTracker.Services {
             lesson.IsInactive = dto.Deprecated;
         }
 
+        // ---------------------------------------------------
         private Lesson MapDtoToLesson(LessonDto dto) {
             return new Lesson {
                 LessonId = dto.Id,
@@ -293,6 +311,7 @@ namespace TraineeTracker.Services {
             };
         }
 
+        // ---------------------------------------------------
         private async Task DeleteOpenTraineeLessonsAsync(int lessonId) {
             var traineeLessons = await _traineeLessonRepo
                 .GetAllTraineeLessonsOfLessonWithLessonAsync(lessonId);
@@ -302,6 +321,8 @@ namespace TraineeTracker.Services {
             }
         }
 
+        
+        // ---------------------------------------------------
         private async Task CreateTraineeLessonsAsync(ApplicationUser trainee, IEnumerable<Lesson> lessons) {
             foreach (var lesson in lessons.Where(l => !l.IsInactive)) {
                 var tl = new TraineeLesson {
