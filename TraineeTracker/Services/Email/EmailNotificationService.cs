@@ -80,11 +80,14 @@ namespace TraineeTracker.Services.Email {
         // ------------------------------------------------------
         public async Task NotifyAboutStateChangeAsync(TraineeLesson traineeLesson, TraineeLessonState oldState, TraineeLessonState newState) {
 
-            var trainee = traineeLesson.Trainee;
-            var traineeSetting = trainee.EmailNotificationSetting!;
-            string traineeName = trainee.UserName!;
+            // Get Trainee
+            var trainee = await _databaseApplicationUserRepository.FindByIdWithNotificationSettingAsync(traineeLesson.TraineeId);
+
+            var traineeSetting = trainee!.EmailNotificationSetting;
+            string traineeName = trainee!.UserName!;
             string lessonTitle = traineeLesson.Lesson.Title;
 
+            // Rejected Note:
             string rejectedReason = traineeLesson.RejectionReason!;
             var rejectionNote = "";
             if (newState == TraineeLessonState.Rejected && !string.IsNullOrWhiteSpace(traineeLesson.RejectionReason)) {
@@ -93,8 +96,8 @@ namespace TraineeTracker.Services.Email {
 
             // ++++++++++++++++++++++++++++++++++++++++++
             // Notify Mentors and Admins
-            var mentors = await _databaseApplicationUserRepository.GetUsersInRoleAsync("Mentor");
-            var admins = await _databaseApplicationUserRepository.GetUsersInRoleAsync("Admin");
+            var mentors = await _databaseApplicationUserRepository.GetOpenUsersInRoleWithEmailNotificationSettingAsync("Mentor");
+            var admins = await _databaseApplicationUserRepository.GetOpenUsersInRoleWithEmailNotificationSettingAsync("Admin");
 
             // Concat
             var thirdPersons = mentors
@@ -143,8 +146,8 @@ namespace TraineeTracker.Services.Email {
 
         // ------------------------------------------------------
         public async Task NotifyAboutImportChangeAsync(ApplicationUser trainee, List<TraineeLesson> removedLessons, List<TraineeLesson> addedLessons) {
-            var mentors = await _databaseApplicationUserRepository.GetUsersInRoleAsync("Mentor");
-            var admins = await _databaseApplicationUserRepository.GetUsersInRoleAsync("Admin");
+            var mentors = await _databaseApplicationUserRepository.GetOpenUsersInRoleWithEmailNotificationSettingAsync("Mentor");
+            var admins = await _databaseApplicationUserRepository.GetOpenUsersInRoleWithEmailNotificationSettingAsync("Admin");
 
             var thirdPersons = mentors
                 .Concat(admins)
@@ -157,32 +160,31 @@ namespace TraineeTracker.Services.Email {
 
             // ++++++++++++++++++++++++++++++++++++++++++
             // Notifiy Trainee
-            if (!trainee.IsClosed) {
-                var setting = trainee.EmailNotificationSetting!;
-                if (setting.ReceiveImportChangeNotifications && (added.Any() || removed.Any())) {
-                    var subject = "TraineeTracker: Your lesson plan has been updated";
+            var setting = await _databaseEmailNotificationSettingRepository.GetByUserIdAsync(trainee.Id);
+            if (setting.ReceiveImportChangeNotifications && (added.Any() || removed.Any())) {
+                var subject = "TraineeTracker: Your lesson plan has been updated";
 
-                    var changes = "";
+                var changes = "";
 
-                    if (added.Any()) {
-                        changes += "<p><strong>New lessons assigned:</strong><br/>" +
-                                string.Join("<br/>", added.Select(n => $"– {n}")) + "</p>";
-                    }
+                if (added.Any()) {
+                    changes += "<p><strong>New lessons assigned:</strong><br/>" +
+                            string.Join("<br/>", added.Select(n => $"– {n}")) + "</p>";
+                }
 
-                    if (removed.Any()) {
-                        changes += "<p><strong>Lessons removed:</strong><br/>" +
-                                string.Join("<br/>", removed.Select(n => $"– {n}")) + "</p>";
-                    }
+                if (removed.Any()) {
+                    changes += "<p><strong>Lessons removed:</strong><br/>" +
+                            string.Join("<br/>", removed.Select(n => $"– {n}")) + "</p>";
+                }
 
-                    var messageHtml = $@"
+                var messageHtml = $@"
                     <p>Hello {trainee.UserName},</p>
                     <p>Your lesson plan has been updated. Here is a summary of the changes:</p>
                     {changes}
                     <p>Best regards,<br/>Your TraineeTracker Team</p>";
 
-                    await _emailSender.SendEmailAsync(trainee.Email!, subject, messageHtml);
-                }
+                await _emailSender.SendEmailAsync(trainee.Email!, subject, messageHtml);
             }
+
 
             // ++++++++++++++++++++++++++++++++++++++++++
             // Notify Mentors and Admins
