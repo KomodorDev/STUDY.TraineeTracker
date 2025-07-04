@@ -37,7 +37,6 @@ change background: add
                         <ul class="navbar-nav flex-grow-1">
                             @{
                                 var currentController = ViewContext.RouteData.Values["controller"]?.ToString();
-                                
                             }
                             <li class="nav-item">
                                 <a class="nav-link @(currentController == "Home" ? "active" : "text-dark")" asp-area="" asp-controller="Home" asp-action="Index">User</a>
