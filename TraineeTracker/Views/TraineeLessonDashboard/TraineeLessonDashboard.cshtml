@@ -9,8 +9,11 @@
 
 @section Styles {
     <link rel="stylesheet" href="~/css/TraineeLessonDashboard.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/TraineeLessonDetail.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/TraineeStatistics_temp.css" asp-append-version="true" />
 }
 
+<button class="button open-button">Open Modal</button>
 <div class="sopro-grid-lessons">
     <!-- Trainee + Statisticss -->
     <div class="sopro-grid-lessons-left">
@@ -120,7 +123,10 @@
         </table>
     </section>
 
-    <!-- Bootstrap stuff, dont really understand -->
+    <!-- TraineeLessonDetail modal -->
+    @await Html.PartialAsync("_TraineeLessonDetailModal")
+
+    <!-- Bootstrap modal stuff, dont really understand 
     <div class="modal fade" id="lessonDetailModal" tabindex="-1" aria-labelledby="lessonDetailModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-lg modal-dialog-scrollable">
             <div class="modal-content">
@@ -135,11 +141,12 @@
                 </div>
             </div>
         </div>
-    </div>
+    </div>-->
 </div>
 
+@section Scripts {
 <script>
-    document.addEventListener("DOMContentLoaded", function () {
+    @*document.addEventListener("DOMContentLoaded", function () {
         const rows = document.querySelectorAll(".lesson-row");
 
         rows.forEach(row => {
@@ -153,6 +160,7 @@
                         <p class="mt-3">Loading...</p>
                     </div>`;
 
+                /* open modal with clicked lesson's ID */
                 fetch(`/TraineeLessonDetailController/ShowTraineeLessonDetailView?traineeLessonId=${lessonId}`)
                     .then(response => response.text())
                     .then(html => {
@@ -164,5 +172,21 @@
                     });
             });
         });
+    });*@
+
+    document.addEventListener('DOMContentLoaded', function () {
+        const modal = document.getElementById('modal');
+        /* open button here */
+        const openButton = document.querySelector('.open-button');
+        /* close button inside of the modal */
+        const closeButton = modal?.querySelector('.close-button');
+
+        if (openButton && modal && closeButton) {
+            openButton.addEventListener('click', () => modal.showModal());
+            closeButton.addEventListener('click', () => modal.close());
+        } else {
+            console.warn("Modal or buttons not found");
+        }
     });
 </script>
+}

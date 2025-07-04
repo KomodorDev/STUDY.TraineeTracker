@@ -1,0 +1,10 @@
+/* by schleale */
+
+.modal {
+    padding: 1em;
+    max-width: 80vw;
+
+    & > * {
+        margin: 0 0 0.5rem 0;
+    }
+}
