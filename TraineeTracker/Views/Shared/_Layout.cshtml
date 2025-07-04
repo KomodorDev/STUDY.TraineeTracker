@@ -35,23 +35,26 @@ change background: add
                 <div class="container-fluid">
                     <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
                         <ul class="navbar-nav flex-grow-1">
+                            @{
+                                var currentController = ViewContext.RouteData.Values["controller"]?.ToString();
+                            }
                             <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">User</a>
+                                <a class="nav-link @(currentController == "Home" ? "active" : "text-dark")" asp-area="" asp-controller="Home" asp-action="Index">User</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="Dashboard" asp-action="Index">Dashboard</a>
+                                <a class="nav-link @(currentController == "TraineeLessonDashboard" ? "active" : "text-dark")" asp-area="" asp-controller="Dashboard" asp-action="Index">Dashboard</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="Feedback" asp-action="Index">Feedback</a>
+                                <a class="nav-link @(currentController == "Feedback" ? "active" : "text-dark")" asp-area="" asp-controller="Feedback" asp-action="Index">Feedback</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="Import" asp-action="Index">Import</a>
+                                <a class="nav-link @(currentController == "TeachingPlan" ? "active" : "text-dark")" asp-area="" asp-controller="Import" asp-action="Index">Import</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="Admin" asp-action="ShowAdminDashboardView">Admin</a>
+                                <a class="nav-link @(currentController == "Admin" ? "active" : "text-dark")" asp-area="" asp-controller="Admin" asp-action="ShowAdminDashboardView">Admin</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="Notifications" asp-action="Index">Settings</a>
+                                <a class="nav-link @(currentController == "EmailNotification" ? "active" : "text-dark")" asp-area="" asp-controller="Notifications" asp-action="Index">Settings</a>
                             </li>
 
                         </ul>
