@@ -6,10 +6,11 @@ using TraineeTracker.Services;
 using TraineeTracker.Models.Dtos;
 using TraineeTracker.Models.Domain;
 using System.Threading.Tasks;
+using TraineeTracker.Models.ViewModels;
 
 namespace TraineeTracker.Controllers {
     [ApiController]
-    [Route("api/[controller]")]
+    [Route("TraineeLessonDetail")]
     public class TraineeLessonDetailController : Controller {
         private readonly TraineeLessonDetailService _traineeLessonDetailService;
 
@@ -19,9 +20,9 @@ namespace TraineeTracker.Controllers {
         
         [HttpGet("{traineeLessonId}")]
         public async Task<IActionResult> ShowTraineeLessonDetailView(int traineeLessonId) {
-            var viewModel = await _traineeLessonDetailService.BuildTraineeLessonDetailViewModel(traineeLessonId, User);
+            TraineeLessonDetailViewModel viewModel = await _traineeLessonDetailService.BuildTraineeLessonDetailViewModel(traineeLessonId, User);
 
-            return View("TraineeLessonDetail", viewModel);
+            return PartialView("~/Views/TraineeLessonDashboard/_TraineeLessonDetailModal.cshtml", viewModel);
         }
 
         // [FromBody] : "deserialize the JSON in the request body into this C# object", necessary for more complex types
