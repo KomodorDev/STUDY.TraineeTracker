@@ -22,8 +22,7 @@
            asp-route-filter="all"
            asp-route-selectedTraineeId="@Model.SelectedTraineeId"
            asp-route-selectedLessonId="@Model.SelectedLessonId"
-           asp-route-sortBy="@Model.ActiveSortBy"
-           asp-route-ascending="@Model.Ascending"
+           asp-route-sortBy="@Model.SortBy"
            asp-route-page="1">
            All (@Model.TotalFeedbackCount)
         </a>
@@ -34,8 +33,7 @@
            asp-route-filter="unread"
            asp-route-selectedTraineeId="@Model.SelectedTraineeId"
            asp-route-selectedLessonId="@Model.SelectedLessonId"
-           asp-route-sortBy="@Model.ActiveSortBy"
-           asp-route-ascending="@Model.Ascending"
+           asp-route-sortBy="@Model.SortBy"
            asp-route-page="1">
            Unread (@Model.UnreadFeedbackCount)
         </a>
@@ -46,8 +44,7 @@
            asp-route-filter="read"
            asp-route-selectedTraineeId="@Model.SelectedTraineeId"
            asp-route-selectedLessonId="@Model.SelectedLessonId"
-           asp-route-sortBy="@Model.ActiveSortBy"
-           asp-route-ascending="@Model.Ascending"
+           asp-route-sortBy="@Model.SortBy"
            asp-route-page="1">
            Read (@Model.ReadFeedbackCount)
         </a>
@@ -58,7 +55,7 @@
 <form method="get" asp-controller="Feedback" asp-action="Dashboard" class="filter-selects">
 
     <!-- Trainee Dropdown -->
-    <select name="selectedTraineeId" onchange="this.form.submit()">
+    <select name="selectedTraineeId" class="select-wide" onchange="this.form.submit()">
         <option value="">All active Trainees</option>
         @foreach (var trainee in Model.ActiveTrainees)
         {
@@ -70,7 +67,7 @@
     </select>
 
     <!-- Lesson Dropdown -->
-    <select name="selectedLessonId" onchange="this.form.submit()">
+    <select name="selectedLessonId" class="select-wide" onchange="this.form.submit()">
         <option value="">All rated Lessons</option>
         @foreach (var lesson in Model.Lessons)
         {
@@ -81,25 +78,20 @@
         }
     </select>
 
-    <!-- Sort Field Dropdown -->
-    <select name="sortBy" onchange="this.form.submit()">
-        <option value="date" selected="@(Model.ActiveSortBy == "date" ? "selected" : null)">Date</option>
-        <option value="author" selected="@(Model.ActiveSortBy == "author" ? "selected" : null)">Author</option>
-        <option value="lesson" selected="@(Model.ActiveSortBy == "lesson" ? "selected" : null)">Lesson</option>
-    </select>
-
-    <!-- Sort Direction Dropdown -->
-    <select name="ascending" onchange="this.form.submit()">
-        <option value="true" selected="@(Model.Ascending ? "selected" : null)">Ascending</option>
-        <option value="false" selected="@(Model.Ascending ? null : "selected")">Descending</option>
+    <!-- Combined Sort Dropdown -->
+    <select name="SortBy" class="select-small" onchange="this.form.submit()">
+        <option value="date_desc" selected="@(Model.SortBy == "date_desc" ? "selected" : null)">Date ↓</option>
+        <option value="date_asc" selected="@(Model.SortBy == "date_asc" ? "selected" : null)">Date ↑</option>
+        <option value="author_desc" selected="@(Model.SortBy == "author_desc" ? "selected" : null)">Author ↓</option>
+        <option value="author_asc" selected="@(Model.SortBy == "author_asc" ? "selected" : null)">Author ↑</option>
+        <option value="lesson_desc" selected="@(Model.SortBy == "lesson_desc" ? "selected" : null)">Lesson ↓</option>
+        <option value="lesson_asc" selected="@(Model.SortBy == "lesson_asc" ? "selected" : null)">Lesson ↑</option>
     </select>
 
 
+
     <input type="hidden" name="filter" value="@Model.ActiveFilter" />
-    <input type="hidden" name="page" value="1" /> <!-- Reset to first page on sort/filter change -->
-    <input type="hidden" name="filter" value="@Model.ActiveFilter" />
-    <input type="hidden" name="sortBy" value="@Model.ActiveSortBy" />
-    <input type="hidden" name="ascending" value="@Model.Ascending" />
+    <input type="hidden" name="sortBy" value="@Model.SortBy" />
     <input type="hidden" name="page" value="1" />
 
 </form>
@@ -130,8 +122,7 @@
                             <input type="hidden" name="feedbackId" value="@feedback.FeedbackId" />
                             <input type="hidden" name="filter" value="@Model.ActiveFilter" />
                             <input type="hidden" name="page" value="@Model.Feedbacks.PageNumber" />
-                            <input type="hidden" name="sortBy" value="@Model.ActiveSortBy" />
-                            <input type="hidden" name="ascending" value="@Model.Ascending" />
+                            <input type="hidden" name="sortBy" value="@Model.SortBy" />
                             <input type="hidden" name="selectedTraineeId" value="@Model.SelectedTraineeId" />
                             <input type="hidden" name="selectedLessonId" value="@Model.SelectedLessonId" />
                         <button class="mark-read-btn" type="submit">Mark as read</button>
@@ -143,8 +134,7 @@
                         <input type="hidden" name="feedbackId" value="@feedback.FeedbackId" />
                         <input type="hidden" name="filter" value="@Model.ActiveFilter" />
                         <input type="hidden" name="page" value="@Model.Feedbacks.PageNumber" />
-                        <input type="hidden" name="sortBy" value="@Model.ActiveSortBy" />
-                        <input type="hidden" name="ascending" value="@Model.Ascending" />
+                        <input type="hidden" name="sortBy" value="@Model.SortBy" />
                         <input type="hidden" name="selectedTraineeId" value="@Model.SelectedTraineeId" />
                         <input type="hidden" name="selectedLessonId" value="@Model.SelectedLessonId" />
                         <button class="mark-unread-btn" type="submit">Mark as unread</button>
@@ -279,8 +269,7 @@
                    asp-route-filter="@Model.ActiveFilter"
                    asp-route-selectedTraineeId="@Model.SelectedTraineeId"
                    asp-route-selectedLessonId="@Model.SelectedLessonId"
-                   asp-route-sortBy="@Model.ActiveSortBy"
-                   asp-route-ascending="@Model.Ascending"
+                   asp-route-sortBy="@Model.SortBy"
                    asp-route-page="@(Model.Feedbacks.PageNumber - 1)">
                    Previous
                 </a>
@@ -296,8 +285,7 @@
                    asp-route-filter="@Model.ActiveFilter"
                    asp-route-selectedTraineeId="@Model.SelectedTraineeId"
                    asp-route-selectedLessonId="@Model.SelectedLessonId"
-                   asp-route-sortBy="@Model.ActiveSortBy"
-                   asp-route-ascending="@Model.Ascending"
+                   asp-route-sortBy="@Model.SortBy"
                    asp-route-page="@i">
                    @i
                 </a>
@@ -313,8 +301,7 @@
                    asp-route-filter="@Model.ActiveFilter"
                    asp-route-selectedTraineeId="@Model.SelectedTraineeId"
                    asp-route-selectedLessonId="@Model.SelectedLessonId"
-                   asp-route-sortBy="@Model.ActiveSortBy"
-                   asp-route-ascending="@Model.Ascending"
+                   asp-route-sortBy="@Model.SortBy"
                    asp-route-page="@(Model.Feedbacks.PageNumber + 1)">
                    Next
                 </a>
