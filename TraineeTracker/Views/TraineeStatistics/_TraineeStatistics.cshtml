@@ -67,7 +67,6 @@
     </div>
 </div>
 
-<!-- Optional: Kein Daten-Hinweis -->
 @if (!Model.AllLessons.Any())
 {
     <div class="alert alert-warning">Keine Lektionsdaten verfügbar.</div>
@@ -147,11 +146,8 @@ window.addEventListener('DOMContentLoaded', () => {
                 },
                 y: {
                     type: 'category',
-                    reverse: true,
                     ticks: {
-                        display: true,
-                        autoSkip: false,
-                        font: { size: 12 }
+                        display: false
                     },
                     grid: {
                         drawTicks: false 
