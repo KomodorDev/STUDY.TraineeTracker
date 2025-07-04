@@ -86,9 +86,7 @@
             <tbody class="sopro-inner-card flex">
                 @foreach (var traineeLesson in (Model.TraineeLessons ?? throw new Exception("Empty Traineelesson ...somehow"))) {
                     <tr class="sopro-card sopro-table-format"
-                        data-lesson-id="@traineeLesson.TraineeLessonId"     @* the modal cshtml has that id *@
-                        data-bs-toggle="modal"                              @* click -> modal window *@
-                        data-bs-target="#lessonDetailModal"                 @* points to modal with id lessonDetailModal *@
+                        data-lesson-id="@traineeLesson.TraineeLessonId"     @* the ID that is given to the modal *@
                         style="cursor: pointer;">                           @* mouse cursor when hovering *@
                         <td>@traineeLesson.Lesson.LessonId | @traineeLesson.Lesson.Title</td>
                         <td><a href="@traineeLesson.Lesson.LinkUrl" target="_blank">Link>></a></td>
@@ -124,5 +122,26 @@
     </section>
 </div>
 
-<!-- load modal -->
-@await Html.PartialAsync("_TraineeLessonDetailModal")
+<!-- usually, you would load the modal here, but we need extra data for the detailed view -->
+<div id="modalPlaceholder"></div>
+
+@section Scripts {
+    <script>
+        document.querySelectorAll('tr[data-lesson-id]').forEach(row => {
+            row.addEventListener('click', function () {
+                const lessonId = this.getAttribute('data-lesson-id');
+
+                fetch(`/TraineeLessonDetail/${lessonId}`)
+                    .then(response => response.text())
+                    .then(html => {
+                        document.getElementById('modalPlaceholder').innerHTML = html;
+                        const modalElement = document.getElementById('lessonDetailModal');
+                        const modal = new bootstrap.Modal(modalElement);
+                        modal.show();
+                    })
+                    .catch(err => console.error("Failed to load modal", err));
+            });
+        });
+    </script>
+}
+
