@@ -95,6 +95,26 @@ namespace TraineeTracker.Data.ApplicationUsers {
             .ToListAsync();
         }
 
+        public async Task<IEnumerable<ApplicationUser>> GetOpenUsersInRoleWithEmailNotificationSettingAsync(string roleName) {
+
+            // Get roleId
+            var roleId = await _context.Roles
+                .Where(r => r.Name == roleName)
+                .Select(r => r.Id)
+                .FirstOrDefaultAsync();
+
+            if (roleId == null) {
+                return Enumerable.Empty<ApplicationUser>();
+            }
+            // Get users with that roleId
+            return await _context.Users
+                .Include(u => u.UserRoles) // Damit EF die UserRoles lädt
+                .Where(u => u.UserRoles!.Any(r => r.RoleId == roleId))
+                .Where(u => !u.IsClosed)
+                .Include(u => u.EmailNotificationSetting)
+                .ToListAsync();
+        }
+
         public async Task<IEnumerable<string>> GetRolesAsync(ApplicationUser user) {
             return await _userManager.GetRolesAsync(user);
         }
