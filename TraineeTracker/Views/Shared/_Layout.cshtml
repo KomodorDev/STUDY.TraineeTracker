@@ -19,7 +19,6 @@ change background: add
 @{
     ViewData["BodyClass"] = "sopro-special-bg";
 }
-
 *@
 
 <body class="@ViewData["BodyClass"]">
@@ -33,7 +32,7 @@ change background: add
             <!-- default nav bar -->
             <nav class="navbar sopro-navbar navbar-expand-sm">
                 <div class="container-fluid">
-                    <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
+                    <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between" style="overflow: hidden;">
                         <ul class="navbar-nav flex-grow-1">
                             @{
                                 var currentController = ViewContext.RouteData.Values["controller"]?.ToString();
@@ -45,7 +44,7 @@ change background: add
                                 <a class="nav-link @(currentController == "TraineeLessonDashboard" ? "active" : "text-dark")" asp-area="" asp-controller="Dashboard" asp-action="Index">Dashboard</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link @(currentController == "Feedback" ? "active" : "text-dark")" asp-area="" asp-controller="Feedback" asp-action="Index">Feedback</a>
+                                <a class="nav-link @(currentController == "Feedback" ? "active" : "text-dark")" asp-area="" asp-controller="Feedback" asp-action="Dashboard">Feedback</a>
                             </li>
                             <li class="nav-item">
                                 <a class="nav-link @(currentController == "TeachingPlan" ? "active" : "text-dark")" asp-area="" asp-controller="Import" asp-action="Index">Import</a>
@@ -60,7 +59,7 @@ change background: add
                         </ul>
 
                         <!-- makandra logo -->
-                        <a href="https://makandra.de/de" class="navbar-brand">
+                        <a href="https://makandra.de/de" target="_blank" class="navbar-brand">
                             <img src="~/resources/makandra_logo_black.png" alt="logo" />
                         </a>
                     </div>
@@ -81,6 +80,7 @@ change background: add
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
+
     @await RenderSectionAsync("Scripts", required: false)
 
 </body>

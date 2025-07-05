@@ -231,8 +231,8 @@ namespace TraineeTracker.Services.Seeders {
                     Role = "Trainee",
                     TeachingPlanId = 2,
                     Password = "Sopro.2025",
-                    TraineeStartDate = new DateOnly(2025, 3, 15),
-                    TraineeEndDate = new DateOnly(2026, 6, 30)
+                    TraineeStartDate = new DateOnly(2025, 1, 15),
+                    TraineeEndDate = new DateOnly(2025, 7, 30)
                 },
 
                 new ApplicationUserDto {

@@ -254,6 +254,7 @@ namespace TraineeTracker.Services {
         public async Task<double> GetPresentDaysAsync(DateOnly startDate, DateOnly endDate, string email) {
 
             double totalDays = endDate.DayNumber - startDate.DayNumber;
+            Console.WriteLine("TotalDays:" + totalDays + " for " + email);
             return totalDays * 0.7;
             
             // ++++++++++++++++
@@ -384,7 +385,7 @@ namespace TraineeTracker.Services {
             double predictedEstimatedEffortDoneInFuture = daysPresentDaysInFuture * speed;
 
             // predicted Buffer in EstimatedEffort: estimatedEffort remaining at EndDate
-            double predictedMissingEstimatedEffortAtEnd = estimatedEffortOpen - predictedEstimatedEffortDoneInFuture;
+            double predictedMissingEstimatedEffortAtEnd = predictedEstimatedEffortDoneInFuture - estimatedEffortOpen;
 
             return predictedMissingEstimatedEffortAtEnd;
         }
