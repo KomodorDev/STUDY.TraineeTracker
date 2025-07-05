@@ -1,17 +1,17 @@
-@model TraineeTracker.Models.ViewModels.ImportDashboardViewModel
+@model TraineeTracker.Models.ViewModels.TeachingPlan.ImportDashboardViewModel
 
 <h1>Import Dashboard</h1>
 
 <!-- 1) Import-Form -->
 <form asp-action="ImportNewTeachingPlan"
+      asp-controller="TeachingPlan"
       method="post"
       enctype="multipart/form-data">
   @Html.AntiForgeryToken()
-  <input asp-for="NewPlanName" />
-  <span asp-validation-for="NewPlanName"></span>
-  <input asp-for="NewPlanFile" type="file" />
-  <span asp-validation-for="NewPlanFile"></span>
-  <button type="submit">Importieren</button>
+
+  <input type="text" name="NewPlanName" required />
+  <input type="file" name="NewPlanFile" required />
+  <button type="submit">Import</button>
 </form>
 
 <hr />
@@ -28,37 +28,40 @@
     </tr>
   </thead>
   <tbody>
-  @foreach(var plan in Model.ExistingTeachingPlans)
-  {
-    <tr>
-    <td>@plan.Name</td>
-    <td>@plan.LastUpdated.ToString("g")</td>
-    <td>@plan.LessonCount</td>    @* Anzahl der Lektionen *@
-    <td>@plan.TraineeCount</td>   @* Anzahl der Azubis *@
-      <td>
-        <!-- Update -->
-        <form asp-action="UpdateTeachingPlan"
-              method="post"
-              enctype="multipart/form-data" class="d-inline">
-          @Html.AntiForgeryToken()
-          <input type="hidden" name="teachingPlanId" value="@plan.TeachingPlanId" />
-          <input type="file" name="file" required />
-          <button type="submit">Update</button>
-        </form>
+    @foreach (var plan in Model.ExistingTeachingPlans)
+    {
+      <tr>
+        <td>@plan.Name</td>
+        <td>@plan.LastUpdated.ToString("g")</td>
+        <td>@plan.LessonCount</td> @* Anzahl der Lektionen *@
+        <td>@plan.TraineeCount</td> @* Anzahl der Azubis *@
+        <td>
+          <!-- Update -->
+          <form asp-action="UpdateTeachingPlan"
+               method="post"
+               enctype="multipart/form-data"
+              class="d-inline">
+            @Html.AntiForgeryToken()
 
-        <!-- Delete -->
-        <form asp-action="DeleteTeachingPlan"
-              method="post" class="d-inline">
-          @Html.AntiForgeryToken()
-          <input type="hidden" name="teachingPlanId" value="@plan.TeachingPlanId" />
-          <button type="submit"
-                  onclick="return confirm('Löschen?');">
-            Delete
-          </button>
-        </form>
-      </td>
-    </tr>
-  }
+            <input type="hidden" name="ExistingTeachingPlanId" value="@plan.TeachingPlanId" />
+            <input type="file" name="NewPlanFile" required />
+            <button type="submit">Update</button>
+          </form>
+
+          <!-- Delete -->
+          <form asp-action="DeleteTeachingPlan"
+          method="post"
+          class="d-inline">
+            @Html.AntiForgeryToken()
+
+            <input type="hidden" name="ExistingTeachingPlanId" value="@plan.TeachingPlanId" />
+            <button type="submit" onclick="return confirm('Löschen?');">
+              Delete
+            </button>
+          </form>
+        </td>
+      </tr>
+    }
   </tbody>
 </table>
 

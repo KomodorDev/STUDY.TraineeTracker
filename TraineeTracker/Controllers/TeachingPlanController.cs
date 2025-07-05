@@ -1,74 +1,83 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
+using TraineeTracker.Models.Dtos;
 using TraineeTracker.Models.ViewModels;
 using TraineeTracker.Services;
+using TraineeTracker.Models.Domain;
 
-namespace TraineeTracker.Controllers
-{
-    public class TeachingPlanController : Controller
-    {
+namespace TraineeTracker.Controllers {
+
+    [Route("TeachingPlan")]
+    public class TeachingPlanController : Controller {
         private readonly TeachingPlanService _teachingPlanService;
 
-        public TeachingPlanController(TeachingPlanService teachingPlanService)
-        {
+        // ------------------------------------------------------
+        public TeachingPlanController(TeachingPlanService teachingPlanService) {
             _teachingPlanService = teachingPlanService;
         }
 
-        [HttpGet]
-        [Route("Import")]
-        public async Task<IActionResult> ImportDashboard()
-        {
-            var vm = await _teachingPlanService.BuildImportDashboardAsync();
-            return View("ImportDashboard", vm);
+        // ------------------------------------------------------
+        [Authorize(Roles = "Admin,Mentor")]
+        [HttpGet("Dashboard")]
+        // [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ShowImportDashboardView() {
+            var existingTeachingPlans = await _teachingPlanService.BuildImportDashboardViewModelAsync();
+            return View("ImportDashboard", existingTeachingPlans);
         }
 
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> ImportNewTeachingPlan(ImportDashboardViewModel model)
-        {
-            if (!ModelState.IsValid)
-            {
-                // Bei Validierungsfehlern die Liste neu laden und zurück zur View
-                var vm = await _teachingPlanService.BuildImportDashboardAsync();
-                vm.NewPlanName = model.NewPlanName;
-                return View("ImportDashboard", vm);
-            }
+        // ------------------------------------------------------
+        [Authorize(Roles = "Admin,Mentor")]
+        [HttpPost("ImportNewTeachingPlan")]
+        // [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ImportNewTeachingPlan(TeachingPlanDto dto) {
 
-            try
-            {
-                await _teachingPlanService.ImportNewTeachingPlan(model.NewPlanFile, model.NewPlanName);
-                return RedirectToAction(nameof(ImportDashboard));
+            /*             
+            if (!ModelState.IsValid) {
+                // Fehler, redirect zurück (evtl. mit TempData-Meldung)
+                return RedirectToAction(nameof(ShowImportDashboardView));
             }
-            catch (Exception dex)
-            {
-                // nur die Business-Fehler hier behandeln
-                ModelState.AddModelError(nameof(model.NewPlanName), dex.Message);
-                var vm = await _teachingPlanService.BuildImportDashboardAsync();
-                vm.NewPlanName = model.NewPlanName;
-                return View("ImportDashboard", vm);
+            */
+    
+            try {
+            Console.WriteLine($"[DEBUG] Controller: Called ImportTeachingPlan");
+                await _teachingPlanService.ImportNewTeachingPlan(dto);
+                return RedirectToAction(nameof(ShowImportDashboardView));
+            }
+            catch (Exception dex) {
+                // Business-Fehler anzeigen
+                TempData["ImportError"] = dex.Message;
+                return RedirectToAction(nameof(ShowImportDashboardView));
             }
         }
 
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> UpdateTeachingPlan(int teachingPlanId, IFormFile file)
-        {
-            if (file == null)
-            {
-                ModelState.AddModelError(nameof(file), "Bitte eine Datei auswählen");
-                var vm = await _teachingPlanService.BuildImportDashboardAsync();
-                return View("ImportDashboard", vm);
+        // ------------------------------------------------------
+        [Authorize(Roles = "Admin,Mentor")]
+        [HttpPost("UpdateTeachingPlan")]
+        // [ValidateAntiForgeryToken]
+        public async Task<IActionResult> UpdateTeachingPlan(TeachingPlanDto dto) {
+
+            Console.WriteLine($"[DEBUG] Controller: Called UpdateTeachingPlan");
+            if (dto.NewPlanFile == null) {
+                Console.WriteLine($"[DEBUG] Controller: NewPlanFile is null");
+                ModelState.AddModelError(nameof(dto.NewPlanFile), "Bitte eine Datei auswählen");
+                var existingTeachingPlans = await _teachingPlanService.BuildImportDashboardViewModelAsync();
+                return View("ImportDashboard", existingTeachingPlans);
             }
 
-            await _teachingPlanService.UpdateTeachingPlan(file, teachingPlanId);
-            return RedirectToAction(nameof(ImportDashboard));
+            await _teachingPlanService.UpdateTeachingPlan(dto);
+            return RedirectToAction(nameof(ShowImportDashboardView));
         }
 
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteTeachingPlan(int teachingPlanId)
-        {
+
+        // ------------------------------------------------------
+        [Authorize(Roles = "Admin,Mentor")]
+        [HttpPost("DeleteTeachingPlan")]
+        // [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteTeachingPlan(int teachingPlanId) {
             await _teachingPlanService.DeleteTeachingPlan(teachingPlanId);
-            return RedirectToAction(nameof(ImportDashboard));
+            return RedirectToAction(nameof(ShowImportDashboardView));
         }
+
+        // ------------------------------------------------------
     }
 }
