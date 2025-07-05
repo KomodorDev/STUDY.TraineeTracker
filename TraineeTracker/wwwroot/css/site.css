@@ -11,8 +11,6 @@ html {
 
   position: relative;
   min-height: 100%;
-
-  overflow: hidden;
 }
 
 @media (min-width: 768px) {
@@ -168,8 +166,6 @@ p {
     /* !important overrides bootstrap or anything really */
     background-color: #ffffff !important;
     color: #000 !important;
-
-    width: 100vw !important;
 
     font-weight: 900;
     font-size: 1.406rem; /* "30" px */

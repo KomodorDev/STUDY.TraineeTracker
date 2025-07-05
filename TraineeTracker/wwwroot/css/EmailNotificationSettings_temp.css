@@ -27,28 +27,6 @@ html {
     box-shadow: 4px 4px 15px 0 rgba(0, 0, 0, 0.2) !important;
   }
   
-  /* === STATUS TAGS === */
-  .status-tag {
-    display: inline-block;
-    padding: 4px 10px;
-    border-radius: 20px;
-    font-size: 0.85rem;
-    font-weight: 500;
-    color: #fff;
-    text-align: center;
-    min-width: 80px;
-  }
-  
-  .status-open       { background-color: #626262; }
-  .status-skipped    { background-color: #dbdbdb; color: #000; }
-  .status-started    { background-color: #ffb199; }
-  .status-finished   { background-color: #fb6770; }
-  .status-rejected   { background-color: #e61d47; }
-  .status-accepted   {
-    background-image: linear-gradient(to right, #e61d47, #ffb199);
-  }
-  .status-rated      { background-color: #dbdbdb; color: #000; }
-  
   /* === BUTTONS === */
   .button {
     padding: 10px 20px;
