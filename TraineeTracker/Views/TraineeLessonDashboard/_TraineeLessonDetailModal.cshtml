@@ -58,7 +58,9 @@
                         </p>
                         <div id="collapse-logs" class="accordion-collapse collapse" aria-labelledby="logs" data-bs-parent="#lessonAccordion">
                             <div class="accordion-body sopro-accordion-truncate">
-                                <p>Content for section 3. Add whatever text or markup you want here.</p>
+                                @foreach (var log in @Model.LogEntries) {
+                                    <p>@log.Timestamp.ToString()  -  @log.UserName  -  @log.OldState → @log.NewState</p>
+                                }
                             </div>
                         </div>
                     </div>
@@ -71,7 +73,9 @@
                         </p>
                         <div id="collapse-feedback" class="accordion-collapse collapse" aria-labelledby="feedback" data-bs-parent="#lessonAccordion">
                             <div class="accordion-body sopro-accordion-truncate">
-                                <p>Content for section 4. Add whatever text or markup you want here.</p>
+                                @foreach (var feedback in @Model.Feedbacks) {
+                                    <p></p>
+                                }
                             </div>
                         </div>
                     </div>
