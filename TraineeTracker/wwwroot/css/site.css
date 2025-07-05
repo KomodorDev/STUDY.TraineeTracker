@@ -11,8 +11,6 @@ html {
 
   position: relative;
   min-height: 100%;
-
-  overflow: hidden;
 }
 
 @media (min-width: 768px) {
@@ -41,7 +39,7 @@ p {
 
 /* custom drop shadow + round corners */
 .sopro-card {
-  box-shadow: 3px 3px 11px 0 rgba(0, 0, 0, 0.2) !important;
+  box-shadow: 3px 3px 11px 0 rgba(0, 0, 0, 0.2);
   border-radius: 11px;
   background-color: white;
   min-height: 0;  /* to allow scrollbars */
@@ -71,6 +69,7 @@ p {
   color: #e61d47;
   font-weight: 900;  /* oh boi he thicc */
   font-size: 1.406rem;  /* "30" px */
+  overflow: hidden;
 }
 
 .sopro-inner-card {
@@ -96,7 +95,7 @@ p {
     scrollbar-width: auto;
     scrollbar-color: #626262 transparent;
 }
-/* other scrollbar stuff, for chromw, safari & edge */
+/* other scrollbar stuff, for chrome, safari & edge */
 .sopro-inner-card::-webkit-scrollbar {
   width: 20px;
 }
@@ -167,8 +166,6 @@ p {
     /* !important overrides bootstrap or anything really */
     background-color: #ffffff !important;
     color: #000 !important;
-
-    width: 100vw !important;
 
     font-weight: 900;
     font-size: 1.406rem; /* "30" px */
@@ -257,7 +254,7 @@ nav.navbar .container-fluid {
 
   font-size: 16px;  /* "20" px */
   font-weight: 900;
-  color: white;
+  color: black;
   user-select: none; /* prevents text selection */
 
   background-color: blue;
@@ -269,24 +266,50 @@ nav.navbar .container-fluid {
   border-radius: 11px;
 }
 .sopro-tag.open {
-  background-color: #626262;
+  background-color: white;
+
+  border-style: solid;
+  border-color: black;
+  border-width: 2px;
 }
 .sopro-tag.skipped {
-  background-color: #dbdbdb;
+  background-color: white;
+
+  border-style: solid;
+  border-color: #dbdbdb;
+  border-width: 2px;
+
+  color: #dbdbdb;
 }
 .sopro-tag.started {
-  background-color: #ffb199;
+  /* striped pattern instead of split
+  background-image: repeating-linear-gradient(135deg, white, white 7px, #afafaf 7px, #afafaf 14px);
+  */
+  background-image: linear-gradient(to right, white 50%, #afafaf 50%);
+
+  border-style: solid;
+  border-color: black;
+  border-width: 2px;
 }
 .sopro-tag.finished {
-  background-color: #fb6770;
+  background-color: #afafaf;
+
+  border-style: solid;
+  border-color: black;
+  border-width: 2px;
 }
 .sopro-tag.rejected {
   background-color: #e61d47;
+
+  color: white;
 }
 .sopro-tag.accepted {
-  background-image: linear-gradient(to right, #e61d47, #ffb199);
+  background-color: #ffb199;
+
+  color: white;
 }
 .sopro-tag.rated {
-  background-color: #dbdbdb;
-  color: #000000;
+  background-color: #626262;
+
+  color: white;
 }

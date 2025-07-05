@@ -1,0 +1,84 @@
+@* This is a modal popup, by schleale *@
+
+@model TraineeTracker.Models.ViewModels.TraineeLessonDetailViewModel
+
+<!-- Vertically centered scrollable modal -->
+@* source: https://getbootstrap.com/docs/5.0/components/modal/ *@
+
+<div id="lessonDetailModal" class="modal fade" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-dialog-centered sopro-lesson-modal-size">
+        <div class="modal-content sopro-card" style="box-shadow: none;">
+            <div class="modal-header">
+                <p class="modal-title">
+                    @Model.Lesson.LessonId | @Model.Lesson.Title
+                </p>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body sopro-inner-card" style="padding-top: 9px;">
+                <div class="accordion accordion-flush" id="lessonAccordion">
+                    <!-- Section 1: lesson info -->
+                    <div class="accordion-item">
+                        <p class="accordion-header" id="info">
+                            <button class="accordion-button sopro-accordion-text" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-info" aria-expanded="true" aria-controls="collapse-info">
+                                Info
+                            </button>
+                        </p>
+                        <div id="collapse-info" class="accordion-collapse collapse show" aria-labelledby="info" data-bs-parent="#lessonAccordion">
+                            <div class="accordion-body sopro-accordion-truncate">
+                                <p>Link: <a href="@Model.Lesson.LinkUrl" target="_blank">@Model.Lesson.LinkUrl</a></p>
+                                <p>Estimation: @Model.Lesson.EstimatedEffort days</p>
+                                @if (@Model.TraineeLesson.DayStarted != null) {
+                                    <p>Started: @Model.TraineeLesson.DayStarted.Value.ToString("dd. MMMM yyyy")</p>
+                                }
+                                @if (@Model.TraineeLesson.DayFinished != null) {
+                                    <p>Finished: @Model.TraineeLesson.DayFinished.Value.ToString("dd. MMMM yyyy")</p>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Section 2: state -->
+                    <div class="accordion-item">
+                        <p class="accordion-header" id="state">
+                            <button class="accordion-button collapsed sopro-accordion-text" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-state" aria-expanded="false" aria-controls="collapse-state">
+                                Status
+                            </button>
+                        </p>
+                        <div id="collapse-state" class="accordion-collapse collapse" aria-labelledby="state" data-bs-parent="#lessonAccordion">
+                            <div class="accordion-body sopro-accordion-truncate">
+                                <p>@Model.TraineeLesson.State.ToString()</p>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Section 3: logs -->
+                    <div class="accordion-item">
+                        <p class="accordion-header" id="logs">
+                            <button class="accordion-button collapsed sopro-accordion-text" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-logs" aria-expanded="false" aria-controls="collapse-logs">
+                                Logs
+                            </button>
+                        </p>
+                        <div id="collapse-logs" class="accordion-collapse collapse" aria-labelledby="logs" data-bs-parent="#lessonAccordion">
+                            <div class="accordion-body sopro-accordion-truncate">
+                                <p>Content for section 3. Add whatever text or markup you want here.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Section 4: feedback -->
+                    <div class="accordion-item">
+                        <p class="accordion-header" id="feedback">
+                            <button class="accordion-button collapsed sopro-accordion-text" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-feedback" aria-expanded="false" aria-controls="collapse-feedback">
+                                Feedbacks
+                            </button>
+                        </p>
+                        <div id="collapse-feedback" class="accordion-collapse collapse" aria-labelledby="feedback" data-bs-parent="#lessonAccordion">
+                            <div class="accordion-body sopro-accordion-truncate">
+                                <p>Content for section 4. Add whatever text or markup you want here.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- #endregion -->
+                </div>
+            </div>
+            <!-- modal-footer would be here -->
+        </div>
+    </div>
+</div>
