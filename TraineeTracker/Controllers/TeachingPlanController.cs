@@ -14,7 +14,7 @@ namespace TraineeTracker.Controllers
         }
 
         [HttpGet]
-        [Route("ImportDashboard")]
+        [Route("Import")]
         public async Task<IActionResult> ImportDashboard()
         {
             var vm = await _teachingPlanService.BuildImportDashboardAsync();
