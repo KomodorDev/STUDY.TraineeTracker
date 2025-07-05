@@ -74,7 +74,12 @@
                         <div id="collapse-feedback" class="accordion-collapse collapse" aria-labelledby="feedback" data-bs-parent="#lessonAccordion">
                             <div class="accordion-body sopro-accordion-truncate">
                                 @foreach (var feedback in @Model.Feedbacks) {
-                                    <p></p>
+                                    <p>@feedback.CreateTime.ToString()  -  @feedback.Author.UserName  -  @feedback.Difficulty/10</p>
+                                    <p>Effort: @(@feedback.HoursOfEffort)h</p>
+                                    <p>@feedback.PreviousKnowledge</p>
+                                    if (!String.IsNullOrWhiteSpace(@feedback.Comment)) {
+                                        <p>@feedback.Comment</p>
+                                    } 
                                 }
                             </div>
                         </div>
