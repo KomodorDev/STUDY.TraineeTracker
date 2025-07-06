@@ -73,8 +73,8 @@ namespace TraineeTracker.Controllers {
         [Authorize(Roles = "Admin,Mentor")]
         [HttpPost("DeleteTeachingPlan")]
         // [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteTeachingPlan(int teachingPlanId) {
-            await _teachingPlanService.DeleteTeachingPlan(teachingPlanId);
+        public async Task<IActionResult> DeleteTeachingPlan(int existingTeachingPlanId) {
+            await _teachingPlanService.DeleteTeachingPlan(existingTeachingPlanId);
             return RedirectToAction(nameof(ShowImportDashboardView));
         }
 
