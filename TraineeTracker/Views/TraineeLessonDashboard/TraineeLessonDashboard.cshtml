@@ -19,10 +19,32 @@
     <div class="sopro-grid-lessons-left">
         <!-- Trainee -->
         <section class="sopro-card small-header">
+
+            
             <!-- Name -->
-            <p class="header thiccboi">
-                <span style="overflow: hidden; text-overflow: ellipsis;">@(Model.SelectedTrainee?.UserName?.Split('@')[0] ?? "No trainee")</span>
-            </p>
+            <div class="header thiccboi">
+                <form method="get"
+                    asp-action="ShowTraineeLessonDashboardView"
+                    class="filter-selects"
+                    style="display: flex; align-items: center;">
+
+                    <!-- Nur Trainee Dropdown -->
+                    <select name="traineeId" class="select-wide" onchange="this.form.submit()">
+                        @foreach (var trainee in Model.Trainees ?? new List<ApplicationUser>())
+                        {
+                            <option value="@trainee.Id"
+                                    selected="@(trainee.Id == Model.SelectedTrainee?.Id ? "selected" : null)">
+                                @trainee.UserName!.Split('@')[0]
+                            </option>
+                        }
+                    </select>
+
+                    <!-- Filterzustand erhalten -->
+                    <input type="hidden" name="filter" value="@Model.ActiveFilter" />
+                    <input type="hidden" name="sortBy" value="@Model.SortBy" />
+                </form>
+            </div>
+
 
             <!-- Teachinplan-->
             <div class="sopro-inner-card">
@@ -67,10 +89,73 @@
     <!-- Selector + Lessons -->
     <section class="sopro-grid-lessons-right">
         <!-- Selector -->
-        <div class="sopro-card">
-            <div class="header thiccboi">
-                Stuff to filter lessons
+        <div class="sopro-card-filter">
+            <div class="filter-bar">
+                <a class="filter-tab @(Model.ActiveFilter == "all" ? "active" : "")"
+                asp-action="ShowTraineeLessonDashboardView"
+                asp-route-traineeId="@Model.SelectedTrainee?.Id"
+                asp-route-filter="all"
+                asp-route-sortBy="@Model.SortBy">
+                    All (@Model.CountAll)
+                </a>
+
+                <a class="filter-tab @(Model.ActiveFilter == "open" ? "active" : "")"
+                asp-action="ShowTraineeLessonDashboardView"
+                asp-route-traineeId="@Model.SelectedTrainee?.Id"
+                asp-route-filter="open"
+                asp-route-sortBy="@Model.SortBy">
+                    Open (@Model.CountOpen)
+                </a>
+
+                <a class="filter-tab @(Model.ActiveFilter == "started" ? "active" : "")"
+                asp-action="ShowTraineeLessonDashboardView"
+                asp-route-traineeId="@Model.SelectedTrainee?.Id"
+                asp-route-filter="started"
+                asp-route-sortBy="@Model.SortBy">
+                    Started (@Model.CountStarted)
+                </a>
+
+                <a class="filter-tab @(Model.ActiveFilter == "finished" ? "active" : "")"
+                asp-action="ShowTraineeLessonDashboardView"
+                asp-route-traineeId="@Model.SelectedTrainee?.Id"
+                asp-route-filter="finished"
+                asp-route-sortBy="@Model.SortBy">
+                    Finished (@Model.CountFinished)
+                </a>
+
+                <a class="filter-tab @(Model.ActiveFilter == "accepted" ? "active" : "")"
+                asp-action="ShowTraineeLessonDashboardView"
+                asp-route-traineeId="@Model.SelectedTrainee?.Id"
+                asp-route-filter="accepted"
+                asp-route-sortBy="@Model.SortBy">
+                    Accepted (@Model.CountAccepted)
+                </a>
+
+                <a class="filter-tab @(Model.ActiveFilter == "rejected" ? "active" : "")"
+                asp-action="ShowTraineeLessonDashboardView"
+                asp-route-traineeId="@Model.SelectedTrainee?.Id"
+                asp-route-filter="rejected"
+                asp-route-sortBy="@Model.SortBy">
+                    Rejected (@Model.CountRejected)
+                </a>
+
+                <a class="filter-tab @(Model.ActiveFilter == "rated" ? "active" : "")"
+                asp-action="ShowTraineeLessonDashboardView"
+                asp-route-traineeId="@Model.SelectedTrainee?.Id"
+                asp-route-filter="rated"
+                asp-route-sortBy="@Model.SortBy">
+                    Rated (@Model.CountRated)
+                </a>
+
+                <a class="filter-tab @(Model.ActiveFilter == "skipped" ? "active" : "")"
+                asp-action="ShowTraineeLessonDashboardView"
+                asp-route-traineeId="@Model.SelectedTrainee?.Id"
+                asp-route-filter="skipped"
+                asp-route-sortBy="@Model.SortBy">
+                    Skipped (@Model.CountSkipped)
+                </a>
             </div>
+
         </div>
 
         <!-- Lessons -->
@@ -88,7 +173,7 @@
                     <tr class="sopro-card sopro-table-format"
                         data-lesson-id="@traineeLesson.TraineeLessonId"     @* the ID that is given to the modal *@
                         style="cursor: pointer;">                           @* mouse cursor when hovering *@
-                        <td>@traineeLesson.Lesson.LessonId | @traineeLesson.Lesson.Title</td>
+                        <td>@traineeLesson.Lesson.SortingIndex | @traineeLesson.Lesson.Title</td>
                         <td><a href="@traineeLesson.Lesson.LinkUrl" target="_blank">Link↗</a></td>
                         <td>@traineeLesson.Lesson.EstimatedEffort days</td>
                         <td>
@@ -107,16 +192,6 @@
                 <tr class="sopro-card sopro-table-format"><td>Lesson</td><td></td><td></td><td><span class="sopro-tag rejected">Rejected</span></td></tr>
                 <tr class="sopro-card sopro-table-format"><td>Lesson</td><td></td><td></td><td><span class="sopro-tag accepted">Accepted</span></td></tr>
                 <tr class="sopro-card sopro-table-format"><td>Lesson</td><td></td><td></td><td><span class="sopro-tag rated">Rated</span></td></tr>
-                <tr class="sopro-card sopro-table-format"><td>Lesson</td></tr>
-                <tr class="sopro-card sopro-table-format"><td>Lesson</td></tr>
-                <tr class="sopro-card sopro-table-format"><td>Lesson</td></tr>
-                <tr class="sopro-card sopro-table-format"><td>Lesson</td></tr>
-                <tr class="sopro-card sopro-table-format"><td>Lesson</td></tr>
-                <tr class="sopro-card sopro-table-format"><td>Lesson</td></tr>
-                <tr class="sopro-card sopro-table-format"><td>Lesson</td></tr>
-                <tr class="sopro-card sopro-table-format"><td>Lesson</td></tr>
-                <tr class="sopro-card sopro-table-format"><td>Lesson</td></tr>
-                <tr class="sopro-card sopro-table-format"><td>Lesson</td></tr>
             </tbody>
         </table>
     </section>
