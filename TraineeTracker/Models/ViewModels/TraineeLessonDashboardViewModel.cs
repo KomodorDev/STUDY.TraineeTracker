@@ -4,9 +4,9 @@ namespace TraineeTracker.Models.ViewModels {
     public class TraineeLessonDashboardViewModel {
         public ApplicationUser? SelectedTrainee { get; set; }
         public TraineeStatisticsSnapshot? TraineeStatisticsSnapshot { get; set; }
-        public List<TraineeLesson>? TraineeLessons { get; set; }
+        public IEnumerable<TraineeLesson>? TraineeLessons { get; set; }
 
-        public List<ApplicationUser>? Trainees { get; set; }
+        public IEnumerable<ApplicationUser>? Trainees { get; set; }
 
         public string ActiveFilter { get; set; } = "all";
         public string SortBy { get; set; } = "date_asc";
