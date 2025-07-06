@@ -13,21 +13,15 @@ namespace TraineeTracker.Services {
         private readonly TraineeStatisticsService _traineeStatisticsService;
         private readonly IApplicationUserRepository _databaseApplicationUserRepository;
 
-        private readonly ITraineeLessonRepository _databaseTraineeLessonRepository;
-
         // ------------------------------------------------------
-
         public TraineeLessonDashboardService(
             TraineeStatisticsService traineeStatisticsService,
-            IApplicationUserRepository databaseApplicationUserRepository,
-            ITraineeLessonRepository databaseTraineeLessonRepository) {
+            IApplicationUserRepository databaseApplicationUserRepository) {
             _traineeStatisticsService = traineeStatisticsService;
             _databaseApplicationUserRepository = databaseApplicationUserRepository;
-            _databaseTraineeLessonRepository = databaseTraineeLessonRepository;
         }
 
         // ------------------------------------------------------
-
         private static void CheckHasAccess(ClaimsPrincipal user, string traineeId) {
             if (user == null || String.IsNullOrWhiteSpace(traineeId))
                 throw new UserNotFoundException();
@@ -45,7 +39,6 @@ namespace TraineeTracker.Services {
         }
 
         // ------------------------------------------------------
-
         public async Task<TraineeLessonDashboardViewModel> BuildTraineeLessonDashboardViewModel(
             ClaimsPrincipal user,
             string? traineeId,
@@ -55,7 +48,7 @@ namespace TraineeTracker.Services {
             var userId = user.FindFirst(ClaimTypes.NameIdentifier)?.Value
                 ?? throw new Exception("User ID not found");
 
-            List<ApplicationUser> selectableTrainees;
+            IEnumerable<ApplicationUser> selectableTrainees;
 
             ApplicationUser selectedTrainee;
 
@@ -65,14 +58,14 @@ namespace TraineeTracker.Services {
                 selectedTrainee = await _databaseApplicationUserRepository.FindByIdWithTraineeLessonsWithLessonsAndTeachingPlanAsync(userId) ?? throw new Exception("Trainee not found");
 
                 // Only current Trainee in Dropdown
-                selectableTrainees = new List<ApplicationUser> { selectedTrainee };
+                selectableTrainees = [selectedTrainee];
             }
 
             // +++++++++++++++
             // B. If user IS NOT Trainee:
             else if (user.IsInRole("Mentor") || user.IsInRole("Admin")) {
                 // All active Trainees in Dropdown
-                selectableTrainees = (await _databaseApplicationUserRepository.GetOpenUsersInRoleAsync("Trainee")).ToList();
+                selectableTrainees = await _databaseApplicationUserRepository.GetOpenUsersInRoleAsync("Trainee");
 
                 // +++++++++++++++
                 // a. No trainee selected:
@@ -129,7 +122,8 @@ namespace TraineeTracker.Services {
 
             // update recent trainees
             await AddLastSelectedTraineeAsync(userId, selectedTrainee);
-            var traineeLessons = selectedTrainee.TraineeLessons ?? new List<TraineeLesson>();
+            var traineeLessons = selectedTrainee.TraineeLessons ?? Enumerable.Empty<TraineeLesson>();
+
 
 
             return new TraineeLessonDashboardViewModel {
@@ -152,11 +146,8 @@ namespace TraineeTracker.Services {
             };
         }
 
-
-
-
         // ------------------------------------------------------
-        private List<TraineeLesson> GetFilteredAndSortedTraineeLessonsForTrainee(
+        private IEnumerable<TraineeLesson> GetFilteredAndSortedTraineeLessonsForTrainee(
             ApplicationUser trainee,
             string filter,
             string sortBy) {
@@ -176,19 +167,19 @@ namespace TraineeTracker.Services {
 
             // Apply Sorting:
             return sortBy.ToLower() switch {
-                "title_asc" => filtered.OrderBy(l => l.Lesson?.Title).ToList(),
-                "title_desc" => filtered.OrderByDescending(l => l.Lesson?.Title).ToList(),
+                "title_asc" => filtered.OrderBy(l => l.Lesson?.Title),
+                "title_desc" => filtered.OrderByDescending(l => l.Lesson?.Title),
 
-                "estimatedeffort_asc" => filtered.OrderBy(l => l.Lesson?.EstimatedEffort).ToList(),
-                "estimatedeffort_desc" => filtered.OrderByDescending(l => l.Lesson?.EstimatedEffort).ToList(),
+                "estimatedeffort_asc" => filtered.OrderBy(l => l.Lesson?.EstimatedEffort),
+                "estimatedeffort_desc" => filtered.OrderByDescending(l => l.Lesson?.EstimatedEffort),
 
-                "sortingindex_asc" => filtered.OrderBy(l => l.Lesson?.SortingIndex).ToList(),
-                "sortingindex_desc" => filtered.OrderByDescending(l => l.Lesson?.SortingIndex).ToList(),
+                "sortingindex_asc" => filtered.OrderBy(l => l.Lesson?.SortingIndex),
+                "sortingindex_desc" => filtered.OrderByDescending(l => l.Lesson?.SortingIndex),
 
-                "state_asc" => filtered.OrderBy(l => l.State).ToList(),
-                "state_desc" => filtered.OrderByDescending(l => l.State).ToList(),
+                "state_asc" => filtered.OrderBy(l => l.State),
+                "state_desc" => filtered.OrderByDescending(l => l.State),
 
-                _ => filtered.OrderBy(l => l.Lesson?.SortingIndex).ToList() // Fallback
+                _ => filtered.OrderBy(l => l.Lesson?.SortingIndex)// Fallback
             };
         }
 
