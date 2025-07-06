@@ -42,9 +42,10 @@ namespace TraineeTracker.Areas.Identity.Pages.Account {
             if (result.Succeeded) {
                 StatusMessage = "Thank you for confirming your email. You will be redirected to set your password.";
                 var resetToken = await _userManager.GeneratePasswordResetTokenAsync(user);
+                resetToken = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(resetToken));
                 return RedirectToPage("/Account/ResetPassword", new { userId = user.Id, code = resetToken });
             } else {
-                StatusMessage = "Error confirming your email.";
+                StatusMessage = $"Error confirming your email: {result.Errors.First().Description}";
             }
             return Page();
         }
