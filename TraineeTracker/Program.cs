@@ -100,8 +100,8 @@ using (var scope = app.Services.CreateScope()) {
 
     // Testdaten (User, Lessons, TeachingPlans)
     var testDataSeeder = serviceProvider.GetRequiredService<TestDataSeeder>();
-    await testDataSeeder.SeedLessonsAsync();
     await testDataSeeder.SeedTeachingPlansAsync();
+    await testDataSeeder.SeedLessonsAsync();
     await testDataSeeder.SeedUsersAsync();
     await testDataSeeder.SeedProcessingPausesAsync();
     await testDataSeeder.SeedFeedbackAsync();
