@@ -4,14 +4,14 @@ namespace TraineeTracker.Models.Domain {
         // Primary Key - Internal
         public int LessonId { get; set; }
 
-        // External Reference (Makandra-ID aus JSON)
+        // External Reference (Makandra-ID from JSON)
         public required string MakandraId { get; set; }
 
         // TeachingPlan Navigation
-        public int TeachingPlanId { get; set; }
+        public required int TeachingPlanId { get; set; }
         public TeachingPlan TeachingPlan { get; set; } = null!;
 
-        public int SortingIndex { get; set; }
+        public required int SortingIndex { get; set; }
 
         public required string Title { get; set; }
 
