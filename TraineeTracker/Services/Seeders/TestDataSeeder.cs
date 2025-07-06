@@ -40,88 +40,29 @@ namespace TraineeTracker.Services.Seeders {
 
         // ---------------------------------------------------
         public async Task SeedLessonsAsync() {
-            var lessons = new[] {
-                new Lesson { LessonId = 1, Title = "Lesson 1: WebDev Topic 1 (Only WebDev)", EstimatedEffort = 2.0, LinkUrl = "https://learn.microsoft.com/de-de/dotnet/csharp/fundamentals/object-oriented/" },
-                new Lesson { LessonId = 2, Title = "Lesson 2: WebDev Topic 2 (Only WebDev)", EstimatedEffort = 2.5, LinkUrl = "https://learn.microsoft.com/de-de/ef/core/" },
-                new Lesson { LessonId = 3, Title = "Lesson 3: WebDev Topic 3 (Only WebDev)", EstimatedEffort = 3.0, LinkUrl = "https://learn.microsoft.com/de-de/aspnet/core/mvc/" },
-                new Lesson { LessonId = 4, Title = "Lesson 4: WebDev Topic 4 (Only WebDev)", EstimatedEffort = 1.5, LinkUrl = "https://learn.microsoft.com/de-de/dotnet/csharp/" },
-                new Lesson { LessonId = 5, Title = "Lesson 5: WebDev Topic 5 (Only WebDev)", EstimatedEffort = 2.0, LinkUrl = "https://learn.microsoft.com/de-de/dotnet/csharp/fundamentals/object-oriented/" },
-                new Lesson { LessonId = 6, Title = "Lesson 6: WebDev Topic 6 (Only WebDev)", EstimatedEffort = 2.5, LinkUrl = "https://learn.microsoft.com/de-de/ef/core/" },
-                new Lesson { LessonId = 7, Title = "Lesson 7: WebDev Topic 7 (Only WebDev)", EstimatedEffort = 3.0, LinkUrl = "https://learn.microsoft.com/de-de/aspnet/core/mvc/" },
-                new Lesson { LessonId = 8, Title = "Lesson 8: WebDev Topic 8 (Only WebDev)", EstimatedEffort = 1.5, LinkUrl = "https://learn.microsoft.com/de-de/dotnet/csharp/" },
-                new Lesson { LessonId = 9, Title = "Lesson 9: WebDev Topic 9 (Only WebDev)", EstimatedEffort = 2.0, LinkUrl = "https://learn.microsoft.com/de-de/dotnet/csharp/fundamentals/object-oriented/" },
-                new Lesson { LessonId = 10, Title = "Lesson 10: WebDev Topic 10 (Only WebDev)", EstimatedEffort = 2.5, LinkUrl = "https://learn.microsoft.com/de-de/ef/core/" },
-                new Lesson { LessonId = 11, Title = "Lesson 11: WebDev Topic 11 (Only WebDev)", EstimatedEffort = 3.0, LinkUrl = "https://learn.microsoft.com/de-de/aspnet/core/mvc/" },
-                new Lesson { LessonId = 12, Title = "Lesson 12: WebDev Topic 12 (Only WebDev)", EstimatedEffort = 1.5, LinkUrl = "https://learn.microsoft.com/de-de/dotnet/csharp/" },
-                new Lesson { LessonId = 13, Title = "Lesson 13: WebDev Topic 13 (Only WebDev)", EstimatedEffort = 2.0, LinkUrl = "https://learn.microsoft.com/de-de/dotnet/csharp/fundamentals/object-oriented/" },
-                new Lesson { LessonId = 14, Title = "Lesson 14: WebDev Topic 14 (Only WebDev)", EstimatedEffort = 2.5, LinkUrl = "https://learn.microsoft.com/de-de/ef/core/" },
-                new Lesson { LessonId = 15, Title = "Lesson 15: WebDev Topic 15 (Only WebDev)", EstimatedEffort = 3.0, LinkUrl = "https://learn.microsoft.com/de-de/aspnet/core/mvc/" },
-                new Lesson { LessonId = 16, Title = "Lesson 16: WebDev Topic 16 (Only WebDev)", EstimatedEffort = 1.5, LinkUrl = "https://learn.microsoft.com/de-de/dotnet/csharp/" },
-                new Lesson { LessonId = 17, Title = "Lesson 17: WebDev Topic 17 (Only WebDev)", EstimatedEffort = 2.0, LinkUrl = "https://learn.microsoft.com/de-de/dotnet/csharp/fundamentals/object-oriented/" },
-                new Lesson { LessonId = 18, Title = "Lesson 18: WebDev Topic 18 (Only WebDev)", EstimatedEffort = 2.5, LinkUrl = "https://learn.microsoft.com/de-de/ef/core/" },
-                new Lesson { LessonId = 19, Title = "Lesson 19: WebDev Topic 19 (Only WebDev)", EstimatedEffort = 3.0, LinkUrl = "https://learn.microsoft.com/de-de/aspnet/core/mvc/" },
-                new Lesson { LessonId = 20, Title = "Lesson 20: WebDev Topic 20 (Only WebDev)", EstimatedEffort = 1.5, LinkUrl = "https://learn.microsoft.com/de-de/dotnet/csharp/" },
-                new Lesson { LessonId = 21, Title = "Lesson 21: WebDev Topic 21 (Only WebDev)", EstimatedEffort = 2.0, LinkUrl = "https://learn.microsoft.com/de-de/dotnet/csharp/fundamentals/object-oriented/" },
-                new Lesson { LessonId = 22, Title = "Lesson 22: WebDev Topic 22 (Only WebDev)", EstimatedEffort = 2.5, LinkUrl = "https://learn.microsoft.com/de-de/ef/core/" },
-                new Lesson { LessonId = 23, Title = "Lesson 23: WebDev Topic 23 (Only WebDev)", EstimatedEffort = 3.0, LinkUrl = "https://learn.microsoft.com/de-de/aspnet/core/mvc/" },
-                new Lesson { LessonId = 24, Title = "Lesson 24: WebDev Topic 24 (Only WebDev)", EstimatedEffort = 1.5, LinkUrl = "https://learn.microsoft.com/de-de/dotnet/csharp/" },
-                new Lesson { LessonId = 25, Title = "Lesson 25: WebDev Topic 25 (Only WebDev)", EstimatedEffort = 2.0, LinkUrl = "https://learn.microsoft.com/de-de/dotnet/csharp/fundamentals/object-oriented/" },
-                new Lesson { LessonId = 26, Title = "Lesson 26: WebDev Topic 26 (Only WebDev)", EstimatedEffort = 2.5, LinkUrl = "https://learn.microsoft.com/de-de/ef/core/" },
-                new Lesson { LessonId = 27, Title = "Lesson 27: WebDev Topic 27 (Only WebDev)", EstimatedEffort = 3.0, LinkUrl = "https://learn.microsoft.com/de-de/aspnet/core/mvc/" },
-                new Lesson { LessonId = 28, Title = "Lesson 28: WebDev Topic 28 (Only WebDev)", EstimatedEffort = 1.5, LinkUrl = "https://learn.microsoft.com/de-de/dotnet/csharp/" },
-                new Lesson { LessonId = 29, Title = "Lesson 29: WebDev Topic 29 (Only WebDev)", EstimatedEffort = 2.0, LinkUrl = "https://learn.microsoft.com/de-de/dotnet/csharp/fundamentals/object-oriented/" },
-                new Lesson { LessonId = 30, Title = "Lesson 30: WebDev Topic 30 (Only WebDev)", EstimatedEffort = 2.5, LinkUrl = "https://learn.microsoft.com/de-de/ef/core/" },
-                new Lesson { LessonId = 31, Title = "Lesson 31: WebDev Topic 31 (Only WebDev)", EstimatedEffort = 3.0, LinkUrl = "https://learn.microsoft.com/de-de/aspnet/core/mvc/" },
-                new Lesson { LessonId = 32, Title = "Lesson 32: WebDev Topic 32 (Only WebDev)", EstimatedEffort = 1.5, LinkUrl = "https://learn.microsoft.com/de-de/dotnet/csharp/" },
-                new Lesson { LessonId = 33, Title = "Lesson 33: WebDev Topic 33 (Only WebDev)", EstimatedEffort = 2.0, LinkUrl = "https://learn.microsoft.com/de-de/dotnet/csharp/fundamentals/object-oriented/" },
-                new Lesson { LessonId = 34, Title = "Lesson 34: WebDev Topic 34 (Only WebDev)", EstimatedEffort = 2.5, LinkUrl = "https://learn.microsoft.com/de-de/ef/core/" },
-                new Lesson { LessonId = 35, Title = "Lesson 35: WebDev Topic 35 (Only WebDev)", EstimatedEffort = 3.0, LinkUrl = "https://learn.microsoft.com/de-de/aspnet/core/mvc/" },
-                new Lesson { LessonId = 36, Title = "Lesson 36: WebDev Topic 36 (Only WebDev)", EstimatedEffort = 1.5, LinkUrl = "https://learn.microsoft.com/de-de/dotnet/csharp/" },
-                new Lesson { LessonId = 37, Title = "Lesson 37: WebDev Topic 37 (Only WebDev)", EstimatedEffort = 2.0, LinkUrl = "https://learn.microsoft.com/de-de/dotnet/csharp/fundamentals/object-oriented/" },
-                new Lesson { LessonId = 38, Title = "Lesson 38: WebDev Topic 38 (Only WebDev)", EstimatedEffort = 2.5, LinkUrl = "https://learn.microsoft.com/de-de/ef/core/" },
-                new Lesson { LessonId = 39, Title = "Lesson 39: WebDev Topic 39 (Only WebDev)", EstimatedEffort = 3.0, LinkUrl = "https://learn.microsoft.com/de-de/aspnet/core/mvc/" },
-                new Lesson { LessonId = 40, Title = "Lesson 40: WebDev Topic 40 (Only WebDev)", EstimatedEffort = 1.5, LinkUrl = "https://learn.microsoft.com/de-de/dotnet/csharp/" },
-                new Lesson { LessonId = 41, Title = "Lesson 41: DevOps Topic 41 (Only DevOps)", EstimatedEffort = 2.5, LinkUrl = "https://learn.microsoft.com/de-de/powershell/" },
-                new Lesson { LessonId = 42, Title = "Lesson 42: DevOps Topic 42 (Only DevOps)", EstimatedEffort = 3.0, LinkUrl = "https://learn.microsoft.com/de-de/windows-server/" },
-                new Lesson { LessonId = 43, Title = "Lesson 43: DevOps Topic 43 (Only DevOps)", EstimatedEffort = 3.5, LinkUrl = "https://learn.microsoft.com/de-de/docker/" },
-                new Lesson { LessonId = 44, Title = "Lesson 44: DevOps Topic 44 (Only DevOps)", EstimatedEffort = 4.0, LinkUrl = "https://learn.microsoft.com/de-de/azure/devops/" },
-                new Lesson { LessonId = 45, Title = "Lesson 45: DevOps Topic 45 (Only DevOps)", EstimatedEffort = 2.0, LinkUrl = "https://learn.microsoft.com/de-de/powershell/" },
-                new Lesson { LessonId = 46, Title = "Lesson 46: DevOps Topic 46 (Only DevOps)", EstimatedEffort = 2.5, LinkUrl = "https://learn.microsoft.com/de-de/windows-server/" },
-                new Lesson { LessonId = 47, Title = "Lesson 47: DevOps Topic 47 (Only DevOps)", EstimatedEffort = 3.0, LinkUrl = "https://learn.microsoft.com/de-de/docker/" },
-                new Lesson { LessonId = 48, Title = "Lesson 48: DevOps Topic 48 (Only DevOps)", EstimatedEffort = 3.5, LinkUrl = "https://learn.microsoft.com/de-de/azure/devops/" },
-                new Lesson { LessonId = 49, Title = "Lesson 49: DevOps Topic 49 (Only DevOps)", EstimatedEffort = 4.0, LinkUrl = "https://learn.microsoft.com/de-de/powershell/" },
-                new Lesson { LessonId = 50, Title = "Lesson 50: DevOps Topic 50 (Only DevOps)", EstimatedEffort = 2.0, LinkUrl = "https://learn.microsoft.com/de-de/windows-server/" },
-                new Lesson { LessonId = 51, Title = "Lesson 51: DevOps Topic 51 (Only DevOps)", EstimatedEffort = 2.5, LinkUrl = "https://learn.microsoft.com/de-de/docker/" },
-                new Lesson { LessonId = 52, Title = "Lesson 52: DevOps Topic 52 (Only DevOps)", EstimatedEffort = 3.0, LinkUrl = "https://learn.microsoft.com/de-de/azure/devops/" },
-                new Lesson { LessonId = 53, Title = "Lesson 53: DevOps Topic 53 (Only DevOps)", EstimatedEffort = 3.5, LinkUrl = "https://learn.microsoft.com/de-de/powershell/" },
-                new Lesson { LessonId = 54, Title = "Lesson 54: DevOps Topic 54 (Only DevOps)", EstimatedEffort = 4.0, LinkUrl = "https://learn.microsoft.com/de-de/windows-server/" },
-                new Lesson { LessonId = 55, Title = "Lesson 55: DevOps Topic 55 (Only DevOps)", EstimatedEffort = 2.0, LinkUrl = "https://learn.microsoft.com/de-de/docker/" },
-                new Lesson { LessonId = 56, Title = "Lesson 56: DevOps Topic 56 (Only DevOps)", EstimatedEffort = 2.5, LinkUrl = "https://learn.microsoft.com/de-de/azure/devops/" },
-                new Lesson { LessonId = 57, Title = "Lesson 57: DevOps Topic 57 (Only DevOps)", EstimatedEffort = 3.0, LinkUrl = "https://learn.microsoft.com/de-de/powershell/" },
-                new Lesson { LessonId = 58, Title = "Lesson 58: DevOps Topic 58 (Only DevOps)", EstimatedEffort = 3.5, LinkUrl = "https://learn.microsoft.com/de-de/windows-server/" },
-                new Lesson { LessonId = 59, Title = "Lesson 59: DevOps Topic 59 (Only DevOps)", EstimatedEffort = 4.0, LinkUrl = "https://learn.microsoft.com/de-de/docker/" },
-                new Lesson { LessonId = 60, Title = "Lesson 60: DevOps Topic 60 (Only DevOps)", EstimatedEffort = 2.0, LinkUrl = "https://learn.microsoft.com/de-de/azure/devops/" },
-                new Lesson { LessonId = 61, Title = "Lesson 61: DevOps Topic 61 (Only DevOps)", EstimatedEffort = 2.5, LinkUrl = "https://learn.microsoft.com/de-de/powershell/" },
-                new Lesson { LessonId = 62, Title = "Lesson 62: DevOps Topic 62 (Only DevOps)", EstimatedEffort = 3.0, LinkUrl = "https://learn.microsoft.com/de-de/windows-server/" },
-                new Lesson { LessonId = 63, Title = "Lesson 63: DevOps Topic 63 (Only DevOps)", EstimatedEffort = 3.5, LinkUrl = "https://learn.microsoft.com/de-de/docker/" },
-                new Lesson { LessonId = 64, Title = "Lesson 64: DevOps Topic 64 (Only DevOps)", EstimatedEffort = 4.0, LinkUrl = "https://learn.microsoft.com/de-de/azure/devops/" },
-                new Lesson { LessonId = 65, Title = "Lesson 65: DevOps Topic 65 (Only DevOps)", EstimatedEffort = 2.0, LinkUrl = "https://learn.microsoft.com/de-de/powershell/" },
-                new Lesson { LessonId = 66, Title = "Lesson 66: DevOps Topic 66 (Only DevOps)", EstimatedEffort = 2.5, LinkUrl = "https://learn.microsoft.com/de-de/windows-server/" },
-                new Lesson { LessonId = 67, Title = "Lesson 67: DevOps Topic 67 (Only DevOps)", EstimatedEffort = 3.0, LinkUrl = "https://learn.microsoft.com/de-de/docker/" },
-                new Lesson { LessonId = 68, Title = "Lesson 68: DevOps Topic 68 (Only DevOps)", EstimatedEffort = 3.5, LinkUrl = "https://learn.microsoft.com/de-de/azure/devops/" },
-                new Lesson { LessonId = 69, Title = "Lesson 69: DevOps Topic 69 (Only DevOps)", EstimatedEffort = 4.0, LinkUrl = "https://learn.microsoft.com/de-de/powershell/" },
-                new Lesson { LessonId = 70, Title = "Lesson 70: DevOps Topic 70 (Only DevOps)", EstimatedEffort = 2.0, LinkUrl = "https://learn.microsoft.com/de-de/windows-server/" },
-                new Lesson { LessonId = 71, Title = "Lesson 71: DevOps Topic 71 (Only DevOps)", EstimatedEffort = 2.5, LinkUrl = "https://learn.microsoft.com/de-de/docker/" },
-                new Lesson { LessonId = 72, Title = "Lesson 72: DevOps Topic 72 (Only DevOps)", EstimatedEffort = 3.0, LinkUrl = "https://learn.microsoft.com/de-de/azure/devops/" },
-                new Lesson { LessonId = 73, Title = "Lesson 73: DevOps Topic 73 (Only DevOps)", EstimatedEffort = 3.5, LinkUrl = "https://learn.microsoft.com/de-de/powershell/" },
-                new Lesson { LessonId = 74, Title = "Lesson 74: DevOps Topic 74 (Only DevOps)", EstimatedEffort = 4.0, LinkUrl = "https://learn.microsoft.com/de-de/windows-server/" },
-                new Lesson { LessonId = 75, Title = "Lesson 75: DevOps Topic 75 (Only DevOps)", EstimatedEffort = 2.0, LinkUrl = "https://learn.microsoft.com/de-de/docker/" },
-                new Lesson { LessonId = 76, Title = "Lesson 76: DevOps Topic 76 (Only DevOps)", EstimatedEffort = 2.5, LinkUrl = "https://learn.microsoft.com/de-de/azure/devops/" },
-                new Lesson { LessonId = 77, Title = "Lesson 77: DevOps Topic 77 (Only DevOps)", EstimatedEffort = 3.0, LinkUrl = "https://learn.microsoft.com/de-de/powershell/" },
-                new Lesson { LessonId = 78, Title = "Lesson 78: DevOps Topic 78 (Only DevOps)", EstimatedEffort = 3.5, LinkUrl = "https://learn.microsoft.com/de-de/windows-server/" },
-                new Lesson { LessonId = 79, Title = "Lesson 79: DevOps Topic 79 (Only DevOps)", EstimatedEffort = 4.0, LinkUrl = "https://learn.microsoft.com/de-de/docker/" },
-                new Lesson { LessonId = 80, Title = "Lesson 80: DevOps Topic 80 (Only DevOps)", EstimatedEffort = 2.0, LinkUrl = "https://learn.microsoft.com/de-de/azure/devops/" }
-            };
+            var lessons = new List<Lesson>();
+
+            for (int i = 1; i <= 80; i++) {
+                lessons.Add(new Lesson {
+                    TeachingPlanId = i > 40 ? 2 : 1,
+                    SortingIndex = i - 1, // 0-basiert
+                    MakandraId = (200 + i).ToString(), // "201" bis "280"
+                    Title = $"Lesson {i}: {(i <= 40 ? "WebDev" : "DevOps")} Topic {i} (Only {(i <= 40 ? "WebDev" : "DevOps")})",
+                    EstimatedEffort = (i % 4) switch {
+                        1 => 2.0,
+                        2 => 2.5,
+                        3 => 3.0,
+                        _ => 1.5
+                    },
+                    LinkUrl = (i % 4) switch {
+                        1 => "https://learn.microsoft.com/de-de/dotnet/csharp/fundamentals/object-oriented/",
+                        2 => "https://learn.microsoft.com/de-de/ef/core/",
+                        3 => "https://learn.microsoft.com/de-de/aspnet/core/mvc/",
+                        _ => "https://learn.microsoft.com/de-de/dotnet/csharp/"
+                    }
+                });
+            }
+
 
             foreach (var lesson in lessons) {
                 var existing = await _databaseLessonRepository.GetLessonByIdAsync(lesson.LessonId);
@@ -140,13 +81,11 @@ namespace TraineeTracker.Services.Seeders {
             var plans = new[] {
                 new {
                     Id = 1,
-                    Name = "WebDevelopment",
-                    LessonIds = Enumerable.Range(1, 40).ToArray()
+                    Name = "WebDevelopment"
                 },
                 new {
                     Id = 2,
-                    Name = "DevOps",
-                    LessonIds = Enumerable.Range(41, 80).ToArray()
+                    Name = "DevOps"
                 }
             };
 
@@ -159,14 +98,13 @@ namespace TraineeTracker.Services.Seeders {
                     continue;
 
                 var lessons = allLessons
-                    .Where(l => plan.LessonIds.Contains(l.LessonId))
+                    .Where(l => l.TeachingPlanId == plan.Id)
                     .ToList();
 
                 var teachingPlan = new TeachingPlan {
                     TeachingPlanId = plan.Id,
                     Name = plan.Name,
                     LastUpdated = DateTime.UtcNow,
-                    Lessons = lessons
                 };
 
                 await _databaseTeachingPlanRepository.CreateAsync(teachingPlan);
@@ -322,6 +260,8 @@ namespace TraineeTracker.Services.Seeders {
 
             // FeedbackSeeds
             var feedbackSeeds = new List<(ApplicationUser? user, Lesson? lesson, int difficulty, float effort, string previousKnowledge, string? comment)> {
+
+                // Alex - WebDev
                 (alex, await _databaseLessonRepository.GetLessonByIdAsync(1), 9, 1.7f, "Prior Java knowledge", "Felt mostly like review, but a few nuances were new."),
                 (alex, await _databaseLessonRepository.GetLessonByIdAsync(2), 9, 2.2f, "Comfortable with Java syntax", "Clear material, just a bit verbose."),
                 (alex, await _databaseLessonRepository.GetLessonByIdAsync(3), 8, 2.0f, "Familiar with core concepts", "Good structure, helpful hands-on tasks."),
@@ -343,6 +283,8 @@ namespace TraineeTracker.Services.Seeders {
                 (alex, await _databaseLessonRepository.GetLessonByIdAsync(19), 4, 2.1f, "Attended similar lectures", "Could’ve skipped a few parts, but still helpful."),
                 (alex, await _databaseLessonRepository.GetLessonByIdAsync(20), 7, 1.6f, "Experienced with basics", "No surprises here – steady pace."),
 
+
+                // Stefan - DevOps
                 (stefan, await _databaseLessonRepository.GetLessonByIdAsync(41), 9, 2.5f, "Solid understanding beforehand", "Most of the content was familiar, but the structure helped reinforce it."),
                 (stefan, await _databaseLessonRepository.GetLessonByIdAsync(42), 3, 2.4f, "Introductory level", "Nice and easy to go through, not much new for me."),
                 (stefan, await _databaseLessonRepository.GetLessonByIdAsync(43), 8, 2.6f, "Advanced concepts reviewed", "I remembered a lot as I worked through it, still useful."),
@@ -364,6 +306,7 @@ namespace TraineeTracker.Services.Seeders {
                 (stefan, await _databaseLessonRepository.GetLessonByIdAsync(59), 8, 1.5f, "Previously practiced", "Didn’t take much time – was confident going in."),
                 (stefan, await _databaseLessonRepository.GetLessonByIdAsync(60), 7, 2.1f, "Clear from prior work", "Some overlap with earlier"),
 
+                // Ursula - DevOps
                 (ursula, await _databaseLessonRepository.GetLessonByIdAsync(41), 5, 2.8f, "Some parts were challenging", "It required careful reading, but I got through it."),
                 (ursula, await _databaseLessonRepository.GetLessonByIdAsync(42), 6, 3.1f, "Familiar with the basics", "A good refresher with some deeper insights."),
                 (ursula, await _databaseLessonRepository.GetLessonByIdAsync(43), 7, 2.5f, "Well-structured content", "Easy to follow and very practical."),
