@@ -6,7 +6,7 @@ namespace TraineeTracker.Models.Domain {
 
         public required DateTime LastUpdated { get; set; }
 
-        public required ICollection<Lesson> Lessons { get; set; } = new List<Lesson>();
+        public ICollection<Lesson> Lessons { get; set; } = new List<Lesson>();
 
         public ICollection<ApplicationUser> Trainees { get; set; } = new List<ApplicationUser>();
     }
