@@ -38,7 +38,7 @@ namespace TraineeTracker.Controllers {
                 viewModel = await _adminService.FillCreateUserDropdownsAsync(viewModel);
                 return View("CreateUser", viewModel);
             }
-            var result = await _adminService.CreateUserAsync(viewModel.User);
+            var result = await _adminService.CreateUserAsync(viewModel.User, Url);
             if (!result.Succeeded) {
                 var modelTask = _adminService.FillCreateUserDropdownsAsync(viewModel);
                 foreach (var message in result.ErrorMessages) {
@@ -46,6 +46,7 @@ namespace TraineeTracker.Controllers {
                 }
                 viewModel = await modelTask;
                 return View("CreateUser", viewModel);
+
             }
             return RedirectToAction("ShowAdminDashboardView");
         }
