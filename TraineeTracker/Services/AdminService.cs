@@ -1,7 +1,9 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.EntityFrameworkCore;
+using System.Text;
 using TraineeTracker.Data.ApplicationUsers;
 using TraineeTracker.Data.ProcessingPauses;
 using TraineeTracker.Data.Feedbacks;
@@ -119,7 +121,7 @@ namespace TraineeTracker.Services.Admin {
             var user = new ApplicationUser {
                 UserName = dto.Email,
                 Email = dto.Email,
-                EmailConfirmed = true,
+                EmailConfirmed = isSeeder ? true : false,
                 EmailNotificationSetting = _emailNotificationService.CreateDefaultEmailNotificationSetting(dto.Role)
             };
 
@@ -171,10 +173,12 @@ namespace TraineeTracker.Services.Admin {
 
             if (!isSeeder) {
                 var token = await _applicationUserRepository.GenerateEmailConfirmationTokenAsync(user);
+                token = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(token));
                 var confirmationLink = urlHelper.Page(
                     "/Account/ConfirmEmail",
                     pageHandler: null,
                     values: new {
+                        area = "Identity",
                         userId = user.Id,
                         code = token
                     },
