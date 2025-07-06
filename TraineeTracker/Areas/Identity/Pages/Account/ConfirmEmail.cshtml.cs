@@ -13,14 +13,11 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.WebUtilities;
 using TraineeTracker.Models.Domain;
 
-namespace TraineeTracker.Areas.Identity.Pages.Account
-{
-    public class ConfirmEmailModel : PageModel
-    {
+namespace TraineeTracker.Areas.Identity.Pages.Account {
+    public class ConfirmEmailModel : PageModel {
         private readonly UserManager<ApplicationUser> _userManager;
 
-        public ConfirmEmailModel(UserManager<ApplicationUser> userManager)
-        {
+        public ConfirmEmailModel(UserManager<ApplicationUser> userManager) {
             _userManager = userManager;
         }
 
@@ -30,23 +27,22 @@ namespace TraineeTracker.Areas.Identity.Pages.Account
         /// </summary>
         [TempData]
         public string StatusMessage { get; set; }
-        public async Task<IActionResult> OnGetAsync(string userId, string code)
-        {
-            if (userId == null || code == null)
-            {
+        public async Task<IActionResult> OnGetAsync(string userId, string code) {
+            if (userId == null || code == null) {
                 return RedirectToPage("/Index");
             }
 
             var user = await _userManager.FindByIdAsync(userId);
-            if (user == null)
-            {
+            if (user == null) {
                 return NotFound($"Unable to load user with ID '{userId}'.");
             }
 
             code = Encoding.UTF8.GetString(WebEncoders.Base64UrlDecode(code));
             var result = await _userManager.ConfirmEmailAsync(user, code);
             if (result.Succeeded) {
-                StatusMessage = "Thank you for confirming your email.";
+                StatusMessage = "Thank you for confirming your email. You will be redirected to set your password.";
+                var resetToken = await _userManager.GeneratePasswordResetTokenAsync(user);
+                return RedirectToPage("/Account/ResetPassword", new { userId = user.Id, code = resetToken });
             } else {
                 StatusMessage = "Error confirming your email.";
             }
