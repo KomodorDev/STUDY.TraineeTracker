@@ -241,6 +241,7 @@ nav.navbar .container-fluid {
 }
 .nav-link.active::after {
   background-color: #e61d47;
+  width: 100%;
 }
 
 .nav-link:hover::after {
