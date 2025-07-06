@@ -111,8 +111,11 @@ namespace TraineeTracker.Services.Admin {
         }
 
         // ------------------------------------------------------------------------------------------------------------
-        public async Task<ServiceResult> CreateUserAsync(ApplicationUserDto dto, IUrlHelper urlHelper) {
+        public async Task<ServiceResult> CreateUserAsync(ApplicationUserDto dto, bool isSeeder, IUrlHelper? urlHelper = null) {
             ArgumentNullException.ThrowIfNull(dto);
+            if (!isSeeder && urlHelper == null) {
+                throw new ArgumentNullException(nameof(urlHelper), "urlHelper must be provided if isSeeder is false");
+            }
             var user = new ApplicationUser {
                 UserName = dto.Email,
                 Email = dto.Email,
@@ -166,20 +169,22 @@ namespace TraineeTracker.Services.Admin {
                 }
             }
 
-            var token = await _applicationUserRepository.GenerateEmailConfirmationTokenAsync(user);
-            var confirmationLink = urlHelper.Page(
-                "/Account/ConfirmEmail",
-                pageHandler: null,
-                values: new {
-                    userId = user.Id,
-                    code = token
-                },
-                protocol: "https");
-            await _emailNotificationService.NotifyUserAsync(
-                user,
-                "Confirm your email to set your password",
-                $"Please confirm your account by <a href='{confirmationLink}'>clicking here</a>.\nYou will be redirected to set your password after.");
-                
+            if (!isSeeder) {
+                var token = await _applicationUserRepository.GenerateEmailConfirmationTokenAsync(user);
+                var confirmationLink = urlHelper.Page(
+                    "/Account/ConfirmEmail",
+                    pageHandler: null,
+                    values: new {
+                        userId = user.Id,
+                        code = token
+                    },
+                    protocol: "https");
+                await _emailNotificationService.NotifyUserAsync(
+                    user,
+                    "Confirm your email to set your password",
+                    $"Please confirm your account by <a href='{confirmationLink}'>clicking here</a>.\nYou will be redirected to set your password after.");
+            }
+
             return ServiceResult.Success();
         }
 

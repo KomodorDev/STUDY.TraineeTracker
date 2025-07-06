@@ -46,7 +46,6 @@ namespace TraineeTracker.Controllers {
                 }
                 viewModel = await modelTask;
                 return View("CreateUser", viewModel);
-
             }
             return RedirectToAction("ShowAdminDashboardView");
         }
