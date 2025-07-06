@@ -82,6 +82,14 @@
                 <div class="progress-bar bg-danger" role="progressbar" style="width: @speed%" aria-valuenow="50"
                     aria-valuemin="0" aria-valuemax="100">
                 </div>
+        
+                <!-- Expand Button -->
+                <a asp-controller="TraineeStatistics"
+                asp-action="ShowTraineeStatisticsDashboardView"
+                asp-route-traineeId="@Model.SelectedTrainee!.Id"
+                class="btn btn-sm btn-outline-primary mt-3">
+                    Expand
+                </a>
             </div>
         </section>
     </div>
