@@ -39,6 +39,8 @@ namespace TraineeTracker.Services.Admin {
                             IFeedbackRepository feedbackRepository,
                             ITeachingPlanRepository teachingPlanRepository,
                             ITraineeStatisticsRepository traineeStatisticsRepository) {
+            _unitOfWork = unitOfWork;
+            _urlHelper = urlHelper;
             _applicationUserRepository = applicationUserRepository;
             _processingPauseRepository = processingPauseRepository;
             _roleManager = roleManager;
@@ -47,8 +49,6 @@ namespace TraineeTracker.Services.Admin {
             _feedbackRepository = feedbackRepository;
             _teachingPlanRepository = teachingPlanRepository;
             _traineeStatisticsRepository = traineeStatisticsRepository;
-            _urlHelper = urlHelper;
-            _unitOfWork = unitOfWork;
         }
 
         // ------------------------------------------------------------------------------------------------------------
@@ -114,7 +114,7 @@ namespace TraineeTracker.Services.Admin {
         }
 
         // ------------------------------------------------------------------------------------------------------------
-        public async Task<ServiceResult> CreateUserAsync(ApplicationUserDto dto) {
+        public async Task<ServiceResult> CreateUserAsync(ApplicationUserDto dto, IUrlHelper urlHelper) {
             ArgumentNullException.ThrowIfNull(dto);
             var user = new ApplicationUser {
                 UserName = dto.Email,
@@ -170,7 +170,7 @@ namespace TraineeTracker.Services.Admin {
             }
 
             var token = await _applicationUserRepository.GenerateEmailConfirmationTokenAsync(user);
-            var confirmationLink = _urlHelper.Page(
+            var confirmationLink = urlHelper.Page(
                 "/Account/ConfirmEmail",
                 pageHandler: null,
                 values: new {
