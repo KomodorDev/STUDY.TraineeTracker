@@ -1,20 +1,23 @@
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.EntityFrameworkCore;
 using TraineeTracker.Data.ApplicationUsers;
 using TraineeTracker.Data.ProcessingPauses;
-using TraineeTracker.Services.Email;
-using TraineeTracker.Models.Domain;
-using TraineeTracker.Models.Dtos;
 using TraineeTracker.Data.Feedbacks;
 using TraineeTracker.Data.TeachingPlans;
 using TraineeTracker.Data.TraineeStatistics;
+using TraineeTracker.Data.UnitOfWork;
+using TraineeTracker.Models.Domain;
+using TraineeTracker.Models.Dtos;
 using TraineeTracker.Models.ViewModels.Admin;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
-using TraineeTracker.Data;
+using TraineeTracker.Services.Email;
 
 namespace TraineeTracker.Services.Admin {
     public class AdminService {
         private readonly IUnitOfWork _unitOfWork;
+        private readonly IUrlHelper _urlHelper;
+
         private readonly IApplicationUserRepository _applicationUserRepository;
         private readonly IProcessingPauseRepository _processingPauseRepository;
         private readonly RoleManager<IdentityRole> _roleManager;
@@ -27,6 +30,7 @@ namespace TraineeTracker.Services.Admin {
         private readonly ITraineeStatisticsRepository _traineeStatisticsRepository;
 
         public AdminService(IUnitOfWork unitOfWork,
+                            IUrlHelper urlHelper,
                             IApplicationUserRepository applicationUserRepository,
                             IProcessingPauseRepository processingPauseRepository,
                             RoleManager<IdentityRole> roleManager,
@@ -35,7 +39,6 @@ namespace TraineeTracker.Services.Admin {
                             IFeedbackRepository feedbackRepository,
                             ITeachingPlanRepository teachingPlanRepository,
                             ITraineeStatisticsRepository traineeStatisticsRepository) {
-            _unitOfWork = unitOfWork;
             _applicationUserRepository = applicationUserRepository;
             _processingPauseRepository = processingPauseRepository;
             _roleManager = roleManager;
@@ -44,6 +47,8 @@ namespace TraineeTracker.Services.Admin {
             _feedbackRepository = feedbackRepository;
             _teachingPlanRepository = teachingPlanRepository;
             _traineeStatisticsRepository = traineeStatisticsRepository;
+            _urlHelper = urlHelper;
+            _unitOfWork = unitOfWork;
         }
 
         // ------------------------------------------------------------------------------------------------------------
@@ -164,6 +169,20 @@ namespace TraineeTracker.Services.Admin {
                 }
             }
 
+            var token = await _applicationUserRepository.GenerateEmailConfirmationTokenAsync(user);
+            var confirmationLink = _urlHelper.Page(
+                "/Account/ConfirmEmail",
+                pageHandler: null,
+                values: new {
+                    userId = user.Id,
+                    code = token
+                },
+                protocol: "https");
+            await _emailNotificationService.NotifyUserAsync(
+                user,
+                "Confirm your email to set your password",
+                $"Please confirm your account by <a href='{confirmationLink}'>clicking here</a>.\nYou will be redirected to set your password after.");
+                
             return ServiceResult.Success();
         }
 
