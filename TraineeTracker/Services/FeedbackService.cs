@@ -49,9 +49,8 @@ namespace TraineeTracker.Services {
 
                 /* 
                 Console.WriteLine($"[DEBUG] selectedTraineeId: {selectedTraineeId}");
-                */
-
                 Console.WriteLine($"[DEBUG] sortBy: {sortBy}");
+                */
 
                 // Get Trainee and the Lessons they wrote feedback for
                 ApplicationUser? traineeNullable = await _databaseApplicaionUserRepository.FindByIdWithWrittenFeedbacksWithLessonAsync(selectedTraineeId!);
@@ -60,13 +59,14 @@ namespace TraineeTracker.Services {
 
                 lessons = trainee.WrittenFeedbacks
                     .Select(f => f.Lesson)
-                    .OrderBy(l => l.LessonId)
+                    .OrderBy(l => l.SortingIndex)
                     .ToList();
             } else {
                 // Get all Lessons that have at least one feedback
                 lessons = (await _databaseLessonRepository.GetAllLessonsWithFeedbacksAsync())
                     .Where(l => l.Feedbacks != null && l.Feedbacks.Any())
-                    .OrderBy(l => l.LessonId)
+                    .OrderBy(l => l.TeachingPlanId)
+                    .ThenBy(l => l.SortingIndex)
                     .ToList();
             }
 
