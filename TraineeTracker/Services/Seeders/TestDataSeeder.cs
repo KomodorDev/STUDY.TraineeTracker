@@ -81,13 +81,11 @@ namespace TraineeTracker.Services.Seeders {
             var plans = new[] {
                 new {
                     Id = 1,
-                    Name = "WebDevelopment",
-                    LessonIds = Enumerable.Range(1, 40).ToArray()
+                    Name = "WebDevelopment"
                 },
                 new {
                     Id = 2,
-                    Name = "DevOps",
-                    LessonIds = Enumerable.Range(41, 80).ToArray()
+                    Name = "DevOps"
                 }
             };
 
@@ -107,7 +105,6 @@ namespace TraineeTracker.Services.Seeders {
                     TeachingPlanId = plan.Id,
                     Name = plan.Name,
                     LastUpdated = DateTime.UtcNow,
-                    Lessons = lessons
                 };
 
                 await _databaseTeachingPlanRepository.CreateAsync(teachingPlan);
