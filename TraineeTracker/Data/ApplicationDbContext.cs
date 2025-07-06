@@ -33,10 +33,17 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser> {
         : base(options) {
     }
 
-
+    // ------------------------------------------------------
     protected override void OnModelCreating(ModelBuilder modelBuilder) {
         base.OnModelCreating(modelBuilder);
 
+        // +++++++++++++++
+        // Only one MakandraID per TeachingPlan
+        modelBuilder.Entity<Lesson>()
+            .HasIndex(l => new { l.MakandraId, l.TeachingPlanId })
+            .IsUnique();
+
+        // +++++++++++++++
         // ApplicationUser and Feedback
         modelBuilder.Entity<Feedback>()
             .HasMany(f => f.ReadByUsers)
@@ -53,14 +60,12 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser> {
             .HasForeignKey(f => f.AuthorId)
             .IsRequired();
 
-        // ---------------------
-
-
-
+        // +++++++++++++++
         // Enum to String Mapping
         modelBuilder.Entity<TraineeLesson>()
             .Property(t => t.State)
             .HasConversion<string>();
     }
 
+    // ------------------------------------------------------
 }

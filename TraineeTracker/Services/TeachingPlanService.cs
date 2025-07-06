@@ -53,23 +53,20 @@ namespace TraineeTracker.Services {
             var lessonDtos = DeserializeLessonDtos(json);
             ValidateLessonDtos(lessonDtos);
 
-            var lessons = MapLessonDtosToLessons(lessonDtos);
-
-            foreach (var lesson in lessons) {
-                await ValidateLesson(lesson);
-                await _databaseLessonRepository.CreateAsync(lesson);
-            }
-
+            // Create TeachingPlan:
             var teachingPlan = new TeachingPlan {
                 Name = dto.NewPlanName!,
                 LastUpdated = DateTime.UtcNow,
-                Lessons = lessons
             };
 
             await _databaseTeachingPlanRepository.CreateAsync(teachingPlan);
+
+            // Create Lessons for TeachingPlan:
+            var lessons = CreateLessons(lessonDtos, teachingPlan.TeachingPlanId);
+            foreach (var lesson in lessons) {
+                await _databaseLessonRepository.CreateAsync(lesson);
+            }
         }
-
-
 
 
         // ---------------------------------------------------
@@ -78,8 +75,12 @@ namespace TraineeTracker.Services {
         // ---------------------------------------------------
         // ---------------------------------------------------
         public async Task UpdateTeachingPlan(TeachingPlanDto teachingPlanDto) {
-
+            /* 
             Console.WriteLine($"[DEBUG] Service: Called UpdateTeachingPlan");
+            */
+
+            int existingTeachingPlanId = teachingPlanDto.ExistingTeachingPlanId ?? throw new Exception("ExistingTeachingPlanId missing!");
+
             // +++++++++++++++
             // 1) Datei einlesen, DTOs validieren
             var json = await ReadJsonAsync(teachingPlanDto.NewPlanFile);
@@ -97,78 +98,79 @@ namespace TraineeTracker.Services {
             // +++++++++++++++
             // Hilfslisten für diff
             var existingLessons = existingTeachingPlan!.Lessons.ToList();
-            var dtoIds = lessonDtos.Select(d => d.Id).ToHashSet();
-            var removedLessons = new List<Lesson>();
+            var dtoMakandraIds = lessonDtos.Select(d => d.Id).ToHashSet();
+            var lessonsMarkedAsInactive = new List<Lesson>();
             var addedLessons = new List<Lesson>();
 
-            // +++++++++++++++
-            // 3) Mark Lessons, that are missing in dto, as inactive
-            var toRemove = existingLessons
-                .Where(l => !dtoIds.Contains(l.LessonId))
-                .ToList();
-            removedLessons.AddRange(toRemove);
-            foreach (var lesson in toRemove) {
-                lesson.IsInactive = true;
-                await _databaseLessonRepository.UpdateAsync(lesson);
-
-                Console.WriteLine($"[Import] Als inaktiv markiert: {lesson.Title} (ID: {lesson.LessonId})");
-            }
+            int sortingIndex = 1;
 
             // +++++++++++++++
-            // 4) DTOs upserten und zusätzlich:
+            // 3) DTOs upserten und zusätzlich:
             //    - Deprecated = true → nur Open-TraineeLessons sollen gelöscht werden ("removed")
             //    - ganz neue Lessons → in teachingPlan einfügen und als "added" markieren
             foreach (var lessonDto in lessonDtos) {
-                // Find Lesson by lessonDto.Id
-                var lesson = existingTeachingPlan.Lessons.FirstOrDefault(l => l.LessonId == lessonDto.Id);
+                // Find Lesson by lessonDto.MakandraId in existingLessons (MakandraId is at least unique within TeachingPlan)
+                var lesson = existingLessons.FirstOrDefault(l => l.MakandraId == lessonDto.Id);
 
-                if (lesson != null) {
-                    // If Lesson does already exist:
-                    ApplyLessonDtoToLesson(lessonDto, lesson);
-                    // Add to removedLessons if it is deprecated:
-                    if (lessonDto.Deprecated) {
-
-                        // Update removedLessons:
-                        removedLessons.Add(lesson);
-                    }
-                    await _databaseLessonRepository.UpdateAsync(lesson);
-                } else {
-                    // If Lesson does not exist yet:
-                    var newLesson = MapLessonDtotoLesson(lessonDto);
-                    await ValidateLesson(newLesson);
-
+                if (lesson == null) {
+                    // a) Lesson does not exist yet in existingTeachingPlan:
+                    var newLesson = CreateLesson(lessonDto, existingTeachingPlanId, sortingIndex++);
                     await _databaseLessonRepository.CreateAsync(newLesson);
-
                     existingTeachingPlan.Lessons.Add(newLesson);
-
-                    // Update addedLessons:
                     addedLessons.Add(newLesson);
+                } else {
+                    if (lessonDto.Deprecated) {
+                        // Lesson is deprecated and we leave the index unchanged (we change it later)
+                        UpdateLesson(lessonDto, lesson, lesson.SortingIndex); 
+                        lessonsMarkedAsInactive.Add(lesson);
+                    } else {
+                        // Lesson is not-depreacted and we increment the index afterwards:
+                        UpdateLesson(lessonDto, lesson, sortingIndex++);
+                    }
+
+                    // Update Database:
+                    await _databaseLessonRepository.UpdateAsync(lesson);
                 }
+
             }
 
-            existingTeachingPlan.LastUpdated = DateTime.UtcNow;
+            // +++++++++++++++
+            // 4) Mark Lessons, that are missing in dto, as inactive
+            lessonsMarkedAsInactive = existingLessons
+             .Where(l => !dtoMakandraIds.Contains(l.MakandraId))
+             .OrderBy(l => l.SortingIndex)
+             .ToList();
 
-            // Update existingTeachingPlan -> New lessons are now in Db. Removed lessons are gone
+            foreach (var lesson in lessonsMarkedAsInactive) {
+                lesson.IsInactive = true;
+                lesson.SortingIndex = sortingIndex++;
+
+                await _databaseLessonRepository.UpdateAsync(lesson);
+            }
+
+            // +++++++++++++++
+            // Update existingTeachingPlan -> New lessons are now in Db. Inactive Lessons are marked
+            existingTeachingPlan.LastUpdated = DateTime.UtcNow;
             await _databaseTeachingPlanRepository.UpdateAsync(existingTeachingPlan);
 
             // +++++++++++++++
             // 5) Für jeden zugewiesenen Trainee:
-            //    - Open-TraineeLessons der removedLessons löschen und sammeln
+            //    - Open-TraineeLessons der lessonsMarkedAsInactive löschen und sammeln
             //    - für addedLessons neue TraineeLesson anlegen und sammeln
             //    - NotifyAboutImportChangeAsync aufrufen
             foreach (var trainee in existingTeachingPlan.Trainees) {
 
-                var addedTraineeLessons = new List<TraineeLesson>();
-
+                // +++++++++++++++
+                // Get all current TraineeLessons of Trainee
                 var traineeLessonsOfTrainee = (await _databaseTraineeLessonRepository
                     .GetAllTraineeLessonsOfTraineeWithLessonAsync(trainee.Id)).ToList();
 
                 // +++++++++++++++
                 // a) Entfernen
                 var removedTraineeLessons = new List<TraineeLesson>();
-                foreach (var lesson in removedLessons) {
+                foreach (var lesson in lessonsMarkedAsInactive) {
 
-                    // Collect lessons that will be deleted
+                    // Collect traineeLessons that will be deleted
                     var toDelete = traineeLessonsOfTrainee
                         .Where(tl => tl.Lesson.LessonId == lesson.LessonId
                                   && tl.State == TraineeLessonState.Open)
@@ -186,6 +188,7 @@ namespace TraineeTracker.Services {
 
                 // +++++++++++++++
                 // b) Hinzufügen
+                var addedTraineeLessons = new List<TraineeLesson>();
                 foreach (var lesson in addedLessons) {
                     var tl = new TraineeLesson {
                         TraineeId = trainee.Id,
@@ -216,14 +219,14 @@ namespace TraineeTracker.Services {
             }
         }
 
-
-
         // ---------------------------------------------------
         // ---------------------------------------------------
         // ---------------------------------------------------
         // PASST
-        public async Task DeleteTeachingPlan(int id) {
-            var plan = await _databaseTeachingPlanRepository.GetTeachingPlanByIdWithLessonsAndTraineesAsync(id)
+        public async Task DeleteTeachingPlan(int existingTeachingPlanId) {
+
+            Console.WriteLine($"ID used for delete: {existingTeachingPlanId}");
+            var plan = await _databaseTeachingPlanRepository.GetTeachingPlanByIdWithLessonsAndTraineesAsync(existingTeachingPlanId)
                        ?? throw new InvalidOperationException("TeachingPlan not found.");
 
             if (plan.Trainees != null && plan.Trainees.Any())
@@ -284,11 +287,13 @@ namespace TraineeTracker.Services {
         }
 
         // ---------------------------------------------------
+        /*         
         private async Task ValidateLesson(Lesson l) {
             bool exists = await _databaseLessonRepository.ExistsAsync(l);
             if (exists)
                 throw new ArgumentException("Dieser Teachingplan existiert schon!");
         }
+        */
 
         // ---------------------------------------------------
         private async Task<string> ReadJsonAsync(IFormFile file) {
@@ -309,32 +314,39 @@ namespace TraineeTracker.Services {
         }
 
         // ---------------------------------------------------
-        private List<Lesson> MapLessonDtosToLessons(IEnumerable<LessonDto> dtos) {
+        private List<Lesson> CreateLessons(IEnumerable<LessonDto> dtos, int teachingPlanId) {
+
+            int sortingIndex = 1;
             return dtos.Select(dto => new Lesson {
-                LessonId = dto.Id,
+                MakandraId = dto.Id,
                 Title = dto.Title,
                 LinkUrl = dto.Url,
                 EstimatedEffort = dto.Estimate ?? 0,
-                IsInactive = dto.Deprecated
+                IsInactive = dto.Deprecated,
+                SortingIndex = sortingIndex++,
+                TeachingPlanId = teachingPlanId
             }).ToList();
         }
 
         // ---------------------------------------------------
-        private void ApplyLessonDtoToLesson(LessonDto dto, Lesson lesson) {
+        private void UpdateLesson(LessonDto dto, Lesson lesson, int sortingIndex) {
             lesson.Title = dto.Title;
             lesson.LinkUrl = dto.Url;
             lesson.EstimatedEffort = dto.Estimate ?? 0;
             lesson.IsInactive = dto.Deprecated;
+            lesson.SortingIndex = sortingIndex;
         }
 
         // ---------------------------------------------------
-        private Lesson MapLessonDtotoLesson(LessonDto dto) {
+        private Lesson CreateLesson(LessonDto dto, int teachingPlanId, int sortingIndex) {
             return new Lesson {
-                LessonId = dto.Id,
+                MakandraId = dto.Id,
                 Title = dto.Title,
                 LinkUrl = dto.Url,
                 EstimatedEffort = dto.Estimate ?? 0,
-                IsInactive = dto.Deprecated
+                IsInactive = dto.Deprecated,
+                TeachingPlanId = teachingPlanId,
+                SortingIndex = sortingIndex
             };
         }
 
