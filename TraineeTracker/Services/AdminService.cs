@@ -16,7 +16,6 @@ using TraineeTracker.Services.Email;
 namespace TraineeTracker.Services.Admin {
     public class AdminService {
         private readonly IUnitOfWork _unitOfWork;
-        private readonly IUrlHelper _urlHelper;
 
         private readonly IApplicationUserRepository _applicationUserRepository;
         private readonly IProcessingPauseRepository _processingPauseRepository;
@@ -30,7 +29,6 @@ namespace TraineeTracker.Services.Admin {
         private readonly ITraineeStatisticsRepository _traineeStatisticsRepository;
 
         public AdminService(IUnitOfWork unitOfWork,
-                            IUrlHelper urlHelper,
                             IApplicationUserRepository applicationUserRepository,
                             IProcessingPauseRepository processingPauseRepository,
                             RoleManager<IdentityRole> roleManager,
@@ -40,7 +38,6 @@ namespace TraineeTracker.Services.Admin {
                             ITeachingPlanRepository teachingPlanRepository,
                             ITraineeStatisticsRepository traineeStatisticsRepository) {
             _unitOfWork = unitOfWork;
-            _urlHelper = urlHelper;
             _applicationUserRepository = applicationUserRepository;
             _processingPauseRepository = processingPauseRepository;
             _roleManager = roleManager;
