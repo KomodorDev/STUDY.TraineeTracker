@@ -110,3 +110,11 @@
     /* hide scrollbar overflow */
     overflow: hidden;
 }
+
+.select-wide {
+    background-color: white;
+    border: none;
+}
+.filter-selects {
+    width: 100%;
+}
