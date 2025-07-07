@@ -20,5 +20,7 @@ namespace TraineeTracker.Data.TeachingPlans {
         Task<TeachingPlan?> GetTeachingPlanByIdWithLessonsAndTraineesAsync(int id);
 
         Task<IEnumerable<TeachingPlan>> GetAllTeachingPlansAsync();
+
+        Task<IEnumerable<TeachingPlan>> GetAllTeachingPlansWithLessonsAndTraineesAsync();
     }
 }

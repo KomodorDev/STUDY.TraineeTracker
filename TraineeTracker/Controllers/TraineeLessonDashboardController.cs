@@ -15,8 +15,10 @@ namespace TraineeTracker.Controllers {
 
         [HttpGet]
         [Route("Dashboard")]
-        public async Task<IActionResult> ShowTraineeLessonDashboardView(string? traineeId) {
-            var model = await _traineeLessonDashboardService.BuildTraineeLessonDashboardViewModel(User, traineeId);
+        public async Task<IActionResult> ShowTraineeLessonDashboardView(string? traineeId,
+            string filter = "all",
+            string sortBy = "SortingIndex_asc") {
+            var model = await _traineeLessonDashboardService.BuildTraineeLessonDashboardViewModel(User, traineeId, filter, sortBy);
 
             return View("TraineeLessonDashboard", model);
         }
