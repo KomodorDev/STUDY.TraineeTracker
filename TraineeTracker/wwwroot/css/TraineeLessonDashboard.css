@@ -58,7 +58,7 @@
 }
 
 
-/* Simon for Filter: */
+/* Filters (hintsimo, revised by schleale) */
 .filter-bar {
     display: flex;
     align-items: center;
@@ -67,6 +67,7 @@
     border: 2px solid black;
     border-radius: 11px;
     overflow: hidden;
+    width: 100%;
 }
 
 .filter-tab {
@@ -79,6 +80,8 @@
     text-decoration: none;
     text-align: center;
     white-space: nowrap;
+
+    width: 100%;
 }
 .filter-tab:last-child {
     border-right: none;
@@ -92,6 +95,7 @@
 .filter-tab:hover {
     background: #f8f9fa;
     color: #e61d47;
+    text-decoration: underline;
 }
 
 
@@ -114,6 +118,7 @@
 .select-wide {
     background-color: white;
     border: none;
+    width: 100%;
 }
 .filter-selects {
     width: 100%;
