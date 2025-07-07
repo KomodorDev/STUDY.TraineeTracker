@@ -117,6 +117,9 @@
 
 .select-wide {
     background-color: white;
+    color: #e61d47;
+    font-weight: 900;
+    
     border: none;
     width: 100%;
 }
