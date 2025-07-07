@@ -50,7 +50,12 @@ namespace TraineeTracker.Data.TeachingPlans {
 
         }
 
+
         public async Task<IEnumerable<TeachingPlan>> GetAllTeachingPlansAsync() {
+            return await _context.TeachingPlans.ToListAsync();
+        }
+
+        public async Task<IEnumerable<TeachingPlan>> GetAllTeachingPlansWithLessonsAndTraineesAsync() {
             return await _context.TeachingPlans
             .Include(tp => tp.Lessons)
             .Include(tp => tp.Trainees)
