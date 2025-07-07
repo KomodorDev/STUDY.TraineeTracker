@@ -8,6 +8,28 @@
     ViewData["BodyClass"] = "sopro-special-bg";
 } *@
 
+@section Navbar {
+    <nav>
+        <!-- default nav bar -->
+            <nav class="navbar sopro-navbar navbar-expand-sm">
+                <div class="container-fluid">
+                    <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between" style="overflow: hidden;">
+                        <ul class="navbar-nav flex-grow-1">
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="" asp-controller="" asp-action="">TraineeTracker</a>
+                            </li>
+                        </ul>
+
+                        <!-- makandra logo -->
+                        <a href="https://makandra.de/de" target="_blank" class="navbar-brand">
+                            <img src="~/resources/makandra_logo_black.png" alt="logo" />
+                        </a>
+                    </div>
+                </div>
+            </nav>
+    </nav>
+}
+
 <h1>@ViewData["Title"]</h1>
 <div class="row">
     <div class="col-md-4">
