@@ -101,10 +101,14 @@
     align-items: center;
     justify-content: center;
 
+    cursor: default;
+
     border-radius: 11px;
 }
 .sopro-status-button.selectable {
     color: #e61d47;
+
+    cursor: pointer;
 }
 .sopro-status-button.selectable:hover {
     border: 2px solid #e61d47;

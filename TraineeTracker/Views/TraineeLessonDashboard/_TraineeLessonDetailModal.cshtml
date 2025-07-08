@@ -51,15 +51,25 @@
                                         var selectableStatus = new String[]{"Skipped", "Started"};
                                     }
                                     <!-- row 1 -->
-                                    <div class="sopro-status-button">Open</div>
+                                    <div class="sopro-status-button
+                                        @(currentStatus == "Open" ? "current" : "")
+                                        @(selectableStatus.Contains("Open") ? "selectable" : "")">Open</div>
                                     <div class="sopro-horizontal-connector"></div>
-                                    <div class="sopro-status-button">Started</div>
+                                    <div class="sopro-status-button
+                                        @(currentStatus == "Started" ? "current" : "")
+                                        @(selectableStatus.Contains("Started") ? "selectable" : "")">Started</div>
                                     <div class="sopro-horizontal-connector"></div>
-                                    <div class="sopro-status-button">Finished</div>
+                                    <div class="sopro-status-button
+                                        @(currentStatus == "Finished" ? "current" : "")
+                                        @(selectableStatus.Contains("Finished") ? "selectable" : "")">Finished</div>
                                     <div class="sopro-horizontal-connector"></div>
-                                    <div class="sopro-status-button">Accepted</div>
+                                    <div class="sopro-status-button
+                                        @(currentStatus == "Accepted" ? "current" : "")
+                                        @(selectableStatus.Contains("Accepted") ? "selectable" : "")">Accepted</div>
                                     <div class="sopro-horizontal-connector"></div>
-                                    <div class="sopro-status-button">Rated</div>
+                                    <div class="sopro-status-button
+                                        @(currentStatus == "Rated" ? "current" : "")
+                                        @(selectableStatus.Contains("Rated") ? "selectable" : "")">Rated</div>
                                     <!-- row 2 -->
                                     <div class="sopro-vertical-connector"></div>
                                     <div></div>
@@ -71,11 +81,15 @@
                                     <div></div>
                                     <div></div>
                                     <!-- row 3-->
-                                    <div class="sopro-status-button">Skipped</div>
+                                    <div class="sopro-status-button
+                                        @(currentStatus == "Skipped" ? "current" : "")
+                                        @(selectableStatus.Contains("Skipped") ? "selectable" : "")">Skipped</div>
                                     <div></div>
                                     <div></div>
                                     <div></div>
-                                    <div class="sopro-status-button">Rejected</div>
+                                    <div class="sopro-status-button
+                                        @(currentStatus == "Rejected" ? "current" : "")
+                                        @(selectableStatus.Contains("Rejected") ? "selectable" : "")">Rejected</div>
                                     <div></div>
                                     <div></div>
                                     <div></div>
