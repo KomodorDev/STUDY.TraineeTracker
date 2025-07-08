@@ -30,24 +30,24 @@
     </nav>
 }
 <div style="display: flex; flex-direction: column; align-items: center; height: calc(100vh - 3.516rem); justify-content: center;">
-    <p style="font-weight: 900; width: 469px; font-size: 2rem;">@ViewData["Title"]</p>
+    <p style="font-weight: 900; width: 469px; font-size: 2rem; padding-bottom: 1rem;">@ViewData["Title"]</p>
     <!-- login card -->
     <div class="sopro-card" style="width: 469px; height: 385px; padding: 2.344rem;">
         <form id="account" method="post">
             <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
             <div class="form-floating mb-3">
-                <input asp-for="Input.Email" class="form-control" autocomplete="username" aria-required="true" placeholder="name@example.com" />
+                <input asp-for="Input.Email" class="form-control sopro-inner-card" style="border-radius: 11px;" autocomplete="username" aria-required="true" placeholder="name@example.com" />
                 <label asp-for="Input.Email" class="form-label">Email</label>
                 <span asp-validation-for="Input.Email" class="text-danger"></span>
             </div>
             <div class="form-floating mb-3">
-                <input asp-for="Input.Password" class="form-control" autocomplete="current-password" aria-required="true" placeholder="password" />
+                <input asp-for="Input.Password" class="form-control sopro-inner-card" style="border-radius: 11px;" autocomplete="current-password" aria-required="true" placeholder="password" />
                 <label asp-for="Input.Password" class="form-label">Password</label>
                 <span asp-validation-for="Input.Password" class="text-danger"></span>
             </div>
             <div class="checkbox mb-3">
                 <label asp-for="Input.RememberMe" class="form-label">
-                    <input class="form-check-input" asp-for="Input.RememberMe" />
+                    <input class="form-check-input sopro-inner-card" style="border-radius: 11px;" asp-for="Input.RememberMe" />
                     @Html.DisplayNameFor(m => m.Input.RememberMe)
                 </label>
             </div>
