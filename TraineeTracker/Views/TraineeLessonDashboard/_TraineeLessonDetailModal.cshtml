@@ -45,7 +45,59 @@
                         </p>
                         <div id="collapse-state" class="accordion-collapse collapse" aria-labelledby="state" data-bs-parent="#lessonAccordion">
                             <div class="accordion-body sopro-accordion-truncate">
-                                <p>@Model.TraineeLesson.State.ToString()</p>
+                                <div class=sopro-status-select>
+                                    @{
+                                        var currentStatus = "Open";
+                                        var selectableStatus = new String[]{"Skipped", "Started"};
+                                    }
+                                    <!-- row 1 -->
+                                    <div class="sopro-status-button
+                                        @(currentStatus == "Open" ? "current" : "")
+                                        @(selectableStatus.Contains("Open") ? "selectable" : "")">Open</div>
+                                    <div class="sopro-horizontal-connector"></div>
+                                    <div class="sopro-status-button
+                                        @(currentStatus == "Started" ? "current" : "")
+                                        @(selectableStatus.Contains("Started") ? "selectable" : "")">Started</div>
+                                    <div class="sopro-horizontal-connector"></div>
+                                    <div class="sopro-status-button
+                                        @(currentStatus == "Finished" ? "current" : "")
+                                        @(selectableStatus.Contains("Finished") ? "selectable" : "")">Finished</div>
+                                    <div class="sopro-horizontal-connector"></div>
+                                    <div class="sopro-status-button
+                                        @(currentStatus == "Accepted" ? "current" : "")
+                                        @(selectableStatus.Contains("Accepted") ? "selectable" : "")">Accepted</div>
+                                    <div class="sopro-horizontal-connector"></div>
+                                    <div class="sopro-status-button
+                                        @(currentStatus == "Rated" ? "current" : "")
+                                        @(selectableStatus.Contains("Rated") ? "selectable" : "")">Rated</div>
+                                    <!-- row 2 -->
+                                    <div class="sopro-vertical-connector"></div>
+                                    <div></div>
+                                    <div></div>
+                                    <div></div>
+                                    <div class="sopro-vertical-connector"></div>
+                                    <div></div>
+                                    <div></div>
+                                    <div></div>
+                                    <div></div>
+                                    <!-- row 3-->
+                                    <div class="sopro-status-button
+                                        @(currentStatus == "Skipped" ? "current" : "")
+                                        @(selectableStatus.Contains("Skipped") ? "selectable" : "")">Skipped</div>
+                                    <div></div>
+                                    <div></div>
+                                    <div></div>
+                                    <div class="sopro-status-button
+                                        @(currentStatus == "Rejected" ? "current" : "")
+                                        @(selectableStatus.Contains("Rejected") ? "selectable" : "")">Rejected</div>
+                                    <div></div>
+                                    <div></div>
+                                    <div></div>
+                                    <div></div>
+                                    
+                                    <!-- save & cancel buttons -->
+                                    @* wip *@
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -58,7 +110,9 @@
                         </p>
                         <div id="collapse-logs" class="accordion-collapse collapse" aria-labelledby="logs" data-bs-parent="#lessonAccordion">
                             <div class="accordion-body sopro-accordion-truncate">
-                                <p>Content for section 3. Add whatever text or markup you want here.</p>
+                                @foreach (var log in @Model.LogEntries) {
+                                    <p class="pwrap" style="white-space: pre;">@log.Timestamp.ToString()  -  @log.UserName.Split('@')[0]  -  @log.OldState → @log.NewState</p>
+                                }
                             </div>
                         </div>
                     </div>
@@ -71,7 +125,18 @@
                         </p>
                         <div id="collapse-feedback" class="accordion-collapse collapse" aria-labelledby="feedback" data-bs-parent="#lessonAccordion">
                             <div class="accordion-body sopro-accordion-truncate">
-                                <p>Content for section 4. Add whatever text or markup you want here.</p>
+                                @foreach (var feedback in @Model.Feedbacks.Select((value, index) => new { value, index })) {
+                                    bool isLast = feedback.index == Model.Feedbacks.Count() - 1;
+
+                                    <p style="white-space: pre; color: #e61d47; font-weight: 900;">@feedback.value.CreateTime.ToString()  -  @feedback.value.Author.UserName?.Split('@')[0]  -  @feedback.value.Difficulty/10★</p>
+                                    <p><span style="font-weight: 900;">Effort:</span> @(@feedback.value.HoursOfEffort)h</p>
+                                    if (!String.IsNullOrWhiteSpace(@feedback.value.Comment)) {
+                                        <p class="pwrap"><span style="font-weight: 900;">Previous knowledge:</span> @feedback.value.PreviousKnowledge</p>
+                                        <p class="pwrap" style="@(isLast ? "" : "border-bottom: 1px solid #626262;")"><span style="font-weight: 900;">Comment:</span> @feedback.value.Comment</p>
+                                    } else {
+                                        <p class="pwrap" style="@(isLast ? "" : "border-bottom: 1px solid #626262;")"><span style="font-weight: 900;">Previous knowledge:</span> @feedback.value.PreviousKnowledge</p>
+                                    }
+                                }
                             </div>
                         </div>
                     </div>
