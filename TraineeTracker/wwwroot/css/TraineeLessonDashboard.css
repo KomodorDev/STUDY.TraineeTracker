@@ -74,9 +74,12 @@
     display: flex;
     align-items: center;
     padding: 0.6rem 1.2rem;
+
     border-right: 1px solid black;
     background: white;
+
     color: black;
+    font-weight: 900;
     text-decoration: none;
     text-align: center;
     white-space: nowrap;
@@ -86,18 +89,18 @@
 .filter-tab:last-child {
     border-right: none;
 }
-.filter-tab.active {
-    background: #ffe3e3;
-    color: #e03131;
-    font-weight: bold;
-}
-
 .filter-tab:hover {
     background: #f8f9fa;
-    color: #e61d47;
+    color: black;
     text-decoration: underline;
 }
-
+.filter-tab.active {
+    background: #ffe3e3;
+    color: #e61d47;
+}
+.filter-tab.active:hover {
+    background: #ffe3e3;
+}
 
 .sopro-card-filter {
     display: flex;
