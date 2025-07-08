@@ -32,7 +32,7 @@
 <div style="display: flex; flex-direction: column; align-items: center; height: calc(100vh - 3.516rem); justify-content: center;">
     <p style="font-weight: 900; width: 469px; font-size: 2rem;">@ViewData["Title"]</p>
     <!-- login card -->
-    <div class="sopro-card" style="width: 469px; height: 385px;">
+    <div class="sopro-card" style="width: 469px; height: 385px; pading: 2.344rem;">
         <form id="account" method="post">
             <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
             <div class="form-floating mb-3">
@@ -52,7 +52,8 @@
                 </label>
             </div>
             <div>
-                <button id="login-submit" type="submit" class="w-100 btn btn-lg btn-primary">Log in</button>
+                <button id="login-submit" type="submit" class="w-100 btn btn-lg btn-primary"
+                    style="color: white; background-color: #e61d47;">Log in</button>
             </div>
             <div>
                 <p>
