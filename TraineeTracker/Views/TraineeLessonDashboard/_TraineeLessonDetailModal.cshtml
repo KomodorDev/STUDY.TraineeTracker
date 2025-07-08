@@ -45,7 +45,42 @@
                         </p>
                         <div id="collapse-state" class="accordion-collapse collapse" aria-labelledby="state" data-bs-parent="#lessonAccordion">
                             <div class="accordion-body sopro-accordion-truncate">
-                                <p>@Model.TraineeLesson.State.ToString()</p>
+                                <div class=sopro-status-select>
+                                    @{
+                                        var currentStatus = "Open";
+                                        var selectableStatus = new String[]{"Skipped", "Started"};
+                                    }
+                                    <!-- row 1 -->
+                                    <div class="sopro-status-button">Open</div>
+                                    <div class="sopro-horizontal-connector"></div>
+                                    <div class="sopro-status-button">Started</div>
+                                    <div class="sopro-horizontal-connector"></div>
+                                    <div class="sopro-status-button">Finished</div>
+                                    <div class="sopro-horizontal-connector"></div>
+                                    <div class="sopro-status-button">Accepted</div>
+                                    <div class="sopro-horizontal-connector"></div>
+                                    <div class="sopro-status-button">Rated</div>
+                                    <!-- row 2 -->
+                                    <div class="sopro-vertical-connector"></div>
+                                    <div></div>
+                                    <div></div>
+                                    <div></div>
+                                    <div class="sopro-vertical-connector"></div>
+                                    <div></div>
+                                    <div></div>
+                                    <div></div>
+                                    <div></div>
+                                    <!-- row 3-->
+                                    <div class="sopro-status-button">Skipped</div>
+                                    <div></div>
+                                    <div></div>
+                                    <div></div>
+                                    <div class="sopro-status-button">Rejected</div>
+                                    <div></div>
+                                    <div></div>
+                                    <div></div>
+                                    <div></div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -59,7 +94,7 @@
                         <div id="collapse-logs" class="accordion-collapse collapse" aria-labelledby="logs" data-bs-parent="#lessonAccordion">
                             <div class="accordion-body sopro-accordion-truncate">
                                 @foreach (var log in @Model.LogEntries) {
-                                    <p style="white-space: pre;">@log.Timestamp.ToString()  -  @log.UserName.Split('@')[0]  -  @log.OldState → @log.NewState</p>
+                                    <p class="pwrap" style="white-space: pre;">@log.Timestamp.ToString()  -  @log.UserName.Split('@')[0]  -  @log.OldState → @log.NewState</p>
                                 }
                             </div>
                         </div>
@@ -79,10 +114,10 @@
                                     <p style="white-space: pre; color: #e61d47; font-weight: 900;">@feedback.value.CreateTime.ToString()  -  @feedback.value.Author.UserName?.Split('@')[0]  -  @feedback.value.Difficulty/10★</p>
                                     <p><span style="font-weight: 900;">Effort:</span> @(@feedback.value.HoursOfEffort)h</p>
                                     if (!String.IsNullOrWhiteSpace(@feedback.value.Comment)) {
-                                        <p><span style="font-weight: 900;">Previous knowledge:</span> @feedback.value.PreviousKnowledge</p>
-                                        <p style="@(isLast ? "" : "border-bottom: 1px solid #626262;")"><span style="font-weight: 900;">Comment:</span> @feedback.value.Comment</p>
+                                        <p class="pwrap"><span style="font-weight: 900;">Previous knowledge:</span> @feedback.value.PreviousKnowledge</p>
+                                        <p class="pwrap" style="@(isLast ? "" : "border-bottom: 1px solid #626262;")"><span style="font-weight: 900;">Comment:</span> @feedback.value.Comment</p>
                                     } else {
-                                        <p style="@(isLast ? "" : "border-bottom: 1px solid #626262;")"><span style="font-weight: 900;">Previous knowledge:</span> @feedback.value.PreviousKnowledge</p>
+                                        <p class="pwrap" style="@(isLast ? "" : "border-bottom: 1px solid #626262;")"><span style="font-weight: 900;">Previous knowledge:</span> @feedback.value.PreviousKnowledge</p>
                                     }
                                 }
                             </div>

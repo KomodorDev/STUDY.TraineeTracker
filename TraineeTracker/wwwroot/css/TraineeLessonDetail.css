@@ -69,6 +69,67 @@
     box-shadow: none;
 }
 
+.pwrap {
+    text-wrap: wrap;
+}
+
+/* STATUS SELECTOR +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ */
+
+.sopro-status-select {
+    display: grid;
+    grid-template-columns: 1fr 0.5fr 1fr 0.5fr 1fr 0.5fr 1fr 0.5fr 1fr;
+    grid-template-rows: 1.172rem 1.172rem 1.172rem;
+    gap: 0;
+
+    width: 100%;
+    height: auto;
+
+    justify-items: center;
+    align-items: center;
+}
+
+.sopro-status-button {
+    border: 2px solid #626262;
+    color: #626262;
+
+    width: 100%;
+    height: 100%;
+
+    font-size: 1rem; /* "20" px */
+    font-weight: 900;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 11px;
+}
+.sopro-status-button.selectable {
+    color: #e61d47;
+}
+.sopro-status-button.selectable:hover {
+    border: 2px solid #e61d47;
+}
+.sopro-status-button.current {
+    border: 2px solid #e61d47;
+    background-color: #e61d47;
+    color: white;
+}
+
+.sopro-horizontal-connector {
+    background-color: #626262;
+
+    height: 2px;
+    width: 100%;
+    justify-self: center;
+}
+.sopro-vertical-connector {
+    background-color: #626262;
+
+    width: 2px;
+    height: 100%;
+    align-self: center;
+}
+
 /* ACCORDION ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ */
 
 #lessonDetailModal .accordion-item {
