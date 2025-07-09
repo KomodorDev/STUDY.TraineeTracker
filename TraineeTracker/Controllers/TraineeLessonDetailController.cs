@@ -24,18 +24,18 @@ namespace TraineeTracker.Controllers {
             return PartialView("~/Views/TraineeLessonDashboard/_TraineeLessonDetailModal.cshtml", viewModel);
         }
 
-        // [FromBody] : "deserialize the JSON in the request body into this C# object", necessary for more complex types
+        // [FromBody] from json [FromFrom] from html form, either necessary for more complex types
         [HttpPost("state-change")]
-        public async Task<IActionResult> SaveTraineeLessonStateChange(TraineeLessonDto traineeLessonUpdate) {
+        public async Task<IActionResult> SaveTraineeLessonStateChange([FromForm] TraineeLessonDto traineeLessonUpdate) {
             await _traineeLessonDetailService.SaveTraineeLessonStateChange(traineeLessonUpdate, User);
 
             // reloads page
             return RedirectToAction("ShowTraineeLessonDetailView", "TraineeLessonDetailController", new { traineeLessonId = traineeLessonUpdate.TraineeLessonId });
         }
 
-        // [FromBody] : "deserialize the JSON in the request body into this C# object", necessary for more complex types
+        // [FromBody] from json [FromFrom] from html form, either necessary for more complex types
         [HttpPost("save-feedback")]
-        public async Task<IActionResult> SaveFeedback([FromBody] FeedbackDto feedback) {
+        public async Task<IActionResult> SaveFeedback([FromForm] FeedbackDto feedback) {
             await _traineeLessonDetailService.SaveFeedback(feedback, User);
 
             return RedirectToAction("ShowTraineeLessonDetailView", "TraineeLessonDetailController", new { traineeLessonId = feedback.TraineeLessonId });
