@@ -2,7 +2,7 @@
 @model TraineeTracker.Models.Dtos.ProcessingPauseDto
 
 @{
-    ViewData["Title"] = $"Create Processing Pause for {((ApplicationUser)ViewBag.User).UserName}";
+    ViewData["Title"] = $"Create Processing Pause for {ViewBag.UserName}";
 }
 
 <h2>@ViewData["Title"]</h2>
