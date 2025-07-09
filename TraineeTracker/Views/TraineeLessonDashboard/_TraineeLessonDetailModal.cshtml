@@ -25,12 +25,8 @@
                 <div class="accordion-body sopro-accordion-truncate">
                     <p>Link: <a href="@Model.Lesson.LinkUrl" target="_blank">@Model.Lesson.LinkUrl</a></p>
                     <p>Estimation: @Model.Lesson.EstimatedEffort days</p>
-                    @if (@Model.TraineeLesson.DayStarted != null) {
-                        <p>Started: @Model.TraineeLesson.DayStarted.Value.ToString("dd. MMMM yyyy")</p>
-                    }
-                    @if (@Model.TraineeLesson.DayFinished != null) {
-                        <p>Finished: @Model.TraineeLesson.DayFinished.Value.ToString("dd. MMMM yyyy")</p>
-                    }
+                    <p>Started: @(Model.TraineeLesson.DayStarted != null ? Model.TraineeLesson.DayStarted.Value.ToString("dd. MMMM yyyy") : "/")</p>
+                    <p>Finished: @(Model.TraineeLesson.DayFinished != null ? Model.TraineeLesson.DayFinished.Value.ToString("dd. MMMM yyyy") : "/")</p>
                 </div>
             </div>
         </div>
