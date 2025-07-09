@@ -241,11 +241,11 @@
                             window.hookUpStateChangeForms();
                         }
                     })
-                    .catch(err => console.error("Failed to load modal", err));
+                    .catch(err => console.error("Failed to load modal", err))
                     .finally(() => {
                         // reset cursor
                         document.body.style.cursor = 'default';
-                    })
+                    });
             });
         });
     </script>
