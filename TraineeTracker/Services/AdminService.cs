@@ -6,6 +6,7 @@ using TraineeTracker.Models.Dtos;
 using TraineeTracker.Data.Feedbacks;
 using TraineeTracker.Data.TeachingPlans;
 using TraineeTracker.Data.TraineeStatistics;
+using TraineeTracker.Models.ViewModels;
 
 namespace TraineeTracker.Services.Admin {
     public class AdminService {
@@ -35,7 +36,7 @@ namespace TraineeTracker.Services.Admin {
             _traineeStatisticsRepository = traineeStatisticsRepository;
         }
 
-        public async Task<Dictionary<string, string>> GetUserRoles() {
+        public async Task<AdminDashboardViewModel> BuildAdminDashboardViewModelAsync() {
             var users = await _applicationUserRepository.GetAllAsync();
             var userRoles = new Dictionary<string, string>();
             foreach (var user in users) {
@@ -46,7 +47,10 @@ namespace TraineeTracker.Services.Admin {
                     userRoles[user.Id] = roles.First();
                 }
             }
-            return userRoles;
+            return new AdminDashboardViewModel {
+                Users = users,
+                UserRoles = userRoles
+            };
         }
 
         public async Task<ServiceResult> CreateUserAsync(ApplicationUserDto dto) {
