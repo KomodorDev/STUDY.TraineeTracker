@@ -120,8 +120,8 @@ namespace TraineeTracker.Services
             // update database
             await _databaseTraineeLessonRepository.UpdateAsync(oldTraineeLesson);
 
-            // sends email and creates log
-            await _emailNotificationService.NotifyAboutStateChangeAsync(oldTraineeLesson, oldState, targetState);
+            // sends email (different thread) and creates log
+            _ = Task.Run(() => _emailNotificationService.NotifyAboutStateChangeAsync(oldTraineeLesson, oldState, targetState));
             await LogStatusChange(oldTraineeLesson, oldState, targetState, user);
         }
 
