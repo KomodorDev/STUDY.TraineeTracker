@@ -1,70 +1,59 @@
 @model TraineeTracker.Models.ViewModels.TeachingPlan.ImportDashboardViewModel
-
-<h1>Import Dashboard</h1>
-
-<!-- 1) Import-Form -->
-<form asp-action="ImportNewTeachingPlan"
-      asp-controller="TeachingPlan"
-      method="post"
-      enctype="multipart/form-data">
-  @Html.AntiForgeryToken()
-
-  <input type="text" name="NewPlanName" required />
-  <input type="file" name="NewPlanFile" required />
-  <button type="submit">Import</button>
-</form>
-
-<hr />
-
-<h2>Vorhandene Lehrpläne</h2>
-<table>
-  <thead>
-    <tr>
-      <th>Name</th>
-      <th>Datei</th>
-      <th>Lektionen</th>
-      <th>Azubis</th>
-      <th>Aktionen</th>
-    </tr>
-  </thead>
-  <tbody>
-    @foreach (var plan in Model.ExistingTeachingPlans)
-    {
-      <tr>
-        <td>@plan.Name</td>
-        <td>@plan.LastUpdated.ToString("g")</td>
-        <td>@plan.LessonCount</td> @* Anzahl der Lektionen *@
-        <td>@plan.TraineeCount</td> @* Anzahl der Azubis *@
-        <td>
-          <!-- Update -->
-          <form asp-action="UpdateTeachingPlan"
-               method="post"
-               enctype="multipart/form-data"
-              class="d-inline">
-            @Html.AntiForgeryToken()
-
-            <input type="hidden" name="ExistingTeachingPlanId" value="@plan.TeachingPlanId" />
-            <input type="file" name="NewPlanFile" required />
-            <button type="submit">Update</button>
-          </form>
-
-          <!-- Delete -->
-          <form asp-action="DeleteTeachingPlan"
-          method="post"
-          class="d-inline">
-            @Html.AntiForgeryToken()
-
-            <input type="hidden" name="ExistingTeachingPlanId" value="@plan.TeachingPlanId" />
-            <button type="submit" onclick="return confirm('Löschen?');">
-              Delete
-            </button>
-          </form>
-        </td>
-      </tr>
-    }
-  </tbody>
-</table>
-
-@section Scripts {
-  @await Html.PartialAsync("_ValidationScriptsPartial")
+@{
+    ViewData["Title"] = "Import Dashboard";
+    Layout = "_Layout";
 }
+<link rel="stylesheet" href="~/css/ImportDashboard_temp.css?v=@DateTime.Now.Ticks" />
+
+<div class="import-dashboard-container">
+  <!-- Fixierte Import-Zeile -->
+  <div class="import-header-fixed">
+    <form asp-action="ImportNewTeachingPlan"
+          asp-controller="TeachingPlan"
+          method="post"
+          enctype="multipart/form-data"
+          class="import-form">
+      @Html.AntiForgeryToken()
+      <input type="text" name="NewPlanName" placeholder="Planname" required />
+      <input type="file" name="NewPlanFile" required />
+      <button type="submit" class="import-btn">Import</button>
+    </form>
+  </div>
+
+  <!-- Scrollbare Liste der Lehrpläne -->
+  <div class="plan-list-container">
+    @if (Model.ExistingTeachingPlans == null || !Model.ExistingTeachingPlans.Any())
+    {
+      <div class="no-plans">Keine Lehrpläne gefunden.</div>
+    }
+    else
+    {
+      @foreach (var plan in Model.ExistingTeachingPlans)
+      {
+        <div class="plan-box">
+          <div class="plan-info">
+            <h3 class="plan-name">@plan.Name</h3>
+            <span class="plan-meta">Trainees: @plan.TraineeCount</span>
+            <span class="plan-meta">Lektionen: @plan.LessonCount</span>
+            <span class="plan-meta">Zuletzt: @plan.LastUpdated.ToString("dd.MM.yyyy")</span>
+          </div>
+          <div class="plan-actions">
+            <!-- Update -->
+            <form asp-action="UpdateTeachingPlan" method="post" enctype="multipart/form-data">
+              @Html.AntiForgeryToken()
+              <input type="hidden" name="ExistingTeachingPlanId" value="@plan.TeachingPlanId" />
+              <input type="file" name="NewPlanFile" required />
+              <button type="submit" class="update-btn">Update</button>
+            </form>
+            <!-- Delete -->
+            <form asp-action="DeleteTeachingPlan" method="post" onsubmit="return confirm('Löschen?');">
+              @Html.AntiForgeryToken()
+              <input type="hidden" name="existingTeachingPlanId" value="@plan.TeachingPlanId" />
+              <button type="submit" class="delete-btn">Löschen</button>
+            </form>
+          </div>
+        </div>
+      }
+    }
+  </div>
+</div>

@@ -1,0 +1,112 @@
+/* Container für das gesamte Dashboard */
+.import-dashboard-container {
+  width: 90%;
+  max-width: 1200px;
+  margin: 2rem auto;
+  background: #f4f4f4;             /* Platzhalter–Farbe, anpassen nach CI */
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  display: grid;
+  grid-template-rows: auto 1fr;    /* Header oben, Liste füllt restliche Höhe */
+  height: calc(100vh - 4rem);      /* Vollbild-Höhe minus margin */
+}
+
+/* Fixierter Import-Header */
+.import-header-fixed {
+  background: #fff;
+  padding: 1rem;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  border-radius: 8px 8px 0 0;
+}
+
+/* Grid-Aufbau für das Import-Formular */
+.import-form {
+  display: grid;
+  grid-template-columns: 1fr auto auto; /* Textfeld | File-Input | Button */
+  align-items: center;
+  gap: 1rem;
+}
+
+/* Inputs im Import-Form */
+.import-form input[type="text"],
+.import-form input[type="file"] {
+  padding: 0.5rem;
+  border: 1px solid #ccc;            /* neutraler Rahmen */
+  border-radius: 4px;
+}
+
+/* Import-Button */
+.import-form .import-btn {
+  padding: 0.6rem 1.2rem;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  /* background/Farbe erst später definieren */
+}
+
+/* Container für die Liste der Teaching Plans */
+.plan-list-container {
+  overflow-y: auto;
+  padding: 1rem;
+  background: #fafafa;
+  border-radius: 0 0 8px 8px;
+}
+
+/* Anzeige, wenn keine Pläne existieren */
+.no-plans {
+  text-align: center;
+  color: #666;
+  padding: 2rem;
+  font-style: italic;
+}
+
+/* Einzelne Plan-Box */
+.plan-box {
+  background: #fff;
+  border-radius: 6px;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+  margin-bottom: 1rem;
+  padding: 1rem;
+  display: grid;
+  grid-template-columns: 3fr 1fr;    /* Info | Aktionen */
+  align-items: center;
+  gap: 1rem;
+}
+
+/* Linke Seite: Plan-Info (Name + Meta) */
+.plan-info {
+  display: grid;
+  grid-auto-flow: column;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.plan-name {
+  margin: 0;
+  font-size: 1.2rem;
+}
+
+.plan-meta {
+  font-size: 0.9rem;
+  color: #555;
+}
+
+/* Rechte Seite: Buttons Update / Delete */
+.plan-actions {
+  display: grid;
+  grid-auto-flow: column;
+  justify-content: end;
+  gap: 0.5rem;
+}
+
+.plan-actions .update-btn,
+.plan-actions .delete-btn {
+  padding: 0.4rem 0.8rem;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  /* Auch hier Farben/hover später definieren */
+}
