@@ -80,10 +80,11 @@
     padding: 0.4rem 0.7rem;
     border-radius: 4px;
     cursor: pointer;
-    width: 80px; /* ensures equal width */
+    width: 120px; /* ensures equal width */
+
+    text-wrap: nowrap;
     font-size: 0.85rem;
 }
-
 .mark-read-btn:hover {
     background-color: #218838;
 }
@@ -95,7 +96,9 @@
     padding: 0.4rem 0.7rem;
     border-radius: 4px;
     cursor: pointer;
-    width: 80px; /* ensures equal width */
+    width: 120px; /* ensures equal width */
+
+    text-wrap: nowrap;
     font-size: 0.85rem;
 }
 
