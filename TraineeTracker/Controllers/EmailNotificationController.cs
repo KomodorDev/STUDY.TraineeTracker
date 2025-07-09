@@ -3,7 +3,9 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using TraineeTracker.Models.Dtos;
 using TraineeTracker.Services.Email;
+using Microsoft.AspNetCore.Authorization;
 
+[Authorize]
 public class EmailNotificationController : Controller {
     private readonly EmailNotificationService _emailNotificationService;
 
