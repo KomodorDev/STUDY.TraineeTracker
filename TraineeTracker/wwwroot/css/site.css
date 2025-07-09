@@ -154,24 +154,24 @@ a {
 }
 
 .sopro-button-content:hover {
-  filter: brightness(0.9);
+  filter: brightness(0.95);
 }
 
 .sopro-button-header {
-  height: 2.813rem;  /* "60" px */
-  min-width: 7.031rem; /* "150" px */
+  height: 2.813rem !important;  /* "60" px */
+  min-width: 7.031rem !important; /* "150" px */
   cursor: pointer;
 
-  font-size: 1.406; /* "30" px */
-  font-weight: 900;
+  font-size: 1.406rem !important; /* "30" px */
+  font-weight: 900 !important;
 
-  border-radius: 11px;
-  background-color: #e61d47;
+  border-radius: 11px !important;
+  background-color: #e61d47 !important;
+  border: none !important;
   transition: background-color 0.2s ease;
 }
-
 .sopro-button-header:hover {
-  filter: brightness(0.9);
+  filter: brightness(0.94);
 }
 
 /* NAVBAR STYLING ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++*/
