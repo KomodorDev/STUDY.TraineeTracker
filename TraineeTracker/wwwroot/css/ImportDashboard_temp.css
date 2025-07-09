@@ -1,12 +1,16 @@
-.sopro-grid-management {
-  grid-template-rows: auto 1fr; /* statt 75px 1fr :contentReference[oaicite:0]{index=0} */
+/* by blaskale with help of schleale */
+
+h3 {
+  font-size: 1.406rem;
+  font-weight: 900;
+  margin-bottom: 3px;
 }
 
 .sopro-grid-management > .sopro-card:first-child {
-  height: auto !important;
-  min-height: auto !important;
-  overflow: visible !important;
-  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 1rem;
 }
 
 /* Container für das gesamte Dashboard */
@@ -28,6 +32,12 @@
   grid-template-columns: 1fr auto auto; /* Textfeld | File-Input | Button */
   align-items: center;
   gap: 1rem;
+
+  height: 45px;
+}
+.import-form > * {
+  border-radius: 11px;
+  height: 100%;
 }
 
 /* Inputs im Import-Form */
@@ -35,7 +45,6 @@
 .import-form input[type="file"] {
   padding: 0.5rem;
   border: 1px solid #ccc;            /* neutraler Rahmen */
-  border-radius: 4px;
 }
 
 .import-btn{
@@ -54,10 +63,13 @@
 
 /* Container für die Liste der Teaching Plans */
 .plan-list-container {
-  overflow-y: auto;
-  padding: 1rem;
-  background: #fafafa;
+  overflow-y: scroll;
+  padding: 1.172rem;
   border-radius: 0 0 8px 8px;
+
+  row-gap: 1.172rem;
+  display: flex;
+  flex-direction: column;
 }
 
 /* Anzeige, wenn keine Pläne existieren */
@@ -85,8 +97,14 @@
   box-shadow: 0 1px 3px rgba(0,0,0,0.1);
 }
 
-.plan-box > .plan-info {
-  display: contents;
+.plan-info {
+  display: grid;
+  align-items: center;
+  padding-left: 1.172rem;
+  width: 100%;
+  grid-template-columns: 1fr 150px 150px 190px 1fr;
+  padding-right: 1.172rem;
+  gap: 1.172rem;
 }
 
 .plan-box > .plan-name {
@@ -94,6 +112,9 @@
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+
+  font-size: 1.406rem;
+  margin-bottom: 4px;
 }
 
 .plan-box > .plan-meta:nth-of-type(1) {
@@ -103,7 +124,7 @@
   white-space: nowrap;
 }
 
-plan-box > .plan-meta:nth-of-type(2) {
+.plan-box > .plan-meta:nth-of-type(2) {
   grid-column: 3;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -119,30 +140,13 @@ plan-box > .plan-meta:nth-of-type(2) {
 
 .plan-actions {
   display: flex;
-  align-items: center;
-  gap: 0.5rem;
+  margin-left: 1rem;
+  justify-content: right;
 }
 
 .plan-actions form {
-  display: block;  /* oder inline-block/inline-flex, wie Du magst */
-  margin: 0;
+  display: flex;
 }
-
-.update-btn {
-  background-color: yellow;
-  color: black;
-}
-
-.delete-btn {
-  background-color: red;
-  color: black;
-}
-
-.delete-btn:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
-
 
 .plan-actions .update-btn,
 .plan-actions .delete-btn {
@@ -150,4 +154,13 @@ plan-box > .plan-meta:nth-of-type(2) {
   border: none;
   border-radius: 4px;
   cursor: pointer;
+}
+
+.sopro-card.teachingplan-card {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+
+  height: 3.516rem;
+  width: 100%;
 }
