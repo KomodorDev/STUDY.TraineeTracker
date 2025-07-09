@@ -80,10 +80,11 @@
     padding: 0.4rem 0.7rem;
     border-radius: 4px;
     cursor: pointer;
-    width: 80px; /* ensures equal width */
+    width: 120px; /* ensures equal width */
+
+    text-wrap: nowrap;
     font-size: 0.85rem;
 }
-
 .mark-read-btn:hover {
     background-color: #218838;
 }
@@ -95,7 +96,9 @@
     padding: 0.4rem 0.7rem;
     border-radius: 4px;
     cursor: pointer;
-    width: 80px; /* ensures equal width */
+    width: 120px; /* ensures equal width */
+
+    text-wrap: nowrap;
     font-size: 0.85rem;
 }
 
@@ -137,14 +140,89 @@
     100% { transform: rotate(360deg); }
   }
   
-.select-wide {
+.feedback-select-wide {
     width: 250px;
 }
 
-.select-medium {
+.feedback-select-medium {
     width: 180px;
 }
 
-.select-small {
+.feedback-select-small {
     width: 120px;
+}
+
+
+.flex-card {
+    display: flex;
+    flex-direction: row;
+    gap: 1rem;
+    flex-wrap: wrap;
+    align-content: center;
+    justify-content: center;
+    align-items: center;
+    height: auto;        /* passt sich automatisch dem Inhalt an */
+    min-height: 0;       /* kein Mindestmaß erzwingen */
+    overflow: visible;   /* falls Inhalte nach außen ragen könnten */
+  }
+
+
+/* Filters (hintsimo, revised by schleale) */
+.filter-bar {
+    display: flex;
+    align-items: center;
+    height: auto;  
+    justify-content: center;
+    border: 2px solid black;
+    border-radius: 11px;
+    overflow: hidden;
+    width: 100%;
+}
+
+.filter-tab {
+    display: flex;
+    align-items: center;
+    padding: 0.6rem 1.2rem;
+
+    border-right: 1px solid black;
+    background: white;
+
+    color: black;
+    font-weight: 900;
+    text-decoration: none;
+    text-align: center;
+    white-space: nowrap;
+
+    width: 100%;
+}
+.filter-tab:last-child {
+    border-right: none;
+}
+.filter-tab:hover {
+    background: #f8f9fa;
+    color: black;
+    text-decoration: underline;
+}
+.filter-tab.active {
+    background: #ffe3e3;
+    color: #e61d47;
+}
+.filter-tab.active:hover {
+    background: #ffe3e3;
+}
+
+.sopro-card-filter {
+    display: flex;
+    align-items: center;      /* vertikale Zentrierung */
+    justify-content: center;  /* horizontale Zentrierung */
+    height: 60px;             /* feste Höhe statt min-height */
+    padding: 0 1rem;
+    box-shadow: 3px 3px 11px 0 rgba(0, 0, 0, 0.2);
+    border-radius: 11px;
+    background-color: white;
+    min-height: 0;  /* to allow scrollbars */
+    height: 100%;
+  
+    /* hide scrollbar overflow */
+    overflow: hidden;
 }
