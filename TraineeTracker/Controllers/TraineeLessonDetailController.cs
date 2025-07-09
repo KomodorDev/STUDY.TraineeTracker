@@ -29,11 +29,7 @@ namespace TraineeTracker.Controllers {
         public async Task<IActionResult> SaveTraineeLessonStateChange([FromForm] TraineeLessonDto traineeLessonUpdate) {
             await _traineeLessonDetailService.SaveTraineeLessonStateChange(traineeLessonUpdate, User);
 
-            // load updated modal
-            var viewModel = await ShowTraineeLessonDetailView(traineeLessonUpdate.TraineeLessonId);
-
-            // reloads page
-            return PartialView("~/Views/TraineeLessonDashboard/_TraineeLessonDetailModal.cshtml", viewModel);
+            return await ShowTraineeLessonDetailView(traineeLessonUpdate.TraineeLessonId);
         }
 
         // [FromBody] from json [FromFrom] from html form, either necessary for more complex types
@@ -41,11 +37,7 @@ namespace TraineeTracker.Controllers {
         public async Task<IActionResult> SaveFeedback([FromForm] FeedbackDto feedback) {
             await _traineeLessonDetailService.SaveFeedback(feedback, User);
 
-            // load updated modal
-            var viewModel = await ShowTraineeLessonDetailView(feedback.TraineeLessonId);
-
-            // reloads page
-            return PartialView("~/Views/TraineeLessonDashboard/_TraineeLessonDetailModal.cshtml", viewModel);
+            return await ShowTraineeLessonDetailView(feedback.TraineeLessonId);
         }
 
         [Authorize(Roles = "Admin,Mentor")]
@@ -53,11 +45,7 @@ namespace TraineeTracker.Controllers {
         public async Task<IActionResult> DeleteFeedback(int feedbackId, int traineeLessonIdForReturn) {
             await _traineeLessonDetailService.DeleteFeedback(User, feedbackId);
 
-            // load updated modal
-            var viewModel = await ShowTraineeLessonDetailView(traineeLessonIdForReturn);
-
-            // reloads page
-            return PartialView("~/Views/TraineeLessonDashboard/_TraineeLessonDetailModal.cshtml", viewModel);
+            return await ShowTraineeLessonDetailView(traineeLessonIdForReturn);
         }
     }
 }
