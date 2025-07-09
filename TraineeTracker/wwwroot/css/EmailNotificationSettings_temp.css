@@ -200,3 +200,29 @@ html {
   .status-label span.status-tag {
     margin-left: 8px;
   }
+
+
+  .sopro-grid-settings {
+    display: grid;
+    grid-template-columns: 1fr; /* nur eine Spalte */
+    grid-template-rows: 1fr;
+  
+    padding: 3.516rem;          
+    column-gap: 2.344rem;       
+
+    /*   
+    height: calc(100vh - 3.516rem); /* Höhe minus Navbar
+    width: 100vw;
+     */
+  }
+/*   
+  .sopro-grid-settings {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1.2rem;
+    padding: 1.2rem 2.4rem; /* gleich wie bei TraineeDashboard
+    max-width: 960px;
+    margin: 0 auto;
+  }
+   */
+  
