@@ -58,7 +58,8 @@
 }
 
 .sopro-card.sopro-table-format:hover {
-    box-shadow: inset 3px 3px 7px 0 rgba(0, 0, 0, 0.07);
+    /*box-shadow: inset 3px 3px 7px 0 rgba(0, 0, 0, 0.07);*/
+    filter: brightness(0.97);
     transform: translateX(-5px);
 }
 
