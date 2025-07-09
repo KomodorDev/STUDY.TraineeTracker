@@ -135,7 +135,7 @@ namespace TraineeTracker.Services {
 
         // --------------------------------------------------
         public void CheckHasAccess(ClaimsPrincipal user, string traineeId) {
-            Console.WriteLine("funktioniert auch");
+            Console.WriteLine("TraineeStatisticsService - CheckHasAccess called");
             if (user == null)
                 throw new UserNotFoundException();
 

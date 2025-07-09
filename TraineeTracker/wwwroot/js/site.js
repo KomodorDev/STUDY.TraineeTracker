@@ -1,10 +1,18 @@
 ﻿console.log("site.js loaded");
 
+
+// ------------------------------------------------------
 /* script for reloading modal */
 function hookUpStateChangeForms() {
+
+    // Browser Print
+    console.log("🔄 hookUpStateChangeForms() aufgerufen");
     document.querySelectorAll(".stateChangeForm").forEach(function (form) {
         if (form.querySelector("input[name='TargetStateName']")) {
             form.addEventListener("submit", async function (e) {
+
+                // Browser Print
+                console.log("📤 Submit intercepted on form:", form);
                 e.preventDefault();
 
                 document.body.classList.add('sopro-waiting-cur');
@@ -40,3 +48,77 @@ function hookUpStateChangeForms() {
 }
 
 window.hookUpStateChangeForms = hookUpStateChangeForms;
+
+
+
+
+// ------------------------------------------------------
+window.renderLessonChart = function(config) {
+    const chartEl = document.getElementById('lessonChart');
+    if (!chartEl) return;
+  
+    const ctx = chartEl.getContext('2d');
+  
+    new Chart(ctx, {
+      type: 'bar',
+      data: {
+        datasets: [
+          {
+            label: 'Predicted Effort Range',
+            data: config.data.map(d => ({ x: [config.effortOverlayMin, config.effortOverlayMax], y: d.y })),
+            backgroundColor: 'rgba(255, 165, 0, 0.25)',
+            parsing: { xAxisKey: 'x', yAxisKey: 'y' },
+            order: 0,
+            barThickness: 14,
+            maxBarThickness: 16
+          },
+          {
+            label: 'Effort (days)',
+            data: config.data,
+            backgroundColor: config.colors,
+            parsing: { xAxisKey: 'x', yAxisKey: 'y' },
+            order: 1,
+            barThickness: 14,
+            maxBarThickness: 16
+          }
+        ]
+      },
+      options: {
+        indexAxis: 'y',
+        responsive: true,
+        maintainAspectRatio: false,
+        animation: false,
+        scales: {
+          x: {
+            beginAtZero: true,
+            title: { display: true, text: 'Effort' }
+          },
+          y: {
+            type: 'category',
+            ticks: { display: false },
+            grid: { drawTicks: false }
+          }
+        },
+        plugins: {
+          legend: { display: false },
+          tooltip: { enabled: true },
+          annotation: {
+            annotations: {
+              today: {
+                type: 'line',
+                xMin: config.todayPos,
+                xMax: config.todayPos,
+                borderColor: 'black',
+                borderWidth: 2,
+                label: {
+                  content: 'current progress',
+                  enabled: true,
+                  position: 'start'
+                }
+              }
+            }
+          }
+        }
+      }
+    });
+  };

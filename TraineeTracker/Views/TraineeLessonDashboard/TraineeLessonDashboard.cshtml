@@ -84,12 +84,12 @@
                 </div>
         
                 <!-- Expand Button -->
-                <a asp-controller="TraineeStatistics"
-                asp-action="ShowTraineeStatisticsDashboardView"
-                asp-route-traineeId="@Model.SelectedTrainee!.Id"
-                class="btn btn-sm btn-outline-primary mt-3">
+                <button id="openStatisticsModalBtn"
+                        class="btn btn-outline-primary"
+                        data-trainee-id="@Model.SelectedTrainee?.Id">
                     Expand
-                </a>
+                </button>
+
             </div>
         </section>
     </div>
@@ -214,6 +214,8 @@
 <!-- usually, you would load the modal here, but we need extra data for the detailed view -->
 <div id="modalPlaceholder"></div>
 
+
+<!-- script for opening modal-->
 @section Scripts {
     <script>
         /* open modal */
@@ -254,6 +256,55 @@
         if (modalEl) {
             modalEl.addEventListener('hidden.bs.modal', () => {
                 location.reload();
+            });
+        }
+    </script>
+
+
+    <script>
+        const expandBtn = document.getElementById("openStatisticsModalBtn");
+        if (expandBtn) {
+        expandBtn.addEventListener("click", function () {
+            const traineeId = this.dataset.traineeId;
+
+            document.body.style.cursor = "wait";
+            console.log("TraineeLessonDashboard - BROWSER:📦 traineeId:", traineeId);
+            fetch(`/TraineeStatistics/${traineeId}`)
+            .then(response => response.text())
+            .then(html => {
+                // Ganze Modalstruktur direkt in den Platzhalter schreiben
+                document.getElementById("modalPlaceholder").innerHTML = html;
+
+
+                // Modal aus dem neu geladenen HTML holen und anzeigen
+                const modalEl = document.getElementById("traineeStatisticsModal");
+                const modal = new bootstrap.Modal(modalEl);
+                modal.show();
+
+                // 🔍 Chart-Konfig lesen
+                const configEl = document.getElementById("lessonChartConfigData");
+                if (configEl) {
+                    try {
+                    const config = JSON.parse(configEl.textContent);
+                    window.lessonChartConfig = config;
+                    console.log("✅ lessonChartConfig geladen:", config);
+
+                    if (typeof window.renderLessonChart === "function") {
+                        window.renderLessonChart(config);
+                    }
+                    } catch (e) {
+                    console.error("❌ Fehler beim Parsen der Chart-Konfiguration:", e);
+                    }
+                } else {
+                    console.warn("⚠️ Kein lessonChartConfigData gefunden");
+                }
+                })
+                .catch(err => {
+                console.error("❌ Fehler beim Laden der Statistik-Modal:", err);
+                })
+                .finally(() => {
+                document.body.style.cursor = "default";
+                });
             });
         }
     </script>
