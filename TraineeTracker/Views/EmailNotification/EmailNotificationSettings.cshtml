@@ -4,80 +4,72 @@
     ViewData["Title"] = "Notification Settings";
 }
 
-<link rel="stylesheet" href="~/css/EmailNotificationSettings_temp
-.css" />
+@{
+    var isTrainee = User.IsInRole("Trainee");
+    var notifyLessonText = isTrainee 
+        ? "Notify me when one of my lessons is marked as  "
+        : "Notify me when any lesson is marked as  ";
 
-<div class="card">
-    <div class="card-header">@ViewData["Title"]</div>
+    var notifyPlanText = isTrainee 
+        ? "Notify me when my teaching plan is updated (including a list of added and removed lessons)"
+        : "Notify me when the teaching plan of a trainee is updated (including a list of added and removed lessons)";
+}
 
-    <form asp-action="SaveEmailNotificationSettingChange" method="post" class="notification-settings-form">
+@section Styles {
+    <link rel="stylesheet" href="~/css/EmailNotificationSettings_temp.css" asp-append-version="true" />
+}
 
-        <div class="notification-setting">
+<div class="sopro-grid-settings">
+    <div class="sopro-card small-header">
+        <div class="header thiccboi">Configure your email notification preferences here ...</div>
+
+        <form asp-action="SaveEmailNotificationSettingChange" method="post" class="sopro-inner-card flex">
+            <!-- Alle Label-Checkboxen wie vorher -->
             <label class="status-label">
                 <input type="checkbox" asp-for="ReceiveSkippedNotifications" />
-                Notify when lesson is marked as
-                <span class="sopro-tag skipped">Skipped</span>
+                @notifyLessonText&nbsp; <span class="sopro-tag skipped">Skipped</span>
             </label>
-        </div>
 
-        <div class="notification-setting">
             <label class="status-label">
                 <input type="checkbox" asp-for="ReceiveOpenNotifications" />
-                Notify when lesson is marked as
-                <span class="sopro-tag open">Open</span>
+                @notifyLessonText&nbsp; <span class="sopro-tag open">Open</span>
             </label>
-        </div>
 
-        <div class="notification-setting">
             <label class="status-label">
                 <input type="checkbox" asp-for="ReceiveStartedNotifications" />
-                Notify when lesson is marked as
-                <span class="sopro-tag started">Started</span>
+                @notifyLessonText&nbsp; <span class="sopro-tag started">Started</span>
             </label>
-        </div>
 
-        <div class="notification-setting">
             <label class="status-label">
                 <input type="checkbox" asp-for="ReceiveFinishedNotifications" />
-                Notify when lesson is marked as
-                <span class="sopro-tag finished">Finished</span>
+                @notifyLessonText&nbsp; <span class="sopro-tag finished">Finished</span>
             </label>
-        </div>
 
-        <div class="notification-setting">
             <label class="status-label">
                 <input type="checkbox" asp-for="ReceiveRejectedNotifications" />
-                Notify when lesson is marked as
-                <span class="sopro-tag rejected">Rejected</span>
+                @notifyLessonText&nbsp; <span class="sopro-tag rejected">Rejected</span>
             </label>
-        </div>
 
-        <div class="notification-setting">
             <label class="status-label">
                 <input type="checkbox" asp-for="ReceiveAcceptedNotifications" />
-                Notify when lesson is marked as
-                <span class="sopro-tag accepted">Accepted</span>
+                @notifyLessonText&nbsp; <span class="sopro-tag accepted">Accepted</span>
             </label>
-        </div>
 
-        <div class="notification-setting">
             <label class="status-label">
                 <input type="checkbox" asp-for="ReceiveRatedNotifications" />
-                Notify when lesson is marked as
-                <span class="sopro-tag rated">Rated</span>
+                @notifyLessonText&nbsp; <span class="sopro-tag rated">Rated</span>
             </label>
-        </div>
 
-        <div class="notification-setting">
-            <label>
+            <label class="status-label">
                 <input type="checkbox" asp-for="ReceiveImportChangeNotifications" />
-                Notify when teaching plan is updated
+                @notifyPlanText
             </label>
-        </div>
-
-        <button type="submit" class="button">Save Settings</button>
-    </form>
+            
+            <button type="submit" class="button mt-3">Save Settings</button>
+        </form>
+    </div>
 </div>
+
 
 <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 
@@ -87,17 +79,13 @@
     const saveButton = form.querySelector("button[type='submit']");
 
     form.addEventListener("submit", function (event) {
-      event.preventDefault(); // ⛔ stop immediate submit
-
-      // Drehung starten
+      event.preventDefault();
       saveButton.classList.add("animate-spin");
 
-      // Button-Position im Viewport
       const rect = saveButton.getBoundingClientRect();
       const x = (rect.left + rect.width / 2) / window.innerWidth;
       const y = (rect.top + rect.height / 2) / window.innerHeight;
 
-      // Konfetti mehrfach feuern
       for (let i = 0; i < 3; i++) {
         setTimeout(() => {
           confetti({
@@ -109,10 +97,9 @@
         }, i * 150);
       }
 
-      // Nach Effekt: Animation zurücksetzen + Submit absenden
       setTimeout(() => {
         saveButton.classList.remove("animate-spin");
-        form.submit(); // ✅ jetzt tatsächlich absenden
+        form.submit();
       }, 1200);
     });
   });
