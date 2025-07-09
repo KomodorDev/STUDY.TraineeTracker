@@ -109,6 +109,16 @@
   margin: 0;          /* verhindert extra-Abstände */
 }
 
+.update-btn {
+  background-color: yellow;
+  color: black;
+}
+
+.delete-btn {
+  background-color: red;
+  color: black;
+}
+
 .plan-actions .update-btn,
 .plan-actions .delete-btn {
   padding: 0.4rem 0.8rem;
