@@ -66,15 +66,11 @@ namespace TraineeTracker.Controllers {
 
         [HttpGet("/ProcessingPauses")]
         public async Task<IActionResult> ShowManageProcessingPausesView(string traineeId) {
-            var userTask = _applicationUserRepository.FindByIdAsync(traineeId);
-            var pausesTask = _processingPauseRepository.GetAllPausesAsync(traineeId);
-            await Task.WhenAll(userTask, pausesTask);
-            var user = await userTask;
-            if (user == null) {
+            var trainee = await _adminService.FindByIdWithProcessingPausesAsync(traineeId);
+            if (trainee == null) {
                 return NotFound();
             }
-            ViewBag.Pauses = await pausesTask;
-            return View("ManageProcessingPauses", user);
+            return View("ManageProcessingPauses", trainee);
         }
 
         [HttpGet("/CreateProcessingPause")]
