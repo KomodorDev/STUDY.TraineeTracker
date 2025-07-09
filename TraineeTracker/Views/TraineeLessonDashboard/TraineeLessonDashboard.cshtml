@@ -215,9 +215,9 @@
 <!-- usually, you would load the modal here, but we need extra data for the detailed view -->
 <div id="modalPlaceholder"></div>
 
-<!-- script for opening modal-->
 @section Scripts {
     <script>
+        /* open modal */
         document.querySelectorAll('tr[data-lesson-id]').forEach(row => {
             row.addEventListener('click', function () {
                 const lessonId = this.getAttribute('data-lesson-id');
@@ -248,6 +248,15 @@
                     });
             });
         });
+
+        /* reload page after closing modal */
+        const modalEl = document.getElementById('lessonDetailModal');
+
+        if (modalEl) {
+            modalEl.addEventListener('hidden.bs.modal', () => {
+                location.reload();
+            });
+        }
     </script>
 }
 
