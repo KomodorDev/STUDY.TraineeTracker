@@ -14,7 +14,6 @@
             enctype="multipart/form-data"
             class="import-form">
         @Html.AntiForgeryToken()
-        <label for="NewPlanName">Import Teachingplan</label>
         <input type="text" name="NewPlanName" placeholder="Planname" required />
         <input type="file" name="NewPlanFile" required />
         <button type="submit" class="import-btn">Import</button>
