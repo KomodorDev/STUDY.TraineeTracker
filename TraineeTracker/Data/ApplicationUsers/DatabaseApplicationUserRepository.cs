@@ -85,6 +85,12 @@ namespace TraineeTracker.Data.ApplicationUsers {
             .FirstOrDefaultAsync(u => u.Id == userId);
         }
 
+        public async Task<ApplicationUser?> FindByIdWithProcessingPausesAsync(string userId) {
+            return await _context.Users
+            .Include(u => u.ProcessingPauses)
+            .FirstOrDefaultAsync(u => u.Id == userId);
+        }
+
         public async Task<ApplicationUser?> FindByIdWithWrittenFeedbacksWithLessonAsync(string userId) {
             return await _context.Users
                 .Include(u => u.WrittenFeedbacks)
