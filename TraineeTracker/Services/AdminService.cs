@@ -6,11 +6,16 @@ using TraineeTracker.Models.Dtos;
 using TraineeTracker.Data.Feedbacks;
 using TraineeTracker.Data.TeachingPlans;
 using TraineeTracker.Data.TraineeStatistics;
+using TraineeTracker.Models.ViewModels.Admin;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 
 namespace TraineeTracker.Services.Admin {
     public class AdminService {
         private readonly IApplicationUserRepository _applicationUserRepository;
         private readonly IProcessingPauseRepository _processingPauseRepository;
+        private readonly RoleManager<IdentityRole> _roleManager;
 
         private readonly EmailNotificationService _emailNotificationService;
         private readonly TeachingPlanService _teachingPlanService;
@@ -21,6 +26,7 @@ namespace TraineeTracker.Services.Admin {
 
         public AdminService(IApplicationUserRepository applicationUserRepository,
                             IProcessingPauseRepository processingPauseRepository,
+                            RoleManager<IdentityRole> roleManager,
                             EmailNotificationService emailNotificationService,
                             TeachingPlanService teachingPlanService,
                             IFeedbackRepository feedbackRepository,
@@ -28,6 +34,7 @@ namespace TraineeTracker.Services.Admin {
                             ITraineeStatisticsRepository traineeStatisticsRepository) {
             _applicationUserRepository = applicationUserRepository;
             _processingPauseRepository = processingPauseRepository;
+            _roleManager = roleManager;
             _emailNotificationService = emailNotificationService;
             _teachingPlanService = teachingPlanService;
             _feedbackRepository = feedbackRepository;
@@ -35,7 +42,7 @@ namespace TraineeTracker.Services.Admin {
             _traineeStatisticsRepository = traineeStatisticsRepository;
         }
 
-        public async Task<Dictionary<string, string>> GetUserRoles() {
+        public async Task<AdminDashboardViewModel> BuildAdminDashboardViewModelAsync() {
             var users = await _applicationUserRepository.GetAllAsync();
             var userRoles = new Dictionary<string, string>();
             foreach (var user in users) {
@@ -46,7 +53,31 @@ namespace TraineeTracker.Services.Admin {
                     userRoles[user.Id] = roles.First();
                 }
             }
-            return userRoles;
+            return new AdminDashboardViewModel {
+                Users = users,
+                UserRoles = userRoles
+            };
+        }
+
+        public async Task<CreateUserViewModel> BuildCreateUserViewModelAsync() {
+            var viewModel = new CreateUserViewModel();
+            return await FillCreateUserDropdownsAsync(viewModel);
+        }
+
+        public async Task<CreateUserViewModel> FillCreateUserDropdownsAsync(CreateUserViewModel viewModel) {
+            var rolesTask = _roleManager.Roles.ToListAsync();
+            var plansTask = _teachingPlanRepository.GetAllTeachingPlansAsync();
+            var roles = await rolesTask;
+            var plans = await plansTask;
+            viewModel.Roles = roles.Select(r => new SelectListItem {
+                Value = r.Name,
+                Text = r.Name
+            });
+            viewModel.TeachingPlans = plans.Select(p => new SelectListItem {
+                Value = p.TeachingPlanId.ToString(),
+                Text = p.Name
+            });
+            return viewModel;
         }
 
         public async Task<ServiceResult> CreateUserAsync(ApplicationUserDto dto) {
@@ -139,6 +170,16 @@ namespace TraineeTracker.Services.Admin {
             return true;
         }
 
+        public async Task<CreateProcessingPauseViewModel> BuildCreateProcessingPauseViewModel(string traineeId) {
+            var user = await _applicationUserRepository.FindByIdAsync(traineeId);
+            return new CreateProcessingPauseViewModel {
+                ProcessingPause = new ProcessingPauseDto {
+                    TraineeId = traineeId
+                },
+                UserName = user.UserName
+            };
+        }
+
         public async Task<ServiceResult> CreateProcessingPauseAsync(ProcessingPauseDto dto) {
             var user = await _applicationUserRepository.FindByIdAsync(dto.TraineeId);
             if (user == null) {
@@ -176,6 +217,10 @@ namespace TraineeTracker.Services.Admin {
             pause.StartDate = dto.StartDate;
             pause.EndDate = dto.EndDate;
             await _processingPauseRepository.UpdateAsync(pause);
+        }
+
+        public async Task<ApplicationUser?> FindByIdWithProcessingPausesAsync(string userId) {
+            return await _applicationUserRepository.FindByIdWithProcessingPausesAsync(userId);
         }
 
         public async Task<ProcessingPauseDto> GetProcessingPauseDtoAsync(int processingPauseId) {

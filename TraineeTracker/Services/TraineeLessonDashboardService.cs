@@ -55,7 +55,7 @@ namespace TraineeTracker.Services {
             // +++++++++++++++
             // A. If user is Trainee:
             if (user.IsInRole("Trainee")) {
-                selectedTrainee = await _databaseApplicationUserRepository.FindByIdWithTraineeLessonsWithLessonsAndTeachingPlanAsync(userId) ?? throw new Exception("Trainee not found");
+                selectedTrainee = await _databaseApplicationUserRepository.FindByIdWithTeachingPlanAndTraineeLessonsWithLessonsAsync(userId) ?? throw new Exception("Trainee not found");
 
                 // Only current Trainee in Dropdown
                 selectableTrainees = [selectedTrainee];
@@ -79,7 +79,7 @@ namespace TraineeTracker.Services {
                         CheckHasAccess(user, mostRecentTrainee.Id);
 
                         // Set mostRecentlyViewedTrainee as selectedTrainee:
-                        selectedTrainee = await _databaseApplicationUserRepository.FindByIdWithTraineeLessonsWithLessonsAndTeachingPlanAsync(mostRecentTrainee.Id) ?? throw new Exception("Trainee not found");
+                        selectedTrainee = await _databaseApplicationUserRepository.FindByIdWithTeachingPlanAndTraineeLessonsWithLessonsAsync(mostRecentTrainee.Id) ?? throw new Exception("Trainee not found");
                     }
 
                     // If we have NO mostRecentTrainee:
@@ -100,7 +100,7 @@ namespace TraineeTracker.Services {
                         else {
 
                             // Get firstTrainee with Lessons
-                            selectedTrainee = await _databaseApplicationUserRepository.FindByIdWithTraineeLessonsWithLessonsAndTeachingPlanAsync(firstTrainee.Id) ?? throw new Exception("Trainee not found");
+                            selectedTrainee = await _databaseApplicationUserRepository.FindByIdWithTeachingPlanAndTraineeLessonsWithLessonsAsync(firstTrainee.Id) ?? throw new Exception("Trainee not found");
                         }
                     }
                 }
@@ -110,7 +110,7 @@ namespace TraineeTracker.Services {
                     CheckHasAccess(user, traineeId);
 
                     // Set request Trainee as selectedTrainee
-                    selectedTrainee = await _databaseApplicationUserRepository.FindByIdWithTraineeLessonsWithLessonsAndTeachingPlanAsync(traineeId) ?? throw new UserNotFoundException();
+                    selectedTrainee = await _databaseApplicationUserRepository.FindByIdWithTeachingPlanAndTraineeLessonsWithLessonsAsync(traineeId) ?? throw new UserNotFoundException();
                 }
             } else {
                 throw new Exception("Unauthorized access: user is neither Trainee, Mentor, nor Admin.");

@@ -15,9 +15,9 @@ namespace TraineeTracker.Models.Domain {
         public TeachingPlan? TeachingPlan { get; set; }
         public TraineeStatisticsSnapshot? TraineeStatisticsSnapshot { get; set; }
 
-        public ICollection<Feedback> WrittenFeedbacks { get; set; } = new List<Feedback>();
         public ICollection<ProcessingPause> ProcessingPauses { get; set; } = new List<ProcessingPause>();
         public ICollection<TraineeLesson> TraineeLessons { get; set; } = new List<TraineeLesson>();
+        public ICollection<Feedback> WrittenFeedbacks { get; set; } = new List<Feedback>();
 
 
         // Mentor
