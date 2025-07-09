@@ -70,48 +70,62 @@
 
 /* Einzelne Plan-Box */
 .plan-box {
-  background: #fff;
-  border-radius: 6px;
-  box-shadow: 0 1px 4px rgba(0,0,0,0.1);
-  margin-bottom: 1rem;
-  padding: 1rem;
   display: grid;
-  grid-template-columns: 3fr 1fr;    /* Info | Aktionen */
+  grid-template-columns: minmax(0, 0.5fr) 0.5fr 0.5fr 0.5fr auto;
   align-items: center;
   gap: 1rem;
+  border: 1px solid #bebdbd;    /* dünner grauer Rahmen */
+  border-radius: 4px;        /* leicht gerundete Ecken */
+  margin-bottom: 0.75rem;    /* Abstand zur nächsten Zeile */
+  padding: 0.75rem;          /* Innenabstand für mehr Luft */
 }
 
-/* Linke Seite: Plan-Info (Name + Meta) */
-.plan-info {
-  display: grid;
-  grid-auto-flow: column;
-  align-items: center;
-  gap: 0.75rem;
+.plan-box:hover {
+  border-color: #999;        /* dunklerer Rahmen beim Überfahren */
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
 }
 
-.plan-name {
-  margin: 0;
-  font-size: 1.2rem;
+.plan-box > .plan-info {
+  display: contents;
 }
 
-.plan-meta {
-  font-size: 0.9rem;
-  color: #555;
+.plan-box > .plan-name {
+  grid-column: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
-/* Rechte Seite: Buttons Update / Delete */
+.plan-box > .plan-meta:nth-of-type(1) {
+  grid-column: 2;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+plan-box > .plan-meta:nth-of-type(2) {
+  grid-column: 3;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.plan-box > .plan-meta:nth-of-type(3) {
+  grid-column: 4;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 .plan-actions {
-  display: grid;
-  grid-auto-flow: column;
-  justify-content: end;
+  display: flex;
+  align-items: center;
   gap: 0.5rem;
 }
 
 .plan-actions form {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;        /* Abstand zwischen den Elementen */
-  margin: 0;          /* verhindert extra-Abstände */
+  display: block;  /* oder inline-block/inline-flex, wie Du magst */
+  margin: 0;
 }
 
 .update-btn {
