@@ -97,14 +97,17 @@ namespace TraineeTracker.Services {
             if (!Enum.TryParse<TraineeLessonState>(traineeLessonUpdate.TargetStateName, out targetState))
                 throw new Exception("Invalid target state in TraineeLessonDto.");
 
-            // changes state, if allowed
+            // checks for missing rejection reason
+            if (targetState == TraineeLessonState.Rejected && String.IsNullOrWhiteSpace(traineeLessonUpdate.RejectionReason))
+                throw new ArgumentException("Rejection reason must be provided for transitioning to rejected.", nameof(traineeLessonUpdate));
+                
+            // transitions, if allowed
             TraineeLessonStateFactory factory = new();
             oldTraineeLesson.State = factory.Create(oldTraineeLesson.State).TransitionTo(targetState, user);
 
+            // changes dates
             if (oldTraineeLesson.State == TraineeLessonState.Rejected) {
                 // add rejection reason & remove dayFinished if lesson rejected
-                if (String.IsNullOrWhiteSpace(traineeLessonUpdate.RejectionReason))
-                    throw new ArgumentException("Rejection reason must be provided for transitioning to rejected.", nameof(traineeLessonUpdate));
                 oldTraineeLesson.RejectionReason = traineeLessonUpdate.RejectionReason;
                 oldTraineeLesson.DayFinished = null;
 
