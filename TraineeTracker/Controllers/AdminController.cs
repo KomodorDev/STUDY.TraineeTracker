@@ -29,12 +29,8 @@ namespace TraineeTracker.Controllers {
 
         [HttpGet("/AdminDashboard")]
         public async Task<IActionResult> ShowAdminDashboardView() {
-            var usersTask = _applicationUserRepository.GetAllAsync();
-            var rolesTask = _adminService.GetUserRoles();
-            await Task.WhenAll(usersTask, rolesTask);
-            var users = await usersTask;
-            ViewBag.UserRoles = await rolesTask;
-            return View("AdminDashboard", users);
+            var viewModel = await _adminService.BuildAdminDashboardViewModelAsync();
+            return View("AdminDashboard", viewModel);
         }
 
         [HttpGet("/CreateUser")]
