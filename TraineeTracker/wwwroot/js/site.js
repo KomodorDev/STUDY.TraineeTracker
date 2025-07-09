@@ -2,7 +2,7 @@
 
 /* script for reloading modal */
 function hookUpStateChangeForms() {
-    document.querySelectorAll("form").forEach(function (form) {
+    document.querySelectorAll(".stateChangeForm").forEach(function (form) {
         if (form.querySelector("input[name='TargetStateName']")) {
             form.addEventListener("submit", async function (e) {
                 e.preventDefault();
