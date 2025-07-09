@@ -34,8 +34,8 @@
             <div class="plan-info">
                 <h3 class="plan-name">@plan.Name</h3>
                 <span class="plan-meta">Trainees: @plan.TraineeCount</span>
-                <span class="plan-meta">Lektionen: @plan.LessonCount</span>
-                <span class="plan-meta">Zuletzt: @plan.LastUpdated.ToString("dd.MM.yyyy")</span>
+                <span class="plan-meta">Lessons: @plan.LessonCount</span>
+                <span class="plan-meta">Last Updated: @plan.LastUpdated.ToString("dd.MM.yyyy")</span>
             </div>
             <div class="plan-actions">
                 <!-- Update -->
@@ -49,7 +49,7 @@
                 <form asp-action="DeleteTeachingPlan" method="post" onsubmit="return confirm('Löschen?');">
                 @Html.AntiForgeryToken()
                 <input type="hidden" name="existingTeachingPlanId" value="@plan.TeachingPlanId" />
-                <button type="submit" class="delete-btn">Löschen</button>
+                <button type="submit" class="delete-btn">Delete</button>
                 </form>
             </div>
           </div>
