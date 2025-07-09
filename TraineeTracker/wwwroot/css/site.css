@@ -37,6 +37,12 @@ p {
   margin: 0;
 }
 
+a {
+  color: #e61d47;   /* url link color */
+}
+
+/* +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ */
+
 /* custom drop shadow + round corners */
 .sopro-card {
   box-shadow: 3px 3px 11px 0 rgba(0, 0, 0, 0.2);
@@ -79,6 +85,8 @@ p {
 
   background-color: #f2f2f2;
   overflow: hidden;
+
+  border: none;
 }
 .sopro-inner-card.flex {
     /* alignment */
@@ -241,6 +249,7 @@ nav.navbar .container-fluid {
 }
 .nav-link.active::after {
   background-color: #e61d47;
+  width: 100%;
 }
 
 .nav-link:hover::after {

@@ -56,3 +56,76 @@
     overflow: hidden;
     text-overflow: ellipsis;
 }
+
+
+/* Filters (hintsimo, revised by schleale) */
+.filter-bar {
+    display: flex;
+    align-items: center;
+    height: auto;  
+    justify-content: center;
+    border: 2px solid black;
+    border-radius: 11px;
+    overflow: hidden;
+    width: 100%;
+}
+
+.filter-tab {
+    display: flex;
+    align-items: center;
+    padding: 0.6rem 1.2rem;
+
+    border-right: 1px solid black;
+    background: white;
+
+    color: black;
+    font-weight: 900;
+    text-decoration: none;
+    text-align: center;
+    white-space: nowrap;
+
+    width: 100%;
+}
+.filter-tab:last-child {
+    border-right: none;
+}
+.filter-tab:hover {
+    background: #f8f9fa;
+    color: black;
+    text-decoration: underline;
+}
+.filter-tab.active {
+    background: #ffe3e3;
+    color: #e61d47;
+}
+.filter-tab.active:hover {
+    background: #ffe3e3;
+}
+
+.sopro-card-filter {
+    display: flex;
+    align-items: center;      /* vertikale Zentrierung */
+    justify-content: center;  /* horizontale Zentrierung */
+    height: 60px;             /* feste Höhe statt min-height */
+    padding: 0 1rem;
+    box-shadow: 3px 3px 11px 0 rgba(0, 0, 0, 0.2);
+    border-radius: 11px;
+    background-color: white;
+    min-height: 0;  /* to allow scrollbars */
+    height: 100%;
+  
+    /* hide scrollbar overflow */
+    overflow: hidden;
+}
+
+.select-wide {
+    background-color: white;
+    color: #e61d47;
+    font-weight: 900;
+    
+    border: none;
+    width: 100%;
+}
+.filter-selects {
+    width: 100%;
+}

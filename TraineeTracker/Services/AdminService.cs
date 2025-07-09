@@ -129,7 +129,7 @@ namespace TraineeTracker.Services.Admin {
                 }
                 user.ProcessingPauses.Clear();
 
-                if (user.TeachingPlan == null) {
+                if (user.TeachingPlanId == null) {
                     throw new Exception("Trainee requires Teachingplan.");
                 }
                 referenceUpdateTasks.Add(_teachingPlanService.UnassignTeachingPlanFromTraineeAsync(user));
