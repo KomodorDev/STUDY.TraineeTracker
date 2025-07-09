@@ -24,9 +24,7 @@
                             </button>
                         </p>
                         <div id="collapse-info" class="accordion-collapse collapse show" aria-labelledby="info"">
-                            <div class="accordion-body sopro-accordion-truncate">
-                                <p>Link: <a href="@Model.Lesson.LinkUrl" target="_blank">@Model.Lesson.LinkUrl</a></p>
-                                <p>Estimation: @Model.Lesson.EstimatedEffort days</p>
+                            <p>Estimation: @Model.Lesson.EstimatedEffort days</p>
                                 @if (@Model.TraineeLesson.DayStarted != null) {
                                     <p>Started: @Model.TraineeLesson.DayStarted.Value.ToString("dd. MMMM yyyy")</p>
                                 }
@@ -47,8 +45,8 @@
                             <div class="accordion-body sopro-accordion-truncate">
                                 <div class=sopro-status-select>
                                     @{
-                                        var currentStatus = "Open";
-                                        var selectableStatus = new String[]{"Skipped", "Started"};
+                                        var currentStatus = Model.TraineeLesson.State.ToString();
+                                        var selectableStates = Model.AllowedStateTransitions;
                                     }
                                     <!-- row 1 -->
                                     <form asp-controller="TraineeLessonDetail"
@@ -61,8 +59,8 @@
                                         <button type="submit"
                                             class="sopro-status-button
                                                 @(currentStatus == "Open" ? "current" : "")
-                                                @(selectableStatus.Contains("Open") ? "selectable" : "")"
-                                            @(selectableStatus.Contains("Open") ? "" : "disabled")>
+                                                @(selectableStates.Contains("Open") ? "selectable" : "")"
+                                            @(selectableStates.Contains("Open") ? "" : "disabled")>
                                             Open
                                         </button>
                                     </form>
@@ -77,8 +75,8 @@
                                         <button type="submit"
                                             class="sopro-status-button
                                                 @(currentStatus == "Started" ? "current" : "")
-                                                @(selectableStatus.Contains("Started") ? "selectable" : "")"
-                                            @(selectableStatus.Contains("Started") ? "" : "disabled")>
+                                                @(selectableStates.Contains("Started") ? "selectable" : "")"
+                                            @(selectableStates.Contains("Started") ? "" : "disabled")>
                                             Started
                                         </button>
                                     </form>
@@ -93,8 +91,8 @@
                                         <button type="submit"
                                             class="sopro-status-button
                                                 @(currentStatus == "Finished" ? "current" : "")
-                                                @(selectableStatus.Contains("Finished") ? "selectable" : "")"
-                                            @(selectableStatus.Contains("Finished") ? "" : "disabled")>
+                                                @(selectableStates.Contains("Finished") ? "selectable" : "")"
+                                            @(selectableStates.Contains("Finished") ? "" : "disabled")>
                                             Finished
                                         </button>
                                     </form>
@@ -109,8 +107,8 @@
                                         <button type="submit"
                                             class="sopro-status-button
                                                 @(currentStatus == "Accepted" ? "current" : "")
-                                                @(selectableStatus.Contains("Accepted") ? "selectable" : "")"
-                                            @(selectableStatus.Contains("Accepted") ? "" : "disabled")>
+                                                @(selectableStates.Contains("Accepted") ? "selectable" : "")"
+                                            @(selectableStates.Contains("Accepted") ? "" : "disabled")>
                                             Accepted
                                         </button>
                                     </form>
@@ -125,8 +123,8 @@
                                         <button type="submit"
                                             class="sopro-status-button
                                                 @(currentStatus == "Rated" ? "current" : "")
-                                                @(selectableStatus.Contains("Rated") ? "selectable" : "")"
-                                            @(selectableStatus.Contains("Rated") ? "" : "disabled")>
+                                                @(selectableStates.Contains("Rated") ? "selectable" : "")"
+                                            @(selectableStates.Contains("Rated") ? "" : "disabled")>
                                             Rated
                                         </button>
                                     </form>
@@ -151,8 +149,8 @@
                                         <button type="submit"
                                             class="sopro-status-button
                                                 @(currentStatus == "Skipped" ? "current" : "")
-                                                @(selectableStatus.Contains("Skipped") ? "selectable" : "")"
-                                            @(selectableStatus.Contains("Skipped") ? "" : "disabled")>
+                                                @(selectableStates.Contains("Skipped") ? "selectable" : "")"
+                                            @(selectableStates.Contains("Skipped") ? "" : "disabled")>
                                             Skipped
                                         </button>
                                     </form>
@@ -170,8 +168,8 @@
                                         <button type="submit"
                                             class="sopro-status-button
                                                 @(currentStatus == "Rejected" ? "current" : "")
-                                                @(selectableStatus.Contains("Rejected") ? "selectable" : "")"
-                                            @(selectableStatus.Contains("Rejected") ? "" : "disabled")>
+                                                @(selectableStates.Contains("Rejected") ? "selectable" : "")"
+                                            @(selectableStates.Contains("Rejected") ? "" : "disabled")>
                                             Rejected
                                         </button>
                                     </form>
