@@ -57,33 +57,38 @@ namespace TraineeTracker.Data.ApplicationUsers {
         public async Task<ApplicationUser?> FindByIdAsync(string userId) {
             return await _userManager.FindByIdAsync(userId);
         }
-
-        public async Task<ApplicationUser?> FindByIdWithNotificationSettingAsync(string userId)
-        {
-            return await _context.Users
-                .Include(u => u.EmailNotificationSetting)
-                .FirstOrDefaultAsync(u => u.Id == userId);
-        }
-
+        
         public async Task<ApplicationUser?> FindByIdWithLastSelectedTraineesAsync(string userId) {
             return await _context.Users
             .Include(u => u.LastSelectedTrainees)
             .FirstOrDefaultAsync(u => u.Id == userId);
         }
 
-        public async Task<ApplicationUser?> FindByIdWithProcessingPausesAndTraineeLessonsAsync(string userId) {
+        public async Task<ApplicationUser?> FindByIdWithNotificationSettingAsync(string userId) {
+            return await _context.Users
+                .Include(u => u.EmailNotificationSetting)
+                .FirstOrDefaultAsync(u => u.Id == userId);
+        }
+
+        public async Task<ApplicationUser?> FindByIdWithTeachingPlanAndTraineeLessonsWithLessonsAsync(string userId) {
+            return await _context.Users
+                .Include(u => u.TraineeLessons)
+                    .ThenInclude(tl => tl.Lesson)
+                .Include(u => u.TeachingPlan)
+                .FirstOrDefaultAsync(u => u.Id == userId);
+        }
+
+        public async Task<ApplicationUser?> FindByIdWithTraineeLessonsAndProcessingPausesAsync(string userId) {
             return await _context.Users
             .Include(u => u.ProcessingPauses)
             .Include(u => u.TraineeLessons)
             .FirstOrDefaultAsync(u => u.Id == userId);
         }
 
-        public async Task<ApplicationUser?> FindByIdWithTraineeLessonsWithLessonsAndTeachingPlanAsync(string userId) {
+        public async Task<ApplicationUser?> FindByIdWithProcessingPausesAsync(string userId) {
             return await _context.Users
-                .Include(u => u.TraineeLessons)
-                    .ThenInclude(tl => tl.Lesson)
-                .Include(u => u.TeachingPlan)
-                .FirstOrDefaultAsync(u => u.Id == userId);
+            .Include(u => u.ProcessingPauses)
+            .FirstOrDefaultAsync(u => u.Id == userId);
         }
 
         public async Task<ApplicationUser?> FindByIdWithWrittenFeedbacksWithLessonAsync(string userId) {

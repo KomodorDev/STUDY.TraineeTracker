@@ -1,4 +1,4 @@
-@model IEnumerable<TraineeTracker.Models.Domain.ApplicationUser>
+@model TraineeTracker.Models.ViewModels.Admin.AdminDashboardViewModel;
 
 @{
     ViewData["Title"] = "Manage Users";
@@ -24,12 +24,12 @@
                 </tr>
             </thead>
             <tbody>
-                @foreach (var user in Model)
+                @foreach (var user in Model.Users)
                 {
                     <tr>
-                        <td>@ViewBag.UserRoles[user.Id]</td>
+                        <td>@Model.UserRoles[user.Id]</td>
                         <td>@user.Email</td>
-                        @if (ViewBag.UserRoles[user.Id] == "Trainee")
+                        @if (Model.UserRoles[user.Id] == "Trainee")
                         {
                             <td>@user.TraineeStartDate - @user.TraineeEndDate</td>
                             <td><a class="btn btn-primary" asp-action="ShowManageProcessingPausesView"

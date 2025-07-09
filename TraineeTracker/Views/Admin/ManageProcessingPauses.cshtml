@@ -1,4 +1,3 @@
-@using TraineeTracker.Models.Domain
 @model TraineeTracker.Models.Domain.ApplicationUser
 
 @{
@@ -20,7 +19,7 @@
         </tr>
     </thead>
     <tbody>
-        @foreach (var pause in (IEnumerable<ProcessingPause>)ViewBag.Pauses)
+        @foreach (var pause in Model.ProcessingPauses)
         {
             <tr>
                 <td>@pause.StartDate</td>
