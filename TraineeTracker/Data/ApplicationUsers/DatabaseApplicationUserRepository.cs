@@ -57,7 +57,7 @@ namespace TraineeTracker.Data.ApplicationUsers {
         public async Task<ApplicationUser?> FindByIdAsync(string userId) {
             return await _userManager.FindByIdAsync(userId);
         }
-        
+
         public async Task<ApplicationUser?> FindByIdWithLastSelectedTraineesAsync(string userId) {
             return await _context.Users
             .Include(u => u.LastSelectedTrainees)
@@ -114,17 +114,29 @@ namespace TraineeTracker.Data.ApplicationUsers {
                 .Where(r => r.Name == roleName)
                 .Select(r => r.Id)
                 .FirstOrDefaultAsync();
+            // Console.WriteLine("Queried roleId: " + roleId);
 
             if (roleId == null) {
                 return Enumerable.Empty<ApplicationUser>();
             }
+
+            var userIds = await _context.UserRoles
+                .Where(ur => ur.RoleId == roleId)
+                .Select(ur => ur.UserId)
+                .ToListAsync();
+
             // Get users with that roleId
-            return await _context.Users
-                .Include(u => u.UserRoles) // Damit EF die UserRoles lädt
-                .Where(u => u.UserRoles!.Any(r => r.RoleId == roleId))
-                .Where(u => !u.IsClosed)
+            var users = await _context.Users
+                .Where(u => userIds.Contains(u.Id) && !u.IsClosed)
                 .Include(u => u.EmailNotificationSetting)
                 .ToListAsync();
+            /* 
+            foreach (var user in users) {
+                Console.WriteLine($"✅ Loaded user: {user.UserName} (Id: {user.Id})");
+            }
+            */
+            return users;
+
         }
 
         public async Task<IEnumerable<string>> GetRolesAsync(ApplicationUser user) {
