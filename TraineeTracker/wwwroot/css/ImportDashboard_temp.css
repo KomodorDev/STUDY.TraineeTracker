@@ -102,6 +102,13 @@
   gap: 0.5rem;
 }
 
+.plan-actions form {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;        /* Abstand zwischen den Elementen */
+  margin: 0;          /* verhindert extra-Abstände */
+}
+
 .plan-actions .update-btn,
 .plan-actions .delete-btn {
   padding: 0.4rem 0.8rem;
