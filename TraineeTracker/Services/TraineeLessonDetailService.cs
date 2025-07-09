@@ -67,12 +67,17 @@ namespace TraineeTracker.Services
             var l = await _databaseLessonRepository.GetLessonByIdAsync(tl.LessonId) ?? throw new LessonNotFoundException(tl.LessonId);
             var tll = _databaseTraineeLessonLogEntryRepository.GetAllLogsForTraineeLesson(traineeLessonId);
             var f = await _databaseFeedbackrepository.GetAllFeedbacksForLessonWithLessonAndAuthorAndReadByUsersAsync(l);
+            TraineeLessonStateFactory factory = new();
 
             return new TraineeLessonDetailViewModel {
                 TraineeLesson = tl,
                 Lesson = l,
                 LogEntries = tll,
-                Feedbacks = f
+                Feedbacks = f,
+                AllowedStateTransitions = factory.Create(tl.State)
+                                                    .GetAllowedLessonStateTransitions(user)
+                                                    .Select(s => s.ToString())
+                                                    .ToList()
             };
         }
 
