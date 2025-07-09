@@ -38,6 +38,11 @@
   border-radius: 4px;
 }
 
+.import-btn{
+    background-color: red;
+    color: black;
+}
+
 /* Import-Button */
 .import-form .import-btn {
   padding: 0.6rem 1.2rem;
