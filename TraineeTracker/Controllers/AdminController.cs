@@ -35,10 +35,8 @@ namespace TraineeTracker.Controllers {
 
         [HttpGet("/CreateUser")]
         public async Task<IActionResult> ShowCreateUserView() {
-            var plans = await _teachingPlanRepository.GetAllTeachingPlansAsync();
-            ViewBag.TeachingPlans = new SelectList(plans, "TeachingPlanId", "Name");
-
-            return View("CreateUser", new ApplicationUserDto());
+            var viewModel = await _adminService.BuildCreateUserViewModelAsync();
+            return View("CreateUser", viewModel);
         }
 
         [HttpPost("/CreateUser")]

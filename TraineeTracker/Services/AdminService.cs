@@ -7,6 +7,7 @@ using TraineeTracker.Data.Feedbacks;
 using TraineeTracker.Data.TeachingPlans;
 using TraineeTracker.Data.TraineeStatistics;
 using TraineeTracker.Models.ViewModels.Admin;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace TraineeTracker.Services.Admin {
     public class AdminService {
@@ -50,6 +51,16 @@ namespace TraineeTracker.Services.Admin {
             return new AdminDashboardViewModel {
                 Users = users,
                 UserRoles = userRoles
+            };
+        }
+
+        public async Task<CreateUserViewModel> BuildCreateUserViewModelAsync() {
+            var plans = await _teachingPlanRepository.GetAllTeachingPlansAsync();
+            return new CreateUserViewModel {
+                TeachingPlans = plans.Select(p => new SelectListItem {
+                    Value = p.TeachingPlanId.ToString(),
+                    Text = p.Name
+                })
             };
         }
 
