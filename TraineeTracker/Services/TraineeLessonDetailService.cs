@@ -106,11 +106,12 @@ namespace TraineeTracker.Services
             } else if (oldTraineeLesson.State == TraineeLessonState.Started) {
                 // add dayStarted if lesson started
                 oldTraineeLesson.DayStarted = DateOnly.FromDateTime(DateTime.Today);
+                oldTraineeLesson.DayFinished = null;
 
             } else if (oldTraineeLesson.State == TraineeLessonState.Open) {
                 // remove dayStarted if lesson un-started
                 oldTraineeLesson.DayStarted = null;
-                
+
             } else if (oldTraineeLesson.State == TraineeLessonState.Finished) {
                 // add dayFinished if lesson finished
                 oldTraineeLesson.DayFinished = DateOnly.FromDateTime(DateTime.Today);
