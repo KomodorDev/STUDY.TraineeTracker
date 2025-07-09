@@ -2,10 +2,56 @@
 @using System.Globalization
 @model TraineeTracker.Models.ViewModels.TraineeStatisticsViewModel
 
+<div id="traineeStatisticsModal" class="modal fade" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-dialog-centered sopro-lesson-modal-size" style="width: 100vw">
+        <div class="modal-content sopro-card" style="box-shadow: none;">
+            <div class="modal-header">
+                <h5 class="modal-title">Statistics:</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body sopro-inner-card">
+
+                <!-- Chart Container -->
+                <div class="chart-container">
+                    <canvas id="lessonChart"></canvas>
+                </div>
+
+                <!-- Metric Tiles -->
+                <div class="metrics-grid">
+                    <div class="metric-tile"><strong>SnapshotDate:</strong> @(Model.SnapshotDateTime.ToString("dd.MM.yyyy HH:mm"))</div>
+                    <div class="metric-tile"><strong>DaysPresentTotal:</strong> @(Model.DaysPresentTotal?.ToString("0.0") ?? "N/A")</div>
+                    <div class="metric-tile"><strong>DaysPresentTillToday:</strong> @(Model.DaysPresentTillToday?.ToString("0.0") ?? "N/A")</div>
+                    <div class="metric-tile"><strong>LessonDaysCompleted:</strong> @(Model.LessonDaysCompleted?.ToString("0.0") ?? "N/A")</div>
+                    <div class="metric-tile"><strong>LessonDaysOpen:</strong> @(Model.LessonDaysOpen?.ToString("0.0") ?? "N/A")</div>
+                    <div class="metric-tile"><strong>LessonDaysBuffer:</strong> @(Model.LessonDaysBuffer?.ToString("0.0") ?? "N/A")</div>
+                    <div class="metric-tile"><strong>Speed:</strong> @(Model.Speed?.ToString("0.00") ?? "N/A")</div>
+                    <div class="metric-tile"><strong>PredictedEstimatedEffortBuffer:</strong> @(Model.PredictedMissingEstimatedEffortAtEnd?.ToString("0.0") ?? "N/A")</div>
+                    <div class="metric-tile"><strong>PredictedActualDaysBuffer:</strong> @(Model.PredictedMissingActualDays?.ToString("0.0") ?? "N/A")</div>
+                    <div class="metric-tile">
+                        <strong>Status:</strong>
+                        @if (Model.IsUpToDate)
+                        {
+                            <span class="text-success">✔ Up to date</span>
+                        }
+                        else
+                        {
+                            <span class="text-danger">✘ Not up to date</span>
+                        }
+                    </div>
+                </div>
+
+                @if (!Model.AllLessons.Any())
+                {
+                    <div class="alert alert-warning">No lesson data available.</div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
 @{
     var basePos = 0.0;
-    var stackedLessons = Model.AllLessons.Select((l, index) =>
-    {
+    var stackedLessons = Model.AllLessons.Select((l, index) => {
         var value = l.WeightedEffort > 0 ? l.WeightedEffort : l.EstimatedEffort;
         if (value <= 0) value = 0.1;
         var start = basePos;
@@ -39,132 +85,12 @@
 
 <link rel="stylesheet" href="~/css/TraineeStatistics_temp.css" />
 
-<h2>Lessonprogress</h2>
-
-<!-- Chart Container -->
-<div class="chart-container">
-    <canvas id="lessonChart"></canvas>
-</div>
-
-<!-- Metric Tiles -->
-<div class="metrics-grid">
-    <div class="metric-tile"><strong>SnapshotDate:</strong> @(Model.SnapshotDateTime.ToString("dd.MM.yyyy HH:mm"))</div>
-    <div class="metric-tile"><strong>DaysPresentTotal:</strong> @(Model.DaysPresentTotal?.ToString("0.0") ?? "N/A")</div>
-    <div class="metric-tile"><strong>DaysPresentTillToday:</strong> @(Model.DaysPresentTillToday?.ToString("0.0") ?? "N/A")</div>
-    <div class="metric-tile"><strong>LessonDaysCompleted:</strong> @(Model.LessonDaysCompleted?.ToString("0.0") ?? "N/A")</div>
-    <div class="metric-tile"><strong>LessonDaysOpen:</strong> @(Model.LessonDaysOpen?.ToString("0.0") ?? "N/A")</div>
-    <div class="metric-tile"><strong>LessonDaysBuffer:</strong> @(Model.LessonDaysBuffer?.ToString("0.0") ?? "N/A")</div>
-    <div class="metric-tile"><strong>Speed:</strong> @(Model.Speed?.ToString("0.00") ?? "N/A")</div>
-    <div class="metric-tile"><strong>PredictedEstimatedEffortBuffer:</strong> @(Model.PredictedMissingEstimatedEffortAtEnd?.ToString("0.0") ?? "N/A")</div>
-    <div class="metric-tile"><strong>PredictedActualDaysBuffer:</strong> @(Model.PredictedMissingActualDays?.ToString("0.0") ?? "N/A")</div>
-    <div class="metric-tile">
-        <strong>State:</strong>
-        @if (Model.IsUpToDate)
-        {
-            <span class="text-success">✔ Up to date</span>
-        }
-        else
-        {
-            <span class="text-danger">✘ Not up to date</span>
-        }
-    </div>
-</div>
-
-@if (!Model.AllLessons.Any())
-{
-    <div class="alert alert-warning">No lesson data available."</div>
-}
-
-<!-- Chart.js und Plugin -->
-<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-annotation@1.1.0/dist/chartjs-plugin-annotation.min.js"></script>
-
-<script>
-window.addEventListener('DOMContentLoaded', () => {
-    const ctx = document.getElementById('lessonChart')?.getContext('2d');
-    if (!ctx) return;
-
-    const data = @Html.Raw(JsonSerializer.Serialize(chartData));
-    const colors = @Html.Raw(JsonSerializer.Serialize(colors));
-
-    const annotations = {
-        today: {
-            type: 'line',
-            xMin: @Model.TodayPosition,
-            xMax: @Model.TodayPosition,
-            borderColor: 'black',
-            borderWidth: 2,
-            label: {
-                content: 'current progress',
-                enabled: true,
-                position: 'start'
-            }
-        }
-    };
-
-    new Chart(ctx, {
-        type: 'bar',
-        data: {
-            datasets: [
-                {
-                    label: 'Predicted Effort Range',
-                    data: data.map(d => ({
-                        x: [@effortOverlayMin, @effortOverlayMax],
-                        y: d.y
-                    })),
-                    backgroundColor: 'rgba(255, 165, 0, 0.25)',
-                    borderRadius: 0,
-                    barThickness: 14,
-                    maxBarThickness: 16,
-                    parsing: {
-                        xAxisKey: 'x',
-                        yAxisKey: 'y'
-                    },
-                    order: 0
-                },
-                {
-                    label: 'Effort (days)',
-                    data: data,
-                    backgroundColor: colors,
-                    borderRadius: 0,
-                    barThickness: 14,
-                    maxBarThickness: 16,
-                    parsing: {
-                        xAxisKey: 'x',
-                        yAxisKey: 'y'
-                    },
-                    order: 1 
-                }
-            ]
-        },
-        options: {
-            indexAxis: 'y',
-            responsive: true,
-            maintainAspectRatio: false,
-            animation: false,
-            scales: {
-                x: {
-                    beginAtZero: true,
-                    title: { display: true, text: 'Effort' }
-                },
-                y: {
-                    type: 'category',
-                    ticks: {
-                        display: false
-                    },
-                    grid: {
-                        drawTicks: false 
-                    }
-                }
-            },
-            plugins: {
-                legend: { display: false },
-                tooltip: { enabled: true },
-                annotation: {
-                    annotations: annotations
-                }
-            }
-        }
-    });
-});
+<script id="lessonChartConfigData" type="application/json">
+@Html.Raw(JsonSerializer.Serialize(new {
+    data = chartData,
+    colors = colors,
+    effortOverlayMin = effortOverlayMin,
+    effortOverlayMax = effortOverlayMax,
+    todayPos = Model.TodayPosition
+}))
 </script>
