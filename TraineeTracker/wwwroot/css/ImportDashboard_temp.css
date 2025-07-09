@@ -138,6 +138,12 @@ plan-box > .plan-meta:nth-of-type(2) {
   color: black;
 }
 
+.delete-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+
 .plan-actions .update-btn,
 .plan-actions .delete-btn {
   padding: 0.4rem 0.8rem;

@@ -365,5 +365,14 @@ namespace TraineeTracker.Services {
 
         // ---------------------------------------------------
 
+         public async Task<bool> CheckIfTeachingPlanHasTrainees(int existingTeachingPlanId) {
+            var teachingPlan = await _databaseTeachingPlanRepository.GetTeachingPlanByIdAsync(existingTeachingPlanId);
+            var trainees = teachingPlan.Trainees;
+            if(trainees == null || !trainees.Any()) {
+                return true;
+            }
+            return true;
+        }
+
     }
 }
