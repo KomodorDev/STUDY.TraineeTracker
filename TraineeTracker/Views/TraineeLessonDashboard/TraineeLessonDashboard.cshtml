@@ -205,24 +205,47 @@
     </section>
 </div>
 
+<div id="lessonDetailModal" class="modal fade" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-dialog-centered sopro-lesson-modal-size">
+        <div class="modal-content sopro-card" id="TraineeLessonModalContent" style="box-shadow: none;">
+        </div>
+    </div>
+</div>
+
 <!-- usually, you would load the modal here, but we need extra data for the detailed view -->
 <div id="modalPlaceholder"></div>
 
+<!-- script for opening modal-->
 @section Scripts {
     <script>
         document.querySelectorAll('tr[data-lesson-id]').forEach(row => {
             row.addEventListener('click', function () {
                 const lessonId = this.getAttribute('data-lesson-id');
 
+                // loading cursor
+                document.body.style.cursor = 'wait';
+
                 fetch(`/TraineeLessonDetail/${lessonId}`)
                     .then(response => response.text())
                     .then(html => {
-                        document.getElementById('modalPlaceholder').innerHTML = html;
+                        // Inject response directly into existing modal content div
+                        document.getElementById('TraineeLessonModalContent').innerHTML = html;
+
+                        // Show the existing modal
                         const modalElement = document.getElementById('lessonDetailModal');
                         const modal = new bootstrap.Modal(modalElement);
                         modal.show();
+
+                        // Hook up any dynamic event handlers inside the modal content
+                        if (typeof window.hookUpStateChangeForms === 'function') {
+                            window.hookUpStateChangeForms();
+                        }
                     })
-                    .catch(err => console.error("Failed to load modal", err));
+                    .catch(err => console.error("Failed to load modal", err))
+                    .finally(() => {
+                        // reset cursor
+                        document.body.style.cursor = 'default';
+                    });
             });
         });
     </script>

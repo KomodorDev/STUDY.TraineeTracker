@@ -1,5 +1,14 @@
 /* by schleale */
 
+form {
+    height: 100%;
+    width: 100%;
+}
+
+button {
+    background: none;
+}
+
 .sopro-lesson-modal-size {
     width: 56rem;
     max-width: 80vw;
