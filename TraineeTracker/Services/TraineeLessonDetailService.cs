@@ -16,8 +16,9 @@ using TraineeTracker.Exceptions;
 using TraineeTracker.Services.TraineeLessonStates;
 using TraineeTracker.Services.Email;
 
-namespace TraineeTracker.Services
-{
+using TraineeTracker.Data;
+
+namespace TraineeTracker.Services {
     public class TraineeLessonDetailService {
 
         private ILessonRepository _databaseLessonRepository;
@@ -28,18 +29,22 @@ namespace TraineeTracker.Services
         private IApplicationUserRepository _databaseApplicationUserRepository;
         private EmailNotificationService _emailNotificationService;
 
+        private readonly IServiceScopeFactory _scopeFactory;
+
         public TraineeLessonDetailService(ILessonRepository databaseLessonRepository,
                                             ITraineeLessonRepository databaseTraineeLessonRepository,
                                             ITraineeLessonLogEntryRepository databaseTraineeLessonLogEntryRepository,
                                             IFeedbackRepository databaseFeedbackRepository,
                                             IApplicationUserRepository databaseApplicationUserRepository,
-                                            EmailNotificationService emailNotificationService) {
+                                            EmailNotificationService emailNotificationService,
+                                            IServiceScopeFactory scopeFactory) {
             _databaseLessonRepository = databaseLessonRepository;
             _databaseTraineeLessonLogEntryRepository = databaseTraineeLessonLogEntryRepository;
             _databaseTraineeLessonRepository = databaseTraineeLessonRepository;
             _databaseFeedbackrepository = databaseFeedbackRepository;
             _databaseApplicationUserRepository = databaseApplicationUserRepository;
             _emailNotificationService = emailNotificationService;
+            _scopeFactory = scopeFactory;
         }
 
         private async Task CheckHasAccess(ClaimsPrincipal user, int traineeLessonId) {
@@ -115,13 +120,21 @@ namespace TraineeTracker.Services
             } else if (oldTraineeLesson.State == TraineeLessonState.Finished) {
                 // add dayFinished if lesson finished
                 oldTraineeLesson.DayFinished = DateOnly.FromDateTime(DateTime.Today);
-            } 
+            }
 
             // update database
             await _databaseTraineeLessonRepository.UpdateAsync(oldTraineeLesson);
 
             // sends email (different thread) and creates log
-            _ = Task.Run(() => _emailNotificationService.NotifyAboutStateChangeAsync(oldTraineeLesson, oldState, targetState));
+            _ = Task.Run(async () => {
+                using var scope = _scopeFactory.CreateScope();
+                var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+                var emailService = scope.ServiceProvider.GetRequiredService<EmailNotificationService>();
+
+
+                await emailService.NotifyAboutStateChangeAsync(oldTraineeLesson, oldState, targetState);
+            });
+            
             await LogStatusChange(oldTraineeLesson, oldState, targetState, user);
         }
 
