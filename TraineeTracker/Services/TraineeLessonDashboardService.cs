@@ -99,7 +99,7 @@ namespace TraineeTracker.Services {
                 CheckHasAccess(user, traineeId);
 
                 // update recent trainees
-                var trainee = await _applicationUserRepository.FindByIdWithTraineeLessonsWithLessonsAndTeachingPlanAsync(traineeId) ?? throw new UserNotFoundException();
+                var trainee = await _applicationUserRepository.FindByIdWithTeachingPlanAndTraineeLessonsWithLessonsAsync(traineeId) ?? throw new UserNotFoundException();
                 await AddLastSelectedTraineeAsync(mentorId, trainee);
 
                 return new TraineeLessonDashboardViewModel {
