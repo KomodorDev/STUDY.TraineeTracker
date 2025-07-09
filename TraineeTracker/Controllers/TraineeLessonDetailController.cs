@@ -26,7 +26,7 @@ namespace TraineeTracker.Controllers {
 
         // [FromBody] : "deserialize the JSON in the request body into this C# object", necessary for more complex types
         [HttpPost("state-change")]
-        public async Task<IActionResult> SaveTraineeLessonStateChange([FromBody] TraineeLessonDto traineeLessonUpdate) {
+        public async Task<IActionResult> SaveTraineeLessonStateChange(TraineeLessonDto traineeLessonUpdate) {
             await _traineeLessonDetailService.SaveTraineeLessonStateChange(traineeLessonUpdate, User);
 
             // reloads page
