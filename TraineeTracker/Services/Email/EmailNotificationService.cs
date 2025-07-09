@@ -116,14 +116,19 @@ namespace TraineeTracker.Services.Email {
 
 
                 var messageHtml = $@"
-                    <p>Status update:</p>
+                    <p>State Change:</p>
                     <p>The lesson <strong>“{lessonTitle}”</strong> of trainee <strong>{traineeName}</strong> has changed.</p>
                     <p><strong>Previous:</strong> {oldState}<br/>
                     <strong>New:</strong> {newState}</p>
                     {rejectionNote}
-                    <p>– TraineeTracker Notification System</p>";
+                    <p>Best regards,<br/>Your TraineeTracker Team</p>";
 
                 await _emailSender.SendEmailAsync(person.Email!, subject, messageHtml);
+
+                /* 
+                Console.WriteLine("Sending email to: " + person.Email);
+                Console.WriteLine("Subject: " + subject);
+                 */
             }
 
             // ++++++++++++++++++++++++++++++++++++++++++
@@ -132,14 +137,19 @@ namespace TraineeTracker.Services.Email {
                 var subject = $"TraineeTracker: Lesson '{lessonTitle}' changed from {oldState} to {newState}";
 
                 var messageHtml = $@"
-                    <p>Hello {trainee.UserName},</p>
-                    <p>The status of your lesson <strong>“{lessonTitle}”</strong> has changed.</p>
+                    <p>State Change:</p>
+                    <p>The state of your lesson <strong>“{lessonTitle}”</strong> has changed.</p>
                     <p><strong>Previous:</strong> {oldState}<br/>
                     <strong>New:</strong> {newState}</p>
                     {rejectionNote}
                     <p>Best regards,<br/>Your TraineeTracker Team</p>";
 
                 await _emailSender.SendEmailAsync(trainee.Email!, subject, messageHtml);
+
+                /* 
+                Console.WriteLine("Sending email to: " + trainee.Email);
+                Console.WriteLine("Subject: " + subject);
+                 */
             }
 
         }
@@ -162,7 +172,7 @@ namespace TraineeTracker.Services.Email {
             // Notifiy Trainee
             var setting = await _databaseEmailNotificationSettingRepository.GetByUserIdAsync(trainee.Id);
             if (setting.ReceiveImportChangeNotifications && (added.Any() || removed.Any())) {
-                var subject = "TraineeTracker: Your lesson plan has been updated";
+                var subject = "TraineeTracker: Your teaching plan has been updated";
 
                 var changes = "";
 
@@ -178,7 +188,7 @@ namespace TraineeTracker.Services.Email {
 
                 var messageHtml = $@"
                     <p>Hello {trainee.UserName},</p>
-                    <p>Your lesson plan has been updated. Here is a summary of the changes:</p>
+                    <p>Your teaching plan has been updated. Here is a summary of the changes:</p>
                     {changes}
                     <p>Best regards,<br/>Your TraineeTracker Team</p>";
 
@@ -192,12 +202,12 @@ namespace TraineeTracker.Services.Email {
                 var subject = $"TraineeTracker: Changes to {trainee.UserName}'s TeachingPlan";
 
                 var messageHtml = $@"
-                    <p>The following changes were made during a TeachingPlan import for trainee <strong>{trainee.UserName}</strong>:</p>
+                    <p>The following changes were made during a teaching plan import for trainee <strong>{trainee.UserName}</strong>:</p>
                     <ul>
                         <li><strong>Added Lessons:</strong> {added.Count}</li>
                         <li><strong>Removed Lessons:</strong> {removed.Count}</li>
                     </ul>
-                    <p>– TraineeTracker Notification System</p>";
+                    <p>Best regards,<br/>Your TraineeTracker Team</p>";
 
                 foreach (var person in thirdPersons) {
                     var s = person.EmailNotificationSetting!;
