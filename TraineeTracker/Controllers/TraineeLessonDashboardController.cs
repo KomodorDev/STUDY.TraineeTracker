@@ -2,8 +2,10 @@
 
 using Microsoft.AspNetCore.Mvc;
 using TraineeTracker.Services;
+using Microsoft.AspNetCore.Authorization;
 
 namespace TraineeTracker.Controllers {
+    [Authorize]
     public class TraineeLessonDashboardController : Controller {
         private readonly TraineeLessonDashboardService _traineeLessonDashboardService;
 
