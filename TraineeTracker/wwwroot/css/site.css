@@ -41,6 +41,10 @@ a {
   color: #e61d47;   /* url link color */
 }
 
+.sopro-waiting-cur * {
+  cursor: wait !important;
+}
+
 /* +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ */
 
 /* custom drop shadow + round corners */
