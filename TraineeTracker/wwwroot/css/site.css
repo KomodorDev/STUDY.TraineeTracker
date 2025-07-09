@@ -159,6 +159,7 @@ a {
 }
 .sopro-button-content:disabled {
   background-color: #afafaf;
+  cursor: not-allowed;
 }
 
 .sopro-button-header {
