@@ -4,6 +4,7 @@ using TraineeTracker.Models.Dtos;
 namespace TraineeTracker.Models.ViewModels.Admin {
     public class CreateUserViewModel {
         public ApplicationUserDto User { get; set; } = new ApplicationUserDto();
-        public required IEnumerable<SelectListItem> TeachingPlans;
+        public IEnumerable<SelectListItem> Roles = Enumerable.Empty<SelectListItem>();
+        public IEnumerable<SelectListItem> TeachingPlans = Enumerable.Empty<SelectListItem>();
     }
 }

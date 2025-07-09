@@ -26,11 +26,8 @@
 
     <div class="form-group">
         <label asp-for="User.Role"></label>
-        <select asp-for="User.Role" class="form-control" aria-required="true">
+        <select asp-for="User.Role" class="form-control" aria-required="true" asp-items="Model.Roles">
             <option value="">Select role...</option>
-            <option value="Admin">Admin</option>
-            <option value="Mentor">Mentor</option>
-            <option value="Trainee">Trainee</option>
         </select>
         <span asp-validation-for="User.Role" class="text-danger"></span>
     </div>
