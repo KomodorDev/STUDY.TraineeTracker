@@ -8,11 +8,14 @@ using TraineeTracker.Data.TeachingPlans;
 using TraineeTracker.Data.TraineeStatistics;
 using TraineeTracker.Models.ViewModels.Admin;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 
 namespace TraineeTracker.Services.Admin {
     public class AdminService {
         private readonly IApplicationUserRepository _applicationUserRepository;
         private readonly IProcessingPauseRepository _processingPauseRepository;
+        private readonly RoleManager<IdentityRole> _roleManager;
 
         private readonly EmailNotificationService _emailNotificationService;
         private readonly TeachingPlanService _teachingPlanService;
@@ -23,6 +26,7 @@ namespace TraineeTracker.Services.Admin {
 
         public AdminService(IApplicationUserRepository applicationUserRepository,
                             IProcessingPauseRepository processingPauseRepository,
+                            RoleManager<IdentityRole> roleManager,
                             EmailNotificationService emailNotificationService,
                             TeachingPlanService teachingPlanService,
                             IFeedbackRepository feedbackRepository,
@@ -30,6 +34,7 @@ namespace TraineeTracker.Services.Admin {
                             ITraineeStatisticsRepository traineeStatisticsRepository) {
             _applicationUserRepository = applicationUserRepository;
             _processingPauseRepository = processingPauseRepository;
+            _roleManager = roleManager;
             _emailNotificationService = emailNotificationService;
             _teachingPlanService = teachingPlanService;
             _feedbackRepository = feedbackRepository;
@@ -55,13 +60,24 @@ namespace TraineeTracker.Services.Admin {
         }
 
         public async Task<CreateUserViewModel> BuildCreateUserViewModelAsync() {
-            var plans = await _teachingPlanRepository.GetAllTeachingPlansAsync();
-            return new CreateUserViewModel {
-                TeachingPlans = plans.Select(p => new SelectListItem {
-                    Value = p.TeachingPlanId.ToString(),
-                    Text = p.Name
-                })
-            };
+            var viewModel = new CreateUserViewModel();
+            return await FillCreateUserDropdownsAsync(viewModel);
+        }
+
+        public async Task<CreateUserViewModel> FillCreateUserDropdownsAsync(CreateUserViewModel viewModel) {
+            var rolesTask = _roleManager.Roles.ToListAsync();
+            var plansTask = _teachingPlanRepository.GetAllTeachingPlansAsync();
+            var roles = await rolesTask;
+            var plans = await plansTask;
+            viewModel.Roles = roles.Select(r => new SelectListItem {
+                Value = r.Name,
+                Text = r.Name
+            });
+            viewModel.TeachingPlans = plans.Select(p => new SelectListItem {
+                Value = p.TeachingPlanId.ToString(),
+                Text = p.Name
+            });
+            return viewModel;
         }
 
         public async Task<ServiceResult> CreateUserAsync(ApplicationUserDto dto) {
