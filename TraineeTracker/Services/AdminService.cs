@@ -209,5 +209,10 @@ namespace TraineeTracker.Services.Admin {
                 EndDate = pause.EndDate
             };
         }
+
+        public async Task<string> GetUserNameByIdAsync(string userId) {
+            var user = await _applicationUserRepository.FindByIdAsync(userId);
+            return user.UserName;
+        }
     }
 }

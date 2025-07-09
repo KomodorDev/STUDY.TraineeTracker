@@ -75,10 +75,7 @@ namespace TraineeTracker.Controllers {
 
         [HttpGet("/CreateProcessingPause")]
         public async Task<IActionResult> ShowCreateProcessingPauseView(string traineeId) {
-            ViewBag.User = await _applicationUserRepository.FindByIdAsync(traineeId);
-            if (ViewBag.User == null) {
-                return NotFound();
-            }
+            ViewBag.UserName = await _adminService.GetUserNameByIdAsync(traineeId);
             return View("CreateProcessingPause", new ProcessingPauseDto { TraineeId = traineeId });
         }
 
