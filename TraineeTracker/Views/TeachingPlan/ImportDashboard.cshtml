@@ -23,44 +23,41 @@
   
   <div class="sopro-card">
       <div class="plan-list-container">
-        @if (Model.ExistingTeachingPlans == null || !Model.ExistingTeachingPlans.Any())
-        {
-        <div class="no-plans">Keine Lehrpläne gefunden.</div>
-        }
-        else
-        {
-        @foreach (var plan in Model.ExistingTeachingPlans)
-        {
-          <div class="plan-box">
-            <div class="plan-info">
-                <h3 class="plan-name" style="font-size: 1.406rem;">@plan.Name</h3>
-                <span class="plan-meta">Trainees: @plan.TraineeCount</span>
-                <span class="plan-meta">Lessons: @plan.LessonCount</span>
-                <span class="plan-meta">Last Updated: @plan.LastUpdated.ToString("dd.MM.yyyy")</span>
+        @if (Model.ExistingTeachingPlans == null || !Model.ExistingTeachingPlans.Any()) {
+          <div class="no-plans">Keine Lehrpläne gefunden.</div>
+        } else {
+          @foreach (var plan in Model.ExistingTeachingPlans) {
+            <div class="sopro-card teachingplan-card">
+              <div class="plan-info">
+                  <h3 class="plan-name">@plan.Name</h3>
+                  <span class="plan-meta">Trainees: @plan.TraineeCount</span>
+                  <span class="plan-meta">Lessons: @plan.LessonCount</span>
+                  <span class="plan-meta">Last Updated: @plan.LastUpdated.ToString("dd.MM.yyyy")</span>
+              
+                  <div class="plan-actions">
+                      <!-- Update -->
+                      <form asp-action="UpdateTeachingPlan" method="post" enctype="multipart/form-data" style="align-items: center; padding-right: 1.172rem;">
+                      @Html.AntiForgeryToken()
+                      <input type="hidden" name="ExistingTeachingPlanId" value="@plan.TeachingPlanId" />
+                      <input type="file" name="NewPlanFile" required />
+                      <button type="submit" class="sopro-button-content" style="background-color: #FFB199;">Update</button>
+                      </form>
+                      <!-- Delete -->
+                      <form asp-action="DeleteTeachingPlan" method="post" onsubmit="return confirm('Confirm deletion?');">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" name="existingTeachingPlanId" value="@plan.TeachingPlanId" />
+                        <button 
+                          type="submit" 
+                          class="sopro-button-content" 
+                          disabled="@(plan.TraineeCount != 0)" 
+                          title="Deletion not possible: Trainee count > 0">
+                          Delete
+                        </button>
+                      </form>
+                  </div>
+              </div>
             </div>
-            <div class="plan-actions">
-                <!-- Update -->
-                <form asp-action="UpdateTeachingPlan" method="post" enctype="multipart/form-data">
-                @Html.AntiForgeryToken()
-                <input type="hidden" name="ExistingTeachingPlanId" value="@plan.TeachingPlanId" />
-                <input type="file" name="NewPlanFile" required />
-                <button type="submit" class="update-btn">Update</button>
-                </form>
-                <!-- Delete -->
-                <form asp-action="DeleteTeachingPlan" method="post" onsubmit="return confirm('Löschen?');">
-                  @Html.AntiForgeryToken()
-                  <input type="hidden" name="existingTeachingPlanId" value="@plan.TeachingPlanId" />
-                  <button 
-                    type="submit" 
-                    class="delete-btn" 
-                    disabled="@(plan.TraineeCount != 0)" 
-                    title="Löschen nicht möglich: Es sind noch Trainees im Teachingplan.">
-                    Delete
-                  </button>
-                </form>
-            </div>
-          </div>
-        }
+          }
         }
     </div>
   </div>
