@@ -68,11 +68,6 @@ namespace TraineeTracker.Services {
             }
         }
 
-
-        // ---------------------------------------------------
-        // ---------------------------------------------------
-        // ---------------------------------------------------
-        // ---------------------------------------------------
         // ---------------------------------------------------
         public async Task UpdateTeachingPlan(TeachingPlanDto teachingPlanDto) {
             /* 
@@ -121,7 +116,7 @@ namespace TraineeTracker.Services {
                 } else {
                     if (lessonDto.Deprecated) {
                         // Lesson is deprecated and we leave the index unchanged (we change it later)
-                        UpdateLesson(lessonDto, lesson, lesson.SortingIndex); 
+                        UpdateLesson(lessonDto, lesson, lesson.SortingIndex);
                         lessonsMarkedAsInactive.Add(lesson);
                     } else {
                         // Lesson is not-depreacted and we increment the index afterwards:
@@ -220,9 +215,6 @@ namespace TraineeTracker.Services {
         }
 
         // ---------------------------------------------------
-        // ---------------------------------------------------
-        // ---------------------------------------------------
-        // PASST
         public async Task DeleteTeachingPlan(int existingTeachingPlanId) {
 
             Console.WriteLine($"ID used for delete: {existingTeachingPlanId}");
@@ -242,8 +234,6 @@ namespace TraineeTracker.Services {
         }
 
         // ---------------------------------------------------
-        // ---------------------------------------------------
-        // ---------------------------------------------------
         public async Task AssignTeachingPlanToTraineeAsync(ApplicationUser trainee, int teachingPlanId) {
             var plan = await _databaseTeachingPlanRepository.GetTeachingPlanByIdWithLessonsAndTraineesAsync(teachingPlanId)
                        ?? throw new InvalidOperationException("TeachingPlan nicht gefunden.");
@@ -259,22 +249,27 @@ namespace TraineeTracker.Services {
 
         // ---------------------------------------------------
         public async Task UnassignTeachingPlanFromTraineeAsync(ApplicationUser trainee) {
+
+            // Trainee - Get all TraineeLessons
             var traineeLessons = await _databaseTraineeLessonRepository.GetAllTraineeLessonsOfTraineeWithLessonAsync(trainee.Id);
+
+            // Trainee - Delete all TraineeLessons
             foreach (var traineeLesson in traineeLessons) {
                 await _databaseTraineeLessonRepository.DeleteAsync(traineeLesson.TraineeLessonId);
             }
 
-            var teachingPlan = trainee.TeachingPlan;
-            if (teachingPlan == null)
-                throw new InvalidOperationException("TeachingPlan nicht gefunden.");
-            teachingPlan.Trainees.Remove(trainee);
+            // Get TeachingPlan
+            var teachingPlan = await _databaseTeachingPlanRepository
+                .GetTeachingPlanByIdWithLessonsAndTraineesAsync(trainee.TeachingPlanId ?? throw new InvalidOperationException("Trainee hat keinen TeachingPlan."));
+
+            // TeachingPlan - Remove Trainee
+            teachingPlan!.Trainees.Remove(trainee);
             await _databaseTeachingPlanRepository.UpdateAsync(teachingPlan);
-
-            trainee.TeachingPlanId = null;
-            trainee.TeachingPlan = null;
             await _databaseApplicationUserRepository.UpdateAsync(trainee);
-        }
 
+            // Trainee - Remove Foreign Key
+            trainee.TeachingPlanId = null;
+        }
 
         // ---------------------------------------------------
         private void ValidateFile(IFormFile file) {
@@ -287,15 +282,6 @@ namespace TraineeTracker.Services {
             if (string.IsNullOrWhiteSpace(name))
                 throw new ArgumentException("Ungültiger Name!");
         }
-
-        // ---------------------------------------------------
-        /*         
-        private async Task ValidateLesson(Lesson l) {
-            bool exists = await _databaseLessonRepository.ExistsAsync(l);
-            if (exists)
-                throw new ArgumentException("Dieser Teachingplan existiert schon!");
-        }
-        */
 
         // ---------------------------------------------------
         private async Task<string> ReadJsonAsync(IFormFile file) {
