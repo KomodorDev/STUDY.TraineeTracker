@@ -5,230 +5,225 @@
 <!-- Vertically centered scrollable modal -->
 @* source: https://getbootstrap.com/docs/5.0/components/modal/ *@
 
-<div id="lessonDetailModal" class="modal fade" tabindex="-1" role="dialog">
-    <div class="modal-dialog modal-dialog-centered sopro-lesson-modal-size">
-        <div class="modal-content sopro-card" style="box-shadow: none;">
-            <div class="modal-header">
-                <p class="modal-title">
-                    @Model.Lesson.LessonId | @Model.Lesson.Title
-                </p>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body sopro-inner-card" style="padding-top: 9px;">
-                <div class="accordion accordion-flush" id="lessonAccordion">
-                    <!-- Section 1: lesson info -->
-                    <div class="accordion-item">
-                        <p class="accordion-header" id="info">
-                            <button class="accordion-button sopro-accordion-text" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-info" aria-expanded="true" aria-controls="collapse-info">
-                                Info
-                            </button>
-                        </p>
-                        <div id="collapse-info" class="accordion-collapse collapse show" aria-labelledby="info"">
-                            <div class="accordion-body sopro-accordion-truncate">
-                                <p>Link: <a href="@Model.Lesson.LinkUrl" target="_blank">@Model.Lesson.LinkUrl</a></p>
-                                <p>Estimation: @Model.Lesson.EstimatedEffort days</p>
-                                @if (@Model.TraineeLesson.DayStarted != null) {
-                                    <p>Started: @Model.TraineeLesson.DayStarted.Value.ToString("dd. MMMM yyyy")</p>
-                                }
-                                @if (@Model.TraineeLesson.DayFinished != null) {
-                                    <p>Finished: @Model.TraineeLesson.DayFinished.Value.ToString("dd. MMMM yyyy")</p>
-                                }
-                            </div>
-                        </div>
-                    </div>
-                    <!-- Section 2: state -->
-                    <div class="accordion-item">
-                        <p class="accordion-header" id="state">
-                            <button class="accordion-button sopro-accordion-text" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-state" aria-expanded="true" aria-controls="collapse-state">
-                                State
-                            </button>
-                        </p>
-                        <div id="collapse-state" class="accordion-collapse collapse show" aria-labelledby="state"">
-                            <div class="accordion-body sopro-accordion-truncate">
-                                <div class=sopro-status-select>
-                                    @{
-                                        var currentStatus = Model.TraineeLesson.State.ToString();
-                                        var selectableStates = Model.AllowedStateTransitions;
-                                    }
-                                    <!-- row 1 -->
-                                    <form asp-controller="TraineeLessonDetail"
-                                        asp-action="SaveTraineeLessonStateChange"
-                                        method="post">
 
-                                        <input type="hidden" name="TraineeLessonId" value=@Model.TraineeLesson.TraineeLessonId />
-                                        <input type="hidden" name="TargetStateName" value="Open" />
-
-                                        <button type="submit"
-                                            class="sopro-status-button
-                                                @(currentStatus == "Open" ? "current" : "")
-                                                @(selectableStates.Contains("Open") ? "selectable" : "")"
-                                            @(selectableStates.Contains("Open") ? "" : "disabled")>
-                                            Open
-                                        </button>
-                                    </form>
-                                    <div class="sopro-horizontal-connector"></div>
-                                    <form asp-controller="TraineeLessonDetail"
-                                        asp-action="SaveTraineeLessonStateChange"
-                                        method="post">
-
-                                        <input type="hidden" name="TraineeLessonId" value=@Model.TraineeLesson.TraineeLessonId />
-                                        <input type="hidden" name="TargetStateName" value="Started" />
-
-                                        <button type="submit"
-                                            class="sopro-status-button
-                                                @(currentStatus == "Started" ? "current" : "")
-                                                @(selectableStates.Contains("Started") ? "selectable" : "")"
-                                            @(selectableStates.Contains("Started") ? "" : "disabled")>
-                                            Started
-                                        </button>
-                                    </form>
-                                    <div class="sopro-horizontal-connector"></div>
-                                    <form asp-controller="TraineeLessonDetail"
-                                        asp-action="SaveTraineeLessonStateChange"
-                                        method="post">
-
-                                        <input type="hidden" name="TraineeLessonId" value=@Model.TraineeLesson.TraineeLessonId />
-                                        <input type="hidden" name="TargetStateName" value="Finished" />
-
-                                        <button type="submit"
-                                            class="sopro-status-button
-                                                @(currentStatus == "Finished" ? "current" : "")
-                                                @(selectableStates.Contains("Finished") ? "selectable" : "")"
-                                            @(selectableStates.Contains("Finished") ? "" : "disabled")>
-                                            Finished
-                                        </button>
-                                    </form>
-                                    <div class="sopro-horizontal-connector"></div>
-                                    <form asp-controller="TraineeLessonDetail"
-                                        asp-action="SaveTraineeLessonStateChange"
-                                        method="post">
-
-                                        <input type="hidden" name="TraineeLessonId" value=@Model.TraineeLesson.TraineeLessonId />
-                                        <input type="hidden" name="TargetStateName" value="Accepted" />
-
-                                        <button type="submit"
-                                            class="sopro-status-button
-                                                @(currentStatus == "Accepted" ? "current" : "")
-                                                @(selectableStates.Contains("Accepted") ? "selectable" : "")"
-                                            @(selectableStates.Contains("Accepted") ? "" : "disabled")>
-                                            Accepted
-                                        </button>
-                                    </form>
-                                    <div class="sopro-horizontal-connector"></div>
-                                    <form asp-controller="TraineeLessonDetail"
-                                        asp-action="SaveTraineeLessonStateChange"
-                                        method="post">
-
-                                        <input type="hidden" name="TraineeLessonId" value=@Model.TraineeLesson.TraineeLessonId />
-                                        <input type="hidden" name="TargetStateName" value="Rated" />
-
-                                        <button type="submit"
-                                            class="sopro-status-button
-                                                @(currentStatus == "Rated" ? "current" : "")
-                                                @(selectableStates.Contains("Rated") ? "selectable" : "")"
-                                            @(selectableStates.Contains("Rated") ? "" : "disabled")>
-                                            Rated
-                                        </button>
-                                    </form>
-                                    <!-- row 2 -->
-                                    <div class="sopro-vertical-connector"></div>
-                                    <div></div>
-                                    <div></div>
-                                    <div></div>
-                                    <div class="sopro-vertical-connector"></div>
-                                    <div></div>
-                                    <div></div>
-                                    <div></div>
-                                    <div></div>
-                                    <!-- row 3-->
-                                    <form asp-controller="TraineeLessonDetail"
-                                        asp-action="SaveTraineeLessonStateChange"
-                                        method="post">
-
-                                        <input type="hidden" name="TraineeLessonId" value=@Model.TraineeLesson.TraineeLessonId />
-                                        <input type="hidden" name="TargetStateName" value="Skipped" />
-
-                                        <button type="submit"
-                                            class="sopro-status-button
-                                                @(currentStatus == "Skipped" ? "current" : "")
-                                                @(selectableStates.Contains("Skipped") ? "selectable" : "")"
-                                            @(selectableStates.Contains("Skipped") ? "" : "disabled")>
-                                            Skipped
-                                        </button>
-                                    </form>
-                                    <div></div>
-                                    <div></div>
-                                    <div></div>
-                                    <form asp-controller="TraineeLessonDetail"
-                                        asp-action="SaveTraineeLessonStateChange"
-                                        method="post">
-
-                                        <input type="hidden" name="TraineeLessonId" value=@Model.TraineeLesson.TraineeLessonId />
-                                        <input type="hidden" name="TargetStateName" value="Rejected" />
-                                        <input type="hidden" name="RejectionReason" value="Placeholder" />
-
-                                        <button type="submit"
-                                            class="sopro-status-button
-                                                @(currentStatus == "Rejected" ? "current" : "")
-                                                @(selectableStates.Contains("Rejected") ? "selectable" : "")"
-                                            @(selectableStates.Contains("Rejected") ? "" : "disabled")>
-                                            Rejected
-                                        </button>
-                                    </form>
-                                    <div></div>
-                                    <div></div>
-                                    <div></div>
-                                    <div></div>
-                                    
-                                    <!-- save & cancel buttons -->
-                                    @* wip *@
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <!-- Section 3: logs -->
-                    <div class="accordion-item">
-                        <p class="accordion-header" id="logs">
-                            <button class="accordion-button collapsed sopro-accordion-text" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-logs" aria-expanded="false" aria-controls="collapse-logs">
-                                Logs
-                            </button>
-                        </p>
-                        <div id="collapse-logs" class="accordion-collapse collapse" aria-labelledby="logs"">
-                            <div class="accordion-body sopro-accordion-truncate">
-                                @foreach (var log in @Model.LogEntries) {
-                                    <p class="pwrap" style="white-space: pre;">@log.Timestamp.ToString()  -  @log.UserName.Split('@')[0]  -  @log.OldState → @log.NewState</p>
-                                }
-                            </div>
-                        </div>
-                    </div>
-                    <!-- Section 4: feedback -->
-                    <div class="accordion-item">
-                        <p class="accordion-header" id="feedback">
-                            <button class="accordion-button collapsed sopro-accordion-text" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-feedback" aria-expanded="false" aria-controls="collapse-feedback">
-                                Feedbacks
-                            </button>
-                        </p>
-                        <div id="collapse-feedback" class="accordion-collapse collapse" aria-labelledby="feedback"">
-                            <div class="accordion-body sopro-accordion-truncate">
-                                @foreach (var feedback in @Model.Feedbacks.Select((value, index) => new { value, index })) {
-                                    bool isLast = feedback.index == Model.Feedbacks.Count() - 1;
-
-                                    <p style="white-space: pre; color: #e61d47; font-weight: 900;">@feedback.value.CreateTime.ToString()  -  @feedback.value.Author.UserName?.Split('@')[0]  -  @feedback.value.Difficulty/10★</p>
-                                    <p><span style="font-weight: 900;">Effort:</span> @(@feedback.value.HoursOfEffort)h</p>
-                                    if (!String.IsNullOrWhiteSpace(@feedback.value.Comment)) {
-                                        <p class="pwrap"><span style="font-weight: 900;">Previous knowledge:</span> @feedback.value.PreviousKnowledge</p>
-                                        <p class="pwrap" style="@(isLast ? "" : "border-bottom: 1px solid #626262;")"><span style="font-weight: 900;">Comment:</span> @feedback.value.Comment</p>
-                                    } else {
-                                        <p class="pwrap" style="@(isLast ? "" : "border-bottom: 1px solid #626262;")"><span style="font-weight: 900;">Previous knowledge:</span> @feedback.value.PreviousKnowledge</p>
-                                    }
-                                }
-                            </div>
-                        </div>
-                    </div>
-                    <!-- #endregion -->
+<div class="modal-header">
+    <p class="modal-title">
+        @Model.Lesson.SortingIndex | @*@Model.Lesson.MakandraId -*@ @Model.Lesson.Title
+    </p>
+    <button type="button" onclick="javascript:window.location.reload()" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+</div>
+<div class="modal-body sopro-inner-card" style="padding-top: 9px;">
+    <div class="accordion accordion-flush" id="lessonAccordion">
+        <!-- Section 1: lesson info -->
+        <div class="accordion-item">
+            <p class="accordion-header" id="info">
+                <button class="accordion-button sopro-accordion-text" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-info" aria-expanded="true" aria-controls="collapse-info">
+                    Info
+                </button>
+            </p>
+            <div id="collapse-info" class="accordion-collapse collapse show" aria-labelledby="info"">
+                <div class="accordion-body sopro-accordion-truncate">
+                    <p>Link: <a href="@Model.Lesson.LinkUrl" target="_blank">@Model.Lesson.LinkUrl</a></p>
+                    <p>Estimation: @Model.Lesson.EstimatedEffort days</p>
+                    @if (@Model.TraineeLesson.DayStarted != null) {
+                        <p>Started: @Model.TraineeLesson.DayStarted.Value.ToString("dd. MMMM yyyy")</p>
+                    }
+                    @if (@Model.TraineeLesson.DayFinished != null) {
+                        <p>Finished: @Model.TraineeLesson.DayFinished.Value.ToString("dd. MMMM yyyy")</p>
+                    }
                 </div>
             </div>
-            <!-- modal-footer would be here -->
         </div>
+        <!-- Section 2: state -->
+        <div class="accordion-item">
+            <p class="accordion-header" id="state">
+                <button class="accordion-button sopro-accordion-text" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-state" aria-expanded="true" aria-controls="collapse-state">
+                    State
+                </button>
+            </p>
+            <div id="collapse-state" class="accordion-collapse collapse show" aria-labelledby="state"">
+                <div class="accordion-body sopro-accordion-truncate">
+                    <div class=sopro-status-select>
+                        @{
+                            var currentStatus = Model.TraineeLesson.State.ToString();
+                            var selectableStates = Model.AllowedStateTransitions;
+                        }
+                        <!-- row 1 -->
+                        <form asp-controller="TraineeLessonDetail"
+                            asp-action="SaveTraineeLessonStateChange"
+                            method="post">
+
+                            <input type="hidden" name="TraineeLessonId" value=@Model.TraineeLesson.TraineeLessonId />
+                            <input type="hidden" name="TargetStateName" value="Open" />
+
+                            <button type="submit"
+                                class="sopro-status-button
+                                    @(currentStatus == "Open" ? "current" : "")
+                                    @(selectableStates.Contains("Open") ? "selectable" : "")"
+                                @(selectableStates.Contains("Open") ? "" : "disabled")>
+                                Open
+                            </button>
+                        </form>
+                        <div class="sopro-horizontal-connector"></div>
+                        <form asp-controller="TraineeLessonDetail"
+                            asp-action="state-change"
+                            method="post">
+
+                            <input type="hidden" name="TraineeLessonId" value=@Model.TraineeLesson.TraineeLessonId />
+                            <input type="hidden" name="TargetStateName" value="Started" />
+
+                            <button type="submit"
+                                class="sopro-status-button
+                                    @(currentStatus == "Started" ? "current" : "")
+                                    @(selectableStates.Contains("Started") ? "selectable" : "")"
+                                @(selectableStates.Contains("Started") ? "" : "disabled")>
+                                Started
+                            </button>
+                        </form>
+                        <div class="sopro-horizontal-connector"></div>
+                        <form asp-controller="TraineeLessonDetail"
+                            asp-action="SaveTraineeLessonStateChange"
+                            method="post">
+
+                            <input type="hidden" name="TraineeLessonId" value=@Model.TraineeLesson.TraineeLessonId />
+                            <input type="hidden" name="TargetStateName" value="Finished" />
+
+                            <button type="submit"
+                                class="sopro-status-button
+                                    @(currentStatus == "Finished" ? "current" : "")
+                                    @(selectableStates.Contains("Finished") ? "selectable" : "")"
+                                @(selectableStates.Contains("Finished") ? "" : "disabled")>
+                                Finished
+                            </button>
+                        </form>
+                        <div class="sopro-horizontal-connector"></div>
+                        <form asp-controller="TraineeLessonDetail"
+                            asp-action="SaveTraineeLessonStateChange"
+                            method="post">
+
+                            <input type="hidden" name="TraineeLessonId" value=@Model.TraineeLesson.TraineeLessonId />
+                            <input type="hidden" name="TargetStateName" value="Accepted" />
+
+                            <button type="submit"
+                                class="sopro-status-button
+                                    @(currentStatus == "Accepted" ? "current" : "")
+                                    @(selectableStates.Contains("Accepted") ? "selectable" : "")"
+                                @(selectableStates.Contains("Accepted") ? "" : "disabled")>
+                                Accepted
+                            </button>
+                        </form>
+                        <div class="sopro-horizontal-connector"></div>
+                        <form asp-controller="TraineeLessonDetail"
+                            asp-action="SaveTraineeLessonStateChange"
+                            method="post">
+
+                            <input type="hidden" name="TraineeLessonId" value=@Model.TraineeLesson.TraineeLessonId />
+                            <input type="hidden" name="TargetStateName" value="Rated" />
+
+                            <button type="submit"
+                                class="sopro-status-button
+                                    @(currentStatus == "Rated" ? "current" : "")
+                                    @(selectableStates.Contains("Rated") ? "selectable" : "")"
+                                @(selectableStates.Contains("Rated") ? "" : "disabled")>
+                                Rated
+                            </button>
+                        </form>
+                        <!-- row 2 -->
+                        <div class="sopro-vertical-connector"></div>
+                        <div></div>
+                        <div></div>
+                        <div></div>
+                        <div class="sopro-vertical-connector"></div>
+                        <div></div>
+                        <div></div>
+                        <div></div>
+                        <div></div>
+                        <!-- row 3-->
+                        <form asp-controller="TraineeLessonDetail"
+                            asp-action="SaveTraineeLessonStateChange"
+                            method="post">
+
+                            <input type="hidden" name="TraineeLessonId" value=@Model.TraineeLesson.TraineeLessonId />
+                            <input type="hidden" name="TargetStateName" value="Skipped" />
+
+                            <button type="submit"
+                                class="sopro-status-button
+                                    @(currentStatus == "Skipped" ? "current" : "")
+                                    @(selectableStates.Contains("Skipped") ? "selectable" : "")"
+                                @(selectableStates.Contains("Skipped") ? "" : "disabled")>
+                                Skipped
+                            </button>
+                        </form>
+                        <div></div>
+                        <div></div>
+                        <div></div>
+                        <form asp-controller="TraineeLessonDetail"
+                            asp-action="SaveTraineeLessonStateChange"
+                            method="post">
+
+                            <input type="hidden" name="TraineeLessonId" value=@Model.TraineeLesson.TraineeLessonId />
+                            <input type="hidden" name="TargetStateName" value="Rejected" />
+                            <input type="hidden" name="RejectionReason" value="Placeholder" />
+
+                            <button type="submit"
+                                class="sopro-status-button
+                                    @(currentStatus == "Rejected" ? "current" : "")
+                                    @(selectableStates.Contains("Rejected") ? "selectable" : "")"
+                                @(selectableStates.Contains("Rejected") ? "" : "disabled")>
+                                Rejected
+                            </button>
+                        </form>
+                        <div></div>
+                        <div></div>
+                        <div></div>
+                        <div></div>
+                        
+                        <!-- save & cancel buttons -->
+                        @* wip *@
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Section 3: logs -->
+        <div class="accordion-item">
+            <p class="accordion-header" id="logs">
+                <button class="accordion-button collapsed sopro-accordion-text" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-logs" aria-expanded="false" aria-controls="collapse-logs">
+                    Logs
+                </button>
+            </p>
+            <div id="collapse-logs" class="accordion-collapse collapse" aria-labelledby="logs"">
+                <div class="accordion-body sopro-accordion-truncate">
+                    @foreach (var log in @Model.LogEntries) {
+                        <p class="pwrap" style="white-space: pre;">@log.Timestamp.ToString()  -  @log.UserName.Split('@')[0]  -  @log.OldState → @log.NewState</p>
+                    }
+                </div>
+            </div>
+        </div>
+        <!-- Section 4: feedback -->
+        <div class="accordion-item">
+            <p class="accordion-header" id="feedback">
+                <button class="accordion-button collapsed sopro-accordion-text" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-feedback" aria-expanded="false" aria-controls="collapse-feedback">
+                    Feedbacks
+                </button>
+            </p>
+            <div id="collapse-feedback" class="accordion-collapse collapse" aria-labelledby="feedback"">
+                <div class="accordion-body sopro-accordion-truncate">
+                    @foreach (var feedback in @Model.Feedbacks.Select((value, index) => new { value, index })) {
+                        bool isLast = feedback.index == Model.Feedbacks.Count() - 1;
+
+                        <p style="white-space: pre; color: #e61d47; font-weight: 900;">@feedback.value.CreateTime.ToString()  -  @feedback.value.Author.UserName?.Split('@')[0]  -  @feedback.value.Difficulty/10★</p>
+                        <p><span style="font-weight: 900;">Effort:</span> @(@feedback.value.HoursOfEffort)h</p>
+                        if (!String.IsNullOrWhiteSpace(@feedback.value.Comment)) {
+                            <p class="pwrap"><span style="font-weight: 900;">Previous knowledge:</span> @feedback.value.PreviousKnowledge</p>
+                            <p class="pwrap" style="@(isLast ? "" : "border-bottom: 1px solid #626262;")"><span style="font-weight: 900;">Comment:</span> @feedback.value.Comment</p>
+                        } else {
+                            <p class="pwrap" style="@(isLast ? "" : "border-bottom: 1px solid #626262;")"><span style="font-weight: 900;">Previous knowledge:</span> @feedback.value.PreviousKnowledge</p>
+                        }
+                    }
+                </div>
+            </div>
+        </div>
+        <!-- #endregion -->
     </div>
 </div>
+<!-- modal-footer would be here -->
