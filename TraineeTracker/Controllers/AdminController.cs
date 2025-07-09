@@ -7,6 +7,7 @@ using TraineeTracker.Data.ProcessingPauses;
 using TraineeTracker.Data.TeachingPlans;
 using TraineeTracker.Models.Domain;
 using TraineeTracker.Models.Dtos;
+using TraineeTracker.Models.ViewModels.Admin;
 using TraineeTracker.Services.Admin;
 
 namespace TraineeTracker.Controllers {
@@ -40,21 +41,18 @@ namespace TraineeTracker.Controllers {
         }
 
         [HttpPost("/CreateUser")]
-        public async Task<IActionResult> CreateUserAsync(ApplicationUserDto dto) {
-            var plans = await _teachingPlanRepository.GetAllTeachingPlansAsync();
-            ViewBag.TeachingPlans = new SelectList(plans, "TeachingPlanId", "Name");
-
+        public async Task<IActionResult> CreateUserAsync(CreateUserViewModel viewModel) {
             if (!ModelState.IsValid) {
-                return View("CreateUser", dto);
+                return View("CreateUser", viewModel);
             }
-            var result = await _adminService.CreateUserAsync(dto);
+            var result = await _adminService.CreateUserAsync(viewModel.User);
             if (result.Succeeded) {
                 return RedirectToAction("ShowAdminDashboardView");
             }
             foreach (var message in result.ErrorMessages) {
                 ModelState.AddModelError("", message);
             }
-            return View("CreateUser", dto);
+            return View("CreateUser", viewModel);
         }
 
         [HttpPost("/CloseUser")]
