@@ -8,18 +8,18 @@
 
 <div class="sopro-grid-management">
   <div class="sopro-card">
-    <div class="import-header-fixed"></div>
         <form asp-action="ImportNewTeachingPlan"
             asp-controller="TeachingPlan"
             method="post"
             enctype="multipart/form-data"
             class="import-form">
         @Html.AntiForgeryToken()
+        <label for="NewPlanName">Import Teachingplan</label>
         <input type="text" name="NewPlanName" placeholder="Planname" required />
         <input type="file" name="NewPlanFile" required />
         <button type="submit" class="import-btn">Import</button>
         </form>
-    </div>
+  </div>
   
   <div class="sopro-card">
       <div class="plan-list-container">
@@ -57,4 +57,5 @@
         }
         }
     </div>
+  </div>
 </div>
