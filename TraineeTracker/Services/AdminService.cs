@@ -6,7 +6,7 @@ using TraineeTracker.Models.Dtos;
 using TraineeTracker.Data.Feedbacks;
 using TraineeTracker.Data.TeachingPlans;
 using TraineeTracker.Data.TraineeStatistics;
-using TraineeTracker.Models.ViewModels;
+using TraineeTracker.Models.ViewModels.Admin;
 
 namespace TraineeTracker.Services.Admin {
     public class AdminService {
