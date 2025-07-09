@@ -1,11 +1,8 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using TraineeTracker.Data.ApplicationUsers;
 using TraineeTracker.Data.ProcessingPauses;
 using TraineeTracker.Data.TeachingPlans;
-using TraineeTracker.Models.Domain;
 using TraineeTracker.Models.Dtos;
 using TraineeTracker.Models.ViewModels.Admin;
 using TraineeTracker.Services.Admin;
@@ -14,17 +11,12 @@ namespace TraineeTracker.Controllers {
     [Authorize(Roles = "Admin")]
     public class AdminController : Controller {
         private readonly AdminService _adminService;
-        private readonly IApplicationUserRepository _applicationUserRepository;
         private readonly IProcessingPauseRepository _processingPauseRepository;
-        private readonly ITeachingPlanRepository _teachingPlanRepository;
         private readonly ILogger<AdminController> _logger;
 
         public AdminController(AdminService adminService, IApplicationUserRepository applicationUserRepository, IProcessingPauseRepository processingPauseRepository, ITeachingPlanRepository teachingPlanRepository, ILogger<AdminController> logger) {
             _adminService = adminService;
-            _applicationUserRepository = applicationUserRepository;
             _processingPauseRepository = processingPauseRepository;
-
-            _teachingPlanRepository = teachingPlanRepository;
             _logger = logger;
         }
 
