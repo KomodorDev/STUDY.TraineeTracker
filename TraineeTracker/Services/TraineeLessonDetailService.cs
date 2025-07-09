@@ -85,7 +85,7 @@ namespace TraineeTracker.Services
             // returns true if TargetStateName could be parsed into targetState
             TraineeLessonState targetState;
             if (!Enum.TryParse<TraineeLessonState>(traineeLessonUpdate.TargetStateName, out targetState))
-                throw new Exception("Inalid target state in TraineeLessonDto.");
+                throw new Exception("Invalid target state in TraineeLessonDto.");
 
             // changes state, if allowed
             TraineeLessonStateFactory factory = new();
