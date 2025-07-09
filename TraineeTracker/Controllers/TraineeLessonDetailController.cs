@@ -29,8 +29,11 @@ namespace TraineeTracker.Controllers {
         public async Task<IActionResult> SaveTraineeLessonStateChange([FromForm] TraineeLessonDto traineeLessonUpdate) {
             await _traineeLessonDetailService.SaveTraineeLessonStateChange(traineeLessonUpdate, User);
 
+            // load updated modal
+            var viewModel = await ShowTraineeLessonDetailView(traineeLessonUpdate.TraineeLessonId);
+
             // reloads page
-            return RedirectToAction("ShowTraineeLessonDetailView", "TraineeLessonDetailController", new { traineeLessonId = traineeLessonUpdate.TraineeLessonId });
+            return PartialView("~/Views/TraineeLessonDashboard/_TraineeLessonDetailModal.cshtml", viewModel);
         }
 
         // [FromBody] from json [FromFrom] from html form, either necessary for more complex types
@@ -38,7 +41,11 @@ namespace TraineeTracker.Controllers {
         public async Task<IActionResult> SaveFeedback([FromForm] FeedbackDto feedback) {
             await _traineeLessonDetailService.SaveFeedback(feedback, User);
 
-            return RedirectToAction("ShowTraineeLessonDetailView", "TraineeLessonDetailController", new { traineeLessonId = feedback.TraineeLessonId });
+            // load updated modal
+            var viewModel = await ShowTraineeLessonDetailView(feedback.TraineeLessonId);
+
+            // reloads page
+            return PartialView("~/Views/TraineeLessonDashboard/_TraineeLessonDetailModal.cshtml", viewModel);
         }
 
         [Authorize(Roles = "Admin,Mentor")]
@@ -46,7 +53,11 @@ namespace TraineeTracker.Controllers {
         public async Task<IActionResult> DeleteFeedback(int feedbackId, int traineeLessonIdForReturn) {
             await _traineeLessonDetailService.DeleteFeedback(User, feedbackId);
 
-            return RedirectToAction("ShowTraineeLessonDetailView", new { traineeLessonIdForReturn });
+            // load updated modal
+            var viewModel = await ShowTraineeLessonDetailView(traineeLessonIdForReturn);
+
+            // reloads page
+            return PartialView("~/Views/TraineeLessonDashboard/_TraineeLessonDetailModal.cshtml", viewModel);
         }
     }
 }
