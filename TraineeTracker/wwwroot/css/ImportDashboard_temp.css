@@ -1,3 +1,14 @@
+.sopro-grid-management {
+  grid-template-rows: auto 1fr; /* statt 75px 1fr :contentReference[oaicite:0]{index=0} */
+}
+
+.sopro-grid-management > .sopro-card:first-child {
+  height: auto !important;
+  min-height: auto !important;
+  overflow: visible !important;
+  padding: 1.5rem;
+}
+
 /* Container für das gesamte Dashboard */
 .import-dashboard-container {
   width: 100%;
@@ -10,18 +21,6 @@
   display: grid;
   grid-template-rows: auto 1fr;    /* Header oben, Liste füllt restliche Höhe */
   height: calc(100vh - 4rem);      /* Vollbild-Höhe minus margin */
-}
-
-/* Fixierter Import-Header */
-.import-header-fixed {
-  background: #fff;
-  position: sticky;
-  top: 0;
-  width: 100%;
-  padding: 1rem;
-  z-index: 10;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-  border-radius: 8px 8px 0 0;
 }
 
 .import-form {
