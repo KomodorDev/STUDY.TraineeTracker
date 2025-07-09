@@ -193,6 +193,10 @@ namespace TraineeTracker.Services.Admin {
             await _processingPauseRepository.UpdateAsync(pause);
         }
 
+        public async Task<ApplicationUser?> FindByIdWithProcessingPausesAsync(string userId) {
+            return await _applicationUserRepository.FindByIdWithProcessingPausesAsync(userId);
+        }
+
         public async Task<ProcessingPauseDto> GetProcessingPauseDtoAsync(int processingPauseId) {
             var pause = await _processingPauseRepository.FindByIdAsync(processingPauseId);
             if (pause == null) {
