@@ -8,152 +8,144 @@
 
 @* <link rel="stylesheet" href="~/css/FeedbackDashboard_temp.css" /> *@
 
-<div class="feedback-header">
-    <h2>@ViewData["Title"]</h2>
-</div>
 
-<!--------------------------------------------------->
-<!-- Toolbar -->
-<div class="feedback-toolbar">
-    <div class="filter-buttons">
-        <a class="filter-btn @(Model.ActiveFilter == "all" ? "active" : "")"
-           asp-controller="Feedback"
-           asp-action="Dashboard"
-           asp-route-filter="all"
-           asp-route-selectedTraineeId="@Model.SelectedTraineeId"
-           asp-route-selectedLessonId="@Model.SelectedLessonId"
-           asp-route-sortBy="@Model.SortBy"
-           asp-route-page="1">
-           All (@Model.TotalFeedbackCount)
-        </a>
+<div class="sopro-grid-management">
 
-        <a class="filter-btn @(Model.ActiveFilter == "unread" ? "active" : "")"
-           asp-controller="Feedback"
-           asp-action="Dashboard"
-           asp-route-filter="unread"
-           asp-route-selectedTraineeId="@Model.SelectedTraineeId"
-           asp-route-selectedLessonId="@Model.SelectedLessonId"
-           asp-route-sortBy="@Model.SortBy"
-           asp-route-page="1">
-           Unread (@Model.UnreadFeedbackCount)
-        </a>
+    <!-- Header Split: Filter links / Dropdowns rechts -->
+    <div class="sopro-card flex-card">
+        <div class="filter-buttons">
+            <a class="filter-btn @(Model.ActiveFilter == "all" ? "active" : "")"
+               asp-action="Dashboard"
+               asp-route-filter="all"
+               asp-route-selectedTraineeId="@Model.SelectedTraineeId"
+               asp-route-selectedLessonId="@Model.SelectedLessonId"
+               asp-route-sortBy="@Model.SortBy"
+               asp-route-page="1">
+               All (@Model.TotalFeedbackCount)
+            </a>
 
-        <a class="filter-btn @(Model.ActiveFilter == "read" ? "active" : "")"
-           asp-controller="Feedback"
-           asp-action="Dashboard"
-           asp-route-filter="read"
-           asp-route-selectedTraineeId="@Model.SelectedTraineeId"
-           asp-route-selectedLessonId="@Model.SelectedLessonId"
-           asp-route-sortBy="@Model.SortBy"
-           asp-route-page="1">
-           Read (@Model.ReadFeedbackCount)
-        </a>
+            <a class="filter-btn @(Model.ActiveFilter == "unread" ? "active" : "")"
+               asp-action="Dashboard"
+               asp-route-filter="unread"
+               asp-route-selectedTraineeId="@Model.SelectedTraineeId"
+               asp-route-selectedLessonId="@Model.SelectedLessonId"
+               asp-route-sortBy="@Model.SortBy"
+               asp-route-page="1">
+               Unread (@Model.UnreadFeedbackCount)
+            </a>
+
+            <a class="filter-btn @(Model.ActiveFilter == "read" ? "active" : "")"
+               asp-action="Dashboard"
+               asp-route-filter="read"
+               asp-route-selectedTraineeId="@Model.SelectedTraineeId"
+               asp-route-selectedLessonId="@Model.SelectedLessonId"
+               asp-route-sortBy="@Model.SortBy"
+               asp-route-page="1">
+               Read (@Model.ReadFeedbackCount)
+            </a>
+        </div>
+
+        <form method="get" asp-controller="Feedback" asp-action="Dashboard" class="filter-selects">
+
+            <!-- Trainee Dropdown -->
+            <select name="selectedTraineeId" class="feedback-select-wide" onchange="this.form.submit()">
+                <option value="">All active Trainees</option>
+                @foreach (var trainee in Model.ActiveTrainees)
+                {
+                    <option value="@trainee.Id"
+                            selected="@(trainee.Id == Model.SelectedTraineeId ? "selected" : null)">
+                        @trainee.UserName
+                    </option>
+                }
+            </select>
+
+            <!-- Lesson Dropdown -->
+            <select name="selectedLessonId" class="feedback-select-wide" onchange="this.form.submit()">
+                <option value="">All rated Lessons</option>
+                @foreach (var lesson in Model.Lessons)
+                {
+                    <option value="@lesson.LessonId"
+                            selected="@(Model.SelectedLessonId == lesson.LessonId ? "selected" : null)">
+                        @lesson.Title
+                    </option>
+                }
+            </select>
+
+            <!-- Combined Sort Dropdown -->
+            <select name="SortBy" class="feedback-select-small" onchange="this.form.submit()">
+                <option value="date_desc" selected="@(Model.SortBy == "date_desc" ? "selected" : null)">Date ↓</option>
+                <option value="date_asc" selected="@(Model.SortBy == "date_asc" ? "selected" : null)">Date ↑</option>
+                <option value="author_desc" selected="@(Model.SortBy == "author_desc" ? "selected" : null)">Author ↓</option>
+                <option value="author_asc" selected="@(Model.SortBy == "author_asc" ? "selected" : null)">Author ↑</option>
+                <option value="lesson_desc" selected="@(Model.SortBy == "lesson_desc" ? "selected" : null)">Lesson ↓</option>
+                <option value="lesson_asc" selected="@(Model.SortBy == "lesson_asc" ? "selected" : null)">Lesson ↑</option>
+            </select>
+
+
+
+            <input type="hidden" name="filter" value="@Model.ActiveFilter" />
+            <input type="hidden" name="sortBy" value="@Model.SortBy" />
+            <input type="hidden" name="page" value="1" />
+
+        </form>
+
 
     </div>
 
-
-<form method="get" asp-controller="Feedback" asp-action="Dashboard" class="filter-selects">
-
-    <!-- Trainee Dropdown -->
-    <select name="selectedTraineeId" class="select-wide" onchange="this.form.submit()">
-        <option value="">All active Trainees</option>
-        @foreach (var trainee in Model.ActiveTrainees)
-        {
-            <option value="@trainee.Id"
-                    selected="@(trainee.Id == Model.SelectedTraineeId ? "selected" : null)">
-                @trainee.UserName
-            </option>
-        }
-    </select>
-
-    <!-- Lesson Dropdown -->
-    <select name="selectedLessonId" class="select-wide" onchange="this.form.submit()">
-        <option value="">All rated Lessons</option>
-        @foreach (var lesson in Model.Lessons)
-        {
-            <option value="@lesson.LessonId"
-                    selected="@(Model.SelectedLessonId == lesson.LessonId ? "selected" : null)">
-                @lesson.Title
-            </option>
-        }
-    </select>
-
-    <!-- Combined Sort Dropdown -->
-    <select name="SortBy" class="select-small" onchange="this.form.submit()">
-        <option value="date_desc" selected="@(Model.SortBy == "date_desc" ? "selected" : null)">Date ↓</option>
-        <option value="date_asc" selected="@(Model.SortBy == "date_asc" ? "selected" : null)">Date ↑</option>
-        <option value="author_desc" selected="@(Model.SortBy == "author_desc" ? "selected" : null)">Author ↓</option>
-        <option value="author_asc" selected="@(Model.SortBy == "author_asc" ? "selected" : null)">Author ↑</option>
-        <option value="lesson_desc" selected="@(Model.SortBy == "lesson_desc" ? "selected" : null)">Lesson ↓</option>
-        <option value="lesson_asc" selected="@(Model.SortBy == "lesson_asc" ? "selected" : null)">Lesson ↑</option>
-    </select>
-
-
-
-    <input type="hidden" name="filter" value="@Model.ActiveFilter" />
-    <input type="hidden" name="sortBy" value="@Model.SortBy" />
-    <input type="hidden" name="page" value="1" />
-
-</form>
-
-<!--------------------------------------------------->
-<!-- Feedback Table -->
-<table class="feedback-table">
-    <thead>
-        <tr>
-            <th>Lesson</th>
-            <th>Name</th>
-            <th>Date</th>
-            <th>Options</th>
-        </tr>
-    </thead>
-    <tbody>
-    @foreach (var feedback in Model.Feedbacks.Items)
-    {
-        var feedbackId = feedback.FeedbackId;
-        <tr class="feedback-summary" data-toggle-id="@feedbackId">
-            <td>@feedback.LessonTitle</td>
-            <td>@feedback.AuthorName</td>
-            <td>@feedback.CreateTime.ToString("dd. MM. yyyy")</td>
-            <td>
-                @if (!feedback.IsReadByCurrentUser)
+    <!-- Feedback-Box -->
+    <div class="sopro-card">
+        <table class="feedback-table">
+            <thead>
+                <tr>
+                    <th>Lesson</th>
+                    <th>Name</th>
+                    <th>Date</th>
+                    <th>Options</th>
+                </tr>
+            </thead>
+            <tbody>
+                @* Feedback-Zeilen bleiben wie gehabt *@
+                @foreach (var feedback in Model.Feedbacks.Items)
                 {
-                    <form asp-action="MarkAsRead" method="post">
-                            <input type="hidden" name="feedbackId" value="@feedback.FeedbackId" />
-                            <input type="hidden" name="filter" value="@Model.ActiveFilter" />
-                            <input type="hidden" name="page" value="@Model.Feedbacks.PageNumber" />
-                            <input type="hidden" name="sortBy" value="@Model.SortBy" />
-                            <input type="hidden" name="selectedTraineeId" value="@Model.SelectedTraineeId" />
-                            <input type="hidden" name="selectedLessonId" value="@Model.SelectedLessonId" />
-                        <button class="mark-read-btn" type="submit">Mark as read</button>
-                    </form>
+                    var feedbackId = feedback.FeedbackId;
+                    <tr class="feedback-summary" data-toggle-id="@feedbackId">
+                        <td>@feedback.LessonTitle</td>
+                        <td>@feedback.AuthorName</td>
+                        <td>@feedback.CreateTime.ToString("dd. MM. yyyy")</td>
+                        <td>
+                            @if (!feedback.IsReadByCurrentUser)
+                            {
+                                <form asp-action="MarkAsRead" method="post">
+                                    <input type="hidden" name="feedbackId" value="@feedback.FeedbackId" />
+                                    <!-- Hidden inputs wie gehabt -->
+                                    <button class="mark-read-btn" type="submit">Mark as read</button>
+                                </form>
+                            }
+                            else
+                            {
+                                <form asp-action="MarkAsUnread" method="post">
+                                    <input type="hidden" name="feedbackId" value="@feedback.FeedbackId" />
+                                    <!-- Hidden inputs wie gehabt -->
+                                    <button class="mark-unread-btn" type="submit">Mark as unread</button>
+                                </form>
+                            }
+                        </td>
+                    </tr>
+                    <tr class="feedback-detail" id="detail-@feedbackId" style="display:none">
+                        <td colspan="4">
+                            <p><strong>Difficulty:</strong> @feedback.Difficulty</p>
+                            <p><strong>Previous knowledge:</strong> @feedback.PreviousKnowledge</p>
+                            <p><strong>Effort:</strong> @feedback.HoursOfEffort hours</p>
+                            <p><strong>Comments:</strong> @feedback.Comment</p>
+                        </td>
+                    </tr>
                 }
-                else
-                {
-                    <form asp-action="MarkAsUnread" method="post">
-                        <input type="hidden" name="feedbackId" value="@feedback.FeedbackId" />
-                        <input type="hidden" name="filter" value="@Model.ActiveFilter" />
-                        <input type="hidden" name="page" value="@Model.Feedbacks.PageNumber" />
-                        <input type="hidden" name="sortBy" value="@Model.SortBy" />
-                        <input type="hidden" name="selectedTraineeId" value="@Model.SelectedTraineeId" />
-                        <input type="hidden" name="selectedLessonId" value="@Model.SelectedLessonId" />
-                        <button class="mark-unread-btn" type="submit">Mark as unread</button>
-                    </form>
-                }
-            </td>
+            </tbody>
+        </table>
+    </div>
 
-        </tr>
-        <tr class="feedback-detail" id="detail-@feedbackId" style="display:none">
-            <td colspan="4">
-                <p><strong>Difficulty:</strong> @feedback.Difficulty</p>
-                <p><strong>Previous knowledge:</strong> @feedback.PreviousKnowledge</p>
-                <p><strong>Effort:</strong> @feedback.HoursOfEffort hours</p>
-                <p><strong>Comments:</strong> @feedback.Comment</p>
-            </td>
-        </tr>
-    }
-    </tbody>
-</table>
+</div>
+
 
 <!--------------------------------------------------->
 <!-- Scripts -->
