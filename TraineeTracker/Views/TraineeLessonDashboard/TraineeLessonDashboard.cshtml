@@ -179,8 +179,7 @@
             <tbody class="sopro-inner-card flex">
                 @foreach (var traineeLesson in (Model.TraineeLessons ?? throw new Exception("Empty Traineelesson ...somehow"))) {
                     <tr class="sopro-card sopro-table-format"
-                        data-lesson-id="@traineeLesson.TraineeLessonId"     @* the ID that is given to the modal *@
-                        style="cursor: pointer;">                           @* mouse cursor when hovering *@
+                        data-lesson-id="@traineeLesson.TraineeLessonId">     @* the ID that is given to the modal *@
                         <td>@traineeLesson.Lesson.SortingIndex | @traineeLesson.Lesson.Title</td>
                         <td><a href="@traineeLesson.Lesson.LinkUrl" target="_blank">Link↗</a></td>
                         <td>@traineeLesson.Lesson.EstimatedEffort days</td>
