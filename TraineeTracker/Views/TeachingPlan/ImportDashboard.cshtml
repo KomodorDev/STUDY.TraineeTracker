@@ -3,6 +3,7 @@
     ViewData["Title"] = "Import Dashboard";
     Layout = "_Layout";
 }
+
 <link rel="stylesheet" href="~/css/site.css" />
 <link rel="stylesheet" href="~/css/ImportDashboard_temp.css?v=@DateTime.Now.Ticks" />
 
@@ -47,9 +48,15 @@
                 </form>
                 <!-- Delete -->
                 <form asp-action="DeleteTeachingPlan" method="post" onsubmit="return confirm('Löschen?');">
-                @Html.AntiForgeryToken()
-                <input type="hidden" name="existingTeachingPlanId" value="@plan.TeachingPlanId" />
-                <button type="submit" class="delete-btn">Delete</button>
+                  @Html.AntiForgeryToken()
+                  <input type="hidden" name="existingTeachingPlanId" value="@plan.TeachingPlanId" />
+                  <button 
+                    type="submit" 
+                    class="delete-btn" 
+                    disabled="@(plan.TraineeCount != 0)" 
+                    title="Löschen nicht möglich: Es sind noch Trainees im Teachingplan.">
+                    Delete
+                  </button>
                 </form>
             </div>
           </div>
@@ -58,3 +65,4 @@
     </div>
   </div>
 </div>
+
