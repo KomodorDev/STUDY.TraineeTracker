@@ -1,12 +1,8 @@
-.sopro-grid-management {
-  grid-template-rows: auto 1fr; /* statt 75px 1fr :contentReference[oaicite:0]{index=0} */
-}
-
 .sopro-grid-management > .sopro-card:first-child {
-  height: auto !important;
-  min-height: auto !important;
-  overflow: visible !important;
-  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 1rem;
 }
 
 /* Container für das gesamte Dashboard */
@@ -28,6 +24,12 @@
   grid-template-columns: 1fr auto auto; /* Textfeld | File-Input | Button */
   align-items: center;
   gap: 1rem;
+
+  height: 45px;
+}
+.import-form > * {
+  border-radius: 11px;
+  height: 100%;
 }
 
 /* Inputs im Import-Form */
@@ -35,7 +37,6 @@
 .import-form input[type="file"] {
   padding: 0.5rem;
   border: 1px solid #ccc;            /* neutraler Rahmen */
-  border-radius: 4px;
 }
 
 .import-btn{
