@@ -22,9 +22,11 @@
     </div>
 
     <input type="hidden" asp-for="ProcessingPause.TraineeId" />
+    <input type="hidden" asp-for="UserName" />
 
     <button type="submit" class="btn btn-primary">Create</button>
-    <a asp-action="ShowManageProcessingPausesView" asp-route-traineeId="@Model.ProcessingPause.TraineeId" class="btn btn-secondary">Cancel</a>
+    <a asp-action="ShowManageProcessingPausesView" asp-route-traineeId="@Model.ProcessingPause.TraineeId"
+        class="btn btn-secondary">Cancel</a>
 </form>
 
 @section Scripts {
