@@ -1,8 +1,9 @@
 /* Container für das gesamte Dashboard */
 .import-dashboard-container {
-  width: 90%;
+  width: 100%;
   max-width: 1200px;
-  margin: 2rem auto;
+  margin: 0;
+  padding: 2rem;
   background: #f4f4f4;             /* Platzhalter–Farbe, anpassen nach CI */
   border-radius: 8px;
   box-shadow: 0 2px 8px rgba(0,0,0,0.1);
@@ -14,15 +15,15 @@
 /* Fixierter Import-Header */
 .import-header-fixed {
   background: #fff;
-  padding: 1rem;
   position: sticky;
   top: 0;
+  width: 100%;
+  padding: 1rem;
   z-index: 10;
   box-shadow: 0 2px 4px rgba(0,0,0,0.1);
   border-radius: 8px 8px 0 0;
 }
 
-/* Grid-Aufbau für das Import-Formular */
 .import-form {
   display: grid;
   grid-template-columns: 1fr auto auto; /* Textfeld | File-Input | Button */
@@ -130,5 +131,4 @@
   border: none;
   border-radius: 4px;
   cursor: pointer;
-  /* Auch hier Farben/hover später definieren */
 }
