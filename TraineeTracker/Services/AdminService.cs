@@ -154,6 +154,16 @@ namespace TraineeTracker.Services.Admin {
             return true;
         }
 
+        public async Task<CreateProcessingPauseViewModel> BuildCreateProcessingPauseViewModel(string traineeId) {
+            var user = await _applicationUserRepository.FindByIdAsync(traineeId);
+            return new CreateProcessingPauseViewModel {
+                ProcessingPause = new ProcessingPauseDto {
+                    TraineeId = traineeId
+                },
+                UserName = user.UserName
+            };
+        }
+
         public async Task<ServiceResult> CreateProcessingPauseAsync(ProcessingPauseDto dto) {
             var user = await _applicationUserRepository.FindByIdAsync(dto.TraineeId);
             if (user == null) {
@@ -208,11 +218,6 @@ namespace TraineeTracker.Services.Admin {
                 StartDate = pause.StartDate,
                 EndDate = pause.EndDate
             };
-        }
-
-        public async Task<string> GetUserNameByIdAsync(string userId) {
-            var user = await _applicationUserRepository.FindByIdAsync(userId);
-            return user.UserName;
         }
     }
 }
