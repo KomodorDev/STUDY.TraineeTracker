@@ -75,22 +75,22 @@ namespace TraineeTracker.Controllers {
 
         [HttpGet("/CreateProcessingPause")]
         public async Task<IActionResult> ShowCreateProcessingPauseView(string traineeId) {
-            ViewBag.UserName = await _adminService.GetUserNameByIdAsync(traineeId);
-            return View("CreateProcessingPause", new ProcessingPauseDto { TraineeId = traineeId });
+            var viewModel = await _adminService.BuildCreateProcessingPauseViewModel(traineeId);
+            return View("CreateProcessingPause", viewModel);
         }
 
         [HttpPost("/CreateProcessingPause")]
-        public async Task<IActionResult> CreateProcessingPauseAsync(ProcessingPauseDto dto) {
+        public async Task<IActionResult> CreateProcessingPauseAsync(CreateProcessingPauseViewModel viewModel) {
             if (!ModelState.IsValid) {
-                return View("CreateProcessingPause", dto);
+                return View("CreateProcessingPause", viewModel);
             }
-            var result = await _adminService.CreateProcessingPauseAsync(dto);
+            var result = await _adminService.CreateProcessingPauseAsync(viewModel.ProcessingPause);
             if (!result.Succeeded) {
                 foreach (var message in result.ErrorMessages)
                     ModelState.AddModelError("", message);
-                return View("CreateProcessingPause", dto);
+                return View("CreateProcessingPause", viewModel);
             }
-            return RedirectToAction("ShowManageProcessingPausesView", new { traineeId = dto.TraineeId });
+            return RedirectToAction("ShowManageProcessingPausesView", new { traineeId = viewModel.ProcessingPause.TraineeId });
         }
 
         [HttpGet("/EditProcessingPause")]

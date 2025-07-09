@@ -1,8 +1,7 @@
-@using TraineeTracker.Models.Domain
-@model TraineeTracker.Models.Dtos.ProcessingPauseDto
+@model TraineeTracker.Models.ViewModels.Admin.CreateProcessingPauseViewModel;
 
 @{
-    ViewData["Title"] = $"Create Processing Pause for {ViewBag.UserName}";
+    ViewData["Title"] = $"Create Processing Pause for {Model.UserName}";
 }
 
 <h2>@ViewData["Title"]</h2>
@@ -11,21 +10,21 @@
     <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
     <div class="form-group">
-        <label asp-for="StartDate"></label>
-        <input asp-for="StartDate" class="form-control" type="date" aria-required="true" />
-        <span asp-validation-for="StartDate" class="text-danger"></span>
+        <label asp-for="ProcessingPause.StartDate"></label>
+        <input asp-for="ProcessingPause.StartDate" class="form-control" type="date" aria-required="true" />
+        <span asp-validation-for="ProcessingPause.StartDate" class="text-danger"></span>
     </div>
 
     <div class="form-group">
-        <label asp-for="EndDate"></label>
-        <input asp-for="EndDate" class="form-control" type="date" aria-required="true" />
-        <span asp-validation-for="EndDate" class="text-danger"></span>
+        <label asp-for="ProcessingPause.EndDate"></label>
+        <input asp-for="ProcessingPause.EndDate" class="form-control" type="date" aria-required="true" />
+        <span asp-validation-for="ProcessingPause.EndDate" class="text-danger"></span>
     </div>
 
-    <input type="hidden" asp-for="TraineeId" />
+    <input type="hidden" asp-for="ProcessingPause.TraineeId" />
 
     <button type="submit" class="btn btn-primary">Create</button>
-    <a asp-action="ShowManageProcessingPausesView" asp-route-traineeId="@Model.TraineeId" class="btn btn-secondary">Cancel</a>
+    <a asp-action="ShowManageProcessingPausesView" asp-route-traineeId="@Model.ProcessingPause.TraineeId" class="btn btn-secondary">Cancel</a>
 </form>
 
 @section Scripts {
