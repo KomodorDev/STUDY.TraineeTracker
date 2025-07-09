@@ -11,6 +11,7 @@ namespace TraineeTracker.Models.Domain {
         // Trainee
         public DateOnly? TraineeStartDate { get; set; }
         public DateOnly? TraineeEndDate { get; set; }
+        public int? TeachingPlanId { get; set; }
         public TeachingPlan? TeachingPlan { get; set; }
         public TraineeStatisticsSnapshot? TraineeStatisticsSnapshot { get; set; }
 

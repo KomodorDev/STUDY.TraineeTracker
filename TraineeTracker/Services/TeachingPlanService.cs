@@ -248,6 +248,7 @@ namespace TraineeTracker.Services {
             var plan = await _databaseTeachingPlanRepository.GetTeachingPlanByIdWithLessonsAndTraineesAsync(teachingPlanId)
                        ?? throw new InvalidOperationException("TeachingPlan nicht gefunden.");
 
+            trainee.TeachingPlanId = teachingPlanId;
             trainee.TeachingPlan = plan;
             await CreateTraineeLessonsAsync(trainee, plan.Lessons);
 
@@ -269,6 +270,7 @@ namespace TraineeTracker.Services {
             teachingPlan.Trainees.Remove(trainee);
             await _databaseTeachingPlanRepository.UpdateAsync(teachingPlan);
 
+            trainee.TeachingPlanId = null;
             trainee.TeachingPlan = null;
             await _databaseApplicationUserRepository.UpdateAsync(trainee);
         }
