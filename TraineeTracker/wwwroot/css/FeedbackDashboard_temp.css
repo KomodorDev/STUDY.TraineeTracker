@@ -23,7 +23,7 @@
     padding: 0.5rem 1rem;
     background-color: #e9ecef;
     border: none;
-    border-radius: 4px;
+    border-radius: 11px;
     color: #333;
     text-decoration: none;
     font-weight: 500;
@@ -32,17 +32,18 @@
 
 .filter-btn:hover {
     background-color: #ced4da;
+    color: black;
 }
 
 .filter-btn.active {
-    background-color: #007bff;
+    background-color: #e61d47;
     color: white;
 }
 
 .filter-selects select {
     padding: 0.4rem;
     font-size: 0.95rem;
-    border-radius: 4px;
+    border-radius: 11px;
     border: 1px solid #ccc;
 }
 
@@ -74,36 +75,34 @@
 }
 
 .mark-read-btn {
-    background-color: #28a745;
+    background-color: #e61d47;
     color: white;
     border: none;
     padding: 0.4rem 0.7rem;
-    border-radius: 4px;
+    border-radius: 11px;
     cursor: pointer;
-    width: 120px; /* ensures equal width */
+    width: 140px; /* ensures equal width */
 
     text-wrap: nowrap;
     font-size: 0.85rem;
 }
 .mark-read-btn:hover {
-    background-color: #218838;
+    filter: brightness(0.94);
 }
-
 .mark-unread-btn {
-    background-color: #dc3545; /* Bootstrap danger red */
+    background-color: #626262; /* Bootstrap danger red */
     color: white;
     border: none;
     padding: 0.4rem 0.7rem;
-    border-radius: 4px;
+    border-radius: 11px;
     cursor: pointer;
-    width: 120px; /* ensures equal width */
+    width: 140px; /* ensures equal width */
 
     text-wrap: nowrap;
     font-size: 0.85rem;
 }
-
 .mark-unread-btn:hover {
-    background-color: #c82333;
+    filter: brightness(0.94);
 }
 
 .pagination {
@@ -119,15 +118,15 @@
     display: block;
     padding: 0.5rem 0.8rem;
     border: 1px solid #dee2e6;
-    border-radius: 4px;
+    border-radius: 11px;
     text-decoration: none;
-    color: #007bff;
+    color: #e61d47;
     transition: background-color 0.2s;
 }
 
 .page-item.active .page-link,
 .page-link:hover {
-    background-color: #007bff;
+    background-color: #e61d47;
     color: white;
 }
 
