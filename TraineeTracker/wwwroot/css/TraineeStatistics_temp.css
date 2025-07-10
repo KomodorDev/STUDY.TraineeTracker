@@ -1,6 +1,4 @@
-body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-}
+@import url('https://fonts.googleapis.com/css2?family=Open+Sans&display=swap');
 
 .chart-container {
     height: 600px;
