@@ -128,6 +128,7 @@ app.MapGet("/", context =>
     return Task.CompletedTask;
 });
 */
+
 app.UseStaticFiles();
 
 app.UseRouting();
