@@ -23,12 +23,21 @@ html {
 }
 
 .btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
-  box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
+  box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #e61d47;
+  outline-offset: 2px; /* space between button and outline */
+}
+.btn-outline-dark {
+  text-wrap: nowrap;
+  border-radius: 11px;
+}
+button:focus {
+  outline: 2px solid #e61d47;
+  outline-offset: 2px; /* Optional: space between button and outline */
 }
 
 body {
   /* set font globally */
-  font-family: 'Open Sans', sans-serif;
+  font-family: 'Open Sans', sans-serif !important;
   background-image: linear-gradient(to right, #f9f6f6, #dccfd3);
 }
 body.sopro-special-bg {
@@ -42,6 +51,9 @@ p {
 a {
   color: #e61d47;   /* url link color */
 }
+a:hover {
+  color: #ffb199;   /* url link hover color */
+}
 
 .sopro-waiting-cur * {
   cursor: wait !important;
@@ -51,7 +63,7 @@ a {
 
 /* custom drop shadow + round corners */
 .sopro-card {
-  box-shadow: 3px 3px 11px 0 rgba(0, 0, 0, 0.2);
+  box-shadow: 3px 3px 11px 0 rgba(0, 0, 0, 0.2) !important;
   border-radius: 11px;
   background-color: white;
   min-height: 0;  /* to allow scrollbars */
@@ -178,7 +190,7 @@ a {
   
   font-size: 1rem !important; /* "20" px */
   font-weight: 900 !important;
-  color: black;
+  color: white;
 
   border-radius: 11px !important;
   background-color: #e61d47;
@@ -187,9 +199,6 @@ a {
 }
 a.sopro-button-content:link, a.sopro-button-content:visited {
     color: black;
-}
-.sopro-button-content:hover {
-  filter: brightness(0.95);
 }
 .sopro-button-content:disabled {
   background-color: #afafaf;
@@ -213,8 +222,13 @@ a.sopro-button-content:link, a.sopro-button-content:visited {
 a.sopro-button-header:link, a.sopro-button-header:visited {
     color: #ffffff;
 }
-.sopro-button-header:hover {
+.sopro-button-content, .sopro-button-header {
+  transition: transform 0.2s ease, filter 0.2s ease;
+}
+.sopro-button-content:hover, .sopro-button-header:hover {
   filter: brightness(0.94);
+  transform: scale(1.05);     /* Grow */
+  color: white;
 }
 
 .sopro-button-navigation {
@@ -256,6 +270,8 @@ a.sopro-button-header:link, a.sopro-button-header:visited {
 .navbar.sopro-navbar .navbar-nav {
     display: flex;
     gap: 1.7rem !important;
+    padding-right: 1.172rem;
+    height: 50px;
 }
 
 /* menu items */
@@ -276,13 +292,12 @@ a.sopro-button-header:link, a.sopro-button-header:visited {
 .navbar.sopro-navbar .navbar-brand {
     color: #000 !important;
     font-weight: bold;
-    font-size: 1.406rem;
     margin-right: 0.5rem;
 }
 
 /* makandra logo */
 .navbar-brand img {
-    max-height: 2.6rem;
+    max-height: 2rem;
     height: auto;
     width: auto;
     vertical-align: middle;
@@ -382,4 +397,19 @@ nav.navbar .container-fluid {
   background-color: #626262;
 
   color: white;
+}
+
+/* IDENTITY PAGES +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ */
+.nav-pills .nav-link.active {
+  background-color: #e61d47;
+  color: white !important;
+}
+
+.btn-primary {
+  border: none;
+  background-color: #e61d47;
+}
+
+.nav-pills .nav-link {
+  color: black;
 }
