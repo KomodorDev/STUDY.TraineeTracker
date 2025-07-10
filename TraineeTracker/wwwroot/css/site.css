@@ -138,6 +138,33 @@ a {
   column-gap: 2.344rem; /* "50" px */
 }
 
+.sopro-btn, a.sopro-btn:link, a.sopro-btn:visited {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    width: fit-content;
+
+    padding-left: 1.172rem;
+    padding-right: 1.172rem;
+
+    text-decoration: none;
+    color: #ffffff;
+    white-space: nowrap;
+}
+
+.sopro-btn:hover, a.sopro-btn:hover, a.sopro-btn:active {
+  filter: brightness(0.9);
+}
+
+.sopro-btn-prim {
+    background-color: #e61d47;
+}
+
+.sopro-btn-sec {
+    background-color: #ffb199;
+}
+
 .sopro-button-content {
   height: 2.813rem; /* "60" px */
   min-width: 5.859rem; /* "125" px */
