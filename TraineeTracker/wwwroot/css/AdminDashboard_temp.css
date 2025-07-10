@@ -6,10 +6,19 @@
     vertical-align: middle;
 }
 
+th {
+    top: 0;
+    position: sticky;
+}
+
 .table td > form {
     display: flex;
     justify-content: center;
     align-items: center;
+}
+
+.sopro-card.scroll {
+    overflow-y: auto;
 }
 
 .sopro-card.form {
