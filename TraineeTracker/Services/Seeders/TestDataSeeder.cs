@@ -157,7 +157,7 @@ namespace TraineeTracker.Services.Seeders {
                     TraineeEndDate = new DateOnly(2026, 6, 30)
                 },
                 new ApplicationUserDto {
-                    Email = "stefan.schnupfenTEST@makandra.de",
+                    Email = "stefan.schnupfen@makandra.de",
                     Role = "Trainee",
                     TeachingPlanId = 2,
                     Password = "Sopro.2025",
@@ -251,12 +251,12 @@ namespace TraineeTracker.Services.Seeders {
         public async Task SeedFeedbackAsync() {
 
             // Get Trainees
-            var alex = await _databaseApplicationUserRepository.FindByEmailAsync("alexandros.blask@uni-a.de");
+            var alex = await _databaseApplicationUserRepository.FindByEmailAsync("alexandros.blaskTEST@uni-a.de");
             var stefan = await _databaseApplicationUserRepository.FindByEmailAsync("stefan.schnupfen@makandra.de");
             var ursula = await _databaseApplicationUserRepository.FindByEmailAsync("ursula.urlaub@makandra.de");
             // Get Mentor and Admin who read it
             var simon = await _databaseApplicationUserRepository.FindByEmailAsync("simon.hinterreiter@uni-a.de"); // Admin
-            var paul = await _databaseApplicationUserRepository.FindByEmailAsync("paul.schweizer@uni-a.de");     // Mentor
+            var paul = await _databaseApplicationUserRepository.FindByEmailAsync("paul.schweizerTEST@uni-a.de");     // Mentor
 
             // FeedbackSeeds
             var feedbackSeeds = new List<(ApplicationUser? user, Lesson? lesson, int difficulty, float effort, string previousKnowledge, string? comment)> {
