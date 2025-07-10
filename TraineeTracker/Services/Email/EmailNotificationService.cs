@@ -167,6 +167,7 @@ namespace TraineeTracker.Services.Email {
 
             var added = addedLessons.Select(l => l.Lesson.Title).ToList();
             var removed = removedLessons.Select(l => l.Lesson.Title).ToList();
+            var changes = "";
 
             // ++++++++++++++++++++++++++++++++++++++++++
             // Notifiy Trainee
@@ -174,15 +175,13 @@ namespace TraineeTracker.Services.Email {
             if (setting.ReceiveImportChangeNotifications && (added.Any() || removed.Any())) {
                 var subject = "TraineeTracker: Your teaching plan has been updated";
 
-                var changes = "";
-
                 if (added.Any()) {
                     changes += "<p><strong>New lessons assigned:</strong><br/>" +
                             string.Join("<br/>", added.Select(n => $"– {n}")) + "</p>";
                 }
 
                 if (removed.Any()) {
-                    changes += "<p><strong>Lessons removed:</strong><br/>" +
+                    changes += "<p><strong>Existing lessons unassigned:</strong><br/>" +
                             string.Join("<br/>", removed.Select(n => $"– {n}")) + "</p>";
                 }
 
@@ -195,24 +194,20 @@ namespace TraineeTracker.Services.Email {
                 await _emailSender.SendEmailAsync(trainee.Email!, subject, messageHtml);
             }
 
-
             // ++++++++++++++++++++++++++++++++++++++++++
             // Notify Mentors and Admins
             if (added.Any() || removed.Any()) {
-                var subject = $"TraineeTracker: Changes to {trainee.UserName}'s TeachingPlan";
-
-                var messageHtml = $@"
-                    <p>The following changes were made during a teaching plan import for trainee <strong>{trainee.UserName}</strong>:</p>
-                    <ul>
-                        <li><strong>Added Lessons:</strong> {added.Count}</li>
-                        <li><strong>Removed Lessons:</strong> {removed.Count}</li>
-                    </ul>
-                    <p>Best regards,<br/>Your TraineeTracker Team</p>";
+                var subject = $"TraineeTracker: Changes to {trainee.UserName}'s teachinglan";
 
                 foreach (var person in thirdPersons) {
                     var s = person.EmailNotificationSetting!;
                     if (person.IsClosed || !s.ReceiveImportChangeNotifications)
                         continue;
+                    var messageHtml = $@"
+                    <p>Hello {person.UserName},</p>
+                    <p>The following changes were made to <strong>{trainee.UserName}</strong>'s teaching plan during a teaching plan import:</p>
+                    {changes}
+                    <p>Best regards,<br/>Your TraineeTracker Team</p>";
 
                     await _emailSender.SendEmailAsync(person.Email!, subject, messageHtml);
                 }

@@ -127,12 +127,12 @@ namespace TraineeTracker.Services.Seeders {
                 // ++++++++++++++++
                 // Mentor
                 new ApplicationUserDto {
-                    Email = "paul.schweizer@uni-a.de",
+                    Email = "paul.schweizerTEST@uni-a.de",
                     Role = "Mentor",
                     Password = "Sopro.2025"
                 },
                 new ApplicationUserDto {
-                    Email = "alexander.schlemmer@uni-a.de",
+                    Email = "alexander.schlemmerTEST@uni-a.de",
                     Role = "Mentor",
                     Password = "Sopro.2025"
                 },
@@ -140,7 +140,7 @@ namespace TraineeTracker.Services.Seeders {
                 // ++++++++++++++++
                 // Trainee
                 new ApplicationUserDto {
-                    Email = "alexandros.blask@uni-a.de",
+                    Email = "alexandros.blaskTEST@uni-a.de",
                     Role = "Trainee",
                     TeachingPlanId = 1,
                     Password = "Sopro.2025",
@@ -149,7 +149,7 @@ namespace TraineeTracker.Services.Seeders {
                 },
 
                 new ApplicationUserDto {
-                    Email = "nikita.stefan@uni-a.de",
+                    Email = "nikita.stefanTEST@uni-a.de",
                     Role = "Trainee",
                     TeachingPlanId = 2,
                     Password = "Sopro.2025",
@@ -174,7 +174,7 @@ namespace TraineeTracker.Services.Seeders {
                 },
 
                 new ApplicationUserDto {
-                    Email = "closed.trainee@uni-a.de",
+                    Email = "closed.traineeTEST@uni-a.de",
                     Role = "Trainee",
                     TeachingPlanId = 2,
                     Password = "Sopro.2025",
@@ -251,12 +251,12 @@ namespace TraineeTracker.Services.Seeders {
         public async Task SeedFeedbackAsync() {
 
             // Get Trainees
-            var alex = await _databaseApplicationUserRepository.FindByEmailAsync("alexandros.blask@uni-a.de");
+            var alex = await _databaseApplicationUserRepository.FindByEmailAsync("alexandros.blaskTEST@uni-a.de");
             var stefan = await _databaseApplicationUserRepository.FindByEmailAsync("stefan.schnupfen@makandra.de");
             var ursula = await _databaseApplicationUserRepository.FindByEmailAsync("ursula.urlaub@makandra.de");
             // Get Mentor and Admin who read it
             var simon = await _databaseApplicationUserRepository.FindByEmailAsync("simon.hinterreiter@uni-a.de"); // Admin
-            var paul = await _databaseApplicationUserRepository.FindByEmailAsync("paul.schweizer@uni-a.de");     // Mentor
+            var paul = await _databaseApplicationUserRepository.FindByEmailAsync("paul.schweizerTEST@uni-a.de");     // Mentor
 
             // FeedbackSeeds
             var feedbackSeeds = new List<(ApplicationUser? user, Lesson? lesson, int difficulty, float effort, string previousKnowledge, string? comment)> {
