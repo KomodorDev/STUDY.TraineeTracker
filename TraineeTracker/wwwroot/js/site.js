@@ -59,13 +59,26 @@ window.renderLessonChart = function(config) {
   
     const ctx = chartEl.getContext('2d');
   
+    const paddedData = [
+        ...config.data,
+        { x: [0, 0], y: '_' }
+    ];
+
+    const paddedColors = [
+        ...config.colors,
+        'rgba(0,0,0,0)'
+    ];
+
     new Chart(ctx, {
       type: 'bar',
       data: {
         datasets: [
           {
             label: 'Predicted Effort Range',
-            data: config.data.map(d => ({ x: [config.effortOverlayMin, config.effortOverlayMax], y: d.y })),
+            data: paddedData.map(d => ({
+              ...d,
+              x: [config.effortOverlayMin, config.effortOverlayMax]
+            })),
             backgroundColor: 'rgba(255, 165, 0, 0.25)',
             parsing: { xAxisKey: 'x', yAxisKey: 'y' },
             order: 0,
@@ -74,8 +87,14 @@ window.renderLessonChart = function(config) {
           },
           {
             label: 'Effort (days)',
-            data: config.data,
-            backgroundColor: config.colors,
+            data: paddedData,
+            backgroundColor: paddedColors,
+            borderColor: paddedData.map(d => d.y === '__padding__' ? 'rgba(0,0,0,0)' : 'black'),
+            borderWidth: 1, 
+            borderSkipped: false,
+            borderAlign: 'inner',
+            categoryPercentage: 1.0,
+            barPercentage: 1.0,
             parsing: { xAxisKey: 'x', yAxisKey: 'y' },
             order: 1,
             barThickness: 14,
@@ -95,13 +114,32 @@ window.renderLessonChart = function(config) {
           },
           y: {
             type: 'category',
+            offset: true,
+            grace: '20%',
             ticks: { display: false },
             grid: { drawTicks: false }
           }
         },
         plugins: {
           legend: { display: false },
-          tooltip: { enabled: true },
+          tooltip: {
+            enabled: true,
+            callbacks: {
+              label: function (context) {
+                const data = context.raw;
+                
+                const effort =
+                  Array.isArray(data.x) ? (data.x[1] - data.x[0]).toFixed(1) : data.x;
+
+                const status = data.status ?? 'unknown';
+
+                return `Effort (days): ${effort}\nStatus: ${status}`;
+              },
+              title: function (context) {
+                return context[0].label;
+              }
+            }
+          },
           annotation: {
             annotations: {
               today: {
