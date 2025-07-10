@@ -124,6 +124,8 @@ a {
   grid-template-columns: 1fr;
   grid-template-rows: 75px 1fr;  /* "100" px header, fill rest */
 
+  height: calc(100vh - 3.516rem);   /* 100% of viewport height - navbar height */
+
   padding: 3.516rem;    /* "75" px distance to screen edges and navbar*/
   column-gap: 2.344rem; /* "50" px */
   row-gap: 1.172rem;    /* "25" px */
@@ -186,35 +188,42 @@ a {
 }
 
 .sopro-button-content {
-  height: 2.813rem; /* "60" px */
-  min-width: 5.859rem; /* "125" px */
+  height: 2.4rem !important;
+  min-width: 5.859rem !important; /* "125" px */
   cursor: pointer;
   
-  font-size: 1rem; /* "20" px */
-  font-weight: 900;
+  font-size: 1rem !important; /* "20" px */
+  font-weight: 900 !important;
+  color: black;
 
-  border-radius: 11px;
+  border-radius: 11px !important;
+  background-color: #e61d47;
+  border: none;
   transition: background-color 0.2s ease;
 }
-
 .sopro-button-content:hover {
-  filter: brightness(0.9);
+  filter: brightness(0.95);
+}
+.sopro-button-content:disabled {
+  background-color: #afafaf;
+  cursor: not-allowed;
 }
 
 .sopro-button-header {
-  height: 2.813rem;  /* "60" px */
-  min-width: 7.031rem; /* "150" px */
+  height: 2.813rem !important;  /* "60" px */
+  min-width: 7.031rem !important; /* "150" px */
   cursor: pointer;
 
-  font-size: 1.406; /* "30" px */
-  font-weight: 900;
+  font-size: 1.406rem !important; /* "30" px */
+  font-weight: 900 !important;
 
-  border-radius: 11px;
+  border-radius: 11px !important;
+  background-color: #e61d47 !important;
+  border: none !important;
   transition: background-color 0.2s ease;
 }
-
 .sopro-button-header:hover {
-  filter: brightness(0.9);
+  filter: brightness(0.94);
 }
 
 .sopro-button-navigation {
