@@ -5,29 +5,47 @@
     ViewData["Title"] = $"Edit Processing Pause";
 }
 
-<h2>@ViewData["Title"]</h2>
+<thead>
+    <link rel="stylesheet" href="~/css/AdminDashboard_temp.css">
+</thead>
 
-<form asp-action="EditProcessingPause" method="post">
-    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-
-    <div class="form-group">
-        <label asp-for="StartDate"></label>
-        <input asp-for="StartDate" class="form-control" type="date" aria-required="true" placeholder="@Model.StartDate"/>
-        <span asp-validation-for="StartDate" class="text-danger"></span>
+<div class="sopro-grid-management">
+    <div class="sopro-card">
+        <div class="header thiccboi form">@ViewData["Title"]</div>
     </div>
+    <div class="sopro-card scroll">
+        <form asp-action="EditProcessingPause" method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
-    <div class="form-group">
-        <label asp-for="EndDate"></label>
-        <input asp-for="EndDate" class="form-control" type="date" aria-required="true" placeholder="@Model.EndDate" />
-        <span asp-validation-for="EndDate" class="text-danger"></span>
+            <div class="sopro-card small-header form">
+                <div class="form-header">
+                    <label asp-for="StartDate"></label>
+                </div>
+                <input asp-for="StartDate" class="sopro-inner-card form" type="date" aria-required="true"
+                    placeholder="@Model.StartDate" />
+                <span asp-validation-for="StartDate" class="text-danger"></span>
+            </div>
+
+            <div class="sopro-card small-header form">
+                <div class="form-header">
+                    <label asp-for="EndDate"></label>
+                </div>
+                <input asp-for="EndDate" class="sopro-inner-card form" type="date" aria-required="true"
+                    placeholder="@Model.EndDate" />
+                <span asp-validation-for="EndDate" class="text-danger"></span>
+            </div>
+
+            <input type="hidden" asp-for="TraineeId" />
+            <input type="hidden" asp-for="ProcessingPauseId" />
+
+            <div class="sopro-card form-buttons">
+                <button type="submit" class="sopro-btn sopro-btn-prim sopro-button-content">Save</button>
+                <a asp-action="ShowManageProcessingPausesView" asp-route-traineeId="@Model.TraineeId"
+                    class="sopro-btn sopro-btn-sec sopro-button-content">Cancel</a>
+            </div>
+        </form>
     </div>
-
-    <input type="hidden" asp-for="TraineeId" />
-    <input type="hidden" asp-for="ProcessingPauseId" />
-
-    <button type="submit" class="btn btn-primary">Save</button>
-    <a asp-action="ShowManageProcessingPausesView" asp-route-traineeId="@Model.TraineeId" class="btn btn-secondary">Cancel</a>
-</form>
+</div>
 
 @section Scripts {
     @{
