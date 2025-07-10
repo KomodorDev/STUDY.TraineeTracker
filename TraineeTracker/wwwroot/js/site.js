@@ -110,7 +110,7 @@ window.renderLessonChart = function(config) {
         scales: {
           x: {
             beginAtZero: true,
-            title: { display: true, text: 'Effort' }
+            title: { display: true, text: 'Estimated Effort in Days' }
           },
           y: {
             type: 'category',
