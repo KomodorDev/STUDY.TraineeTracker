@@ -127,12 +127,12 @@ namespace TraineeTracker.Services.Seeders {
                 // ++++++++++++++++
                 // Mentor
                 new ApplicationUserDto {
-                    Email = "paul.schweizer@uni-a.de",
+                    Email = "paul.schweizerTEST@uni-a.de",
                     Role = "Mentor",
                     Password = "Sopro.2025"
                 },
                 new ApplicationUserDto {
-                    Email = "alexander.schlemmer@uni-a.de",
+                    Email = "alexander.schlemmerTEST@uni-a.de",
                     Role = "Mentor",
                     Password = "Sopro.2025"
                 },
@@ -140,7 +140,7 @@ namespace TraineeTracker.Services.Seeders {
                 // ++++++++++++++++
                 // Trainee
                 new ApplicationUserDto {
-                    Email = "alexandros.blask@uni-a.de",
+                    Email = "alexandros.blaskTEST@uni-a.de",
                     Role = "Trainee",
                     TeachingPlanId = 1,
                     Password = "Sopro.2025",
@@ -149,7 +149,7 @@ namespace TraineeTracker.Services.Seeders {
                 },
 
                 new ApplicationUserDto {
-                    Email = "nikita.stefan@uni-a.de",
+                    Email = "nikita.stefanTEST@uni-a.de",
                     Role = "Trainee",
                     TeachingPlanId = 2,
                     Password = "Sopro.2025",
@@ -157,7 +157,7 @@ namespace TraineeTracker.Services.Seeders {
                     TraineeEndDate = new DateOnly(2026, 6, 30)
                 },
                 new ApplicationUserDto {
-                    Email = "stefan.schnupfen@makandra.de",
+                    Email = "stefan.schnupfenTEST@makandra.de",
                     Role = "Trainee",
                     TeachingPlanId = 2,
                     Password = "Sopro.2025",
@@ -174,7 +174,7 @@ namespace TraineeTracker.Services.Seeders {
                 },
 
                 new ApplicationUserDto {
-                    Email = "closed.trainee@uni-a.de",
+                    Email = "closed.traineeTEST@uni-a.de",
                     Role = "Trainee",
                     TeachingPlanId = 2,
                     Password = "Sopro.2025",
