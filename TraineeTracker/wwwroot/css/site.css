@@ -145,8 +145,10 @@ a {
 
     width: fit-content;
 
-    padding-left: 1.172rem;
-    padding-right: 1.172rem;
+    margin-right: 0.4688rem; /* "10" px */
+
+    padding-left: 1.172rem; /* "25" px */
+    padding-right: 1.172rem; /* "25" px */
 
     text-decoration: none;
     color: #ffffff;
@@ -174,7 +176,6 @@ a {
   font-weight: 900;
 
   border-radius: 11px;
-  background-color: #e61d47;
   transition: background-color 0.2s ease;
 }
 
@@ -191,7 +192,6 @@ a {
   font-weight: 900;
 
   border-radius: 11px;
-  background-color: #e61d47;
   transition: background-color 0.2s ease;
 }
 
