@@ -6,28 +6,28 @@
     <div class="modal-dialog modal-dialog-centered sopro-lesson-modal-size" style="width: 100vw">
         <div class="modal-content sopro-card" style="box-shadow: none;">
             <div class="modal-header">
-                <h5 class="modal-title">Statistics:</h5>
+                <h5 class="modal-title" style="font-weight: 900;">Statistics</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body sopro-inner-card">
 
                 <!-- Chart Container -->
-                <div class="chart-container">
-                    <canvas id="lessonChart"></canvas>
+                <div class="chart-container sopro-card">
+                    <canvas id="lessonChart" style="border-radius: 11px;"></canvas>
                 </div>
 
                 <!-- Metric Tiles -->
                 <div class="metrics-grid">
-                    <div class="metric-tile"><strong>SnapshotDate:</strong> @(Model.SnapshotDateTime.ToString("dd.MM.yyyy HH:mm"))</div>
-                    <div class="metric-tile"><strong>DaysPresentTotal:</strong> @(Model.DaysPresentTotal?.ToString("0.0") ?? "N/A")</div>
-                    <div class="metric-tile"><strong>DaysPresentTillToday:</strong> @(Model.DaysPresentTillToday?.ToString("0.0") ?? "N/A")</div>
-                    <div class="metric-tile"><strong>LessonDaysCompleted:</strong> @(Model.LessonDaysCompleted?.ToString("0.0") ?? "N/A")</div>
-                    <div class="metric-tile"><strong>LessonDaysOpen:</strong> @(Model.LessonDaysOpen?.ToString("0.0") ?? "N/A")</div>
-                    <div class="metric-tile"><strong>LessonDaysBuffer:</strong> @(Model.LessonDaysBuffer?.ToString("0.0") ?? "N/A")</div>
-                    <div class="metric-tile"><strong>Speed:</strong> @(Model.Speed?.ToString("0.00") ?? "N/A")</div>
-                    <div class="metric-tile"><strong>PredictedEstimatedEffortBuffer:</strong> @(Model.PredictedMissingEstimatedEffortAtEnd?.ToString("0.0") ?? "N/A")</div>
-                    <div class="metric-tile"><strong>PredictedActualDaysBuffer:</strong> @(Model.PredictedMissingActualDays?.ToString("0.0") ?? "N/A")</div>
-                    <div class="metric-tile">
+                    <div class="metric-tile sopro-card"><strong>SnapshotDate:</strong> @(Model.SnapshotDateTime.ToString("dd.MM.yyyy HH:mm"))</div>
+                    <div class="metric-tile sopro-card"><strong>DaysPresentTotal:</strong> @(Model.DaysPresentTotal?.ToString("0.0") ?? "N/A")</div>
+                    <div class="metric-tile sopro-card"><strong>DaysPresentTillToday:</strong> @(Model.DaysPresentTillToday?.ToString("0.0") ?? "N/A")</div>
+                    <div class="metric-tile sopro-card"><strong>LessonDaysCompleted:</strong> @(Model.LessonDaysCompleted?.ToString("0.0") ?? "N/A")</div>
+                    <div class="metric-tile sopro-card"><strong>LessonDaysOpen:</strong> @(Model.LessonDaysOpen?.ToString("0.0") ?? "N/A")</div>
+                    <div class="metric-tile sopro-card"><strong>LessonDaysBuffer:</strong> @(Model.LessonDaysBuffer?.ToString("0.0") ?? "N/A")</div>
+                    <div class="metric-tile sopro-card"><strong>Speed:</strong> @(Model.Speed?.ToString("0.00") ?? "N/A")</div>
+                    <div class="metric-tile sopro-card"><strong>PredictedEstimatedEffortBuffer:</strong> @(Model.PredictedMissingEstimatedEffortAtEnd?.ToString("0.0") ?? "N/A")</div>
+                    <div class="metric-tile sopro-card"><strong>PredictedActualDaysBuffer:</strong> @(Model.PredictedMissingActualDays?.ToString("0.0") ?? "N/A")</div>
+                    <div class="metric-tile sopro-card">
                         <strong>Status:</strong>
                         @if (Model.IsUpToDate)
                         {
@@ -40,7 +40,7 @@
                     </div>
                 </div>
 
-                @if (!Model.AllLessons.Any())
+                @if (Model.AllLessons == null || !Model.AllLessons.Any())
                 {
                     <div class="alert alert-warning">No lesson data available.</div>
                 }
