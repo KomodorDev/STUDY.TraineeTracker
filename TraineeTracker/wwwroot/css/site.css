@@ -228,7 +228,9 @@ a.sopro-button-header:link, a.sopro-button-header:visited {
 .sopro-button-content:hover, .sopro-button-header:hover {
   filter: brightness(0.94);
   transform: scale(1.05);     /* Grow */
-  color: white;
+  box-shadow: 3px 3px 11px 0 rgba(0, 0, 0, 0.2);
+  
+  color: white;         /* something from bootstrap overwrites the color otherwise */
 }
 
 .sopro-button-navigation {
