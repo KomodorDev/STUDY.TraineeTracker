@@ -166,25 +166,7 @@ a {
     padding-right: 1.172rem; /* "25" px */
 
     text-decoration: none;
-    color: #ffffff;
     white-space: nowrap;
-}
-
-.sopro-btn:hover, a.sopro-btn:hover, a.sopro-btn:active {
-  filter: brightness(0.9);
-}
-
-.sopro-btn-prim {
-    background-color: #e61d47;
-}
-
-.sopro-btn-sec {
-    background-color: #ffb199;
-}
-
-.sopro-btn-dis {
-    color: #afafaf;
-    background-color: #626262;
 }
 
 .sopro-button-content {
@@ -201,6 +183,9 @@ a {
   border: none;
   transition: background-color 0.2s ease;
 }
+a.sopro-button-content:link, a.sopro-button-content:visited {
+    color: black;
+}
 .sopro-button-content:hover {
   filter: brightness(0.95);
 }
@@ -216,34 +201,30 @@ a {
 
   font-size: 1.406rem !important; /* "30" px */
   font-weight: 900 !important;
+  color: #ffffff;
 
   border-radius: 11px !important;
   background-color: #e61d47 !important;
   border: none !important;
   transition: background-color 0.2s ease;
 }
+a.sopro-button-header:link, a.sopro-button-header:visited {
+    color: #ffffff;
+}
 .sopro-button-header:hover {
   filter: brightness(0.94);
 }
 
 .sopro-button-navigation {
-  height: 2.5784rem;  /* "55" px */
-  min-width: 7.031rem; /* "150" px */
-  cursor: pointer;
-
-  font-size: 1.406; /* "30" px */
-  font-weight: 900;
-
-  border-radius: 11px;
-  transition: background-color 0.2s ease;
+  height: 2.5784rem !important;  /* "55" px */
 }
 
-.sopro-button-navigation:hover {
-  filter: brightness(0.9);
+.sopro-btn-prim {
+    background-color: #e61d47 !important;
 }
 
-.sopro-btn-dis:hover {
-  filter: brightness(1);
+.sopro-btn-sec {
+    background-color: #ffb199 !important;
 }
 
 /* NAVBAR STYLING ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++*/
