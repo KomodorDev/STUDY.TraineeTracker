@@ -11,20 +11,19 @@
 
 @section Navbar {
     <nav>
-        <!-- default nav bar -->
+        <!-- different nav bar -->
             <nav class="navbar sopro-navbar navbar-expand-sm">
                 <div class="container-fluid">
                     <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between" style="overflow: hidden;">
                         <ul class="navbar-nav flex-grow-1">
-                            <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="Identity" asp-page="/Account/Login" asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })">TraineeTracker</a>
-                            </li>
+                            <!-- makandra logo -->
+                            <a href="https://makandra.de/de" target="_blank" class="navbar-brand">
+                                <img src="~/resources/makandra_logo_black.png" alt="logo" />
+                            </a>
                         </ul>
-
-                        <!-- makandra logo -->
-                        <a href="https://makandra.de/de" target="_blank" class="navbar-brand">
-                            <img src="~/resources/makandra_logo_black.png" alt="logo" />
-                        </a>
+                        <div class="nav-item">
+                            <a class="nav-link text-dark" asp-area="Identity" asp-page="/Account/Login" asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })">TraineeTracker</a>
+                        </div>
                     </div>
                 </div>
             </nav>
@@ -54,7 +53,7 @@
             </div>
             <div>
                 <button id="login-submit" type="submit" class="w-100 btn btn-lg btn-primary"
-                    style="color: white; background-color: #e61d47;">Log in</button>
+                    style="color: white; background-color: #e61d47; font-weight: 900; border: none; border-radius: 11px;">Log in</button>
             </div>
             <div>
                 <p>
