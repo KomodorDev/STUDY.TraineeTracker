@@ -131,6 +131,19 @@ a {
   row-gap: 1.172rem;    /* "25" px */
 }
 
+.sopro-grid-management.navigation {
+  display: grid;
+  grid-template-columns: 1fr;
+  grid-template-rows: 1.8752rem 75px 1fr;  /* "40" px navigation "100" px header, fill rest */
+  
+  padding-top: 0.4688rem;    /* "10" px distance to navbar */
+  padding-left: 3.516rem;    /* "75" px distance to screen edge*/
+  padding-right: 3.516rem;    /* "75" px distance to screen edge*/
+  padding-bottom: 3.516rem;    /* "75" px distance to screen edge*/
+  column-gap: 2.344rem; /* "50" px */
+  row-gap: 1.172rem;    /* "25" px */
+}
+
 /* splits the "100"px bar at the top */
 .sopro-grid-management .split-header {
   display: grid;
@@ -138,6 +151,22 @@ a {
   grid-template-rows: 1fr;
 
   column-gap: 2.344rem; /* "50" px */
+}
+
+.sopro-btn, a.sopro-btn:link, a.sopro-btn:visited {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    width: fit-content;
+
+    margin-right: 0.4688rem; /* "10" px */
+
+    padding-left: 1.172rem; /* "25" px */
+    padding-right: 1.172rem; /* "25" px */
+
+    text-decoration: none;
+    white-space: nowrap;
 }
 
 .sopro-button-content {
@@ -154,6 +183,9 @@ a {
   border: none;
   transition: background-color 0.2s ease;
 }
+a.sopro-button-content:link, a.sopro-button-content:visited {
+    color: black;
+}
 .sopro-button-content:hover {
   filter: brightness(0.95);
 }
@@ -169,14 +201,30 @@ a {
 
   font-size: 1.406rem !important; /* "30" px */
   font-weight: 900 !important;
+  color: #ffffff;
 
   border-radius: 11px !important;
   background-color: #e61d47 !important;
   border: none !important;
   transition: background-color 0.2s ease;
 }
+a.sopro-button-header:link, a.sopro-button-header:visited {
+    color: #ffffff;
+}
 .sopro-button-header:hover {
   filter: brightness(0.94);
+}
+
+.sopro-button-navigation {
+  height: 2.5784rem !important;  /* "55" px */
+}
+
+.sopro-btn-prim {
+    background-color: #e61d47 !important;
+}
+
+.sopro-btn-sec {
+    background-color: #ffb199 !important;
 }
 
 /* NAVBAR STYLING ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++*/
