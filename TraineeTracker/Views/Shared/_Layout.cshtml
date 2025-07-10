@@ -10,16 +10,10 @@
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/TraineeTracker.styles.css" asp-append-version="true" />
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans&display=swap" rel="stylesheet">
 
     @RenderSection("Styles", required: false)
 </head>
-
-@*
-change background: add
-@{
-    ViewData["BodyClass"] = "sopro-special-bg";
-}
-*@
 
 <body class="@ViewData["BodyClass"]">
     <header>
@@ -37,31 +31,34 @@ change background: add
                             @{
                                 var currentController = ViewContext.RouteData.Values["controller"]?.ToString();
                             }
-                            <li class="nav-item">
-                                <a class="nav-link @(currentController == "Home" ? "active" : "text-dark")" asp-area="" asp-controller="Home" asp-action="Index">User</a>
-                            </li>
+                            <!-- makandra logo -->
+                            <a href="https://makandra.de/de" target="_blank" class="navbar-brand">
+                                <img src="~/resources/makandra_logo_black.png" alt="logo" />
+                            </a>
+
+                            <!-- nav items -->
                             <li class="nav-item">
                                 <a class="nav-link @(currentController == "TraineeLessonDashboard" ? "active" : "text-dark")" asp-area="" asp-controller="Dashboard" asp-action="Index">Dashboard</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link @(currentController == "Feedback" ? "active" : "text-dark")" asp-area="" asp-controller="Feedback" asp-action="Dashboard">Feedback</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link @(currentController == "TeachingPlan" ? "active" : "text-dark")" asp-area="" asp-controller="TeachingPlan" asp-action="Dashboard">Import</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link @(currentController == "Admin" ? "active" : "text-dark")" asp-area="" asp-controller="Admin" asp-action="ShowAdminDashboardView">Admin</a>
-                            </li>
-                            <li class="nav-item">
                                 <a class="nav-link @(currentController == "EmailNotification" ? "active" : "text-dark")" asp-area="" asp-controller="Notifications" asp-action="Index">Settings</a>
                             </li>
-
+                            @if (User.IsInRole("Mentor") || User.IsInRole("Admin")) {
+                                <li class="nav-item">
+                                    <a class="nav-link @(currentController == "Feedback" ? "active" : "text-dark")" asp-area="" asp-controller="Feedback" asp-action="Dashboard">Feedback</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link @(currentController == "TeachingPlan" ? "active" : "text-dark")" asp-area="" asp-controller="TeachingPlan" asp-action="Dashboard">Import</a>
+                                </li>
+                            }
+                            @if (User.IsInRole("Admin")) {
+                                <li class="nav-item">
+                                    <a class="nav-link @(currentController == "Admin" ? "active" : "text-dark")" asp-area="" asp-controller="Admin" asp-action="ShowAdminDashboardView">Admin</a>
+                                </li>
+                            }
                         </ul>
-
-                        <!-- makandra logo -->
-                        <a href="https://makandra.de/de" target="_blank" class="navbar-brand">
-                            <img src="~/resources/makandra_logo_black.png" alt="logo" />
-                        </a>
+                        <!-- _LoginPartial -->
+                        <partial name="_LoginPartial" />
                     </div>
                 </div>
             </nav>
