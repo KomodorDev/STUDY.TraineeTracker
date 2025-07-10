@@ -2,7 +2,8 @@
 Notes:  .name         for class="name"
         .name.name2    for class="name name2"
         .name .name2   for class="name" ... any child="name2"
-        .name > .name   for class="name" ... direct child="namw2" */
+        .name > .name   for class="name" ... direct child="namw2"
+        .name > *       for class="name" ... any direct child */
 
 /* Open Sans font */
 @import url('https://fonts.googleapis.com/css2?family=Open+Sans&display=swap');
