@@ -66,14 +66,16 @@
 
     var chartData = stackedLessons.Select(l => new {
         x = new[] { l.Start, l.End },
-        y = l.Title
+        y = l.Title,
+        status = l.Status
     });
 
     var colors = stackedLessons.Select(l =>
-        l.Status == "finished" ? "rgba(40, 167, 69, 0.8)" :
-        l.Status == "accepted" ? "rgba(0, 123, 255, 0.8)" :
-        l.Status == "rejected" ? "rgba(220, 53, 69, 0.8)" :
-        l.Status == "started" ? "rgba(255, 193, 7, 0.8)" :
+        l.Status == "open" ? "white" :
+        l.Status == "started" ? "yellow" :
+        l.Status == "finished" ? "#afafaf" :
+        l.Status == "rejected" ? "#e61d47" :
+        l.Status == "accepted" ? "#ffb199" :
         "rgba(108, 117, 125, 0.8)"
     );
 
