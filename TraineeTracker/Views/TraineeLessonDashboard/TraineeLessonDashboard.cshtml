@@ -10,8 +10,7 @@
 @section Styles {
     <link rel="stylesheet" href="~/css/TraineeLessonDashboard.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/css/TraineeLessonDetail.css" asp-append-version="true" />
-    @* that file is not fixed yet <link rel="stylesheet" href="~/css/TraineeStatistics_temp.css" asp-append-version="true" />
-    *@
+    <link rel="stylesheet" href="~/css/TraineeStatistics_temp.css" asp-append-version="true" />
 }
 
 <div class="sopro-grid-lessons">
@@ -85,7 +84,7 @@
         
                 <!-- Expand Button -->
                 <button id="openStatisticsModalBtn"
-                        class="btn btn-outline-primary"
+                        class="btn sopro-button-content"
                         data-trainee-id="@Model.SelectedTrainee?.Id">
                     Show Extended Statistics
                 </button>
@@ -192,13 +191,13 @@
                         </td>
                     </tr>
                 }
-                <tr class="sopro-card sopro-table-format"><td>Lesson</td><td></td><td></td><td><span class="sopro-tag open">Open</span></td></tr>
-                <tr class="sopro-card sopro-table-format"><td>Lesson</td><td></td><td></td><td><span class="sopro-tag skipped">Skipped</span></td></tr>
-                <tr class="sopro-card sopro-table-format"><td>Lesson</td><td></td><td></td><td><span class="sopro-tag started">Started</span></td></tr>
-                <tr class="sopro-card sopro-table-format"><td>Lesson</td><td></td><td></td><td><span class="sopro-tag finished">Finished</span></td></tr>
-                <tr class="sopro-card sopro-table-format"><td>Lesson</td><td></td><td></td><td><span class="sopro-tag rejected">Rejected</span></td></tr>
-                <tr class="sopro-card sopro-table-format"><td>Lesson</td><td></td><td></td><td><span class="sopro-tag accepted">Accepted</span></td></tr>
-                <tr class="sopro-card sopro-table-format"><td>Lesson</td><td></td><td></td><td><span class="sopro-tag rated">Rated</span></td></tr>
+                <tr class="sopro-card sopro-table-format"><td>This ia an open lesson</td><td></td><td></td><td><span class="sopro-tag open">Open</span></td></tr>
+                <tr class="sopro-card sopro-table-format"><td>This ia a skipped lesson</td><td></td><td></td><td><span class="sopro-tag skipped">Skipped</span></td></tr>
+                <tr class="sopro-card sopro-table-format"><td>This ia a started lesson</td><td></td><td></td><td><span class="sopro-tag started">Started</span></td></tr>
+                <tr class="sopro-card sopro-table-format"><td>This ia a finished lesson</td><td></td><td></td><td><span class="sopro-tag finished">Finished</span></td></tr>
+                <tr class="sopro-card sopro-table-format"><td>This ia a rejected lesson</td><td></td><td></td><td><span class="sopro-tag rejected">Rejected</span></td></tr>
+                <tr class="sopro-card sopro-table-format"><td>This ia an accepted lesson</td><td></td><td></td><td><span class="sopro-tag accepted">Accepted</span></td></tr>
+                <tr class="sopro-card sopro-table-format"><td>This ia a rated lesson</td><td></td><td></td><td><span class="sopro-tag rated">Rated</span></td></tr>
             </tbody>
         </table>
     </section>
