@@ -167,6 +167,11 @@ a {
     background-color: #ffb199;
 }
 
+.sopro-btn-dis {
+    color: #afafaf;
+    background-color: #626262;
+}
+
 .sopro-button-content {
   height: 2.813rem; /* "60" px */
   min-width: 5.859rem; /* "125" px */
@@ -197,6 +202,10 @@ a {
 
 .sopro-button-header:hover {
   filter: brightness(0.9);
+}
+
+.sopro-btn-dis:hover {
+  filter: brightness(1);
 }
 
 /* NAVBAR STYLING ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++*/

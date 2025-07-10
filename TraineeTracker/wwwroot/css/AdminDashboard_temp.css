@@ -1,4 +1,8 @@
-.table td>form {
+.table {
+    vertical-align: middle;
+}
+
+.table td > form {
     display: flex;
     justify-content: center;
     align-items: center;
