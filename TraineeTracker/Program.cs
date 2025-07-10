@@ -119,6 +119,16 @@ if (app.Environment.IsDevelopment()) {
 }
 
 app.UseHttpsRedirection();
+
+// set dashboard as standard page <do not use yet>
+/*
+app.MapGet("/", context =>
+{
+    context.Response.Redirect("/Dashboard");
+    return Task.CompletedTask;
+});
+*/
+
 app.UseStaticFiles();
 
 app.UseRouting();

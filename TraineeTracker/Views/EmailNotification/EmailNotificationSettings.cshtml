@@ -23,7 +23,7 @@
     <div class="sopro-card small-header">
         <div class="header thiccboi">Configure your email notification preferences here ...</div>
 
-        <form asp-action="SaveEmailNotificationSettingChange" method="post" class="sopro-inner-card flex">
+        <form id="notificationSettings" asp-action="SaveEmailNotificationSettingChange" method="post" class="sopro-inner-card flex">
             <!-- Alle Label-Checkboxen wie vorher -->
             <label class="status-label">
                 <input type="checkbox" asp-for="ReceiveSkippedNotifications" />
@@ -65,7 +65,7 @@
                 @notifyPlanText
             </label>
             
-            <button type="submit" class="button mt-3">Save Settings</button>
+            <button id="saveNotificationsButton" type="submit" class="button mt-3" style="border-radius: 11px; background-color: #e61d47; font-weight: 900;">Save Settings</button>
         </form>
     </div>
 </div>
@@ -75,8 +75,8 @@
 
 <script>
   document.addEventListener("DOMContentLoaded", function () {
-    const form = document.querySelector("form");
-    const saveButton = form.querySelector("button[type='submit']");
+    const form = document.getElementById("notificationSettings");
+    const saveButton = document.getElementById("saveNotificationsButton");
 
     form.addEventListener("submit", function (event) {
       event.preventDefault();
