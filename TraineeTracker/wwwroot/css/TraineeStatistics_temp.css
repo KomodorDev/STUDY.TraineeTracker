@@ -1,3 +1,5 @@
+/* hintsimo & stefanni, minor adjustments schleale */
+
 body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
@@ -25,20 +27,19 @@ body {
 
 .metric-tile {
     padding: 1rem;
-    border: 1px solid #ccc;
     background-color: #ffffff;
-    border-radius: 8px;
+    border-radius: 11px;
     box-shadow: 0 0 5px rgba(0,0,0,0.05);
     word-wrap: break-word;
     overflow-wrap: break-word;
 }
 
 .text-success {
-    color: green;
+    color: #626262 !important;      /* GRAY SUCCESS TEXT PERHAPS CHANGE IDK */
     font-weight: bold;
 }
 
 .text-danger {
-    color: red;
+    color: #e61d47;
     font-weight: bold;
 }
