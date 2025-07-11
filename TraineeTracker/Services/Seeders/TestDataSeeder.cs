@@ -199,8 +199,8 @@ namespace TraineeTracker.Services.Seeders {
 
         // ---------------------------------------------------
         public async Task SeedProcessingPausesAsync() {
-            var alex = await _databaseApplicationUserRepository.FindByEmailAsync("alexandros.blask@uni-a.de");
-            var nikita = await _databaseApplicationUserRepository.FindByEmailAsync("nikita.stefan@uni-a.de");
+            var alex = await _databaseApplicationUserRepository.FindByEmailAsync("alexandros.blaskTEST@uni-a.de");
+            var nikita = await _databaseApplicationUserRepository.FindByEmailAsync("nikita.stefanTEST@uni-a.de");
             var stefan = await _databaseApplicationUserRepository.FindByEmailAsync("stefan.schnupfen@makandra.de");
             var ursula = await _databaseApplicationUserRepository.FindByEmailAsync("ursula.urlaub@makandra.de");
 
