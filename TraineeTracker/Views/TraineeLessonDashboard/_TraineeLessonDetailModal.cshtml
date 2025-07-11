@@ -27,6 +27,9 @@
                     <p>Estimation: @Model.Lesson.EstimatedEffort days</p>
                     <p>Started: @(Model.TraineeLesson.DayStarted != null ? Model.TraineeLesson.DayStarted.Value.ToString("dd. MMMM yyyy") : "/")</p>
                     <p>Finished: @(Model.TraineeLesson.DayFinished != null ? Model.TraineeLesson.DayFinished.Value.ToString("dd. MMMM yyyy") : "/")</p>
+                    @if (!String.IsNullOrWhiteSpace(Model.TraineeLesson.RejectionReason)) {
+                        <p style="text-wrap: auto;">Rejection reason: @Model.TraineeLesson.RejectionReason</p>
+                    }
                 </div>
             </div>
         </div>
@@ -163,7 +166,7 @@
 
                             <input type="hidden" name="TraineeLessonId" value=@Model.TraineeLesson.TraineeLessonId />
                             <input type="hidden" name="TargetStateName" value="Rejected" />
-                            <input type="hidden" name="RejectionReason" value="Placeholder" />
+                            <input type="hidden" name="RejectionReason" value="Placeholder reason awawawawawawawawawawawawawawawawawawawawawawawawawawawawawawawawawawawawawawawawawawawawawawawawawawawawawawawawawawawawawawawawawawawawawawawawawawawawawawawawawawawawawawawawawawawawawawawawawawawawawawawawawawawawawawawawawawawawawawawawa" />
 
                             <button type="submit"
                                 class="sopro-status-button
