@@ -42,7 +42,7 @@
     height: 2.344rem; /* "50" px */
 
     display: grid;
-    grid-template-columns: 1fr 6.25rem 6.25rem 6.25rem; /* "25"px*/
+    grid-template-columns: 0.5fr 0.167fr 0.167fr 0.167fr;
     gap: 0;
 
     align-items: center;
