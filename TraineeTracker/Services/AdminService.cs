@@ -192,21 +192,13 @@ namespace TraineeTracker.Services.Admin {
                 EndDate = dto.EndDate
             };
 
-            // Only create processingPause if non-existent
-            if (!await CheckProcessingPause(processingPause)) {
-                return ServiceResult.Failed();
+            var result = await CheckProcessingPause(processingPause);
+            if (!result.Succeeded) {
+                return result;
             }
             await _processingPauseRepository.CreateAsync(processingPause);
             return ServiceResult.Success();
         }
-
-        private async Task<bool> CheckProcessingPause(ProcessingPause processingPause) {
-            if (processingPause.EndDate < processingPause.StartDate) {
-                return false;
-            }
-            return await _processingPauseRepository.OverlapsAsync(processingPause);
-        }
-
         public async Task UpdateProcessingPauseAsync(ProcessingPauseDto dto) {
             if (!dto.ProcessingPauseId.HasValue) {
                 throw new Exception($"Missing {nameof(dto.ProcessingPauseId)} in {nameof(dto)}");
@@ -223,7 +215,21 @@ namespace TraineeTracker.Services.Admin {
             pause.Trainee = trainee;
             pause.StartDate = dto.StartDate;
             pause.EndDate = dto.EndDate;
+            var result = await CheckProcessingPause(pause);
+            if (!result.Succeeded) {
+                throw new Exception(result.ErrorMessages.First());
+            }
             await _processingPauseRepository.UpdateAsync(pause);
+        }
+
+        private async Task<ServiceResult> CheckProcessingPause(ProcessingPause processingPause) {
+            if (processingPause.StartDate > processingPause.EndDate) {
+                return ServiceResult.Failed("Startdate after Enddate");
+            }
+            if (await _processingPauseRepository.OverlapsAsync(processingPause)) {
+                return ServiceResult.Failed($"{nameof(processingPause)} overlaps with another.");
+            }
+            return ServiceResult.Success();
         }
 
         public async Task<ProcessingPause> DeleteProcessingPauseAsync(int processingPauseId) {
