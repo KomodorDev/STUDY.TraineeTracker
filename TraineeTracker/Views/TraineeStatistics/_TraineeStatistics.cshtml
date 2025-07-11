@@ -21,7 +21,7 @@
                     <div class="metric-tile sopro-card" title="Date and time this data snapshot was taken."><strong>Snapshot taken at:</strong> @(Model.SnapshotDateTime.ToString("dd.MM.yyyy HH:mm"))</div>
                     <div class="metric-tile sopro-card" title="Total number of days the trainee is present."><strong>Total days present:</strong> @(Model.DaysPresentTotal?.ToString("0.0") ?? "N/A") days</div>
                     <div class="metric-tile sopro-card" title="Presence days up to today's date."><strong>Days present (until today):</strong> @(Model.DaysPresentTillToday?.ToString("0.0") ?? "N/A") days</div>
-                    <div class="metric-tile sopro-card" title="Sum of estimated effort from completed lessons."><strong>Estimated lesson effort completed:</strong> @(Model.LessonDaysCompleted?.ToString("0.0") ?? "N/A") days</div>
+                    <div class="metric-tile sopro-card" title="Sum of estimated effort from completed lessons."><strong>Estimated effort completed:</strong> @(Model.LessonDaysCompleted?.ToString("0.0") ?? "N/A") days</div>
                     <div class="metric-tile sopro-card" title="Estimated effort still required to complete all lessons."><strong>Estimated effort remaining:</strong> @(Model.LessonDaysOpen?.ToString("0.0") ?? "N/A") days</div>
                     <div class="metric-tile sopro-card" title="Shows how far ahead or behind the trainee is based on expected lesson progress. Positive = ahead, negative = behind."><strong>Effort buffer:</strong> @(Model.LessonDaysBuffer?.ToString("0.0") ?? "N/A") days</div>
                     <div class="metric-tile sopro-card" title="Indicates how efficiently the trainee has used their time. 100% = on pace, below 100% = behind, above 100% = ahead.">
