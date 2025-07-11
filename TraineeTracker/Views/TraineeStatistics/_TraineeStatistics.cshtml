@@ -40,6 +40,23 @@
                     </div>
                 </div>
 
+                @if (Model.ProcessingPauses != null && Model.ProcessingPauses.Any())
+                {
+                    <div class="metric-tile sopro-card mt-3" style="width: 100%; padding: 1rem; min-height: auto; height: auto;">
+                        <strong>Processing Pauses:</strong>
+                        <ul class="mb-0 mt-1">
+                            @foreach (var pause in Model.ProcessingPauses)
+                            {
+                                <li>
+                                    @pause.StartDate.ToString("dd.MM.yyyy")
+                                    –
+                                    @pause.EndDate.ToString("dd.MM.yyyy")
+                                </li>
+                            }
+                        </ul>
+                    </div>
+                }
+
                 @if (Model.AllLessons == null || !Model.AllLessons.Any())
                 {
                     <div class="alert alert-warning">No lesson data available.</div>
