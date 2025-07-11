@@ -193,11 +193,18 @@ namespace TraineeTracker.Services.Admin {
             };
 
             // Only create processingPause if non-existent
-            if (await _processingPauseRepository.ExistsAsync(processingPause)) {
-                return ServiceResult.Failed("A pause already exists for this user for this period.");
+            if (!await CheckProcessingPause(processingPause)) {
+                return ServiceResult.Failed();
             }
             await _processingPauseRepository.CreateAsync(processingPause);
             return ServiceResult.Success();
+        }
+
+        private async Task<bool> CheckProcessingPause(ProcessingPause processingPause) {
+            if (processingPause.EndDate < processingPause.StartDate) {
+                return false;
+            }
+            return await _processingPauseRepository.OverlapsAsync(processingPause);
         }
 
         public async Task UpdateProcessingPauseAsync(ProcessingPauseDto dto) {
