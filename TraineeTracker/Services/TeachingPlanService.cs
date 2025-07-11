@@ -209,7 +209,7 @@ namespace TraineeTracker.Services {
 
                 // +++++++++++++++
                 // c) Benachrichtigung
-                await _emailNotificationService
+                _emailNotificationService
                     .NotifyAboutImportChangeAsync(trainee, removedTraineeLessons, addedTraineeLessons);
             }
         }
