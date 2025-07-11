@@ -1,8 +1,5 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using TraineeTracker.Data.ApplicationUsers;
-using TraineeTracker.Data.ProcessingPauses;
-using TraineeTracker.Data.TeachingPlans;
 using TraineeTracker.Models.Dtos;
 using TraineeTracker.Models.ViewModels.Admin;
 using TraineeTracker.Services.Admin;
@@ -11,12 +8,10 @@ namespace TraineeTracker.Controllers {
     [Authorize(Roles = "Admin")]
     public class AdminController : Controller {
         private readonly AdminService _adminService;
-        private readonly IProcessingPauseRepository _processingPauseRepository;
         private readonly ILogger<AdminController> _logger;
 
-        public AdminController(AdminService adminService, IApplicationUserRepository applicationUserRepository, IProcessingPauseRepository processingPauseRepository, ITeachingPlanRepository teachingPlanRepository, ILogger<AdminController> logger) {
+        public AdminController(AdminService adminService, ILogger<AdminController> logger) {
             _adminService = adminService;
-            _processingPauseRepository = processingPauseRepository;
             _logger = logger;
         }
 
@@ -104,13 +99,8 @@ namespace TraineeTracker.Controllers {
 
         [HttpPost("/DeleteProcessingPause")]
         public async Task<IActionResult> DeleteProcessingPauseAsync(int processingPauseId) {
-            var pause = await _processingPauseRepository.FindByIdAsync(processingPauseId);
-            if (pause == null) {
-                return NotFound();
-            }
-            var traineeId = pause.TraineeId;
-            await _processingPauseRepository.DeleteAsync(pause);
-            return RedirectToAction("ShowManageProcessingPausesView", new { TraineeId = traineeId });
+            var pause = await _adminService.DeleteProcessingPauseAsync(processingPauseId);
+            return RedirectToAction("ShowManageProcessingPausesView", new { TraineeId = pause.TraineeId });
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
