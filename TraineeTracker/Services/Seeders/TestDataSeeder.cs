@@ -65,10 +65,10 @@ namespace TraineeTracker.Services.Seeders {
 
 
             foreach (var lesson in lessons) {
-                var existing = await _databaseLessonRepository.GetLessonByIdAsync(lesson.LessonId);
+                bool alreadyExists = await _databaseLessonRepository
+                    .ExistsAsync(lesson.MakandraId, lesson.TeachingPlanId);
 
-                // Only add lesson if not existing yet
-                if (existing == null) {
+                if (!alreadyExists) {
                     await _databaseLessonRepository.CreateAsync(lesson);
                 }
             }
