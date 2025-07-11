@@ -219,6 +219,13 @@ namespace TraineeTracker.Services.Admin {
             await _processingPauseRepository.UpdateAsync(pause);
         }
 
+        public async Task<ProcessingPause> DeleteProcessingPauseAsync(int processingPauseId) {
+            var pause = await _processingPauseRepository.FindByIdAsync(processingPauseId);
+            var traineeId = pause.TraineeId;
+            await _processingPauseRepository.DeleteAsync(pause);
+            return pause;
+        }
+
         public async Task<ApplicationUser?> FindByIdWithProcessingPausesAsync(string userId) {
             return await _applicationUserRepository.FindByIdWithProcessingPausesAsync(userId);
         }
