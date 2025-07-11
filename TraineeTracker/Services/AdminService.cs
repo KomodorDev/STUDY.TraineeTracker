@@ -65,22 +65,24 @@ namespace TraineeTracker.Services.Admin {
         }
 
         public async Task<CreateUserViewModel> FillCreateUserDropdownsAsync(CreateUserViewModel viewModel) {
+            ArgumentNullException.ThrowIfNull(viewModel);
             var rolesTask = _roleManager.Roles.ToListAsync();
             var plansTask = _teachingPlanRepository.GetAllTeachingPlansAsync();
             var roles = await rolesTask;
-            var plans = await plansTask;
             viewModel.Roles = roles.Select(r => new SelectListItem {
                 Value = r.Name,
                 Text = r.Name
-            });
+            }).ToList();
+            var plans = await plansTask;
             viewModel.TeachingPlans = plans.Select(p => new SelectListItem {
                 Value = p.TeachingPlanId.ToString(),
                 Text = p.Name
-            });
+            }).ToList();
             return viewModel;
         }
 
         public async Task<ServiceResult> CreateUserAsync(ApplicationUserDto dto) {
+            ArgumentNullException.ThrowIfNull(dto);
             var user = new ApplicationUser {
                 UserName = dto.Email,
                 Email = dto.Email,
@@ -102,10 +104,9 @@ namespace TraineeTracker.Services.Admin {
                 return ServiceResult.Failed(result.Errors.Select(e => e.Description).ToArray());
             }
 
-            var roleResult = await _applicationUserRepository.AddToRoleAsync(user, dto.Role);
-            if (!roleResult.Succeeded) {
-                var errors = result.Errors.Concat(roleResult.Errors);
-                return ServiceResult.Failed(errors.Select(e => e.Description).ToArray());
+            result = await _applicationUserRepository.AddToRoleAsync(user, dto.Role);
+            if (!result.Succeeded) {
+                return ServiceResult.Failed(result.Errors.Select(e => e.Description).ToArray());
             }
 
             if (dto.Role == "Trainee") {
@@ -119,10 +120,9 @@ namespace TraineeTracker.Services.Admin {
                     return teachingPlanResult;
                 } */
 
-                var updateResult = await _applicationUserRepository.UpdateAsync(user);
-                if (!updateResult.Succeeded) {
-                    var errors = result.Errors.Concat(updateResult.Errors);
-                    return ServiceResult.Failed(errors.Select(e => e.Description).ToArray());
+                result = await _applicationUserRepository.UpdateAsync(user);
+                if (!result.Succeeded) {
+                    return ServiceResult.Failed(result.Errors.Select(e => e.Description).ToArray());
                 }
             }
 
