@@ -77,8 +77,16 @@ namespace TraineeTracker.Services {
                         WeightedEffort = l.Lesson.EstimatedEffort * 0.7,
                         State = l.State
                     }).ToList(),
-                AcceptedAndRatedLessons = lessons
-                    .Where(l => l.State == TraineeLessonState.Accepted || l.State == TraineeLessonState.Rated)
+                AcceptedLessons = lessons
+                    .Where(l => l.State == TraineeLessonState.Accepted)
+                    .Select(l => new TraineeLessonViewModel {
+                        Title = l.Lesson.Title,
+                        EstimatedEffort = l.Lesson.EstimatedEffort,
+                        WeightedEffort = l.Lesson.EstimatedEffort * 1.0,
+                        State = l.State
+                    }).ToList(),
+                RatedLessons = lessons
+                    .Where(l => l.State == TraineeLessonState.Rated)
                     .Select(l => new TraineeLessonViewModel {
                         Title = l.Lesson.Title,
                         EstimatedEffort = l.Lesson.EstimatedEffort,
@@ -115,9 +123,9 @@ namespace TraineeTracker.Services {
                 ProcessingPauses = processingPauses
             };
 
-
+            AddWithStatus(model.RatedLessons, "rated");
+            AddWithStatus(model.AcceptedLessons, "accepted");
             AddWithStatus(model.FinishedLessons, "finished");
-            AddWithStatus(model.AcceptedAndRatedLessons, "accepted");
             AddWithStatus(model.RejectedLessons, "rejected");
             AddWithStatus(model.StartedLessons, "started");
             AddWithStatus(model.OpenLessons, "open");
@@ -126,7 +134,8 @@ namespace TraineeTracker.Services {
 
             model.TodayPosition = (
                 (model.FinishedLessons?.Sum(l => l.WeightedEffort) ?? 0) +
-                (model.AcceptedAndRatedLessons?.Sum(l => l.WeightedEffort) ?? 0) +
+                (model.AcceptedLessons?.Sum(l => l.WeightedEffort) ?? 0) +
+                (model.RatedLessons?.Sum(l => l.WeightedEffort) ?? 0) +
                 (model.RejectedLessons?.Sum(l => l.WeightedEffort) ?? 0)
             );
 
