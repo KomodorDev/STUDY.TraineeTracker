@@ -13,11 +13,9 @@ namespace TraineeTracker.Data.Lessons {
             return await _context.Lessons.AnyAsync(l => l.LessonId == id);
         }
 
-        public async Task<bool> ExistsAsync(Lesson lesson) {
-            return await _context.Lessons.AnyAsync(l =>
-            l.Title == lesson.Title &&
-            l.LinkUrl == lesson.LinkUrl &&
-            l.EstimatedEffort == lesson.EstimatedEffort);
+        public async Task<bool> ExistsAsync(string makandraId, int teachingPlanId) {
+            return await _context.Lessons
+                .AnyAsync(l => l.MakandraId == makandraId && l.TeachingPlanId == teachingPlanId);
         }
 
         public async Task CreateAsync(Lesson lesson) {
@@ -39,11 +37,6 @@ namespace TraineeTracker.Data.Lessons {
             return await _context.Lessons
             .Include(l => l.Feedbacks)
             .FirstOrDefaultAsync(l => l.LessonId == id);
-        }
-
-        public async Task<Lesson?> GetLessonByTitleAsync(string title) {
-            return await _context.Lessons
-            .FirstOrDefaultAsync(l => l.Title == title);
         }
 
         public async Task<IEnumerable<Lesson>> GetAllLessonsAsync() {
