@@ -33,6 +33,10 @@ namespace TraineeTracker.Data.ApplicationUsers {
             return await _userManager.CreateAsync(user, password);
         }
 
+        public async Task<IdentityResult> DeleteAsync(ApplicationUser user) {
+            return await _userManager.DeleteAsync(user);
+        }
+
         public async Task<bool> ExistsAsync(string userId) {
             var user = await _userManager.FindByIdAsync(userId);
             return user != null;
