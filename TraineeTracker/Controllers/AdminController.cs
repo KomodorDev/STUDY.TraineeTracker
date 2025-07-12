@@ -65,7 +65,7 @@ namespace TraineeTracker.Controllers {
 
         [HttpGet("/CreateProcessingPause")]
         public async Task<IActionResult> ShowCreateProcessingPauseView(string traineeId) {
-            var viewModel = await _adminService.BuildCreateProcessingPauseViewModel(traineeId);
+            var viewModel = await _adminService.BuildCreateProcessingPauseViewModelÁsync(traineeId);
             return View("CreateProcessingPause", viewModel);
         }
 
