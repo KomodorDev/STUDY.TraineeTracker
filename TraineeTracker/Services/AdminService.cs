@@ -106,22 +106,27 @@ namespace TraineeTracker.Services.Admin {
 
             result = await _applicationUserRepository.AddToRoleAsync(user, dto.Role);
             if (!result.Succeeded) {
+                await _applicationUserRepository.DeleteAsync(user);
                 return ServiceResult.Failed(result.Errors.Select(e => e.Description).ToArray());
             }
 
             if (dto.Role == "Trainee") {
-
                 user.TraineeStartDate = dto.TraineeStartDate;
                 user.TraineeEndDate = dto.TraineeEndDate;
 
-                /* var teachingPlanResult = */
+                if (dto.TeachingPlanId == null) {
+                    return ServiceResult.Failed("Trainee requires Teachingplan.");  // only for compiler
+                }
+                /* result = */
                 await _teachingPlanService.AssignTeachingPlanToTraineeAsync(user, dto.TeachingPlanId.Value); // TODO: method should return a ServiceResult
-                /* if (!teachingPlanResult.Succeeded) {
-                    return teachingPlanResult;
+                /* if (!result.Succeeded) {
+                    await _applicationUserRepository.DeleteAsync(user);
+                    return result;
                 } */
 
                 result = await _applicationUserRepository.UpdateAsync(user);
                 if (!result.Succeeded) {
+                    await _applicationUserRepository.DeleteAsync(user);
                     return ServiceResult.Failed(result.Errors.Select(e => e.Description).ToArray());
                 }
             }
