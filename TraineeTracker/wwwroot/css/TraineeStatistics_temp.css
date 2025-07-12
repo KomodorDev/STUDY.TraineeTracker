@@ -43,3 +43,76 @@ body {
     color: #e61d47;
     font-weight: bold;
 }
+.metric-tile-new {
+    text-align: center;
+    position: relative;
+    padding: 1rem;
+    overflow: visible;
+    background-color: #fff;
+    border-radius: 1rem;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+}
+
+.tile-header {
+    font-size: 1rem;
+    font-weight: 600;
+    margin-bottom: 0.4rem;
+}
+
+.tile-value-with-icon {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 0.4rem;
+}
+
+.tile-value {
+    font-size: 1rem;
+    font-weight: 500;
+    color: #222;
+}
+
+.info-icon-wrapper {
+    position: relative;
+    display: inline-block;
+}
+
+.info-icon {
+    background-color: #007bff;
+    color: white;
+    border-radius: 50%;
+    width: 1.2rem;
+    height: 1.2rem;
+    font-size: 0.9rem;
+    line-height: 1.2rem;
+    text-align: center;
+    cursor: pointer;
+    font-weight: bold;
+    display: inline-block;
+}
+
+.tooltip-box {
+    display: none;
+    position: absolute;
+    top: 130%;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: #333;
+    color: #fff;
+    padding: 0.8rem 1rem;
+    border-radius: 0.5rem;
+    font-size: 0.95rem;
+    z-index: 9999;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+
+    /* ✨ Die eigentlichen Fixes: */
+    width: max-content;
+    min-width: 100px;
+    max-width: 20vw;
+    white-space: normal;
+    line-height: 1.4;
+}
+
+.info-icon:hover + .tooltip-box {
+    display: block;
+}
