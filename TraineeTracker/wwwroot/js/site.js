@@ -68,8 +68,6 @@ window.renderLessonChart = function(config) {
         'rgba(0,0,0,0)'
     ];
 
-    const labels = config.data.map(d => d.y).filter(y => y && y !== '_');
-
     new Chart(ctx, {
       type: 'bar',
       data: {
