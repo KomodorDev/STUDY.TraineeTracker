@@ -134,10 +134,10 @@ namespace TraineeTracker.Services.Admin {
             return ServiceResult.Success();
         }
 
-        public async Task<bool> CloseUserAsync(string userId) {
+        public async Task<ServiceResult> CloseUserAsync(string userId) {
             var user = await _applicationUserRepository.FindByIdAsync(userId);
             if (user == null) {
-                return false;
+                return ServiceResult.Failed("User not found");
             }
 
             user.IsClosed = true;
@@ -150,9 +150,6 @@ namespace TraineeTracker.Services.Admin {
                 }
                 user.ProcessingPauses.Clear();
 
-                if (user.TeachingPlanId == null) {
-                    throw new Exception("Trainee requires Teachingplan.");
-                }
                 referenceUpdateTasks.Add(_teachingPlanService.UnassignTeachingPlanFromTraineeAsync(user));
 
                 if (user.TraineeStatisticsSnapshot != null) {
@@ -161,7 +158,9 @@ namespace TraineeTracker.Services.Admin {
                 }
             } else {
                 foreach (var feedback in user.ReadFeedbacks.ToList()) {
-                    feedback.ReadByUsers.Remove(user);
+                    if (!feedback.ReadByUsers.Remove(user)) {
+                        return ServiceResult.Failed($"Could not remove {nameof(user)} from {nameof(feedback.ReadByUsers)}");
+                    }
                     referenceUpdateTasks.Add(_feedbackRepository.UpdateAsync(feedback));
                 }
                 user.ReadFeedbacks.Clear();
@@ -169,10 +168,22 @@ namespace TraineeTracker.Services.Admin {
                 user.LastSelectedTrainees.Clear();
             }
 
-            await Task.WhenAll(referenceUpdateTasks);
-            await _applicationUserRepository.UpdateAsync(user);
+            try {
+                await Task.WhenAll(referenceUpdateTasks);
+            }
+            catch (AggregateException aggEx) {
+                return ServiceResult.Failed(aggEx.InnerExceptions.Select(e => e.Message).ToArray());
+            }
+            catch (Exception ex) {
+                return ServiceResult.Failed(ex.Message);
+            }
 
-            return true;
+            var result = await _applicationUserRepository.UpdateAsync(user);
+            if (!result.Succeeded) {
+                return ServiceResult.Failed(result.Errors.Select(e => e.Description).ToArray());
+            }
+
+            return ServiceResult.Success();
         }
 
         public async Task<CreateProcessingPauseViewModel> BuildCreateProcessingPauseViewModel(string traineeId) {
