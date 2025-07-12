@@ -186,14 +186,21 @@ namespace TraineeTracker.Services.Admin {
             return ServiceResult.Success();
         }
 
-        public async Task<CreateProcessingPauseViewModel> BuildCreateProcessingPauseViewModel(string traineeId) {
-            var user = await _applicationUserRepository.FindByIdAsync(traineeId);
-            return new CreateProcessingPauseViewModel {
+        public async Task<ServiceResult<CreateProcessingPauseViewModel>> BuildCreateProcessingPauseViewModelÁsync(string traineeId) {
+            var trainee = await _applicationUserRepository.FindByIdAsync(traineeId);
+            if (trainee == null) {
+                return ServiceResult<CreateProcessingPauseViewModel>.Failed("Trainee not found.");
+            }
+            if (trainee.UserName == null) {
+                throw new NullReferenceException(nameof(trainee.UserName));
+            }
+            var viewModel = new CreateProcessingPauseViewModel {
                 ProcessingPause = new ProcessingPauseDto {
                     TraineeId = traineeId
                 },
-                UserName = user.UserName
+                UserName = trainee.UserName
             };
+            return ServiceResult<CreateProcessingPauseViewModel>.Success(viewModel);
         }
 
         public async Task<ServiceResult> CreateProcessingPauseAsync(ProcessingPauseDto dto) {
