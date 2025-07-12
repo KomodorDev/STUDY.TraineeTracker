@@ -394,6 +394,7 @@ namespace TraineeTracker.Services {
             double predictedEstimatedEffortDoneInFuture = daysPresentDaysInFuture * speed;
 
             // predicted Buffer in EstimatedEffort: estimatedEffort remaining at EndDate
+            // SAH: Die Rechnung hier muss andersrum sein. Es heißt ja "predictedMissingEstimatedEffortAtEnd" und nicht "predictedAdditionalEstimatedEffortPossibleAtEnd". Das muss dann entsprechend auch in der View angepasst werden. Betrifft dann logischerweise auch die Methode eins drunter.
             double predictedMissingEstimatedEffortAtEnd = predictedEstimatedEffortDoneInFuture - estimatedEffortOpen;
 
             return predictedMissingEstimatedEffortAtEnd;
@@ -416,7 +417,7 @@ namespace TraineeTracker.Services {
 
             return lessons
                 .Where(tl => tl.State != TraineeLessonState.Skipped &&
-                            !(tl.Lesson.IsInactive && tl.State == TraineeLessonState.Open))
+                            !(tl.Lesson.IsInactive && tl.State == TraineeLessonState.Open)) // SAH: kp ob wir das wirklich brauchen. TeachingPlanService sollte eig alle TraineeLessons löschen, deren State = Open ist und deren Lesson.IsInactive ist
                 .Sum(tl => tl.Lesson.EstimatedEffort);
         }
 
