@@ -49,11 +49,10 @@ function hookUpStateChangeForms() {
 
 window.hookUpStateChangeForms = hookUpStateChangeForms;
 
-
-
-
 // ------------------------------------------------------
 window.renderLessonChart = function(config) {
+    console.log("Overlay-Werte:", config.effortOverlayMin, config.effortOverlayMax);
+
     const chartEl = document.getElementById('lessonChart');
     if (!chartEl) return;
   
@@ -69,22 +68,12 @@ window.renderLessonChart = function(config) {
         'rgba(0,0,0,0)'
     ];
 
+    const labels = config.data.map(d => d.y).filter(y => y && y !== '_');
+
     new Chart(ctx, {
       type: 'bar',
       data: {
         datasets: [
-          {
-            label: 'Predicted Effort Range',
-            data: paddedData.map(d => ({
-              ...d,
-              x: [config.effortOverlayMin, config.effortOverlayMax]
-            })),
-            backgroundColor: 'rgba(255, 165, 0, 0.25)',
-            parsing: { xAxisKey: 'x', yAxisKey: 'y' },
-            order: 0,
-            barThickness: 14,
-            maxBarThickness: 16
-          },
           {
             label: 'Effort (days)',
             data: paddedData,
@@ -153,8 +142,24 @@ window.renderLessonChart = function(config) {
                   enabled: true,
                   position: 'start'
                 }
+              },
+              
+              range: {
+                type: 'box',
+                xMin: config.effortOverlayMin,
+                xMax: config.effortOverlayMax,
+                yMin: -2,
+                yMax: config.data.length + 2,
+                backgroundColor: 'rgba(128, 128, 128, 0.15)',
+                borderWidth: 0,
+                label: {
+                  content: 'Effort buffer',
+                  enabled: true,
+                  position: 'center'
+                }
               }
             }
+
           }
         }
       }
