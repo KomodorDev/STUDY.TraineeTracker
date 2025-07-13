@@ -188,7 +188,7 @@ namespace TraineeTracker.Services.Seeders {
             foreach (var dto in userData) {
                 await _adminService.CreateUserAsync(dto);
 
-                if (dto.Email == "closed.trainee@uni-a.de") {
+                if (dto.Email == "closed.traineeTEST@uni-a.de") {
                     var user = await _databaseApplicationUserRepository.FindByEmailAsync(dto.Email);
                     if (user != null) {
                         await _adminService.CloseUserAsync(user.Id);
