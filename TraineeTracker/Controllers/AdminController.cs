@@ -49,7 +49,7 @@ namespace TraineeTracker.Controllers {
         public async Task<IActionResult> CloseUserAsync(string userId) {
             var result = await _adminService.CloseUserAsync(userId);
             if (!result.Succeeded) {
-                return NotFound();
+                return Error();
             }
             return RedirectToAction("ShowAdminDashboardView");
         }
@@ -85,7 +85,11 @@ namespace TraineeTracker.Controllers {
 
         [HttpGet("/EditProcessingPause")]
         public async Task<IActionResult> ShowEditProcessingPauseView(int processingPauseId) {
-            return View("EditProcessingPause", await _adminService.GetProcessingPauseDtoAsync(processingPauseId));
+            var result = await _adminService.GetProcessingPauseDtoAsync(processingPauseId);
+            if (!result.Succeeded) {
+                return NotFound();
+            }
+            return View("EditProcessingPause", result.Value);
         }
 
         [HttpPost("/EditProcessingPause")]
@@ -93,14 +97,23 @@ namespace TraineeTracker.Controllers {
             if (!ModelState.IsValid) {
                 return View("EditProcessingPause", dto);
             }
-            await _adminService.UpdateProcessingPauseAsync(dto);
+            var result = await _adminService.UpdateProcessingPauseAsync(dto);
+            if (!result.Succeeded) {
+                foreach (var message in result.ErrorMessages)
+                    ModelState.AddModelError("", message);
+                return View("EditProcessingPause", dto);
+            }
             return RedirectToAction("ShowManageProcessingPausesView", new { traineeId = dto.TraineeId });
         }
 
         [HttpPost("/DeleteProcessingPause")]
         public async Task<IActionResult> DeleteProcessingPauseAsync(int processingPauseId) {
-            var pause = await _adminService.DeleteProcessingPauseAsync(processingPauseId);
-            return RedirectToAction("ShowManageProcessingPausesView", new { TraineeId = pause.TraineeId });
+            var result = await _adminService.DeleteProcessingPauseAsync(processingPauseId);
+            if (!result.Succeeded) {
+                return NotFound();
+            }
+            ArgumentNullException.ThrowIfNull(result.Value);
+            return RedirectToAction("ShowManageProcessingPausesView", new { TraineeId = result.Value.TraineeId });
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
