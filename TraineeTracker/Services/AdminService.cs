@@ -215,13 +215,14 @@ namespace TraineeTracker.Services.Admin {
                 EndDate = dto.EndDate
             };
 
-            var result = await CheckProcessingPause(processingPause);
+            var result = await ValidateProcessingPause(processingPause);
             if (!result.Succeeded) {
                 return result;
             }
             await _processingPauseRepository.CreateAsync(processingPause);
             return ServiceResult.Success();
         }
+
         public async Task UpdateProcessingPauseAsync(ProcessingPauseDto dto) {
             if (!dto.ProcessingPauseId.HasValue) {
                 throw new Exception($"Missing {nameof(dto.ProcessingPauseId)} in {nameof(dto)}");
@@ -238,14 +239,14 @@ namespace TraineeTracker.Services.Admin {
             pause.Trainee = trainee;
             pause.StartDate = dto.StartDate;
             pause.EndDate = dto.EndDate;
-            var result = await CheckProcessingPause(pause);
+            var result = await ValidateProcessingPause(pause);
             if (!result.Succeeded) {
                 throw new Exception(result.ErrorMessages.First());
             }
             await _processingPauseRepository.UpdateAsync(pause);
         }
 
-        private async Task<ServiceResult> CheckProcessingPause(ProcessingPause processingPause) {
+        private async Task<ServiceResult> ValidateProcessingPause(ProcessingPause processingPause) {
             if (processingPause.StartDate > processingPause.EndDate) {
                 return ServiceResult.Failed("Startdate after Enddate");
             }
