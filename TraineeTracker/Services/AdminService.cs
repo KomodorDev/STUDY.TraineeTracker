@@ -223,17 +223,17 @@ namespace TraineeTracker.Services.Admin {
             return ServiceResult.Success();
         }
 
-        public async Task UpdateProcessingPauseAsync(ProcessingPauseDto dto) {
+        public async Task<ServiceResult> UpdateProcessingPauseAsync(ProcessingPauseDto dto) {
             if (!dto.ProcessingPauseId.HasValue) {
-                throw new Exception($"Missing {nameof(dto.ProcessingPauseId)} in {nameof(dto)}");
+                return ServiceResult.Failed($"Missing {nameof(dto.ProcessingPauseId)} in {nameof(dto)}");
             }
             var pause = await _processingPauseRepository.FindByIdAsync(dto.ProcessingPauseId.Value);
             if (pause == null) {
-                throw new Exception($"{nameof(dto)} not found.");
+                return ServiceResult.Failed($"{nameof(dto)} not found.");
             }
             var trainee = await _applicationUserRepository.FindByIdAsync(dto.TraineeId);
             if (trainee == null) {
-                throw new Exception($"{nameof(trainee)} not found.");
+                return ServiceResult.Failed($"{nameof(trainee)} not found.");
             }
             pause.TraineeId = dto.TraineeId;
             pause.Trainee = trainee;
@@ -241,9 +241,10 @@ namespace TraineeTracker.Services.Admin {
             pause.EndDate = dto.EndDate;
             var result = await ValidateProcessingPause(pause);
             if (!result.Succeeded) {
-                throw new Exception(result.ErrorMessages.First());
+                return result;
             }
             await _processingPauseRepository.UpdateAsync(pause);
+            return ServiceResult.Success();
         }
 
         private async Task<ServiceResult> ValidateProcessingPause(ProcessingPause processingPause) {
@@ -256,11 +257,14 @@ namespace TraineeTracker.Services.Admin {
             return ServiceResult.Success();
         }
 
-        public async Task<ProcessingPause> DeleteProcessingPauseAsync(int processingPauseId) {
+        public async Task<ServiceResult<ProcessingPause>> DeleteProcessingPauseAsync(int processingPauseId) {
             var pause = await _processingPauseRepository.FindByIdAsync(processingPauseId);
+            if (pause == null) {
+                return ServiceResult<ProcessingPause>.Failed($"{nameof(pause)} not found");
+            }
             var traineeId = pause.TraineeId;
             await _processingPauseRepository.DeleteAsync(pause);
-            return pause;
+            return ServiceResult<ProcessingPause>.Success(pause);
         }
 
         public async Task<ApplicationUser?> FindByIdWithProcessingPausesAsync(string userId) {
