@@ -6,6 +6,7 @@ using TraineeTracker.Services.Admin;
 
 namespace TraineeTracker.Controllers {
     [Authorize(Roles = "Admin")]
+    [Route("Admin")]
     public class AdminController : Controller {
         private readonly AdminService _adminService;
         private readonly ILogger<AdminController> _logger;
@@ -15,19 +16,19 @@ namespace TraineeTracker.Controllers {
             _logger = logger;
         }
 
-        [HttpGet("/AdminDashboard")]
+        [HttpGet("Dashboard")]
         public async Task<IActionResult> ShowAdminDashboardView() {
             var viewModel = await _adminService.BuildAdminDashboardViewModelAsync();
             return View("AdminDashboard", viewModel);
         }
 
-        [HttpGet("/CreateUser")]
+        [HttpGet("CreateUser")]
         public async Task<IActionResult> ShowCreateUserView() {
             var viewModel = await _adminService.BuildCreateUserViewModelAsync();
             return View("CreateUser", viewModel);
         }
 
-        [HttpPost("/CreateUser")]
+        [HttpPost("CreateUser")]
         public async Task<IActionResult> CreateUserAsync(CreateUserViewModel viewModel) {
             if (!ModelState.IsValid) {
                 viewModel = await _adminService.FillCreateUserDropdownsAsync(viewModel);
@@ -45,7 +46,7 @@ namespace TraineeTracker.Controllers {
             return RedirectToAction("ShowAdminDashboardView");
         }
 
-        [HttpPost("/CloseUser")]
+        [HttpPost("CloseUser")]
         public async Task<IActionResult> CloseUserAsync(string userId) {
             var result = await _adminService.CloseUserAsync(userId);
             if (!result.Succeeded) {
@@ -54,7 +55,7 @@ namespace TraineeTracker.Controllers {
             return RedirectToAction("ShowAdminDashboardView");
         }
 
-        [HttpGet("/ProcessingPauses")]
+        [HttpGet("ProcessingPauses")]
         public async Task<IActionResult> ShowManageProcessingPausesView(string traineeId) {
             var trainee = await _adminService.FindByIdWithProcessingPausesAsync(traineeId);
             if (trainee == null) {
@@ -63,13 +64,13 @@ namespace TraineeTracker.Controllers {
             return View("ManageProcessingPauses", trainee);
         }
 
-        [HttpGet("/CreateProcessingPause")]
+        [HttpGet("CreateProcessingPause")]
         public async Task<IActionResult> ShowCreateProcessingPauseView(string traineeId) {
             var viewModel = await _adminService.BuildCreateProcessingPauseViewModelAsync(traineeId);
             return View("CreateProcessingPause", viewModel);
         }
 
-        [HttpPost("/CreateProcessingPause")]
+        [HttpPost("CreateProcessingPause")]
         public async Task<IActionResult> CreateProcessingPauseAsync(CreateProcessingPauseViewModel viewModel) {
             if (!ModelState.IsValid) {
                 return View("CreateProcessingPause", viewModel);
@@ -83,7 +84,7 @@ namespace TraineeTracker.Controllers {
             return RedirectToAction("ShowManageProcessingPausesView", new { traineeId = viewModel.ProcessingPause.TraineeId });
         }
 
-        [HttpGet("/EditProcessingPause")]
+        [HttpGet("EditProcessingPause")]
         public async Task<IActionResult> ShowEditProcessingPauseView(int processingPauseId) {
             var result = await _adminService.GetProcessingPauseDtoAsync(processingPauseId);
             if (!result.Succeeded) {
@@ -92,7 +93,7 @@ namespace TraineeTracker.Controllers {
             return View("EditProcessingPause", result.Value);
         }
 
-        [HttpPost("/EditProcessingPause")]
+        [HttpPost("EditProcessingPause")]
         public async Task<IActionResult> EditProcessingPauseAsync(ProcessingPauseDto dto) {
             if (!ModelState.IsValid) {
                 return View("EditProcessingPause", dto);
@@ -106,7 +107,7 @@ namespace TraineeTracker.Controllers {
             return RedirectToAction("ShowManageProcessingPausesView", new { traineeId = dto.TraineeId });
         }
 
-        [HttpPost("/DeleteProcessingPause")]
+        [HttpPost("DeleteProcessingPause")]
         public async Task<IActionResult> DeleteProcessingPauseAsync(int processingPauseId) {
             var result = await _adminService.DeleteProcessingPauseAsync(processingPauseId);
             if (!result.Succeeded) {
