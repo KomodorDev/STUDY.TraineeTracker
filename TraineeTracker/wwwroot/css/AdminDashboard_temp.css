@@ -1,3 +1,8 @@
+.smash {
+    margin-right: auto;
+}
+
+
 .sopro-grid-management .split-header.flex {
   display: flex;
   gap: 2.344rem; /* "50" px */
@@ -11,6 +16,22 @@
 
 .sopro-card.scroll {
     overflow-y: auto;
+}
+
+
+.table {
+    vertical-align: middle;
+}
+
+th {
+    top: 0;
+    position: sticky;
+}
+
+.table td > form {
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 
@@ -49,25 +70,4 @@ sopro-card.form {
     font-weight: 900;  /* oh boi he thicc */
     font-size: 1.172rem; /* "25" px */
     overflow: hidden;
-}
-
-
-.table {
-    vertical-align: middle;
-}
-
-th {
-    top: 0;
-    position: sticky;
-}
-
-.table td > form {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-
-
-.smash {
-    margin-right: auto;
 }
