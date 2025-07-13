@@ -14,15 +14,17 @@
             Filter by
             <div class="filter-bar">
                 <form asp-action="Dashboard" method="get" class="filter-tab filter-tab-select">
-                    <select class="select-wide-filter" onchange="this.form.submit()">
-                        <option>Role</option>
-                        <option>Admin</option>
-                        <option>Mentor</option>
-                        <option>Trainee</option>
+                    <select name="selectedRole" class="select-wide-filter" onchange="this.form.submit()">
+                        <option value="">Role</option>
+                        @foreach (var role in Model.Roles)
+                        {
+                            <option value="@role.Name" selected="@(role.Name == Model.SelectedRole ? "selected" : null)">
+                                @role.Name</option>
+                        }
                     </select>
                 </form>
-                <form class="filter-tab filter-tab-select">
-                    <select asp-action="Dashboard" method="get" class="select-wide-filter" onchange="this.form.submit()">
+                <form asp-action="Dashboard" method="get" class="filter-tab filter-tab-select">
+                    <select class="select-wide-filter" onchange="this.form.submit()">
                         <option>Status</option>
                         <option>Open</option>
                         <option>Closed</option>
