@@ -271,17 +271,18 @@ namespace TraineeTracker.Services.Admin {
             return await _applicationUserRepository.FindByIdWithProcessingPausesAsync(userId);
         }
 
-        public async Task<ProcessingPauseDto> GetProcessingPauseDtoAsync(int processingPauseId) {
+        public async Task<ServiceResult<ProcessingPauseDto>> GetProcessingPauseDtoAsync(int processingPauseId) {
             var pause = await _processingPauseRepository.FindByIdAsync(processingPauseId);
             if (pause == null) {
-                throw new Exception($"{nameof(pause)} not found.");
+                return ServiceResult<ProcessingPauseDto>.Failed($"{nameof(pause)} not found.");
             }
-            return new ProcessingPauseDto {
+            var dto = new ProcessingPauseDto {
                 ProcessingPauseId = pause.ProcessingPauseId,
                 TraineeId = pause.TraineeId,
                 StartDate = pause.StartDate,
                 EndDate = pause.EndDate
             };
+            return ServiceResult<ProcessingPauseDto>.Success(dto);
         }
     }
 }
