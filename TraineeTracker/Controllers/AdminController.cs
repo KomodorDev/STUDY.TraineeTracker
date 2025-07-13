@@ -34,15 +34,15 @@ namespace TraineeTracker.Controllers {
                 return View("CreateUser", viewModel);
             }
             var result = await _adminService.CreateUserAsync(viewModel.User);
-            if (result.Succeeded) {
-                return RedirectToAction("ShowAdminDashboardView");
+            if (!result.Succeeded) {
+                var modelTask = _adminService.FillCreateUserDropdownsAsync(viewModel);
+                foreach (var message in result.ErrorMessages) {
+                    ModelState.AddModelError("", message);
+                }
+                viewModel = await modelTask;
+                return View("CreateUser", viewModel);
             }
-            var modelTask = _adminService.FillCreateUserDropdownsAsync(viewModel);
-            foreach (var message in result.ErrorMessages) {
-                ModelState.AddModelError("", message);
-            }
-            viewModel = await modelTask;
-            return View("CreateUser", viewModel);
+            return RedirectToAction("ShowAdminDashboardView");
         }
 
         [HttpPost("/CloseUser")]
@@ -65,7 +65,7 @@ namespace TraineeTracker.Controllers {
 
         [HttpGet("/CreateProcessingPause")]
         public async Task<IActionResult> ShowCreateProcessingPauseView(string traineeId) {
-            var viewModel = await _adminService.BuildCreateProcessingPauseViewModelÁsync(traineeId);
+            var viewModel = await _adminService.BuildCreateProcessingPauseViewModelAsync(traineeId);
             return View("CreateProcessingPause", viewModel);
         }
 
