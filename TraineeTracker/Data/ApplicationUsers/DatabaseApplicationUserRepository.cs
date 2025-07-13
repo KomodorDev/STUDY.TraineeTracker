@@ -103,7 +103,7 @@ namespace TraineeTracker.Data.ApplicationUsers {
         }
 
         public async Task<IEnumerable<ApplicationUser>> GetOpenUsersInRoleAsync(string roleName) {
-            var usersInRole = await _userManager.GetUsersInRoleAsync(roleName);
+            var usersInRole = await GetUsersInRoleAsync(roleName);
             var userIds = usersInRole.Select(u => u.Id).ToList();
             return await _context.Users
             .Where(u => userIds.Contains(u.Id))
@@ -166,7 +166,7 @@ namespace TraineeTracker.Data.ApplicationUsers {
         }
 
         public async Task<IEnumerable<ApplicationUser>> GetUsersInRoleWithProcessingPausesAndTraineeLessonsAsync(string roleName) {
-            var usersInRole = await _userManager.GetUsersInRoleAsync(roleName);
+            var usersInRole = await GetUsersInRoleAsync(roleName);
             var userIds = usersInRole.Select(u => u.Id).ToList();
             return await _context.Users
             .Where(u => userIds.Contains(u.Id))
