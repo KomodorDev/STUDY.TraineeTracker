@@ -12,33 +12,34 @@
     <div class="split-header flex">
         <div class="sopro-card-filter">
             Filter by
-            <div class="filter-bar">
-                <form asp-action="Dashboard" method="get" class="filter-tab filter-tab-select">
-                    <select name="selectedRole" class="select-wide-filter" onchange="this.form.submit()">
-                        <option value="">Role</option>
-                        @foreach (var role in Model.Roles)
-                        {
-                            <option value="@role.Name" selected="@(role.Name == Model.SelectedRole ? "selected" : null)">
-                                @role.Name</option>
-                        }
-                    </select>
-                </form>
-                <form asp-action="Dashboard" method="get" class="filter-tab filter-tab-select">
-                    <select class="select-wide-filter" onchange="this.form.submit()">
-                        <option>Status</option>
-                        <option>Open</option>
-                        <option>Closed</option>
-                    </select>
-                </form>
-                <form asp-action="Dashboard" method="get" class="filter-tab filter-tab-select">
-                    <select class="select-wide-filter" onchange="this.form.submit()">
-                        <option>Sort by</option>
-                        <option>Name</option>
-                        <option>Startdate</option>
-                        <option>Enddate</option>
-                    </select>
-                </form>
-            </div>
+            <form asp-action="Dashboard" method="get" class="filter-bar">
+                    <div class="filter-tab filter-tab-select ">
+                        <select name="selectedRole" class="select-wide-filter" onchange="this.form.submit()">
+                            <option value="">Role</option>
+                            @foreach (var role in Model.Roles)
+                            {
+                                <option value="@role.Name"
+                                    selected="@(role.Name == Model.SelectedRole ? "selected" : null)">
+                                    @role.Name</option>
+                            }
+                        </select>
+                    </div>
+                    <div class="filter-tab filter-tab-select ">
+                        <select class="select-wide-filter" onchange="this.form.submit()">
+                            <option>Status</option>
+                            <option>Open</option>
+                            <option>Closed</option>
+                        </select>
+                    </div>
+                    <div class="filter-tab filter-tab-select ">
+                        <select class="select-wide-filter" onchange="this.form.submit()">
+                            <option>Sort by</option>
+                            <option>Name</option>
+                            <option>Startdate</option>
+                            <option>Enddate</option>
+                        </select>
+                    </div>
+            </form>
         </div>
         <div class="sopro-card flex">
             <div class="header">
