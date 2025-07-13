@@ -10,6 +10,7 @@ using TraineeTracker.Models.ViewModels.Admin;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace TraineeTracker.Services.Admin {
     public class AdminService {
@@ -42,12 +43,24 @@ namespace TraineeTracker.Services.Admin {
             _traineeStatisticsRepository = traineeStatisticsRepository;
         }
 
-        public async Task<AdminDashboardViewModel> BuildAdminDashboardViewModelAsync(string? selectedRole = null) {
+        public async Task<AdminDashboardViewModel> BuildAdminDashboardViewModelAsync(string? selectedRole = null, string? selectedStatus = null) {
             IEnumerable<ApplicationUser> users;
             if (string.IsNullOrEmpty(selectedRole)) {
-                users = await _applicationUserRepository.GetAllAsync();
-            } else {
+                if (string.IsNullOrEmpty(selectedStatus)) {
+                    users = await _applicationUserRepository.GetAllAsync();
+                } else if (selectedStatus == "Open") {
+                    users = await _applicationUserRepository.GetAllAsync(false);
+                } else {
+                    users = await _applicationUserRepository.GetAllAsync(true);
+                }
+            } else if (string.IsNullOrEmpty(selectedStatus)) {
                 users = await _applicationUserRepository.GetUsersInRoleAsync(selectedRole);
+            } else {
+                if (selectedStatus == "Open") {
+                    users = await _applicationUserRepository.GetOpenUsersInRoleAsync(selectedRole);
+                } else {
+                    users = await _applicationUserRepository.GetClosedUsersInRoleAsync(selectedRole);
+                }
             }
             var userRoles = new Dictionary<string, string>();
             foreach (var user in users) {
@@ -60,10 +73,11 @@ namespace TraineeTracker.Services.Admin {
             }
             var roles = await _roleManager.Roles.ToListAsync();
             return new AdminDashboardViewModel {
-                Users = users,
+                Users = users.OrderBy(u => u.TraineeStartDate),
                 UserRoles = userRoles,
                 Roles = roles,
-                SelectedRole = selectedRole
+                SelectedRole = selectedRole,
+                SelectedStatus = selectedStatus
             };
         }
 
