@@ -8,5 +8,6 @@ namespace TraineeTracker.Models.ViewModels.Admin {
         public required IEnumerable<IdentityRole> Roles { get; set; }
 
         public string? SelectedRole { get; set; }
+        public string? SelectedStatus { get; set; }
     }
 }

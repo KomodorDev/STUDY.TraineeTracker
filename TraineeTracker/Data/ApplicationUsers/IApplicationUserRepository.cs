@@ -19,12 +19,14 @@ namespace TraineeTracker.Data.ApplicationUsers {
         public Task<ApplicationUser?> FindByIdWithProcessingPausesAsync(string userId);
         public Task<ApplicationUser?> FindByIdWithWrittenFeedbacksWithLessonAsync(string userId);
         public Task<IEnumerable<ApplicationUser>> GetOpenUsersInRoleAsync(string roleName);
+        public Task<IEnumerable<ApplicationUser>> GetClosedUsersInRoleAsync(string roleName);
         public Task<IEnumerable<ApplicationUser>> GetOpenUsersInRoleWithEmailNotificationSettingAsync(string roleName);
         public Task<IEnumerable<string>> GetRolesAsync(ApplicationUser user);
         public Task<ApplicationUser?> GetUserAsync(ClaimsPrincipal principal);
         public Task<IEnumerable<ApplicationUser>> GetUsersInRoleAsync(string roleName);
         public Task<IEnumerable<ApplicationUser>> GetUsersInRoleWithProcessingPausesAndTraineeLessonsAsync(string roleName);
         public Task<IEnumerable<ApplicationUser>> GetAllAsync();
+        public Task<IEnumerable<ApplicationUser>> GetAllAsync(bool isClosed);
         public Task<bool> IsInRoleAsync(ApplicationUser user, string role);
         public Task<IdentityResult> UpdateAsync(ApplicationUser user);
     }

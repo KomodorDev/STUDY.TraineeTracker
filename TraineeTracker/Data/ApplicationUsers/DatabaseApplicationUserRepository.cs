@@ -111,6 +111,15 @@ namespace TraineeTracker.Data.ApplicationUsers {
             .ToListAsync();
         }
 
+        public async Task<IEnumerable<ApplicationUser>> GetClosedUsersInRoleAsync(string roleName) {
+            var usersInRole = await GetUsersInRoleAsync(roleName);
+            var userIds = usersInRole.Select(u => u.Id).ToList();
+            return await _context.Users
+            .Where(u => userIds.Contains(u.Id))
+            .Where(u => u.IsClosed)
+            .ToListAsync();
+        }
+
         public async Task<IEnumerable<ApplicationUser>> GetOpenUsersInRoleWithEmailNotificationSettingAsync(string roleName) {
 
             // Get roleId
@@ -177,6 +186,10 @@ namespace TraineeTracker.Data.ApplicationUsers {
 
         public async Task<IEnumerable<ApplicationUser>> GetAllAsync() {
             return await _context.Users.ToListAsync();
+        }
+
+        public async Task<IEnumerable<ApplicationUser>> GetAllAsync(bool isClosed) {
+            return await _context.Users.Where(u => u.IsClosed == isClosed).ToListAsync();
         }
 
         public async Task<bool> IsInRoleAsync(ApplicationUser user, string role) {
