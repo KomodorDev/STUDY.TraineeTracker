@@ -1,27 +1,20 @@
-.smash {
-    margin-right: auto;
+.sopro-grid-management .split-header.flex {
+  display: flex;
+  gap: 2.344rem; /* "50" px */
 }
 
-.table {
-    vertical-align: middle;
+.sopro-card.flex {
+    width: fit-content;
+    flex-shrink: 0;
 }
 
-th {
-    top: 0;
-    position: sticky;
-}
-
-.table td > form {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
 
 .sopro-card.scroll {
     overflow-y: auto;
 }
 
-.sopro-card.form {
+
+sopro-card.form {
     padding: 0; /* "0" px */
 }
 
@@ -56,4 +49,25 @@ th {
     font-weight: 900;  /* oh boi he thicc */
     font-size: 1.172rem; /* "25" px */
     overflow: hidden;
+}
+
+
+.table {
+    vertical-align: middle;
+}
+
+th {
+    top: 0;
+    position: sticky;
+}
+
+.table td > form {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+
+.smash {
+    margin-right: auto;
 }

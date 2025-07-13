@@ -9,14 +9,18 @@
 </thead>
 
 <div class="sopro-grid-management">
-    <div class="split-header">
-        <div class="sopro-card">
+    <div class="split-header flex">
+        <div class="sopro-card-filter">
+            <div class="filter-bar">
+                <a class="filter-tab" asp-action="ShowAdminDashboardView">All</a>
+            </div>
+        </div>
+        <div class="sopro-card flex">
             <div class="header">
                 <a class="sopro-btn sopro-btn-prim sopro-button-header" asp-controller="Admin"
                     asp-action="ShowCreateUserView">Create User</a>
             </div>
         </div>
-        <div class="sopro-card">filters</div>
     </div>
     <div class="sopro-card scroll">
         <table class="table">
