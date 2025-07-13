@@ -106,8 +106,13 @@ namespace TraineeTracker.Services.Admin {
 
             result = await _applicationUserRepository.AddToRoleAsync(user, dto.Role);
             if (!result.Succeeded) {
-                await _applicationUserRepository.DeleteAsync(user);
-                return ServiceResult.Failed(result.Errors.Select(e => e.Description).ToArray());
+                var deleteTask = _applicationUserRepository.DeleteAsync(user);
+                var errors = result.Errors;
+                var deleteResult = await deleteTask;
+                if (!deleteResult.Succeeded) {
+                    errors = result.Errors.Concat(deleteResult.Errors);
+                }
+                return ServiceResult.Failed(errors.Select(e => e.Description).ToArray());
             }
 
             if (dto.Role == "Trainee") {
@@ -117,17 +122,17 @@ namespace TraineeTracker.Services.Admin {
                 if (dto.TeachingPlanId == null) {
                     return ServiceResult.Failed("Trainee requires Teachingplan.");  // only for compiler
                 }
-                /* result = */
-                await _teachingPlanService.AssignTeachingPlanToTraineeAsync(user, dto.TeachingPlanId.Value); // TODO: method should return a ServiceResult
-                /* if (!result.Succeeded) {
-                    await _applicationUserRepository.DeleteAsync(user);
-                    return result;
-                } */
+                await _teachingPlanService.AssignTeachingPlanToTraineeAsync(user, dto.TeachingPlanId.Value);
 
                 result = await _applicationUserRepository.UpdateAsync(user);
                 if (!result.Succeeded) {
-                    await _applicationUserRepository.DeleteAsync(user);
-                    return ServiceResult.Failed(result.Errors.Select(e => e.Description).ToArray());
+                    var deleteTask = _applicationUserRepository.DeleteAsync(user);
+                    var errors = result.Errors;
+                    var deleteResult = await deleteTask;
+                    if (!deleteResult.Succeeded) {
+                        errors = result.Errors.Concat(deleteResult.Errors);
+                    }
+                    return ServiceResult.Failed(errors.Select(e => e.Description).ToArray());
                 }
             }
 
@@ -137,7 +142,7 @@ namespace TraineeTracker.Services.Admin {
         public async Task<ServiceResult> CloseUserAsync(string userId) {
             var user = await _applicationUserRepository.FindByIdAsync(userId);
             if (user == null) {
-                return ServiceResult.Failed("User not found");
+                throw new InvalidOperationException($"{nameof(user)} not found");
             }
 
             user.IsClosed = true;
@@ -158,9 +163,7 @@ namespace TraineeTracker.Services.Admin {
                 }
             } else {
                 foreach (var feedback in user.ReadFeedbacks.ToList()) {
-                    if (!feedback.ReadByUsers.Remove(user)) {
-                        return ServiceResult.Failed($"Could not remove {nameof(user)} from {nameof(feedback.ReadByUsers)}");
-                    }
+                    feedback.ReadByUsers.Remove(user);
                     referenceUpdateTasks.Add(_feedbackRepository.UpdateAsync(feedback));
                 }
                 user.ReadFeedbacks.Clear();
@@ -186,10 +189,10 @@ namespace TraineeTracker.Services.Admin {
             return ServiceResult.Success();
         }
 
-        public async Task<ServiceResult<CreateProcessingPauseViewModel>> BuildCreateProcessingPauseViewModelÁsync(string traineeId) {
+        public async Task<ServiceResult<CreateProcessingPauseViewModel>> BuildCreateProcessingPauseViewModelAsync(string traineeId) {
             var trainee = await _applicationUserRepository.FindByIdAsync(traineeId);
             if (trainee == null) {
-                return ServiceResult<CreateProcessingPauseViewModel>.Failed("Trainee not found.");
+                throw new InvalidOperationException($"{nameof(trainee)} not found.");
             }
             if (trainee.UserName == null) {
                 throw new NullReferenceException(nameof(trainee.UserName));
@@ -206,7 +209,7 @@ namespace TraineeTracker.Services.Admin {
         public async Task<ServiceResult> CreateProcessingPauseAsync(ProcessingPauseDto dto) {
             var user = await _applicationUserRepository.FindByIdAsync(dto.TraineeId);
             if (user == null) {
-                return ServiceResult.Failed("User not found.");
+                throw new InvalidOperationException($"{nameof(user)} not found.");
             }
             var processingPause = new ProcessingPause {
                 TraineeId = dto.TraineeId,
@@ -224,16 +227,14 @@ namespace TraineeTracker.Services.Admin {
         }
 
         public async Task<ServiceResult> UpdateProcessingPauseAsync(ProcessingPauseDto dto) {
-            if (!dto.ProcessingPauseId.HasValue) {
-                return ServiceResult.Failed($"Missing {nameof(dto.ProcessingPauseId)} in {nameof(dto)}");
-            }
+            ArgumentNullException.ThrowIfNull(dto.ProcessingPauseId);
             var pause = await _processingPauseRepository.FindByIdAsync(dto.ProcessingPauseId.Value);
             if (pause == null) {
                 return ServiceResult.Failed($"{nameof(dto)} not found.");
             }
             var trainee = await _applicationUserRepository.FindByIdAsync(dto.TraineeId);
             if (trainee == null) {
-                return ServiceResult.Failed($"{nameof(trainee)} not found.");
+                throw new InvalidOperationException($"{nameof(trainee)} not found.");
             }
             pause.TraineeId = dto.TraineeId;
             pause.Trainee = trainee;
@@ -262,7 +263,6 @@ namespace TraineeTracker.Services.Admin {
             if (pause == null) {
                 return ServiceResult<ProcessingPause>.Failed($"{nameof(pause)} not found");
             }
-            var traineeId = pause.TraineeId;
             await _processingPauseRepository.DeleteAsync(pause);
             return ServiceResult<ProcessingPause>.Success(pause);
         }
