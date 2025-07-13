@@ -152,7 +152,17 @@ namespace TraineeTracker.Data.ApplicationUsers {
         }
 
         public async Task<IEnumerable<ApplicationUser>> GetUsersInRoleAsync(string roleName) {
-            return await _userManager.GetUsersInRoleAsync(roleName);
+            var usersInRole = await _userManager.GetUsersInRoleAsync(roleName);
+            if (roleName != "Mentor") {
+                return usersInRole;
+            }
+            var filtered = new List<ApplicationUser>();
+            foreach (var user in usersInRole) {
+                if (!await IsInRoleAsync(user, "Admin")) {
+                    filtered.Add(user);
+                }
+            }
+            return filtered;
         }
 
         public async Task<IEnumerable<ApplicationUser>> GetUsersInRoleWithProcessingPausesAndTraineeLessonsAsync(string roleName) {

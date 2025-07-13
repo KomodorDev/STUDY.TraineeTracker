@@ -42,20 +42,28 @@ namespace TraineeTracker.Services.Admin {
             _traineeStatisticsRepository = traineeStatisticsRepository;
         }
 
-        public async Task<AdminDashboardViewModel> BuildAdminDashboardViewModelAsync() {
-            var users = await _applicationUserRepository.GetAllAsync();
+        public async Task<AdminDashboardViewModel> BuildAdminDashboardViewModelAsync(string? selectedRole = null) {
+            IEnumerable<ApplicationUser> users;
+            if (string.IsNullOrEmpty(selectedRole)) {
+                users = await _applicationUserRepository.GetAllAsync();
+            } else {
+                users = await _applicationUserRepository.GetUsersInRoleAsync(selectedRole);
+            }
             var userRoles = new Dictionary<string, string>();
             foreach (var user in users) {
-                var roles = await _applicationUserRepository.GetRolesAsync(user);
-                if (roles.Contains("Admin")) {
+                var rolesOfUser = await _applicationUserRepository.GetRolesAsync(user);
+                if (rolesOfUser.Contains("Admin")) {
                     userRoles[user.Id] = "Admin";
                 } else {
-                    userRoles[user.Id] = roles.First();
+                    userRoles[user.Id] = rolesOfUser.First();
                 }
             }
+            var roles = await _roleManager.Roles.ToListAsync();
             return new AdminDashboardViewModel {
                 Users = users,
-                UserRoles = userRoles
+                UserRoles = userRoles,
+                Roles = roles,
+                SelectedRole = selectedRole
             };
         }
 

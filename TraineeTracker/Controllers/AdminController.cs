@@ -17,8 +17,8 @@ namespace TraineeTracker.Controllers {
         }
 
         [HttpGet("Dashboard")]
-        public async Task<IActionResult> ShowAdminDashboardView() {
-            var viewModel = await _adminService.BuildAdminDashboardViewModelAsync();
+        public async Task<IActionResult> ShowAdminDashboardView(string? selectedRole = null) {
+            var viewModel = await _adminService.BuildAdminDashboardViewModelAsync(selectedRole);
             return View("AdminDashboard", viewModel);
         }
 
