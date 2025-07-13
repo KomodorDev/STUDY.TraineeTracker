@@ -15,7 +15,6 @@ namespace TraineeTracker.Data.ProcessingPauses {
             await _context.SaveChangesAsync();
         }
 
-        [Obsolete("Use OverlapsAsync instead.")]
         public async Task<bool> ExistsAsync(ProcessingPause processingPause) {
             return await _context.ProcessingPauses.AnyAsync(p =>
                 p.TraineeId == processingPause.TraineeId &&
@@ -24,14 +23,16 @@ namespace TraineeTracker.Data.ProcessingPauses {
             );
         }
 
-        public async Task<bool> OverlapsAsync(ProcessingPause processingPause) {
+        public async Task<bool> OverlapsAsync(ProcessingPause processingPause, bool newProcessingPause) {
+            Console.WriteLine(processingPause.ProcessingPauseId);
             return await _context.ProcessingPauses.AnyAsync(p =>
+                (newProcessingPause || p.ProcessingPauseId != processingPause.ProcessingPauseId) &&    // if in database (Id != 1): don't compare with same instance of processingPause
                 p.TraineeId == processingPause.TraineeId &&
-                ((p.StartDate == processingPause.StartDate && p.EndDate == processingPause.EndDate) ||  // Same
-                (processingPause.StartDate < p.StartDate && p.StartDate < processingPause.EndDate) ||   // StartDate strictly inside new pause
-                (processingPause.StartDate < p.EndDate && p.EndDate < processingPause.EndDate) ||       // EndDate strictly inside new Pause
-                (p.StartDate == processingPause.StartDate && p.EndDate > processingPause.StartDate) ||  // Enddate lurks inside new Pause
-                (p.EndDate == processingPause.EndDate && p.StartDate < processingPause.EndDate))        // Startdate lurks inside new Pause
+                ((p.StartDate == processingPause.StartDate && p.EndDate == processingPause.EndDate) ||                      // Same
+                (processingPause.StartDate < p.StartDate && p.StartDate < processingPause.EndDate) ||                       // StartDate strictly inside new pause
+                (processingPause.StartDate < p.EndDate && p.EndDate < processingPause.EndDate) ||                           // EndDate strictly inside new Pause
+                (p.StartDate == processingPause.StartDate && p.EndDate > processingPause.StartDate) ||                      // Enddate lurks inside new Pause
+                (p.EndDate == processingPause.EndDate && p.StartDate < processingPause.EndDate))                            // Startdate lurks inside new Pause
             );
         }
 

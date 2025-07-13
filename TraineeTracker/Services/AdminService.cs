@@ -217,7 +217,7 @@ namespace TraineeTracker.Services.Admin {
                 EndDate = dto.EndDate
             };
 
-            var result = await ValidateProcessingPause(processingPause);
+            var result = await ValidateProcessingPause(processingPause, true);
             if (!result.Succeeded) {
                 return result;
             }
@@ -239,7 +239,7 @@ namespace TraineeTracker.Services.Admin {
             pause.Trainee = trainee;
             pause.StartDate = dto.StartDate;
             pause.EndDate = dto.EndDate;
-            var result = await ValidateProcessingPause(pause);
+            var result = await ValidateProcessingPause(pause, false);
             if (!result.Succeeded) {
                 return result;
             }
@@ -247,11 +247,11 @@ namespace TraineeTracker.Services.Admin {
             return ServiceResult.Success();
         }
 
-        private async Task<ServiceResult> ValidateProcessingPause(ProcessingPause processingPause) {
+        private async Task<ServiceResult> ValidateProcessingPause(ProcessingPause processingPause, bool newProcessingPause) {
             if (processingPause.StartDate > processingPause.EndDate) {
                 return ServiceResult.Failed("Startdate after Enddate");
             }
-            if (await _processingPauseRepository.OverlapsAsync(processingPause)) {
+            if (await _processingPauseRepository.OverlapsAsync(processingPause, newProcessingPause)) {
                 return ServiceResult.Failed($"{nameof(processingPause)} overlaps with another.");
             }
             return ServiceResult.Success();
