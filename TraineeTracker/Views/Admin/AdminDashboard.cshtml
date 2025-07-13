@@ -11,8 +11,31 @@
 <div class="sopro-grid-management">
     <div class="split-header flex">
         <div class="sopro-card-filter">
+            Filter by
             <div class="filter-bar">
-                <a class="filter-tab" asp-action="ShowAdminDashboardView">All</a>
+                <form asp-action="Dashboard" method="get" class="filter-tab filter-tab-select">
+                    <select class="select-wide-filter" onchange="this.form.submit()">
+                        <option>Role</option>
+                        <option>Admin</option>
+                        <option>Mentor</option>
+                        <option>Trainee</option>
+                    </select>
+                </form>
+                <form class="filter-tab filter-tab-select">
+                    <select asp-action="Dashboard" method="get" class="select-wide-filter" onchange="this.form.submit()">
+                        <option>Status</option>
+                        <option>Open</option>
+                        <option>Closed</option>
+                    </select>
+                </form>
+                <form asp-action="Dashboard" method="get" class="filter-tab filter-tab-select">
+                    <select class="select-wide-filter" onchange="this.form.submit()">
+                        <option>Sort by</option>
+                        <option>Name</option>
+                        <option>Startdate</option>
+                        <option>Enddate</option>
+                    </select>
+                </form>
             </div>
         </div>
         <div class="sopro-card flex">
@@ -43,7 +66,8 @@
                         {
                             <td>@user.TraineeStartDate - @user.TraineeEndDate</td>
                             <td><a class="sopro-btn sopro-btn-sec sopro-button-content"
-                                    asp-action="ShowManageProcessingPausesView" asp-route-traineeId="@user.Id">Manage Processing
+                                    asp-action="ShowManageProcessingPausesView" asp-route-traineeId="@user.Id">Manage
+                                    Processing
                                     Pauses</a></td>
                         }
                         else

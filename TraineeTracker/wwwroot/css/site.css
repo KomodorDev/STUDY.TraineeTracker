@@ -195,6 +195,21 @@ a:hover {
     background: #ffe3e3;
 }
 
+.filter-tab.filter-tab-select {
+    padding: 0;
+}
+
+.select-wide-filter {
+    background-color: white;
+    color: #000000;
+    font-weight: 900;
+
+    padding: 0.6rem 1.2rem;
+    
+    border: none;
+    width: 100%;
+}
+
 
 .sopro-grid-management {
   display: grid;
