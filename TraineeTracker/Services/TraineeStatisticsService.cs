@@ -210,8 +210,8 @@ namespace TraineeTracker.Services {
             double lessonDaysOpen = await CalculateLessonDaysOpenAsync(traineeId);
             double lessonDaysBuffer = CalculateLessonDaysBuffer(daysPresentTillToday, lessonDaysCompleted);
             double speed = CalculateSpeed(daysPresentTillToday, lessonDaysCompleted);
-            double predictedMissingEstimatedEffortAtEnd = CalculatePredictedMissingEstimatedEffortAtEnd(daysPresentTillToday, daysPresentTotal, lessonDaysOpen, speed);
-            double predictedMissingActualDays = CalculatePredictedMissingActualDaysAtEnd(daysPresentTillToday, daysPresentTotal, lessonDaysOpen, speed);
+            double? predictedMissingEstimatedEffortAtEnd = CalculatePredictedMissingEstimatedEffortAtEnd(daysPresentTillToday, daysPresentTotal, lessonDaysOpen, speed);
+            double? predictedMissingActualDays = CalculatePredictedMissingActualDaysAtEnd(daysPresentTillToday, daysPresentTotal, lessonDaysOpen, speed);
 
             TraineeStatisticsSnapshot snapshot;
 
@@ -385,9 +385,9 @@ namespace TraineeTracker.Services {
         }
 
         // --------------------------------------------------
-        public double CalculatePredictedMissingEstimatedEffortAtEnd(double daysPresentTillToday, double daysPresentTotal, double estimatedEffortOpen, double speed) {
+        public double? CalculatePredictedMissingEstimatedEffortAtEnd(double daysPresentTillToday, double daysPresentTotal, double estimatedEffortOpen, double speed) {
             if (speed <= 0)
-                return -1;
+                return null;
 
             // Days from today till EndDate:
             double daysPresentDaysInFuture = daysPresentTotal - daysPresentTillToday;
@@ -403,11 +403,11 @@ namespace TraineeTracker.Services {
         }
 
         // --------------------------------------------------
-        public double CalculatePredictedMissingActualDaysAtEnd(double daysPresentTillToday, double daysPresentTotal, double estimatedEffortOpen, double speed) {
+        public double? CalculatePredictedMissingActualDaysAtEnd(double daysPresentTillToday, double daysPresentTotal, double estimatedEffortOpen, double speed) {
             if (speed <= 0)
-                return -1;
+                return null;
 
-            double predictedMissingEstimatedEffortAtEnd = CalculatePredictedMissingEstimatedEffortAtEnd(daysPresentTillToday, daysPresentTotal, estimatedEffortOpen, speed);
+            double? predictedMissingEstimatedEffortAtEnd = CalculatePredictedMissingEstimatedEffortAtEnd(daysPresentTillToday, daysPresentTotal, estimatedEffortOpen, speed);
 
             // predicted Buffer in actual Days:
             return predictedMissingEstimatedEffortAtEnd / speed;
