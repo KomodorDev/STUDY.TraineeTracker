@@ -73,7 +73,6 @@ body {
 }
 
 .info-icon-wrapper {
-    position: relative;
     display: inline-block;
 }
 
@@ -94,7 +93,7 @@ body {
 .tooltip-box {
     display: none;
     position: absolute;
-    top: 130%;
+    top: calc(100% + 10px);
     left: 50%;
     transform: translateX(-50%);
     background-color: #333;
@@ -104,15 +103,38 @@ body {
     font-size: 0.95rem;
     z-index: 9999;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-
-    /* ✨ Die eigentlichen Fixes: */
-    width: max-content;
-    min-width: 100px;
-    max-width: 20vw;
     white-space: normal;
     line-height: 1.4;
+    max-width: 300px;
+    width: max-content;
+    min-width: 200px;
+    text-align: left;
+    word-break: break-word;
+}
+
+.tooltip-box.centered {
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.tooltip-box.align-left {
+    right: 0;
+    left: auto;
+    transform: none;
+}
+
+.tooltip-box.align-right {
+    left: 0;
+    right: auto;
+    transform: none;
 }
 
 .info-icon-wrapper:hover .tooltip-box {
     display: block;
+}
+
+.modal,
+.modal-dialog,
+.modal-content {
+    overflow: visible !important;
 }

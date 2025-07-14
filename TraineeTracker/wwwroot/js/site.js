@@ -183,3 +183,25 @@ window.renderLessonChart = function(config) {
       }
     });
   };
+
+  document.querySelectorAll('.info-icon-wrapper').forEach(wrapper => {
+    const tooltip = wrapper.querySelector('.tooltip-box');
+
+    wrapper.addEventListener('mouseenter', () => {
+        if (!tooltip) return;
+
+        // Reset previous classes
+        tooltip.classList.remove('align-left', 'align-right', 'centered');
+
+        const rect = tooltip.getBoundingClientRect();
+        const padding = 8; // optionaler Sicherheitsabstand zum Rand
+
+        if (rect.right > window.innerWidth - padding) {
+            tooltip.classList.add('align-left');
+        } else if (rect.left < padding) {
+            tooltip.classList.add('align-right');
+        } else {
+            tooltip.classList.add('centered');
+        }
+    });
+});
