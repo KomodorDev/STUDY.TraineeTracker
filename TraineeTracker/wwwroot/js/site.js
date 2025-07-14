@@ -70,6 +70,53 @@ window.renderLessonChart = function(config) {
 
     const effortGapCenterX = (Number(config.effortOverlayMin) + Number(config.effortOverlayMax)) / 2;
 
+    const annotations = {
+      today: {
+        type: 'line',
+        xMin: config.todayPos,
+        xMax: config.todayPos,
+        borderColor: 'black',
+        borderWidth: 2,
+        label: {
+          content: 'Current Progress',
+          enabled: true,
+          position: 'start'
+        }
+      },
+      range: {
+        type: 'box',
+        xMin: config.effortOverlayMin,
+        xMax: config.effortOverlayMax,
+        yMin: -2,
+        yMax: config.data.length + 2,
+        backgroundColor: 'rgba(128, 128, 128, 0.15)',
+        borderWidth: 0
+      }
+    };
+
+    if (
+      config.PredictedMissingEstimatedEffortAtEnd !== null &&
+      config.PredictedMissingEstimatedEffortAtEnd !== 0 &&
+      !isNaN(config.PredictedMissingEstimatedEffortAtEnd)
+    ) {
+      annotations.effortGapLabel = {
+        type: 'line',
+        xMin: effortGapCenterX,
+        xMax: effortGapCenterX,
+        borderWidth: 0,
+        label: {
+          content: 'Predicted Effort Gap',
+          enabled: true,
+          position: 'start',
+          backgroundColor: 'black',
+          color: 'white',
+          font: {
+            weight: 'bold'
+          }
+        }
+      };
+    }
+
     new Chart(ctx, {
       type: 'bar',
       data: {
@@ -111,6 +158,9 @@ window.renderLessonChart = function(config) {
         },
         plugins: {
           legend: { display: false },
+          annotation: {
+            annotations: annotations
+          },
           tooltip: {
             enabled: true,
             callbacks: {
@@ -129,48 +179,6 @@ window.renderLessonChart = function(config) {
               }
             }
           },
-          annotation: {
-            annotations: {
-              today: {
-                type: 'line',
-                xMin: config.todayPos,
-                xMax: config.todayPos,
-                borderColor: 'black',
-                borderWidth: 2,
-                label: {
-                  content: 'Current Progress',
-                  enabled: true,
-                  position: 'start'
-                }
-              },
-              
-              range: {
-                type: 'box',
-                xMin: config.effortOverlayMin,
-                xMax: config.effortOverlayMax,
-                yMin: -2,
-                yMax: config.data.length + 2,
-                backgroundColor: 'rgba(128, 128, 128, 0.15)',
-                borderWidth: 0
-              },
-              effortGapLabel: {
-                type: 'line',
-                xMin: effortGapCenterX,
-                xMax: effortGapCenterX,
-                borderWidth: 0,
-                label: {
-                  content: 'Predicted Effort Gap',
-                  enabled: true,
-                  position: 'start',
-                  backgroundColor: 'black',
-                  color: 'white',
-                  font: {
-                    weight: 'bold'
-                  }
-                }
-              }
-            }
-          }
         }
       }
     });
