@@ -134,7 +134,7 @@ namespace TraineeTracker.Services {
 
             model.AllLessons = allLessons;
 
-            model.TodayPosition = (
+            model.CurrentProgress = (
                 (model.FinishedLessons?.Sum(l => l.WeightedEffort) ?? 0) +
                 (model.AcceptedLessons?.Sum(l => l.WeightedEffort) ?? 0) +
                 (model.RatedLessons?.Sum(l => l.WeightedEffort) ?? 0) +
