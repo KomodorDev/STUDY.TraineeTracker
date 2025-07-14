@@ -19,9 +19,12 @@
             <div class="modal-body sopro-inner-card">
 
                 <!-- Chart Container -->
-                <div class="chart-container sopro-card">
-                    <canvas id="lessonChart" style="border-radius: 11px;"></canvas>
-                </div>
+                @if (Model.IsUpToDate)
+                {
+                    <div class="chart-container sopro-card">
+                        <canvas id="lessonChart" style="border-radius: 11px;"></canvas>
+                    </div>
+                }
 
                 <!-- Metric Tiles -->
                 <div class="metrics-grid">
@@ -352,13 +355,16 @@
 }
 
 
-<script id="lessonChartConfigData" type="application/json">
-@Html.Raw(JsonSerializer.Serialize(new {
-    data = chartData,
-    colors = colors,
-    effortOverlayMin = effortOverlayMin,
-    effortOverlayMax = effortOverlayMax,
-    todayPos = Model.CurrentProgress,
-    PredictedMissingEstimatedEffortAtEnd = Model.PredictedMissingEstimatedEffortAtEnd
-}))
-</script>
+@if (Model.IsUpToDate)
+{
+    <script id="lessonChartConfigData" type="application/json">
+        @Html.Raw(JsonSerializer.Serialize(new {
+            data = chartData,
+            colors = colors,
+            effortOverlayMin = effortOverlayMin,
+            effortOverlayMax = effortOverlayMax,
+            todayPos = Model.CurrentProgress,
+            PredictedMissingEstimatedEffortAtEnd = Model.PredictedMissingEstimatedEffortAtEnd
+        }))
+    </script>
+}
