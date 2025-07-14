@@ -113,6 +113,6 @@ body {
     line-height: 1.4;
 }
 
-.info-icon:hover + .tooltip-box {
+.info-icon-wrapper:hover .tooltip-box {
     display: block;
 }
