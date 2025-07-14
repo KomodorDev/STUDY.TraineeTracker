@@ -68,6 +68,8 @@ window.renderLessonChart = function(config) {
         'rgba(0,0,0,0)'
     ];
 
+    const effortGapCenterX = (Number(config.effortOverlayMin) + Number(config.effortOverlayMax)) / 2;
+
     new Chart(ctx, {
       type: 'bar',
       data: {
@@ -136,7 +138,7 @@ window.renderLessonChart = function(config) {
                 borderColor: 'black',
                 borderWidth: 2,
                 label: {
-                  content: 'current progress',
+                  content: 'Current Progress',
                   enabled: true,
                   position: 'start'
                 }
@@ -149,15 +151,25 @@ window.renderLessonChart = function(config) {
                 yMin: -2,
                 yMax: config.data.length + 2,
                 backgroundColor: 'rgba(128, 128, 128, 0.15)',
+                borderWidth: 0
+              },
+              effortGapLabel: {
+                type: 'line',
+                xMin: effortGapCenterX,
+                xMax: effortGapCenterX,
                 borderWidth: 0,
                 label: {
-                  content: 'Effort buffer',
+                  content: 'Predicted Effort Gap',
                   enabled: true,
-                  position: 'center'
+                  position: 'start',
+                  backgroundColor: 'black',
+                  color: 'white',
+                  font: {
+                    weight: 'bold'
+                  }
                 }
               }
             }
-
           }
         }
       }
