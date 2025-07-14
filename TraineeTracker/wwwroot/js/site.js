@@ -105,7 +105,7 @@ window.renderLessonChart = function(config) {
         xMax: effortGapCenterX,
         borderWidth: 0,
         label: {
-          content: 'Predicted Effort Gap',
+          content: 'Predicted Effort Buffer',
           enabled: true,
           position: 'start',
           backgroundColor: 'black',
