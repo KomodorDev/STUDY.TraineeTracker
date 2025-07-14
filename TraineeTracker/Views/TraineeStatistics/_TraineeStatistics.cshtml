@@ -50,7 +50,7 @@
                         </div>
                         <div class="tile-value-with-icon">
                             <span class="tile-value">
-                                @(Model.DaysPresentTotal?.ToString("0.0") ?? "N/A") days
+                                @(Model.DaysPresentTotal.HasValue ? Model.DaysPresentTotal.Value.ToString("0.0") + " days" : "N/A")
                             </span>
                             <span class="info-icon-wrapper">
                                 <span class="info-icon">?</span>
@@ -68,7 +68,7 @@
                         </div>
                         <div class="tile-value-with-icon">
                             <span class="tile-value">
-                                @(Model.DaysPresentTillToday?.ToString("0.0") ?? "N/A") days
+                                @(Model.DaysPresentTillToday.HasValue ? Model.DaysPresentTillToday.Value.ToString("0.0") + " days" : "N/A")
                             </span>
                             <span class="info-icon-wrapper">
                                 <span class="info-icon">?</span>
@@ -86,7 +86,7 @@
                         </div>
                         <div class="tile-value-with-icon">
                             <span class="tile-value">
-                                @(Model.LessonDaysCompleted?.ToString("0.0") ?? "N/A") days
+                                @(Model.LessonDaysCompleted.HasValue ? Model.LessonDaysCompleted.Value.ToString("0.0") + " days" : "N/A")
                             </span>
                             <span class="info-icon-wrapper">
                                 <span class="info-icon">?</span>
@@ -104,7 +104,7 @@
                         </div>
                         <div class="tile-value-with-icon">
                             <span class="tile-value">
-                                @(Model.LessonDaysOpen?.ToString("0.0") ?? "N/A") days
+                                @(Model.LessonDaysOpen.HasValue ? Model.LessonDaysOpen.Value.ToString("0.0") + " days" : "N/A")
                             </span>
                             <span class="info-icon-wrapper">
                                 <span class="info-icon">?</span>
@@ -122,7 +122,7 @@
                         </div>
                         <div class="tile-value-with-icon">
                             <span class="tile-value">
-                                @(Model.LessonDaysBuffer?.ToString("0.0") ?? "N/A") days
+                                @(Model.LessonDaysBuffer.HasValue ? Model.LessonDaysBuffer.Value.ToString("0.0") + " days" : "N/A")
                             </span>
                             <span class="info-icon-wrapper">
                                 <span class="info-icon">?</span>
@@ -158,7 +158,7 @@
                         </div>
                         <div class="tile-value-with-icon">
                             <span class="tile-value">
-                                @(Model.PredictedMissingEstimatedEffortAtEnd?.ToString("0.0") ?? "N/A") days
+                                @(Model.PredictedMissingEstimatedEffortAtEnd.HasValue ? Model.PredictedMissingEstimatedEffortAtEnd.Value.ToString("0.0") + " days" : "N/A")
                             </span>
                             <span class="info-icon-wrapper">
                                 <span class="info-icon">?</span>
@@ -176,7 +176,7 @@
                         </div>
                         <div class="tile-value-with-icon">
                             <span class="tile-value">
-                                @(Model.PredictedMissingActualDays?.ToString("0.0") ?? "N/A") days
+                                @(Model.PredictedMissingActualDays.HasValue ? Model.PredictedMissingActualDays.Value.ToString("0.0") + " days" : "N/A")
                             </span>
                             <span class="info-icon-wrapper">
                                 <span class="info-icon">?</span>
