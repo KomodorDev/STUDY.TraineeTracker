@@ -138,3 +138,20 @@ body {
 .modal-content {
     overflow: visible !important;
 }
+
+.processing-pauses-tile {
+    width: 100%;
+    padding: 1rem;
+    min-height: auto;
+    height: auto;
+    text-align: left;
+}
+
+.tile-value.list-left,
+.tile-value.list-left ul,
+.tile-value.list-left li {
+    text-align: left;
+    list-style-position: inside;
+    margin-left: 0;
+    padding-left: 0.5rem;
+}

@@ -216,29 +216,21 @@
                 <!-- Processing Pauses -->
                 @if (Model.ProcessingPauses != null && Model.ProcessingPauses.Any())
                 {
-                    <div class="metric-tile-new sopro-card mt-3" style="width: 100%; padding: 1rem; min-height: auto; height: auto;">
+                    <div class="metric-tile-new sopro-card mt-3 processing-pauses-tile">
                         <div class="tile-header">
                             <strong>Processing Pauses:</strong>
                         </div>
-                        <div class="tile-value-with-icon">
-                            <span class="tile-value">
-                                <ul class="mb-0 mt-1">
-                                    @foreach (var pause in Model.ProcessingPauses)
-                                    {
-                                        <li>
-                                            @pause.StartDate.ToString("dd.MM.yyyy")
-                                            –
-                                            @pause.EndDate.ToString("dd.MM.yyyy")
-                                        </li>
-                                    }
-                                </ul>
-                            </span>
-                            <span class="info-icon-wrapper">
-                                <span class="info-icon">?</span>
-                                <div class="tooltip-box">
-                                    Marked by administrators to pause a trainee's program. The days within a processing pause are excluded from progress statistics.
-                                </div>
-                            </span>
+                        <div class="tile-value list-left">
+                            <ul class="mb-0 mt-1">
+                                @foreach (var pause in Model.ProcessingPauses)
+                                {
+                                    <li>
+                                        @pause.StartDate.ToString("dd.MM.yyyy")
+                                        –
+                                        @pause.EndDate.ToString("dd.MM.yyyy")
+                                    </li>
+                                }
+                            </ul>
                         </div>
                     </div>
                 }
