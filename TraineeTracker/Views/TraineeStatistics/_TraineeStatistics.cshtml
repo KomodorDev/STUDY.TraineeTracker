@@ -22,7 +22,7 @@
 
                 <!-- Metric Tiles -->
                 <div class="metrics-grid">
-                    <!-- Metric Tile -->
+                    <!-- Snapshot Taken At -->
                     <div class="metric-tile-new sopro-card">
                         <div class="tile-header">
                             <strong>Snapshot Taken At:</strong>
@@ -39,7 +39,8 @@
                             </span>
                         </div>
                     </div>
-                    <!-- Metric Tile -->
+
+                    <!-- Total days present -->
                     <div class="metric-tile-new sopro-card">
                         <div class="tile-header">
                             <strong>Total Days Present:</strong>
@@ -56,60 +57,186 @@
                             </span>
                         </div>
                     </div>
-                    <!-- Metric Tile -->
-                    <div class="metric-tile sopro-card" title="Presence days up to today's date."><strong>Days present
-                            (until today):</strong> @(Model.DaysPresentTillToday?.ToString("0.0") ?? "N/A") days</div>
-                    <div class="metric-tile sopro-card" title="Sum of estimated effort from completed lessons.">
-                        <strong>Estimated effort completed:</strong> @(Model.LessonDaysCompleted?.ToString("0.0") ??
-                                                "N/A") days</div>
-                    <div class="metric-tile sopro-card"
-                        title="Estimated effort still required to complete all lessons."><strong>Estimated effort
-                            remaining:</strong> @(Model.LessonDaysOpen?.ToString("0.0") ?? "N/A") days</div>
-                    <div class="metric-tile sopro-card"
-                        title="Shows how far ahead or behind the trainee is based on expected lesson progress. Positive = ahead, negative = behind.">
-                        <strong>Effort buffer:</strong> @(Model.LessonDaysBuffer?.ToString("0.0") ?? "N/A") days</div>
-                    <div class="metric-tile sopro-card"
-                        title="Indicates how efficiently the trainee has used their time. 100% = on pace, below 100% = behind, above 100% = ahead.">
-                        <strong>Progress speed:</strong>
-                        @(Model.Speed.HasValue ? (Model.Speed.Value * 100).ToString("0") + "%" : "N/A")
+
+                    <!-- Days Present (Until Today) -->
+                    <div class="metric-tile-new sopro-card">
+                        <div class="tile-header">
+                            <strong>Days Present (Until Today):</strong>
+                        </div>
+                        <div class="tile-value-with-icon">
+                            <span class="tile-value">
+                                @(Model.DaysPresentTillToday?.ToString("0.0") ?? "N/A") days
+                            </span>
+                            <span class="info-icon-wrapper">
+                                <span class="info-icon">?</span>
+                                <div class="tooltip-box">
+                                    Presence days up to today's date.
+                                </div>
+                            </span>
+                        </div>
                     </div>
-                    <div class="metric-tile sopro-card"
-                        title="Forecast of the difference between estimated remaining effort and expected progress until the end. Positive = extra capacity, negative = shortfall.">
-                        <strong>Predicted effort gap at end:</strong>
-                        @(Model.PredictedMissingEstimatedEffortAtEnd?.ToString("0.0") ?? "N/A") days</div>
-                    <div class="metric-tile sopro-card"
-                        title="Forecast of how many real days will remain or be missing at the end, based on current speed. Positive = buffer, negative = delay.">
-                        <strong>Predicted actual buffer:</strong> @(Model.PredictedMissingActualDays?.ToString("0.0") ??
-                                                "N/A") days</div>
-                    <div class="metric-tile sopro-card" title="Indicates whether the current data is up to date.">
-                        <strong>Status:</strong>
-                        @if (Model.IsUpToDate)
-                        {
-                            <span class="text-success">✔ Up to date</span>
-                        }
-                        else
-                        {
-                            <span class="text-danger">✘ Not up to date</span>
-                        }
+
+                    <!-- Estimated Effort Completed -->
+                    <div class="metric-tile-new sopro-card">
+                        <div class="tile-header">
+                            <strong>Estimated Effort Completed:</strong>
+                        </div>
+                        <div class="tile-value-with-icon">
+                            <span class="tile-value">
+                                @(Model.LessonDaysCompleted?.ToString("0.0") ?? "N/A") days
+                            </span>
+                            <span class="info-icon-wrapper">
+                                <span class="info-icon">?</span>
+                                <div class="tooltip-box">
+                                    Sum of estimated effort from completed lessons.
+                                </div>
+                            </span>
+                        </div>
+                    </div>
+
+                    <!-- Estimated Effort Remaining -->
+                    <div class="metric-tile-new sopro-card">
+                        <div class="tile-header">
+                            <strong>Estimated Effort Remaining:</strong>
+                        </div>
+                        <div class="tile-value-with-icon">
+                            <span class="tile-value">
+                                @(Model.LessonDaysOpen?.ToString("0.0") ?? "N/A") days
+                            </span>
+                            <span class="info-icon-wrapper">
+                                <span class="info-icon">?</span>
+                                <div class="tooltip-box">
+                                    Estimated effort still required to complete all lessons.
+                                </div>
+                            </span>
+                        </div>
+                    </div>
+
+                    <!-- Effort Buffer -->
+                    <div class="metric-tile-new sopro-card">
+                        <div class="tile-header">
+                            <strong>Effort Buffer:</strong>
+                        </div>
+                        <div class="tile-value-with-icon">
+                            <span class="tile-value">
+                                @(Model.LessonDaysBuffer?.ToString("0.0") ?? "N/A") days
+                            </span>
+                            <span class="info-icon-wrapper">
+                                <span class="info-icon">?</span>
+                                <div class="tooltip-box">
+                                    Shows how far ahead or behind the trainee is based on expected lesson progress. Positive = ahead, negative = behind.
+                                </div>
+                            </span>
+                        </div>
+                    </div>
+
+                    <!-- Progress Speed -->
+                    <div class="metric-tile-new sopro-card">
+                        <div class="tile-header">
+                            <strong>Progress Speed:</strong>
+                        </div>
+                        <div class="tile-value-with-icon">
+                            <span class="tile-value">
+                                @(Model.Speed.HasValue ? (Model.Speed.Value * 100).ToString("0") + "%" : "N/A")
+                            </span>
+                            <span class="info-icon-wrapper">
+                                <span class="info-icon">?</span>
+                                <div class="tooltip-box">
+                                    Indicates how efficiently the trainee has used their time. 100% = on pace, below 100% = behind, above 100% = ahead.
+                                </div>
+                            </span>
+                        </div>
+                    </div>
+
+                    <!-- Predicted Effort Gap at End -->
+                    <div class="metric-tile-new sopro-card">
+                        <div class="tile-header">
+                            <strong>Predicted Effort Gap at End:</strong>
+                        </div>
+                        <div class="tile-value-with-icon">
+                            <span class="tile-value">
+                                @(Model.PredictedMissingEstimatedEffortAtEnd?.ToString("0.0") ?? "N/A") days
+                            </span>
+                            <span class="info-icon-wrapper">
+                                <span class="info-icon">?</span>
+                                <div class="tooltip-box">
+                                    Forecast of the difference between estimated remaining effort and expected progress until the end. Positive = extra capacity, negative = shortfall.
+                                </div>
+                            </span>
+                        </div>
+                    </div>
+
+                    <!-- Predicted Actual Buffer -->
+                    <div class="metric-tile-new sopro-card">
+                        <div class="tile-header">
+                            <strong>Predicted Actual Buffer:</strong>
+                        </div>
+                        <div class="tile-value-with-icon">
+                            <span class="tile-value">
+                                @(Model.PredictedMissingActualDays?.ToString("0.0") ?? "N/A") days
+                            </span>
+                            <span class="info-icon-wrapper">
+                                <span class="info-icon">?</span>
+                                <div class="tooltip-box">
+                                    Forecast of how many real days will remain or be missing at the end, based on current speed. Positive = buffer, negative = delay.
+                                </div>
+                            </span>
+                        </div>
+                    </div>
+                    
+                    <!-- Status -->
+                    <div class="metric-tile-new sopro-card">
+                        <div class="tile-header">
+                            <strong>Status:</strong>
+                        </div>
+                        <div class="tile-value-with-icon">
+                            <span class="tile-value">
+                                @if (Model.IsUpToDate)
+                                {
+                                    <span class="text-success">✔ Up to date</span>
+                                }
+                                else
+                                {
+                                    <span class="text-danger">✘ Not up to date</span>
+                                }
+                            </span>
+                            <span class="info-icon-wrapper">
+                                <span class="info-icon">?</span>
+                                <div class="tooltip-box">
+                                    Indicates whether the current data is up to date.
+                                </div>
+                            </span>
+                        </div>
                     </div>
                 </div>
 
+                <!-- Processing Pauses -->
                 @if (Model.ProcessingPauses != null && Model.ProcessingPauses.Any())
                 {
-                    <div class="metric-tile sopro-card mt-3"
-                        style="width: 100%; padding: 1rem; min-height: auto; height: auto;"
-                        title="Marked by administrators to pause a trainee's program. The days within a processing pause are excluded from progress statistics.">
-                        <strong>Processing Pauses:</strong>
-                        <ul class="mb-0 mt-1">
-                            @foreach (var pause in Model.ProcessingPauses)
-                            {
-                                <li>
-                                    @pause.StartDate.ToString("dd.MM.yyyy")
-                                    –
-                                    @pause.EndDate.ToString("dd.MM.yyyy")
-                                </li>
-                            }
-                        </ul>
+                    <div class="metric-tile-new sopro-card mt-3" style="width: 100%; padding: 1rem; min-height: auto; height: auto;">
+                        <div class="tile-header">
+                            <strong>Processing Pauses:</strong>
+                        </div>
+                        <div class="tile-value-with-icon">
+                            <span class="tile-value">
+                                <ul class="mb-0 mt-1">
+                                    @foreach (var pause in Model.ProcessingPauses)
+                                    {
+                                        <li>
+                                            @pause.StartDate.ToString("dd.MM.yyyy")
+                                            –
+                                            @pause.EndDate.ToString("dd.MM.yyyy")
+                                        </li>
+                                    }
+                                </ul>
+                            </span>
+                            <span class="info-icon-wrapper">
+                                <span class="info-icon">?</span>
+                                <div class="tooltip-box">
+                                    Marked by administrators to pause a trainee's program. The days within a processing pause are excluded from progress statistics.
+                                </div>
+                            </span>
+                        </div>
                     </div>
                 }
 
