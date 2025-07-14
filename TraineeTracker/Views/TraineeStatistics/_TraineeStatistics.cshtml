@@ -1,5 +1,6 @@
 @using System.Text.Json
 @using System.Globalization
+@using TraineeTracker.Models.ViewModels
 @model TraineeTracker.Models.ViewModels.TraineeStatisticsViewModel
 
 @section Styles {
@@ -255,10 +256,11 @@
     // Rated, Accepted, Rejected, and Finished:
     var basePos = 0.0;
 
-    var orderedLessons = Model.RatedLessons
-        .Concat(Model.AcceptedLessons)
-        .Concat(Model.RejectedLessons)
-        .Concat(Model.FinishedLessons);
+    var orderedLessons = 
+    (Model.RatedLessons ?? new List<TraineeLessonViewModel>())
+    .Concat(Model.AcceptedLessons ?? new List<TraineeLessonViewModel>())
+    .Concat(Model.RejectedLessons ?? new List<TraineeLessonViewModel>())
+    .Concat(Model.FinishedLessons ?? new List<TraineeLessonViewModel>());
 
 
     var stackedLessons = orderedLessons.Select(l =>
@@ -282,7 +284,10 @@
         var extraBasePos = Model.TodayPosition; // Startpunkt: Tagesfortschritt
         var lastExtraEnd = extraBasePos; // wird aktualisiert
 
-        var rejectedAndFinished = Model.RejectedLessons.Concat(Model.FinishedLessons).ToList();
+        var rejectedAndFinished =
+            (Model.RejectedLessons ?? Enumerable.Empty<TraineeLessonViewModel>())
+            .Concat(Model.FinishedLessons ?? Enumerable.Empty<TraineeLessonViewModel>())
+            .ToList();
 
         var extraFragments = rejectedAndFinished.Select(l =>
         {
@@ -304,7 +309,9 @@
     // Started and Open:
     var finalBasePos = lastExtraEnd;
 
-    var openAndStarted = Model.StartedLessons.Concat(Model.OpenLessons);
+    var openAndStarted =
+        (Model.StartedLessons ?? Enumerable.Empty<TraineeLessonViewModel>())
+        .Concat(Model.OpenLessons ?? Enumerable.Empty<TraineeLessonViewModel>());
 
     var finalFragments = openAndStarted.Select(l => {
         var value = l.WeightedEffort > 0 ? l.WeightedEffort : l.EstimatedEffort;
