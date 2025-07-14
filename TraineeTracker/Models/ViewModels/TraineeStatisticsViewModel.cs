@@ -21,6 +21,6 @@ namespace TraineeTracker.Models.ViewModels {
         public List<TraineeLessonViewModel>? StartedLessons { get; set; }
         public List<ProcessingPause>? ProcessingPauses { get; set; }
         public List<TraineeLessonViewModel>? AllLessons { get; set; } 
-        public double TodayPosition { get; set; } 
+        public double CurrentProgress { get; set; } 
     }
 }
