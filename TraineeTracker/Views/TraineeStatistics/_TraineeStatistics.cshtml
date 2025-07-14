@@ -43,6 +43,31 @@
                         </div>
                     </div>
 
+                    <!-- Status -->
+                    <div class="metric-tile-new sopro-card">
+                        <div class="tile-header">
+                            <strong>Status:</strong>
+                        </div>
+                        <div class="tile-value-with-icon">
+                            <span class="tile-value">
+                                @if (Model.IsUpToDate)
+                                {
+                                    <span class="text-success">✔ Up to date</span>
+                                }
+                                else
+                                {
+                                    <span class="text-danger">✘ Not up to date</span>
+                                }
+                            </span>
+                            <span class="info-icon-wrapper">
+                                <span class="info-icon">?</span>
+                                <div class="tooltip-box">
+                                    Indicates whether the current data is up to date.
+                                </div>
+                            </span>
+                        </div>
+                    </div>
+
                     <!-- Total days present -->
                     <div class="metric-tile-new sopro-card">
                         <div class="tile-header">
@@ -182,31 +207,6 @@
                                 <span class="info-icon">?</span>
                                 <div class="tooltip-box">
                                     Forecast of how many real days will remain or be missing at the end, based on current speed. Positive = buffer, negative = delay.
-                                </div>
-                            </span>
-                        </div>
-                    </div>
-                    
-                    <!-- Status -->
-                    <div class="metric-tile-new sopro-card">
-                        <div class="tile-header">
-                            <strong>Status:</strong>
-                        </div>
-                        <div class="tile-value-with-icon">
-                            <span class="tile-value">
-                                @if (Model.IsUpToDate)
-                                {
-                                    <span class="text-success">✔ Up to date</span>
-                                }
-                                else
-                                {
-                                    <span class="text-danger">✘ Not up to date</span>
-                                }
-                            </span>
-                            <span class="info-icon-wrapper">
-                                <span class="info-icon">?</span>
-                                <div class="tooltip-box">
-                                    Indicates whether the current data is up to date.
                                 </div>
                             </span>
                         </div>
