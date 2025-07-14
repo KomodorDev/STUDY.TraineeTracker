@@ -39,6 +39,7 @@ namespace TraineeTracker.Services {
             var snapshot = await BuildLatestTraineeStatisticsSnapshotAsync(traineeId);
             var lessons = await _traineeLessonRepository.GetAllTraineeLessonsOfTraineeWithLessonAsync(traineeId);
             var processingPauses = (await _processingPauseRepository.GetAllPausesAsync(traineeId)).ToList();
+            var trainee = await _userManager.FindByIdAsync(traineeId);
 
             // ++++++++++++++++
             // all lessons for chart
@@ -56,6 +57,7 @@ namespace TraineeTracker.Services {
             // ++++++++++++++++
             // Build and return ViewModel
             var model = new TraineeStatisticsViewModel {
+                SelectedTrainee = trainee,
                 SnapshotDateTime = snapshot.SnapshotDateTime,
                 DaysPresentTotal = snapshot.DaysPresentTotal,
                 DaysPresentTillToday = snapshot.DaysPresentTillToday,
