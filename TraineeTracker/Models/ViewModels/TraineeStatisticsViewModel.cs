@@ -2,6 +2,7 @@ using TraineeTracker.Models.Domain;
 
 namespace TraineeTracker.Models.ViewModels {
     public class TraineeStatisticsViewModel {
+        public ApplicationUser? SelectedTrainee { get; set; }
         public DateTime SnapshotDateTime { get; set; }
         public double? DaysPresentTotal { get; set; }
         public double? DaysPresentTillToday { get; set; }
@@ -20,6 +21,6 @@ namespace TraineeTracker.Models.ViewModels {
         public List<TraineeLessonViewModel>? StartedLessons { get; set; }
         public List<ProcessingPause>? ProcessingPauses { get; set; }
         public List<TraineeLessonViewModel>? AllLessons { get; set; } 
-        public double TodayPosition { get; set; } 
+        public double CurrentProgress { get; set; } 
     }
 }
