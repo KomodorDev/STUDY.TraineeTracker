@@ -93,7 +93,8 @@ body {
 .tooltip-box {
     display: none;
     position: absolute;
-    top: calc(100% + 10px);
+    bottom: calc(100% + 10px);
+    top: auto;
     left: 50%;
     transform: translateX(-50%);
     background-color: #333;
