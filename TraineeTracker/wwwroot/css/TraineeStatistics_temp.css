@@ -35,11 +35,124 @@ body {
 }
 
 .text-success {
-    color: #626262 !important;      /* GRAY SUCCESS TEXT PERHAPS CHANGE IDK */
+    color: #198754 !important;
     font-weight: bold;
 }
 
 .text-danger {
     color: #e61d47;
     font-weight: bold;
+}
+.metric-tile-new {
+    text-align: center;
+    position: relative;
+    padding: 1rem;
+    overflow: visible;
+    background-color: #fff;
+    border-radius: 1rem;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+}
+
+.tile-header {
+    font-size: 1rem;
+    font-weight: 600;
+    margin-bottom: 0.4rem;
+}
+
+.tile-value-with-icon {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 0.4rem;
+}
+
+.tile-value {
+    font-size: 1rem;
+    font-weight: 500;
+    color: #222;
+}
+
+.info-icon-wrapper {
+    display: inline-block;
+}
+
+.info-icon {
+    background-color: #e61d47;
+    color: white;
+    border-radius: 50%;
+    width: 1.2rem;
+    height: 1.2rem;
+    font-size: 0.9rem;
+    line-height: 1.2rem;
+    text-align: center;
+    cursor: pointer;
+    font-weight: bold;
+    display: inline-block;
+}
+
+.tooltip-box {
+    display: none;
+    position: absolute;
+    bottom: calc(100% + 10px);
+    top: auto;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: #333;
+    color: #fff;
+    padding: 0.8rem 1rem;
+    border-radius: 0.5rem;
+    font-size: 0.95rem;
+    z-index: 9999;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    white-space: normal;
+    line-height: 1.4;
+    max-width: 300px;
+    width: max-content;
+    min-width: 200px;
+    text-align: left;
+    word-break: break-word;
+}
+
+.tooltip-box.centered {
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.tooltip-box.align-left {
+    right: 0;
+    left: auto;
+    transform: none;
+}
+
+.tooltip-box.align-right {
+    left: 0;
+    right: auto;
+    transform: none;
+}
+
+.info-icon-wrapper:hover .tooltip-box {
+    display: block;
+}
+
+.modal,
+.modal-dialog,
+.modal-content {
+    overflow: visible !important;
+}
+
+.processing-pauses-tile {
+    width: 100%;
+    padding: 1rem;
+    min-height: auto;
+    height: auto;
+    text-align: left;
+}
+
+.tile-value.list-left,
+.tile-value.list-left ul,
+.tile-value.list-left li {
+    text-align: left;
+    list-style-position: inside;
+    margin-left: 0;
+    padding-left: 0.5rem;
 }
