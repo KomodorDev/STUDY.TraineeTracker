@@ -83,10 +83,10 @@
                         </div>
                     </div>
 
-                    <!-- Total days present -->
+                    <!-- Days Present Total-->
                     <div class="metric-tile-new sopro-card">
                         <div class="tile-header">
-                            <strong>Total Days Present:</strong>
+                            <strong>Days Present Total:</strong>
                         </div>
                         <div class="tile-value-with-icon">
                             <span class="tile-value">
@@ -101,10 +101,10 @@
                         </div>
                     </div>
 
-                    <!-- Days Present (Until Today) -->
+                    <!-- Days Present Until Today -->
                     <div class="metric-tile-new sopro-card">
                         <div class="tile-header">
-                            <strong>Days Present (Until Today):</strong>
+                            <strong>Days Present Until Today:</strong>
                         </div>
                         <div class="tile-value-with-icon">
                             <span class="tile-value">
@@ -131,7 +131,7 @@
                             <span class="info-icon-wrapper">
                                 <span class="info-icon">?</span>
                                 <div class="tooltip-box">
-                                    Sum of estimated effort from completed lessons.
+                                    Sum of estimated weighted effort from completed lessons.
                                 </div>
                             </span>
                         </div>
@@ -149,7 +149,7 @@
                             <span class="info-icon-wrapper">
                                 <span class="info-icon">?</span>
                                 <div class="tooltip-box">
-                                    Estimated effort still required to complete all lessons.
+                                    Estimated effort still required to complete all lessons. (Estimated Effort Remaining = Total Effort - Estimated Effort Completed)
                                 </div>
                             </span>
                         </div>
@@ -167,7 +167,7 @@
                             <span class="info-icon-wrapper">
                                 <span class="info-icon">?</span>
                                 <div class="tooltip-box">
-                                    Shows how far ahead or behind the trainee is based on expected lesson progress. Positive = ahead, negative = behind.
+                                    Shows how far ahead or behind the trainee is based on expected lesson progress. Positive = ahead, negative = behind. (Effort Buffer = Estimated Effort Completed - Days Present Until Today)
                                 </div>
                             </span>
                         </div>
@@ -185,16 +185,16 @@
                             <span class="info-icon-wrapper">
                                 <span class="info-icon">?</span>
                                 <div class="tooltip-box">
-                                    Indicates how efficiently the trainee has used their time. 100% = on pace, below 100% = behind, above 100% = ahead.
+                                    Indicates how efficiently the trainee has used their time. 100% = on pace, below 100% = behind, above 100% = ahead. (Progress Speed = Estimated Effort Completed / Days Present Until Today)
                                 </div>
                             </span>
                         </div>
                     </div>
 
-                    <!-- Predicted Effort Gap at End -->
+                    <!-- Predicted Effort Buffer -->
                     <div class="metric-tile-new sopro-card">
                         <div class="tile-header">
-                            <strong>Predicted Effort Buffer at End:</strong>
+                            <strong>Predicted Effort Buffer:</strong>
                         </div>
                         <div class="tile-value-with-icon">
                             <span class="tile-value">
@@ -203,7 +203,7 @@
                             <span class="info-icon-wrapper">
                                 <span class="info-icon">?</span>
                                 <div class="tooltip-box">
-                                    Forecast of the difference between estimated remaining effort and expected progress until the end. Positive = extra capacity, negative = shortfall.
+                                    Forecast of the difference between estimated remaining effort and expected progress until the end. Positive = extra capacity, negative = shortfall. (Predicted Effort Buffer = (Days Present In Future * Progress Speed) - Estimated Effort Remaining)
                                 </div>
                             </span>
                         </div>
@@ -221,7 +221,7 @@
                             <span class="info-icon-wrapper">
                                 <span class="info-icon">?</span>
                                 <div class="tooltip-box">
-                                    Forecast of how many real days will remain or be missing at the end, based on current speed. Positive = buffer, negative = delay.
+                                    Forecast of how many real days will remain or be missing at the end, based on current speed. Positive = buffer, negative = delay. (Predicted Actual Buffer = Predicted Effort Buffer / Progress Speed)
                                 </div>
                             </span>
                         </div>
