@@ -10,9 +10,11 @@ using TraineeTracker.Models.ViewModels.Admin;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using TraineeTracker.Data;
 
 namespace TraineeTracker.Services.Admin {
     public class AdminService {
+        private readonly IUnitOfWork _unitOfWork;
         private readonly IApplicationUserRepository _applicationUserRepository;
         private readonly IProcessingPauseRepository _processingPauseRepository;
         private readonly RoleManager<IdentityRole> _roleManager;
@@ -24,7 +26,8 @@ namespace TraineeTracker.Services.Admin {
         private readonly ITeachingPlanRepository _teachingPlanRepository;
         private readonly ITraineeStatisticsRepository _traineeStatisticsRepository;
 
-        public AdminService(IApplicationUserRepository applicationUserRepository,
+        public AdminService(IUnitOfWork unitOfWork,
+                            IApplicationUserRepository applicationUserRepository,
                             IProcessingPauseRepository processingPauseRepository,
                             RoleManager<IdentityRole> roleManager,
                             EmailNotificationService emailNotificationService,
@@ -32,6 +35,7 @@ namespace TraineeTracker.Services.Admin {
                             IFeedbackRepository feedbackRepository,
                             ITeachingPlanRepository teachingPlanRepository,
                             ITraineeStatisticsRepository traineeStatisticsRepository) {
+            _unitOfWork = unitOfWork;
             _applicationUserRepository = applicationUserRepository;
             _processingPauseRepository = processingPauseRepository;
             _roleManager = roleManager;
