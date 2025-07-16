@@ -105,6 +105,7 @@ h3 {
   grid-template-columns: minmax(0, 0.5fr) 0.5fr 0.5fr 0.5fr auto;
   padding-right: 1.172rem;
   gap: 1.172rem;
+  text-wrap: nowrap;
 }
 
 .plan-box > .plan-name {
