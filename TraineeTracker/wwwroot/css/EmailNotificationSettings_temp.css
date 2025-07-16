@@ -208,7 +208,10 @@ html {
     grid-template-rows: 1fr;
   
     padding: 3.516rem;          
-    column-gap: 2.344rem;       
+    column-gap: 2.344rem;   
+    
+    max-width: calc(1920px - 3.516rem - 3.516rem);
+    margin: 0 auto;
 
     /*   
     height: calc(100vh - 3.516rem); /* Höhe minus Navbar
