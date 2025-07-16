@@ -130,7 +130,11 @@ namespace TraineeTracker.Data.ApplicationUsers {
         }
 
         public async Task<IEnumerable<string>> GetRolesAsync(ApplicationUser user) {
-            return await _userManager.GetRolesAsync(user);
+            var roles = await _userManager.GetRolesAsync(user);
+            if (roles.Contains("Admin")) {
+                roles.Remove("Mentor");
+            }
+            return roles;
         }
 
         public async Task<ApplicationUser?> GetUserAsync(ClaimsPrincipal principal) {

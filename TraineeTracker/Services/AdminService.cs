@@ -61,11 +61,7 @@ namespace TraineeTracker.Services.Admin {
             var userRoles = new Dictionary<string, string>();
             foreach (var user in users) {
                 var rolesOfUser = await _applicationUserRepository.GetRolesAsync(user);
-                if (rolesOfUser.Contains("Admin")) {
-                    userRoles[user.Id] = "Admin";
-                } else {
-                    userRoles[user.Id] = rolesOfUser.First();
-                }
+                userRoles[user.Id] = rolesOfUser.First();
             }
 
             var roles = await _roleManager.Roles.ToListAsync();
