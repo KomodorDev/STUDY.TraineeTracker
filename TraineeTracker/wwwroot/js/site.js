@@ -4,44 +4,42 @@
 // ------------------------------------------------------
 /* script for reloading modal */
 function hookUpStateChangeForms() {
+  // Browser Print
+  console.log("hookUpStateChangeForms() executed");
+  document.querySelectorAll(".stateChangeForm").forEach(function (form) {
+    form.addEventListener("submit", async function (e) {
+      // Browser Print
+      e.preventDefault();
 
-    // Browser Print
-    console.log("🔄 hookUpStateChangeForms() aufgerufen");
-    document.querySelectorAll(".stateChangeForm").forEach(function (form) {
-      form.addEventListener("submit", async function (e) {
-          // Browser Print
-          console.log("📤 Submit intercepted on form:", form);
-          e.preventDefault();
+      document.body.classList.add('sopro-waiting-cur');
 
-          document.body.classList.add('sopro-waiting-cur');
+      try {
+        const formData = new FormData(form);
 
-          try {
-              const formData = new FormData(form);
+        const response = await fetch(form.action, {
+          method: "POST",
+          body: formData
+        });
 
-              const response = await fetch(form.action, {
-                  method: "POST",
-                  body: formData
-              });
+        if (response.ok) {
+          const html = await response.text();
+          const modalContent = document.getElementById("TraineeLessonModalContent");
 
-              if (response.ok) {
-                  const html = await response.text();
-                  const modalContent = document.getElementById("TraineeLessonModalContent");
+          // Replace inner modal content only
+          modalContent.innerHTML = html;
 
-                  // Replace inner modal content only
-                  modalContent.innerHTML = html;
-
-                  // Re-hook form events if needed
-                  window.hookUpStateChangeForms();
-              } else {
-                  alert("Failed to change state.");
-              }
-          } catch (error) {
-              alert("An error occured during state change.");
-          } finally {
-              document.body.classList.remove('sopro-waiting-cur');
-          }
-      });
+          // Re-hook form events if needed
+          window.hookUpStateChangeForms();
+        } else {
+          alert("Failed to change state.");
+        }
+      } catch (error) {
+        alert("An error occured during state change.");
+      } finally {
+        document.body.classList.remove('sopro-waiting-cur');
+      }
     });
+  });
 }
 
 window.hookUpStateChangeForms = hookUpStateChangeForms;
