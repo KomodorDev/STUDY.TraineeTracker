@@ -78,6 +78,7 @@ namespace TraineeTracker.Services.Email {
             setting.ReceiveRatedNotifications = update.ReceiveRatedNotifications;
 
             setting.ReceiveImportChangeNotifications = update.ReceiveImportChangeNotifications;
+            setting.ReceiveFeedbackChangeNotifications = update.ReceiveFeedbackChangeNotifications;
 
             // 3. Store Setting
             await _databaseEmailNotificationSettingRepository.UpdateAsync(setting);
@@ -106,7 +107,8 @@ namespace TraineeTracker.Services.Email {
                 ReceiveRejectedNotifications = setting.ReceiveRejectedNotifications,
                 ReceiveAcceptedNotifications = setting.ReceiveAcceptedNotifications,
                 ReceiveRatedNotifications = setting.ReceiveRatedNotifications,
-                ReceiveImportChangeNotifications = setting.ReceiveImportChangeNotifications
+                ReceiveImportChangeNotifications = setting.ReceiveImportChangeNotifications,
+                ReceiveFeedbackChangeNotifications = setting.ReceiveFeedbackChangeNotifications
             };
         }
 
