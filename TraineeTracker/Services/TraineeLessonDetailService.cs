@@ -199,9 +199,6 @@ namespace TraineeTracker.Services {
             } else {
                 // -> feedback doesn't exist
 
-                if (!user.IsInRole("Trainee"))
-                    throw new UnauthorizedAccessException("Only Trainees can write feedbacks.");
-
                 if (correspondingTraineeLesson.State != TraineeLessonState.Accepted)
                     throw new UnauthorizedAccessException("You can write a feedback once your TraineeLesson has been accepted.");
 
