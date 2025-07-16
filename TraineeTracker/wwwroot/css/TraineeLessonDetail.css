@@ -110,7 +110,7 @@ button {
     align-items: center;
     justify-content: center;
 
-    cursor: default;
+    cursor: not-allowed;
 
     border-radius: 11px;
 }
