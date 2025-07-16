@@ -66,9 +66,9 @@ namespace TraineeTracker.Services.Admin {
             var roles = await _roleManager.Roles.ToListAsync();
 
             users = sortBy switch {
-                "Name" => users.OrderBy(u => u.UserName),
-                "StartDate" => users.OrderBy(u => u.TraineeStartDate),
-                "EndDate" => users.OrderBy(u => u.TraineeEndDate),
+                "UserName" => users.OrderBy(u => u.UserName),
+                "TraineeStartDate" => users.OrderBy(u => u.TraineeStartDate),
+                "TraineeEndDate" => users.OrderBy(u => u.TraineeEndDate),
                 _ => users.OrderBy(u => userRoles[u.Id])
             };
 
@@ -77,7 +77,8 @@ namespace TraineeTracker.Services.Admin {
                 UserRoles = userRoles,
                 Roles = roles,
                 SelectedRole = selectedRole,
-                SelectedStatus = selectedStatus
+                SelectedStatus = selectedStatus,
+                SortBy = sortBy
             };
         }
 
