@@ -10,7 +10,6 @@ using TraineeTracker.Models.ViewModels.Admin;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace TraineeTracker.Services.Admin {
     public class AdminService {
