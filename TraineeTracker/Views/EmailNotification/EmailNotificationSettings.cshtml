@@ -6,13 +6,18 @@
 
 @{
     var isTrainee = User.IsInRole("Trainee");
-    var notifyLessonText = isTrainee 
-        ? "Notify me when one of my lessons is marked as  "
-        : "Notify me when any lesson is marked as  ";
+    var notifyLessonText = isTrainee
+    ? "Notify me when one of my lessons is marked as "
+    : "Notify me when any lesson is marked as ";
 
-    var notifyPlanText = isTrainee 
-        ? "Notify me when my teaching plan is updated (including a list of added and removed lessons)"
-        : "Notify me when the teaching plan of a trainee is updated (including a list of added and removed lessons)";
+    var notifyPlanText = isTrainee
+    ? "Notify me when my teaching plan is updated (including a list of added and removed lessons)"
+    : "Notify me when the teaching plan of a trainee is updated (including a list of added and removed lessons)";
+
+    var notifyFeedbackText = isTrainee
+    ? "Notify me when my feedback is edited by a mentor or admin"
+    : "Notify me when a trainee's feedback is edited";
+
 }
 
 @section Styles {
@@ -23,7 +28,8 @@
     <div class="sopro-card small-header">
         <div class="header thiccboi">Configure your email notification preferences here ...</div>
 
-        <form id="notificationSettings" asp-action="SaveEmailNotificationSettingChange" method="post" class="sopro-inner-card flex">
+        <form id="notificationSettings" asp-action="SaveEmailNotificationSettingChange" method="post"
+            class="sopro-inner-card flex">
             <!-- Alle Label-Checkboxen wie vorher -->
             <label class="status-label">
                 <input type="checkbox" asp-for="ReceiveSkippedNotifications" />
@@ -64,8 +70,14 @@
                 <input type="checkbox" asp-for="ReceiveImportChangeNotifications" />
                 @notifyPlanText
             </label>
-            
-            <button id="saveNotificationsButton" type="submit" class="button mt-3" style="border-radius: 11px; background-color: #e61d47; font-weight: 900;">Save Settings</button>
+
+            <label class="status-label">
+                <input type="checkbox" asp-for="ReceiveFeedbackChangeNotifications" />
+                @notifyFeedbackText
+            </label>
+
+            <button id="saveNotificationsButton" type="submit" class="button mt-3"
+                style="border-radius: 11px; background-color: #e61d47; font-weight: 900;">Save Settings</button>
         </form>
     </div>
 </div>
@@ -74,33 +86,33 @@
 <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 
 <script>
-  document.addEventListener("DOMContentLoaded", function () {
-    const form = document.getElementById("notificationSettings");
-    const saveButton = document.getElementById("saveNotificationsButton");
+    document.addEventListener("DOMContentLoaded", function () {
+        const form = document.getElementById("notificationSettings");
+        const saveButton = document.getElementById("saveNotificationsButton");
 
-    form.addEventListener("submit", function (event) {
-      event.preventDefault();
-      saveButton.classList.add("animate-spin");
+        form.addEventListener("submit", function (event) {
+            event.preventDefault();
+            saveButton.classList.add("animate-spin");
 
-      const rect = saveButton.getBoundingClientRect();
-      const x = (rect.left + rect.width / 2) / window.innerWidth;
-      const y = (rect.top + rect.height / 2) / window.innerHeight;
+            const rect = saveButton.getBoundingClientRect();
+            const x = (rect.left + rect.width / 2) / window.innerWidth;
+            const y = (rect.top + rect.height / 2) / window.innerHeight;
 
-      for (let i = 0; i < 3; i++) {
-        setTimeout(() => {
-          confetti({
-            particleCount: 50,
-            spread: 60,
-            startVelocity: 35,
-            origin: { x, y }
-          });
-        }, i * 150);
-      }
+            for (let i = 0; i < 3; i++) {
+                setTimeout(() => {
+                    confetti({
+                        particleCount: 50,
+                        spread: 60,
+                        startVelocity: 35,
+                        origin: { x, y }
+                    });
+                }, i * 150);
+            }
 
-      setTimeout(() => {
-        saveButton.classList.remove("animate-spin");
-        form.submit();
-      }, 1200);
+            setTimeout(() => {
+                saveButton.classList.remove("animate-spin");
+                form.submit();
+            }, 1200);
+        });
     });
-  });
 </script>
