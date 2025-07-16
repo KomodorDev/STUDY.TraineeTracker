@@ -1,22 +1,20 @@
 using System.Collections.Generic;
 using TraineeTracker.Models.Domain;
 
-namespace TraineeTracker.Data.ProcessingPauses
-{
-    public interface IProcessingPauseRepository
-    {
-        public Task CreateAsync(ProcessingPause processingPause);
+namespace TraineeTracker.Data.ProcessingPauses {
+    public interface IProcessingPauseRepository {
+        Task CreateAsync(ProcessingPause processingPause);
 
-        public Task<bool> ExistsAsync(ProcessingPause processingPause);
+        Task<bool> ExistsAsync(ProcessingPause processingPause);
 
-        public Task<bool> OverlapsAsync(ProcessingPause processingPause, bool newProcessingPause);
+        Task<bool> OverlapsAsync(ProcessingPause processingPause, bool newProcessingPause);
 
-        public Task<ProcessingPause?> FindByIdAsync(int processingPauseId);
+        Task<ProcessingPause?> FindByIdAsync(int processingPauseId);
 
-        public Task UpdateAsync(ProcessingPause processingPause);
+        Task UpdateAsync(ProcessingPause processingPause);
 
-        public Task DeleteAsync(ProcessingPause processingPause);
+        Task DeleteAsync(ProcessingPause processingPause);
 
-        public Task<IEnumerable<ProcessingPause>> GetAllPausesAsync(string traineeId);
+        Task<IEnumerable<ProcessingPause>> GetAllPausesAsync(string traineeId);
     }
 }
