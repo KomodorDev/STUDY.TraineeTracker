@@ -24,7 +24,6 @@ namespace TraineeTracker.Data.ProcessingPauses {
         }
 
         public async Task<bool> OverlapsAsync(ProcessingPause processingPause, bool newProcessingPause) {
-            Console.WriteLine(processingPause.ProcessingPauseId);
             return await _context.ProcessingPauses.AnyAsync(p =>
                 (newProcessingPause || p.ProcessingPauseId != processingPause.ProcessingPauseId) &&    // if in database (Id != 1): don't compare with same instance of processingPause
                 p.TraineeId == processingPause.TraineeId &&
