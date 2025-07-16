@@ -238,6 +238,17 @@ namespace TraineeTracker.Services {
                 throw new FeedbackNotFoundException(feedbackId);
 
             await _databaseFeedbackrepository.DeleteAsync(feedbackId);
+
+            var trainee = (await _databaseFeedbackrepository.GetFeedbackByIDWithLessonAndAuthorAndReadByUsersAsync(feedbackId))?.Author ?? throw new UserNotFoundException();
+
+            // sends email (different thread)
+            _ = Task.Run(async () => {
+                using var scope = _scopeFactory.CreateScope();
+                var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+                var emailService = scope.ServiceProvider.GetRequiredService<EmailNotificationService>();
+
+                await emailService.NotifyUserAsync(trainee, "Feedback deletion", "One of your feedbacks has been deleted. Contact a mentor for further information.");
+            });
         }
     }
 }
