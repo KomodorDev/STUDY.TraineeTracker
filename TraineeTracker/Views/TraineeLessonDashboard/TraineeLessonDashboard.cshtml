@@ -61,7 +61,7 @@
             <div class="sopro-inner-card flex">
                 @{
                     var stats = Model.TraineeStatisticsSnapshot;
-                    var progressBarProgress = stats?.LessonDaysCompleted / (stats?.LessonDaysOpen + stats?.LessonDaysCompleted);
+                    var progressBarProgress = 100* stats?.LessonDaysCompleted / (stats?.LessonDaysOpen + stats?.LessonDaysCompleted);
                 }
                 <p>Snapshot Taken At: @(stats?.SnapshotDateTime.ToString("dd. MMMM yyyy HH:mm:ss") ?? "No Time") </p>
                 <p>
@@ -74,7 +74,7 @@
                     Effort Buffer: @((stats?.LessonDaysBuffer ?? -999).ToString("0.0")) days
                 </p>
                 <p>
-                    Progress Speed: @((stats?.Speed ?? 0).ToString("0.00"))
+                    Progress Speed: @(((stats?.Speed ?? 0) * 100).ToString("0.00")) %
                 </p>
                 <div class="w-100">
                     <p>Total Progress:</p>
@@ -82,7 +82,7 @@
                         <div class="progress-bar bg-danger" role="progressbar" 
                             style="width: @(progressBarProgress)%; height: 100%;
                                 background-image: linear-gradient(to right, #ff0844, #ffb199);" 
-                            aria-valuenow="-1" aria-valuemin="0" aria-valuemax="100">
+                            aria-valuenow="@progressBarProgress" aria-valuemin="0" aria-valuemax="100">
                         </div>
                     </div>
                 </div>
