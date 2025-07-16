@@ -26,17 +26,17 @@
                 <div class="filter-tab filter-tab-select ">
                     <select name="selectedStatus" class="select-wide-filter" onchange="this.form.submit()">
                         <option value="">Status: All</option>
-                        <option selected="@(Model.SelectedStatus == "Open" ? "selected" : null)">Status: Open</option>
-                        <option selected="@(Model.SelectedStatus == "Closed" ? "selected" : null)">Status: Closed
+                        <option value="Open" selected="@(Model.SelectedStatus == "Open" ? "selected" : null)">Status: Open</option>
+                        <option value="Closed" selected="@(Model.SelectedStatus == "Closed" ? "selected" : null)">Status: Closed
                         </option>
                     </select>
                 </div>
                 <div class="filter-tab filter-tab-select ">
-                    <select class="select-wide-filter" onchange="this.form.submit()">
-                        <option>Sort by</option>
-                        <option>Name</option>
-                        <option>Startdate</option>
-                        <option>Enddate</option>
+                    <select name="sortBy" class="select-wide-filter" onchange="this.form.submit()">
+                        <option value="Role" selected="@(Model.SortBy == "Role" ? "selected" : null)">Sort by Role</option>
+                        <option value="UserName" selected="@(Model.SortBy == "UserName" ? "selected" : null)">Sort by Name</option>
+                        <option value="TraineeStartDate" selected="@(Model.SortBy == "TraineeStartDate" ? "selected" : null)">Sort by Startdate</option>
+                        <option value="TraineeEndDate" selected="@(Model.SortBy == "TraineeEndDate" ? "selected" : null)">Sort by Enddate</option>
                     </select>
                 </div>
             </form>
