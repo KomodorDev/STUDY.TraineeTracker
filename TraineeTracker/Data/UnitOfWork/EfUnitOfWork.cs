@@ -11,6 +11,9 @@ namespace TraineeTracker.Data.UnitOfWork
         }
 
         public async Task BeginTransactionAsync() {
+            if (_context.Database.ProviderName == "Microsoft.EntityFrameworkCore.InMemory") {
+                return;
+            }
             _transaction = await _context.Database.BeginTransactionAsync();
         }
 
@@ -23,6 +26,7 @@ namespace TraineeTracker.Data.UnitOfWork
         public async Task RollbackAsync() {
             if (_transaction != null) {
                 await _transaction.RollbackAsync();
+                _transaction = null;
             }
         }
     }
