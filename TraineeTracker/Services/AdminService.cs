@@ -168,8 +168,11 @@ namespace TraineeTracker.Services.Admin {
         }
 
         public async Task<ServiceResult> CloseUserAsync(string userId) {
+            await _unitOfWork.BeginTransactionAsync();
+
             var user = await _applicationUserRepository.FindByIdAsync(userId);
             if (user == null) {
+                await _unitOfWork.RollbackAsync();
                 throw new InvalidOperationException($"{nameof(user)} not found");
             }
 
@@ -203,17 +206,21 @@ namespace TraineeTracker.Services.Admin {
                 await Task.WhenAll(referenceUpdateTasks);
             }
             catch (AggregateException aggEx) {
+                await _unitOfWork.RollbackAsync();
                 return ServiceResult.Failed(aggEx.InnerExceptions.Select(e => e.Message).ToArray());
             }
             catch (Exception ex) {
+                await _unitOfWork.RollbackAsync();
                 return ServiceResult.Failed(ex.Message);
             }
 
             var result = await _applicationUserRepository.UpdateAsync(user);
             if (!result.Succeeded) {
+                await _unitOfWork.RollbackAsync();
                 return ServiceResult.Failed(result.Errors.Select(e => e.Description).ToArray());
             }
 
+            await _unitOfWork.CommitAsync();
             return ServiceResult.Success();
         }
 
