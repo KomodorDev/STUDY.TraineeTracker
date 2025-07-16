@@ -8,6 +8,6 @@ namespace TraineeTracker.Models.Dtos {
         public bool ReceiveAcceptedNotifications { get; set; }
         public bool ReceiveRatedNotifications { get; set; }
         public bool ReceiveImportChangeNotifications { get; set; }
-
+        public bool ReceiveFeedbackChangeNotifications { get; set; }
     }
 }

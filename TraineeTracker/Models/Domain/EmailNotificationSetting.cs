@@ -58,6 +58,11 @@ namespace TraineeTracker.Models.Domain {
         public bool ReceiveImportChangeNotifications { get; set; } = true;
 
         /// <summary>
+        /// Indicates whether the user wants to be notified about feedback changes (e.g. a feedback was updated)
+        /// </summary>
+        public bool ReceiveFeedbackChangeNotifications { get; set; } = true;
+
+        /// <summary>
         /// Foreign key to the user this setting belongs to.
         /// </summary>
         public string? UserId { get; set; }
