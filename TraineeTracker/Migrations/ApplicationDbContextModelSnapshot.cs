@@ -32,21 +32,6 @@ namespace TraineeTracker.Migrations
                     b.ToTable("FeedbackRead");
                 });
 
-            modelBuilder.Entity("LessonTeachingPlan", b =>
-                {
-                    b.Property<int>("LessonsLessonId")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<int>("TeachingPlansTeachingPlanId")
-                        .HasColumnType("INTEGER");
-
-                    b.HasKey("LessonsLessonId", "TeachingPlansTeachingPlanId");
-
-                    b.HasIndex("TeachingPlansTeachingPlanId");
-
-                    b.ToTable("LessonTeachingPlan");
-                });
-
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
                 {
                     b.Property<string>("Id")
@@ -151,7 +136,12 @@ namespace TraineeTracker.Migrations
                     b.Property<string>("RoleId")
                         .HasColumnType("TEXT");
 
+                    b.Property<string>("ApplicationUserId")
+                        .HasColumnType("TEXT");
+
                     b.HasKey("UserId", "RoleId");
+
+                    b.HasIndex("ApplicationUserId");
 
                     b.HasIndex("RoleId");
 
@@ -186,6 +176,9 @@ namespace TraineeTracker.Migrations
 
                     b.Property<int>("AccessFailedCount")
                         .HasColumnType("INTEGER");
+
+                    b.Property<string>("ApplicationUserId")
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken()
@@ -244,6 +237,8 @@ namespace TraineeTracker.Migrations
                         .HasColumnType("TEXT");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("ApplicationUserId");
 
                     b.HasIndex("NormalizedEmail")
                         .HasDatabaseName("EmailIndex");
@@ -311,6 +306,9 @@ namespace TraineeTracker.Migrations
                     b.Property<string>("Comment")
                         .HasColumnType("TEXT");
 
+                    b.Property<DateTime>("CreateTime")
+                        .HasColumnType("TEXT");
+
                     b.Property<int>("Difficulty")
                         .HasColumnType("INTEGER");
 
@@ -349,11 +347,26 @@ namespace TraineeTracker.Migrations
                         .IsRequired()
                         .HasColumnType("TEXT");
 
+                    b.Property<string>("MakandraId")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("SortingIndex")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("TeachingPlanId")
+                        .HasColumnType("INTEGER");
+
                     b.Property<string>("Title")
                         .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.HasKey("LessonId");
+
+                    b.HasIndex("TeachingPlanId");
+
+                    b.HasIndex("MakandraId", "TeachingPlanId")
+                        .IsUnique();
 
                     b.ToTable("Lessons");
                 });
@@ -477,25 +490,34 @@ namespace TraineeTracker.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
-                    b.Property<double>("DaysBufferPredicted")
+                    b.Property<double?>("DaysPresentTillToday")
                         .HasColumnType("REAL");
 
-                    b.Property<double>("DaysPresent")
+                    b.Property<double?>("DaysPresentTotal")
                         .HasColumnType("REAL");
 
-                    b.Property<double>("LessonDaysBuffer")
+                    b.Property<bool>("IsUpToDate")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<double?>("LessonDaysBuffer")
                         .HasColumnType("REAL");
 
-                    b.Property<double>("LessonDaysCompleted")
+                    b.Property<double?>("LessonDaysCompleted")
                         .HasColumnType("REAL");
 
-                    b.Property<double>("LessonDaysOpen")
+                    b.Property<double?>("LessonDaysOpen")
+                        .HasColumnType("REAL");
+
+                    b.Property<double?>("PredictedMissingActualDays")
+                        .HasColumnType("REAL");
+
+                    b.Property<double?>("PredictedMissingEstimatedEffortAtEnd")
                         .HasColumnType("REAL");
 
                     b.Property<DateTime>("SnapshotDateTime")
                         .HasColumnType("TEXT");
 
-                    b.Property<double>("Speed")
+                    b.Property<double?>("Speed")
                         .HasColumnType("REAL");
 
                     b.Property<string>("TraineeId")
@@ -521,21 +543,6 @@ namespace TraineeTracker.Migrations
                     b.HasOne("TraineeTracker.Models.Domain.ApplicationUser", null)
                         .WithMany()
                         .HasForeignKey("ReaderId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("LessonTeachingPlan", b =>
-                {
-                    b.HasOne("TraineeTracker.Models.Domain.Lesson", null)
-                        .WithMany()
-                        .HasForeignKey("LessonsLessonId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("TraineeTracker.Models.Domain.TeachingPlan", null)
-                        .WithMany()
-                        .HasForeignKey("TeachingPlansTeachingPlanId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
@@ -569,6 +576,10 @@ namespace TraineeTracker.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<string>", b =>
                 {
+                    b.HasOne("TraineeTracker.Models.Domain.ApplicationUser", null)
+                        .WithMany("UserRoles")
+                        .HasForeignKey("ApplicationUserId");
+
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
                         .WithMany()
                         .HasForeignKey("RoleId")
@@ -593,6 +604,10 @@ namespace TraineeTracker.Migrations
 
             modelBuilder.Entity("TraineeTracker.Models.Domain.ApplicationUser", b =>
                 {
+                    b.HasOne("TraineeTracker.Models.Domain.ApplicationUser", null)
+                        .WithMany("LastSelectedTrainees")
+                        .HasForeignKey("ApplicationUserId");
+
                     b.HasOne("TraineeTracker.Models.Domain.TeachingPlan", "TeachingPlan")
                         .WithMany("Trainees")
                         .HasForeignKey("TeachingPlanId");
@@ -626,6 +641,17 @@ namespace TraineeTracker.Migrations
                     b.Navigation("Author");
 
                     b.Navigation("Lesson");
+                });
+
+            modelBuilder.Entity("TraineeTracker.Models.Domain.Lesson", b =>
+                {
+                    b.HasOne("TraineeTracker.Models.Domain.TeachingPlan", "TeachingPlan")
+                        .WithMany("Lessons")
+                        .HasForeignKey("TeachingPlanId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("TeachingPlan");
                 });
 
             modelBuilder.Entity("TraineeTracker.Models.Domain.ProcessingPause", b =>
@@ -674,11 +700,15 @@ namespace TraineeTracker.Migrations
                     b.Navigation("EmailNotificationSetting")
                         .IsRequired();
 
+                    b.Navigation("LastSelectedTrainees");
+
                     b.Navigation("ProcessingPauses");
 
                     b.Navigation("TraineeLessons");
 
                     b.Navigation("TraineeStatisticsSnapshot");
+
+                    b.Navigation("UserRoles");
 
                     b.Navigation("WrittenFeedbacks");
                 });
@@ -692,6 +722,8 @@ namespace TraineeTracker.Migrations
 
             modelBuilder.Entity("TraineeTracker.Models.Domain.TeachingPlan", b =>
                 {
+                    b.Navigation("Lessons");
+
                     b.Navigation("Trainees");
                 });
 #pragma warning restore 612, 618

@@ -70,6 +70,8 @@ function toggleFeedbackForm() {
 
 // ------------------------------------------------------
 window.renderLessonChart = function(config) {
+    console.log("Overlay-Werte:", config.effortOverlayMin, config.effortOverlayMax);
+
     const chartEl = document.getElementById('lessonChart');
     if (!chartEl) return;
   
@@ -85,22 +87,59 @@ window.renderLessonChart = function(config) {
         'rgba(0,0,0,0)'
     ];
 
+    const effortGapCenterX = (Number(config.effortOverlayMin) + Number(config.effortOverlayMax)) / 2;
+
+    const annotations = {
+      today: {
+        type: 'line',
+        xMin: config.todayPos,
+        xMax: config.todayPos,
+        borderColor: 'black',
+        borderWidth: 2,
+        label: {
+          content: 'Current Progress',
+          enabled: true,
+          position: 'start'
+        }
+      },
+      range: {
+        type: 'box',
+        xMin: config.effortOverlayMin,
+        xMax: config.effortOverlayMax,
+        yMin: -2,
+        yMax: config.data.length + 2,
+        backgroundColor: 'rgba(128, 128, 128, 0.15)',
+        borderWidth: 0
+      }
+    };
+
+    if (
+      config.PredictedMissingEstimatedEffortAtEnd !== null &&
+      config.PredictedMissingEstimatedEffortAtEnd !== 0 &&
+      !isNaN(config.PredictedMissingEstimatedEffortAtEnd)
+    ) {
+      annotations.effortGapLabel = {
+        type: 'line',
+        xMin: effortGapCenterX,
+        xMax: effortGapCenterX,
+        borderWidth: 0,
+        label: {
+          content: 'Predicted Effort Buffer',
+          enabled: true,
+          position: 'start',
+          backgroundColor: 'black',
+          color: 'white',
+          font: {
+            weight: 'bold'
+          }
+        }
+      };
+    }
+
     new Chart(ctx, {
       type: 'bar',
       data: {
         datasets: [
-          {
-            label: 'Predicted Effort Range',
-            data: paddedData.map(d => ({
-              ...d,
-              x: [config.effortOverlayMin, config.effortOverlayMax]
-            })),
-            backgroundColor: 'rgba(255, 165, 0, 0.25)',
-            parsing: { xAxisKey: 'x', yAxisKey: 'y' },
-            order: 0,
-            barThickness: 14,
-            maxBarThickness: 16
-          },
           {
             label: 'Effort (days)',
             data: paddedData,
@@ -138,6 +177,9 @@ window.renderLessonChart = function(config) {
         },
         plugins: {
           legend: { display: false },
+          annotation: {
+            annotations: annotations
+          },
           tooltip: {
             enabled: true,
             callbacks: {
@@ -156,23 +198,29 @@ window.renderLessonChart = function(config) {
               }
             }
           },
-          annotation: {
-            annotations: {
-              today: {
-                type: 'line',
-                xMin: config.todayPos,
-                xMax: config.todayPos,
-                borderColor: 'black',
-                borderWidth: 2,
-                label: {
-                  content: 'current progress',
-                  enabled: true,
-                  position: 'start'
-                }
-              }
-            }
-          }
         }
       }
     });
   };
+
+  document.querySelectorAll('.info-icon-wrapper').forEach(wrapper => {
+    const tooltip = wrapper.querySelector('.tooltip-box');
+
+    wrapper.addEventListener('mouseenter', () => {
+        if (!tooltip) return;
+
+        // Reset previous classes
+        tooltip.classList.remove('align-left', 'align-right', 'centered');
+
+        const rect = tooltip.getBoundingClientRect();
+        const padding = 8; // optionaler Sicherheitsabstand zum Rand
+
+        if (rect.right > window.innerWidth - padding) {
+            tooltip.classList.add('align-left');
+        } else if (rect.left < padding) {
+            tooltip.classList.add('align-right');
+        } else {
+            tooltip.classList.add('centered');
+        }
+    });
+});

@@ -97,7 +97,7 @@ namespace TraineeTracker.Services {
             var lessonsMarkedAsInactive = new List<Lesson>();
             var addedLessons = new List<Lesson>();
 
-            int sortingIndex = 1;
+            int sortingIndex = 0;
 
             // +++++++++++++++
             // 3) DTOs upserten und zusätzlich:
@@ -108,33 +108,57 @@ namespace TraineeTracker.Services {
                 var lesson = existingLessons.FirstOrDefault(l => l.MakandraId == lessonDto.Id);
 
                 if (lesson == null) {
-                    // a) Lesson does not exist yet in existingTeachingPlan:
+                    // Lesson does not exist yet in existingTeachingPlan:
+
+                    // Create new lesson object:
                     var newLesson = CreateLesson(lessonDto, existingTeachingPlanId, sortingIndex++);
+
+                    // Store new lesson in DB:
                     await _databaseLessonRepository.CreateAsync(newLesson);
-                    existingTeachingPlan.Lessons.Add(newLesson);
+                    /*  
+                                        // Add Lesson to teachingPlan:
+                                        existingTeachingPlan.Lessons.Add(newLesson);
+                      */
+                    // Append addedLessons
                     addedLessons.Add(newLesson);
+
+                } else if (lessonDto.Deprecated) {
+                    // Existing lesson gets deprecated:
+
+                    // Update the lesson (do not increment sorting index, because we set it later):
+                    UpdateLesson(lessonDto, lesson, lesson.SortingIndex);
+
+                    // Update lesson in DB:
+                    await _databaseLessonRepository.UpdateAsync(lesson);
+
+                    // Append lessonsMarkedAsInactive:
+                    lessonsMarkedAsInactive.Add(lesson);
+
                 } else {
-                    if (lessonDto.Deprecated) {
-                        // Lesson is deprecated and we leave the index unchanged (we change it later)
-                        UpdateLesson(lessonDto, lesson, lesson.SortingIndex);
-                        lessonsMarkedAsInactive.Add(lesson);
-                    } else {
-                        // Lesson is not-depreacted and we increment the index afterwards:
-                        UpdateLesson(lessonDto, lesson, sortingIndex++);
+                    // Lesson exisits already and is not deprecated in import:
+
+                    // If it was previously inactive, we add it to addedLessons
+                    if (lesson.IsInactive) {
+                        addedLessons.Add(lesson);
                     }
 
-                    // Update Database:
+                    // Update the lesson:
+                    UpdateLesson(lessonDto, lesson, sortingIndex++); // Setzt IsInactive = false
+
+                    // Update lesson in DB:
                     await _databaseLessonRepository.UpdateAsync(lesson);
                 }
-
             }
 
             // +++++++++++++++
             // 4) Mark Lessons, that are missing in dto, as inactive
-            lessonsMarkedAsInactive = existingLessons
-             .Where(l => !dtoMakandraIds.Contains(l.MakandraId))
-             .OrderBy(l => l.SortingIndex)
-             .ToList();
+            var missingLessons = existingLessons
+                .Where(l => !dtoMakandraIds.Contains(l.MakandraId))
+                .OrderBy(l => l.SortingIndex)
+                .ToList();
+
+            lessonsMarkedAsInactive.AddRange(missingLessons);
+
 
             foreach (var lesson in lessonsMarkedAsInactive) {
                 lesson.IsInactive = true;
@@ -147,6 +171,13 @@ namespace TraineeTracker.Services {
             // Update existingTeachingPlan -> New lessons are now in Db. Inactive Lessons are marked
             existingTeachingPlan.LastUpdated = DateTime.UtcNow;
             await _databaseTeachingPlanRepository.UpdateAsync(existingTeachingPlan);
+
+            // DEBUG:
+            Console.WriteLine("[Import] Final sorting indices:");
+            foreach (var l in existingTeachingPlan.Lessons.OrderBy(l => l.SortingIndex)) {
+                var status = l.IsInactive ? "inactive" : "active";
+                Console.WriteLine($"  - {l.SortingIndex}: [{l.LessonId}] {l.Title} | MakandraId: {l.MakandraId} ({status})");
+            }
 
             // +++++++++++++++
             // 5) Für jeden zugewiesenen Trainee:
@@ -209,7 +240,7 @@ namespace TraineeTracker.Services {
 
                 // +++++++++++++++
                 // c) Benachrichtigung
-                await _emailNotificationService
+                _emailNotificationService
                     .NotifyAboutImportChangeAsync(trainee, removedTraineeLessons, addedTraineeLessons);
             }
         }
@@ -249,7 +280,6 @@ namespace TraineeTracker.Services {
 
         // ---------------------------------------------------
         public async Task UnassignTeachingPlanFromTraineeAsync(ApplicationUser trainee) {
-
             // Trainee - Get all TraineeLessons
             var traineeLessons = await _databaseTraineeLessonRepository.GetAllTraineeLessonsOfTraineeWithLessonAsync(trainee.Id);
 
@@ -362,17 +392,5 @@ namespace TraineeTracker.Services {
                 await _databaseTraineeLessonRepository.CreateAsync(tl);
             }
         }
-
-        // ---------------------------------------------------
-
-         public async Task<bool> CheckIfTeachingPlanHasTrainees(int existingTeachingPlanId) {
-            var teachingPlan = await _databaseTeachingPlanRepository.GetTeachingPlanByIdAsync(existingTeachingPlanId);
-            var trainees = teachingPlan.Trainees;
-            if(trainees == null || !trainees.Any()) {
-                return true;
-            }
-            return true;
-        }
-
     }
 }

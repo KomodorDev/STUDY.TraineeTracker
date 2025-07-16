@@ -39,6 +39,7 @@ namespace TraineeTracker.Services {
             var snapshot = await BuildLatestTraineeStatisticsSnapshotAsync(traineeId);
             var lessons = await _traineeLessonRepository.GetAllTraineeLessonsOfTraineeWithLessonAsync(traineeId);
             var processingPauses = (await _processingPauseRepository.GetAllPausesAsync(traineeId)).ToList();
+            var trainee = await _userManager.FindByIdAsync(traineeId);
 
             // ++++++++++++++++
             // all lessons for chart
@@ -56,6 +57,7 @@ namespace TraineeTracker.Services {
             // ++++++++++++++++
             // Build and return ViewModel
             var model = new TraineeStatisticsViewModel {
+                SelectedTrainee = trainee,
                 SnapshotDateTime = snapshot.SnapshotDateTime,
                 DaysPresentTotal = snapshot.DaysPresentTotal,
                 DaysPresentTillToday = snapshot.DaysPresentTillToday,
@@ -77,8 +79,16 @@ namespace TraineeTracker.Services {
                         WeightedEffort = l.Lesson.EstimatedEffort * 0.7,
                         State = l.State
                     }).ToList(),
-                AcceptedAndRatedLessons = lessons
-                    .Where(l => l.State == TraineeLessonState.Accepted || l.State == TraineeLessonState.Rated)
+                AcceptedLessons = lessons
+                    .Where(l => l.State == TraineeLessonState.Accepted)
+                    .Select(l => new TraineeLessonViewModel {
+                        Title = l.Lesson.Title,
+                        EstimatedEffort = l.Lesson.EstimatedEffort,
+                        WeightedEffort = l.Lesson.EstimatedEffort * 1.0,
+                        State = l.State
+                    }).ToList(),
+                RatedLessons = lessons
+                    .Where(l => l.State == TraineeLessonState.Rated)
                     .Select(l => new TraineeLessonViewModel {
                         Title = l.Lesson.Title,
                         EstimatedEffort = l.Lesson.EstimatedEffort,
@@ -115,18 +125,19 @@ namespace TraineeTracker.Services {
                 ProcessingPauses = processingPauses
             };
 
-
+            AddWithStatus(model.RatedLessons, "rated");
+            AddWithStatus(model.AcceptedLessons, "accepted");
             AddWithStatus(model.FinishedLessons, "finished");
-            AddWithStatus(model.AcceptedAndRatedLessons, "accepted");
             AddWithStatus(model.RejectedLessons, "rejected");
             AddWithStatus(model.StartedLessons, "started");
             AddWithStatus(model.OpenLessons, "open");
 
             model.AllLessons = allLessons;
 
-            model.TodayPosition = (
+            model.CurrentProgress = (
                 (model.FinishedLessons?.Sum(l => l.WeightedEffort) ?? 0) +
-                (model.AcceptedAndRatedLessons?.Sum(l => l.WeightedEffort) ?? 0) +
+                (model.AcceptedLessons?.Sum(l => l.WeightedEffort) ?? 0) +
+                (model.RatedLessons?.Sum(l => l.WeightedEffort) ?? 0) +
                 (model.RejectedLessons?.Sum(l => l.WeightedEffort) ?? 0)
             );
 
@@ -199,8 +210,8 @@ namespace TraineeTracker.Services {
             double lessonDaysOpen = await CalculateLessonDaysOpenAsync(traineeId);
             double lessonDaysBuffer = CalculateLessonDaysBuffer(daysPresentTillToday, lessonDaysCompleted);
             double speed = CalculateSpeed(daysPresentTillToday, lessonDaysCompleted);
-            double predictedMissingEstimatedEffortAtEnd = CalculatePredictedMissingEstimatedEffortAtEnd(daysPresentTillToday, daysPresentTotal, lessonDaysOpen, speed);
-            double predictedMissingActualDays = CalculatePredictedMissingActualDaysAtEnd(daysPresentTillToday, daysPresentTotal, lessonDaysOpen, speed);
+            double? predictedMissingEstimatedEffortAtEnd = CalculatePredictedMissingEstimatedEffortAtEnd(daysPresentTillToday, daysPresentTotal, lessonDaysOpen, speed);
+            double? predictedMissingActualDays = CalculatePredictedMissingActualDaysAtEnd(daysPresentTillToday, daysPresentTotal, lessonDaysOpen, speed);
 
             TraineeStatisticsSnapshot snapshot;
 
@@ -374,9 +385,9 @@ namespace TraineeTracker.Services {
         }
 
         // --------------------------------------------------
-        public double CalculatePredictedMissingEstimatedEffortAtEnd(double daysPresentTillToday, double daysPresentTotal, double estimatedEffortOpen, double speed) {
+        public double? CalculatePredictedMissingEstimatedEffortAtEnd(double daysPresentTillToday, double daysPresentTotal, double estimatedEffortOpen, double speed) {
             if (speed <= 0)
-                return -1;
+                return null;
 
             // Days from today till EndDate:
             double daysPresentDaysInFuture = daysPresentTotal - daysPresentTillToday;
@@ -385,17 +396,18 @@ namespace TraineeTracker.Services {
             double predictedEstimatedEffortDoneInFuture = daysPresentDaysInFuture * speed;
 
             // predicted Buffer in EstimatedEffort: estimatedEffort remaining at EndDate
+            // SAH: Die Rechnung hier muss andersrum sein. Es heißt ja "predictedMissingEstimatedEffortAtEnd" und nicht "predictedAdditionalEstimatedEffortPossibleAtEnd". Das muss dann entsprechend auch in der View angepasst werden. Betrifft dann logischerweise auch die Methode eins drunter.
             double predictedMissingEstimatedEffortAtEnd = predictedEstimatedEffortDoneInFuture - estimatedEffortOpen;
 
             return predictedMissingEstimatedEffortAtEnd;
         }
 
         // --------------------------------------------------
-        public double CalculatePredictedMissingActualDaysAtEnd(double daysPresentTillToday, double daysPresentTotal, double estimatedEffortOpen, double speed) {
+        public double? CalculatePredictedMissingActualDaysAtEnd(double daysPresentTillToday, double daysPresentTotal, double estimatedEffortOpen, double speed) {
             if (speed <= 0)
-                return -1;
+                return null;
 
-            double predictedMissingEstimatedEffortAtEnd = CalculatePredictedMissingEstimatedEffortAtEnd(daysPresentTillToday, daysPresentTotal, estimatedEffortOpen, speed);
+            double? predictedMissingEstimatedEffortAtEnd = CalculatePredictedMissingEstimatedEffortAtEnd(daysPresentTillToday, daysPresentTotal, estimatedEffortOpen, speed);
 
             // predicted Buffer in actual Days:
             return predictedMissingEstimatedEffortAtEnd / speed;
@@ -407,7 +419,7 @@ namespace TraineeTracker.Services {
 
             return lessons
                 .Where(tl => tl.State != TraineeLessonState.Skipped &&
-                            !(tl.Lesson.IsInactive && tl.State == TraineeLessonState.Open))
+                            !(tl.Lesson.IsInactive && tl.State == TraineeLessonState.Open)) // SAH: kp ob wir das wirklich brauchen. TeachingPlanService sollte eig alle TraineeLessons löschen, deren State = Open ist und deren Lesson.IsInactive ist
                 .Sum(tl => tl.Lesson.EstimatedEffort);
         }
 

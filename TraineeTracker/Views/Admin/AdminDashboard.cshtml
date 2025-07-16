@@ -9,14 +9,43 @@
 </thead>
 
 <div class="sopro-grid-management">
-    <div class="split-header">
-        <div class="sopro-card">
+    <div class="split-header flex">
+        <div class="sopro-card-filter">
+            <form asp-action="Dashboard" method="get" class="filter-bar">
+                <div class="filter-tab filter-tab-select ">
+                    <select name="selectedRole" class="select-wide-filter" onchange="this.form.submit()">
+                        <option value="">Role: All</option>
+                        @foreach (var role in Model.Roles)
+                        {
+                            <option value="@role.Name" selected="@(role.Name == Model.SelectedRole ? "selected" : null)">
+                                Role: @role.Name</option>
+                        }
+                    </select>
+                </div>
+                <div class="filter-tab filter-tab-select ">
+                    <select name="selectedStatus" class="select-wide-filter" onchange="this.form.submit()">
+                        <option value="">Status: All</option>
+                        <option value="Open" selected="@(Model.SelectedStatus == "Open" ? "selected" : null)">Status: Open</option>
+                        <option value="Closed" selected="@(Model.SelectedStatus == "Closed" ? "selected" : null)">Status: Closed
+                        </option>
+                    </select>
+                </div>
+                <div class="filter-tab filter-tab-select ">
+                    <select name="sortBy" class="select-wide-filter" onchange="this.form.submit()">
+                        <option value="Role" selected="@(Model.SortBy == "Role" ? "selected" : null)">Sort by Role</option>
+                        <option value="UserName" selected="@(Model.SortBy == "UserName" ? "selected" : null)">Sort by Name</option>
+                        <option value="TraineeStartDate" selected="@(Model.SortBy == "TraineeStartDate" ? "selected" : null)">Sort by Startdate</option>
+                        <option value="TraineeEndDate" selected="@(Model.SortBy == "TraineeEndDate" ? "selected" : null)">Sort by Enddate</option>
+                    </select>
+                </div>
+            </form>
+        </div>
+        <div class="sopro-card flex">
             <div class="header">
                 <a class="sopro-btn sopro-btn-prim sopro-button-header" asp-controller="Admin"
                     asp-action="ShowCreateUserView">Create User</a>
             </div>
         </div>
-        <div class="sopro-card">filters</div>
     </div>
     <div class="sopro-card scroll">
         <table class="table">
@@ -39,7 +68,8 @@
                         {
                             <td>@user.TraineeStartDate - @user.TraineeEndDate</td>
                             <td><a class="sopro-btn sopro-btn-sec sopro-button-content"
-                                    asp-action="ShowManageProcessingPausesView" asp-route-traineeId="@user.Id">Manage Processing
+                                    asp-action="ShowManageProcessingPausesView" asp-route-traineeId="@user.Id">Manage
+                                    Processing
                                     Pauses</a></td>
                         }
                         else
