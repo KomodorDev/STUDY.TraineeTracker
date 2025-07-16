@@ -80,7 +80,10 @@ namespace TraineeTracker.Services {
                 TraineeLesson = tl,
                 Lesson = l,
                 LogEntries = tll,
-                Feedbacks = f,
+                Feedbacks = f
+                    .OrderByDescending(x => x.CreateTime)
+                    .Take(10)
+                    .ToList(),
                 AllowedStateTransitions = factory.Create(tl.State)
                                                     .GetAllowedLessonStateTransitions(user)
                                                     .Select(s => s.ToString())
