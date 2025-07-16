@@ -126,6 +126,18 @@ button {
     border: 2px solid #e61d47;
     background-color: #e61d47;
     color: white;
+
+    cursor: default;
+}
+@keyframes pulse-expanded {
+  0%  { background-color: transparent; color: #e61d47; }
+  50% { background-color: #e61d47; color: white; }
+  100% { background-color: transparent; color: #e61d47; }
+}
+#toggleRejectionButton.expanded-pulse,
+#toggleFeedbackButton.expanded-pulse {
+  animation: pulse-expanded 2s infinite;
+  border: 2px solid #e61d47
 }
 
 .sopro-horizontal-connector {

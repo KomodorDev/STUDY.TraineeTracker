@@ -8,42 +8,39 @@ function hookUpStateChangeForms() {
     // Browser Print
     console.log("🔄 hookUpStateChangeForms() aufgerufen");
     document.querySelectorAll(".stateChangeForm").forEach(function (form) {
-        if (form.querySelector("input[name='TargetStateName']")) {
-            form.addEventListener("submit", async function (e) {
+      form.addEventListener("submit", async function (e) {
+          // Browser Print
+          console.log("📤 Submit intercepted on form:", form);
+          e.preventDefault();
 
-                // Browser Print
-                console.log("📤 Submit intercepted on form:", form);
-                e.preventDefault();
+          document.body.classList.add('sopro-waiting-cur');
 
-                document.body.classList.add('sopro-waiting-cur');
+          try {
+              const formData = new FormData(form);
 
-                try {
-                    const formData = new FormData(form);
+              const response = await fetch(form.action, {
+                  method: "POST",
+                  body: formData
+              });
 
-                    const response = await fetch(form.action, {
-                        method: "POST",
-                        body: formData
-                    });
+              if (response.ok) {
+                  const html = await response.text();
+                  const modalContent = document.getElementById("TraineeLessonModalContent");
 
-                    if (response.ok) {
-                        const html = await response.text();
-                        const modalContent = document.getElementById("TraineeLessonModalContent");
+                  // Replace inner modal content only
+                  modalContent.innerHTML = html;
 
-                        // Replace inner modal content only
-                        modalContent.innerHTML = html;
-
-                        // Re-hook form events if needed
-                        window.hookUpStateChangeForms();
-                    } else {
-                        alert("Failed to change state.");
-                    }
-                } catch (error) {
-                    alert("An error occured during state change.");
-                } finally {
-                    document.body.classList.remove('sopro-waiting-cur');
-                }
-            });
-        }
+                  // Re-hook form events if needed
+                  window.hookUpStateChangeForms();
+              } else {
+                  alert("Failed to change state.");
+              }
+          } catch (error) {
+              alert("An error occured during state change.");
+          } finally {
+              document.body.classList.remove('sopro-waiting-cur');
+          }
+      });
     });
 }
 
@@ -55,12 +52,22 @@ window.hookUpStateChangeForms = hookUpStateChangeForms;
 // Opening rejection reason & feedback form
 function toggleRejectionForm() {
   const form = document.getElementById("rejectionForm");
-  form.style.display = (form.style.display === "none" || form.style.display === "") ? "block" : "none";
+  const btn = document.getElementById("toggleRejectionButton");
+
+  const isHidden = form.style.display === "none";
+
+  btn.classList.toggle("expanded-pulse", isHidden);
+  form.style.display = isHidden ? "block" : "none";
 }
 
 function toggleFeedbackForm() {
   const form = document.getElementById("feedbackForm");
-  form.style.display = (form.style.display === "none" || form.style.display === "") ? "block" : "none";
+  const btn = document.getElementById("toggleFeedbackButton");
+
+  const isHidden = form.style.display === "none";
+
+  btn.classList.toggle("expanded-pulse", isHidden);
+  form.style.display = isHidden ? "block" : "none";
 }
 
 

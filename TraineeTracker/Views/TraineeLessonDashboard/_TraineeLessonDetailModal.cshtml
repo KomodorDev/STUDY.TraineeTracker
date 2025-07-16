@@ -34,6 +34,10 @@
             </div>
         </div>
         <!-- Section 2: state -->
+        @{
+            var currentState = Model.TraineeLesson.State.ToString();
+            var selectableStates = Model.AllowedStateTransitions;
+        }
         <div class="accordion-item">
             <p class="accordion-header" id="state">
                 <button class="accordion-button sopro-accordion-text" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-state" aria-expanded="true" aria-controls="collapse-state">
@@ -43,92 +47,90 @@
             <div id="collapse-state" class="accordion-collapse collapse show" aria-labelledby="state"">
                 <div class="accordion-body sopro-accordion-truncate">
                     <div class=sopro-status-select>
-                        @{
-                            var currentStatus = Model.TraineeLesson.State.ToString();
-                            var selectableStates = Model.AllowedStateTransitions;
-                        }
                         <!-- row 1 -->
-                        <form class="stateChangeForm"
-                            asp-controller="TraineeLessonDetail"
-                            asp-action="SaveTraineeLessonStateChange"
-                            method="post">
+                        <div class="w-100 h-100">
+                            <form class="stateChangeForm"
+                                asp-controller="TraineeLessonDetail"
+                                asp-action="SaveTraineeLessonStateChange"
+                                method="post">
 
-                            <input type="hidden" name="TraineeLessonId" value=@Model.TraineeLesson.TraineeLessonId />
-                            <input type="hidden" name="TargetStateName" value="Open" />
+                                <input type="hidden" name="TraineeLessonId" value=@Model.TraineeLesson.TraineeLessonId />
+                                <input type="hidden" name="TargetStateName" value="Open" />
 
-                            <button type="submit"
-                                class="sopro-status-button
-                                    @(currentStatus == "Open" ? "current" : "")
-                                    @(selectableStates.Contains("Open") ? "selectable" : "")"
-                                @(selectableStates.Contains("Open") ? "" : "disabled")>
-                                Open
-                            </button>
-                        </form>
+                                <button type="submit"
+                                    class="sopro-status-button
+                                        @(currentState == "Open" ? "current" : "")
+                                        @(selectableStates.Contains("Open") ? "selectable" : "")"
+                                    @(selectableStates.Contains("Open") ? "" : "disabled")>
+                                    Open
+                                </button>
+                            </form>
+                        </div>
                         <div class="sopro-horizontal-connector"></div>
-                        <form class="stateChangeForm"
-                            asp-controller="TraineeLessonDetail"
-                            asp-action="state-change"
-                            method="post">
+                        <div class="w-100 h-100">
+                            <form class="stateChangeForm"
+                                asp-controller="TraineeLessonDetail"
+                                asp-action="state-change"
+                                method="post">
 
-                            <input type="hidden" name="TraineeLessonId" value=@Model.TraineeLesson.TraineeLessonId />
-                            <input type="hidden" name="TargetStateName" value="Started" />
+                                <input type="hidden" name="TraineeLessonId" value=@Model.TraineeLesson.TraineeLessonId />
+                                <input type="hidden" name="TargetStateName" value="Started" />
 
-                            <button type="submit"
-                                class="sopro-status-button
-                                    @(currentStatus == "Started" ? "current" : "")
-                                    @(selectableStates.Contains("Started") ? "selectable" : "")"
-                                @(selectableStates.Contains("Started") ? "" : "disabled")>
-                                Started
-                            </button>
-                        </form>
+                                <button type="submit"
+                                    class="sopro-status-button
+                                        @(currentState == "Started" ? "current" : "")
+                                        @(selectableStates.Contains("Started") ? "selectable" : "")"
+                                    @(selectableStates.Contains("Started") ? "" : "disabled")>
+                                    Started
+                                </button>
+                            </form>
+                        </div>
                         <div class="sopro-horizontal-connector"></div>
-                        <form class="stateChangeForm" asp-controller="TraineeLessonDetail"
-                            asp-action="SaveTraineeLessonStateChange"
-                            method="post">
+                        <div class="w-100 h-100">
+                            <form class="stateChangeForm" asp-controller="TraineeLessonDetail"
+                                asp-action="SaveTraineeLessonStateChange"
+                                method="post">
 
-                            <input type="hidden" name="TraineeLessonId" value=@Model.TraineeLesson.TraineeLessonId />
-                            <input type="hidden" name="TargetStateName" value="Finished" />
+                                <input type="hidden" name="TraineeLessonId" value=@Model.TraineeLesson.TraineeLessonId />
+                                <input type="hidden" name="TargetStateName" value="Finished" />
 
-                            <button type="submit"
-                                class="sopro-status-button
-                                    @(currentStatus == "Finished" ? "current" : "")
-                                    @(selectableStates.Contains("Finished") ? "selectable" : "")"
-                                @(selectableStates.Contains("Finished") ? "" : "disabled")>
-                                Finished
-                            </button>
-                        </form>
+                                <button type="submit"
+                                    class="sopro-status-button
+                                        @(currentState == "Finished" ? "current" : "")
+                                        @(selectableStates.Contains("Finished") ? "selectable" : "")"
+                                    @(selectableStates.Contains("Finished") ? "" : "disabled")>
+                                    Finished
+                                </button>
+                            </form>
+                        </div>
                         <div class="sopro-horizontal-connector"></div>
-                        <form class="stateChangeForm" asp-controller="TraineeLessonDetail"
-                            asp-action="SaveTraineeLessonStateChange"
-                            method="post">
+                        <div class="w-100 h-100">
+                            <form class="stateChangeForm" asp-controller="TraineeLessonDetail"
+                                asp-action="SaveTraineeLessonStateChange"
+                                method="post">
 
-                            <input type="hidden" name="TraineeLessonId" value=@Model.TraineeLesson.TraineeLessonId />
-                            <input type="hidden" name="TargetStateName" value="Accepted" />
+                                <input type="hidden" name="TraineeLessonId" value=@Model.TraineeLesson.TraineeLessonId />
+                                <input type="hidden" name="TargetStateName" value="Accepted" />
 
-                            <button type="submit"
-                                class="sopro-status-button
-                                    @(currentStatus == "Accepted" ? "current" : "")
-                                    @(selectableStates.Contains("Accepted") ? "selectable" : "")"
-                                @(selectableStates.Contains("Accepted") ? "" : "disabled")>
-                                Accepted
-                            </button>
-                        </form>
+                                <button type="submit"
+                                    class="sopro-status-button
+                                        @(currentState == "Accepted" ? "current" : "")
+                                        @(selectableStates.Contains("Accepted") ? "selectable" : "")"
+                                    @(selectableStates.Contains("Accepted") ? "" : "disabled")>
+                                    Accepted
+                                </button>
+                            </form>
+                        </div>
                         <div class="sopro-horizontal-connector"></div>
-                        <form class="stateChangeForm" asp-controller="TraineeLessonDetail"
-                            asp-action="SaveTraineeLessonStateChange"
-                            method="post">
-
-                            <input type="hidden" name="TraineeLessonId" value=@Model.TraineeLesson.TraineeLessonId />
-                            <input type="hidden" name="TargetStateName" value="Rated" />
-
-                            <button type="submit"
+                        <div class="w-100 h-100">
+                            <button id="toggleFeedbackButton" onclick="toggleFeedbackForm()"
                                 class="sopro-status-button
-                                    @(currentStatus == "Rated" ? "current" : "")
-                                    @(selectableStates.Contains("Rated") ? "selectable" : "")"
-                                @(selectableStates.Contains("Rated") ? "" : "disabled")>
+                                        @(currentState == "Rated" ? "current" : "")
+                                        @(selectableStates.Contains("Rated") ? "selectable" : "")"
+                                    @(selectableStates.Contains("Rated") ? "" : "disabled")>
                                 Rated
                             </button>
-                        </form>
+                        </div>
                         <!-- row 2 -->
                         <div class="sopro-vertical-connector"></div>
                         <div></div>
@@ -140,66 +142,135 @@
                         <div></div>
                         <div></div>
                         <!-- row 3-->
-                        <form class="stateChangeForm"
-                            asp-controller="TraineeLessonDetail"
-                            asp-action="SaveTraineeLessonStateChange"
-                            method="post">
+                        <div class="w-100 h-100">
+                            <form class="stateChangeForm"
+                                asp-controller="TraineeLessonDetail"
+                                asp-action="SaveTraineeLessonStateChange"
+                                method="post">
 
-                            <input type="hidden" name="TraineeLessonId" value=@Model.TraineeLesson.TraineeLessonId />
-                            <input type="hidden" name="TargetStateName" value="Skipped" />
+                                <input type="hidden" name="TraineeLessonId" value=@Model.TraineeLesson.TraineeLessonId />
+                                <input type="hidden" name="TargetStateName" value="Skipped" />
 
-                            <button type="submit"
+                                <button type="submit"
+                                    class="sopro-status-button
+                                        @(currentState == "Skipped" ? "current" : "")
+                                        @(selectableStates.Contains("Skipped") ? "selectable" : "")"
+                                    @(selectableStates.Contains("Skipped") ? "" : "disabled")>
+                                    Skipped
+                                </button>
+                            </form>
+                        </div>
+                        <div></div>
+                        <div></div>
+                        <div></div>
+                        <div class="w-100 h-100">
+                            <button id="toggleRejectionButton" onclick="toggleRejectionForm()"
                                 class="sopro-status-button
-                                    @(currentStatus == "Skipped" ? "current" : "")
-                                    @(selectableStates.Contains("Skipped") ? "selectable" : "")"
-                                @(selectableStates.Contains("Skipped") ? "" : "disabled")>
-                                Skipped
-                            </button>
-                        </form>
-                        <div></div>
-                        <div></div>
-                        <div></div>
-                        <form class="stateChangeForm"
-                            asp-controller="TraineeLessonDetail"
-                            asp-action="SaveTraineeLessonStateChange"
-                            method="post">
-
-                            <input type="hidden" name="TraineeLessonId" value=@Model.TraineeLesson.TraineeLessonId />
-                            <input type="hidden" name="TargetStateName" value="Rejected" />
-                            <input type="hidden" name="RejectionReason" value="Placeholder reason awawawawawawawawawawawawawawawawawawawawawawawa wawawawawawawawawawawawawawawawawawawawawawawawawawawawawawawawawawawawawawawawawawawawawawawawawawawawawawawawawawawawawaw awawawawawawawawawawawawawawawawawawawawawawawawaw awawawawawawawawawawa" />
-
-                            <button type="submit"
-                                class="sopro-status-button
-                                    @(currentStatus == "Rejected" ? "current" : "")
+                                    @(currentState == "Rejected" ? "current" : "")
                                     @(selectableStates.Contains("Rejected") ? "selectable" : "")"
                                 @(selectableStates.Contains("Rejected") ? "" : "disabled")>
                                 Rejected
                             </button>
-                        </form>
+                        </div>
                         <div></div>
                         <div></div>
                         <div></div>
                         <div></div>
                     </div>
 
-                    <!-- text field, save & cancel buttons -->
-                    <textarea name="rejectionReason" rows="4" placeholder="Enter a rejection reason" style="height: 68px; width: 100%; margin-top: 1.172rem; border-radius: 11px;"></textarea>
-                    <form id="feedback">
-                        <label for="difficulty">Difficulty (1-10):</label>
-                        <input type="number" id="difficulty" name="difficulty" min="1" max="10" required style="width: 75px; border-radius: 11px;"><br>
+                    <!-- text fields, save & cancel buttons -->
+                    <div style="height: 25px;"></div>
 
-                        <label for="knowledge">Previous Knowledge:</label><br>
-                        <textarea id="knowledge" name="knowledge" rows="2" style="width: 100%; border-radius: 11px;" required></textarea><br>
+                    <div id="rejectionForm" style="display: none;">
+                        <form class="stateChangeForm"
+                            asp-controller="TraineeLessonDetail"
+                            asp-action="SaveTraineeLessonStateChange"
+                            method="post">
+                            <input type="hidden" name="TraineeLessonId" value=@Model.TraineeLesson.TraineeLessonId />
+                            <input type="hidden" name="TargetStateName" value="Rejected" />
 
-                        <label for="hours">Hours of Effort:</label>
-                        <input type="number" id="hours" name="hours" step="0.1" min="0" required style="width: 75px; border-radius: 11px;"><br>
+                            <label for="rejectionReason">Rejection reason:</label>
+                            <br>
+                            <textarea name="rejectionReason" rows="4" style="height: 68px; width: 100%; border-radius: 11px; margin-bottom: 1.172rem;" required>@Model.TraineeLesson.RejectionReason</textarea>
+                            <br>
 
-                        <label for="comment">Comment (optional):</label><br>
-                        <textarea id="comment" name="comment" rows="2" style="width: 100%; margin-bottom: 1.172rem; border-radius: 11px;"></textarea><br>
+                            <button type="submit" class="sopro-button-content" style="margin-right: 1.172rem;">Submit</button>
+                            <button type="reset" class="sopro-button-content" style="background-color: #626262;">Cancel</button>
+                        </form>
+                    </div>
 
-                        <button type="submit" class="sopro-button-content" style="margin-right: 1.172rem;">Submit</button>
-                        <button type="reset" class="sopro-button-content" style="background-color: #626262;">Cancel</button>
-                    </form>
+                    @if (currentState == "Rated") {
+                        // Show existing feedback
+
+                        <div>
+                            <form class="stateChangeForm"
+                                asp-controller="TraineeLessonDetail"
+                                asp-action="SaveFeedback"
+                                method="post">
+                                <input type="hidden" name="TraineeLessonId" value=@Model.TraineeLesson.TraineeLessonId />
+                                <input type="hidden" name="TargetStateName" value="Rated" />
+
+                                <label for="difficulty">Difficulty (1-10):</label>
+                                <br>
+                                <input type="number" id="difficulty" name="difficulty" min="1" max="10" required style="width: 75px; border-radius: 11px;"
+                                    value="@Model.ExistingFeedback?.Difficulty">
+                                <br>
+
+                                <label for="previousKnowledge">Previous Knowledge:</label>
+                                <br>
+                                <textarea id="previousKnowledge" name="previousKnowledge" rows="2" style="width: 100%; border-radius: 11px;" required>@Model.ExistingFeedback?.PreviousKnowledge</textarea>
+                                <br>
+
+                                <label for="hoursOfEffort">Hours of Effort:</label>
+                                <br>
+                                <input type="number" id="hoursOfEffort" name="hoursOfEffort" step="0.1" min="0" required style="width: 75px; border-radius: 11px;"
+                                    value="@Model.ExistingFeedback?.HoursOfEffort">
+                                <br>
+
+                                <label for="comment">Comment (optional):</label>
+                                <br>
+                                <textarea id="comment" name="comment" rows="2" style="width: 100%; margin-bottom: 1.172rem; border-radius: 11px;">@Model.ExistingFeedback?.Comment</textarea>
+                                <br>
+
+                                <button type="submit" class="sopro-button-content" style="margin-right: 1.172rem;">Update</button>
+                                <button type="reset" class="sopro-button-content" style="background-color: #626262;">Cancel</button>
+                            </form>
+                        </div>
+                    } else {
+                        // Open feedback form when pressing Rated
+
+                        <div id="feedbackForm" style="display: none;">
+                            <form class="stateChangeForm"
+                                asp-controller="TraineeLessonDetail"
+                                asp-action="SaveFeedback"
+                                method="post">
+                                <input type="hidden" name="TraineeLessonId" value=@Model.TraineeLesson.TraineeLessonId />
+
+                                <label for="difficulty">Difficulty (1-10):</label>
+                                <br>
+                                <input type="number" id="difficulty" name="difficulty" min="1" max="10" required style="width: 75px; border-radius: 11px;">
+                                <br>
+
+                                <label for="previousKnowledge">Previous Knowledge:</label>
+                                <br>
+                                <textarea id="previousKnowledge" name="previousKnowledge" rows="2" style="width: 100%; border-radius: 11px;" placeholder="e.g. I already learned that in a hobby project" required></textarea>
+                                <br>
+
+                                <label for="hoursOfEffort">Hours of Effort:</label>
+                                <br>
+                                <input type="number" id="hoursOfEffort" name="hoursOfEffort" step="0.1" min="0" required style="width: 75px; border-radius: 11px;">
+                                <br>
+
+                                <label for="comment">Comment (optional):</label>
+                                <br>
+                                <textarea id="comment" name="comment" rows="2" style="width: 100%; margin-bottom: 1.172rem; border-radius: 11px;" placeholder="e.g. Good structure, helpful hands-on tasks"></textarea>
+                                <br>
+
+                                <button type="submit" class="sopro-button-content" style="margin-right: 1.172rem;">Submit</button>
+                                <button type="reset" class="sopro-button-content" style="background-color: #626262;">Cancel</button>
+                            </form>
+                        </div>
+                    }
                 </div>
             </div>
         </div>
