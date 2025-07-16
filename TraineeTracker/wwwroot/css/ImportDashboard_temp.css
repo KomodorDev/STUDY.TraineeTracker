@@ -102,7 +102,7 @@ h3 {
   align-items: center;
   padding-left: 1.172rem;
   width: 100%;
-  grid-template-columns: 1fr 150px 150px 190px 1fr;
+  grid-template-columns: minmax(0, 0.5fr) 0.5fr 0.5fr 0.5fr auto;
   padding-right: 1.172rem;
   gap: 1.172rem;
 }
@@ -163,4 +163,21 @@ h3 {
 
   height: 3.516rem;
   width: 100%;
+}
+
+@media (max-width: 1475px) {
+  .plan-info > .plan-meta:nth-of-type(1), /* Trainees */
+  .plan-info > .plan-meta:nth-of-type(2)  /* Lessons */ {
+    display: none;
+  }
+
+  .plan-info {
+    grid-template-columns: minmax(0, 1fr) 1fr auto;
+  }
+}
+
+@media (max-width: 1100px) {
+  .plan-info > .plan-meta:nth-of-type(3)  /* LastUpdated */ {
+    display: none;
+  }
 }
