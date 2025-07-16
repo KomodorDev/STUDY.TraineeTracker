@@ -112,7 +112,7 @@ a:hover {
     flex-direction: column; /* only vertically */
     align-items: flex-start;  /* align left */
 
-    row-gap: 1.172rem;  /* "25" px */
+    row-gap: 1rem;  
     padding: 1.172rem;  /* "25" px */
 
     /* scrollability */
