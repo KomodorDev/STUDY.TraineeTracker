@@ -191,13 +191,11 @@ namespace TraineeTracker.Services {
                     var emailService = scope.ServiceProvider.GetRequiredService<EmailNotificationService>();
 
                     if (user.IsInRole("Trainee")) {
-                        await emailService.NotifyUserAsync(trainee, "Your feedback has been updated", $"Your feedback of the lesson \"{correspondingTraineeLesson.Lesson.Title}\" by you.");
+                        await emailService.NotifyUserAsync(trainee, "Your feedback has been updated", $"Your feedback of the lesson \"{correspondingTraineeLesson.Lesson.Title}\" has been updated by you.");
                     } else {
-                        await emailService.NotifyUserAsync(trainee, "Your feedback has been updated", $"Your feedback of the lesson \"{correspondingTraineeLesson.Lesson.Title}\" by a mentor.");
+                        await emailService.NotifyUserAsync(trainee, "Your feedback has been updated", $"Your feedback of the lesson \"{correspondingTraineeLesson.Lesson.Title}\" has been updated by a mentor.");
                     }
                 });
-
-                // no log, already was in rated
             } else {
                 // -> feedback doesn't exist
 
@@ -224,23 +222,11 @@ namespace TraineeTracker.Services {
                     ReadByUsers = new List<ApplicationUser>()
                 });
 
-                // update state to rated
+                // update state to rated, also sends email and creates log
                 await SaveTraineeLessonStateChange(new TraineeLessonDto {
                     TraineeLessonId = feedbackDto.TraineeLessonId,
                     TargetStateName = TraineeLessonState.Rated.ToString()
                 }, user);
-
-                // sends state change email (different thread)
-                _ = Task.Run(async () => {
-                    using var scope = _scopeFactory.CreateScope();
-                    var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-                    var emailService = scope.ServiceProvider.GetRequiredService<EmailNotificationService>();
-
-                    await emailService.NotifyAboutStateChangeAsync(correspondingTraineeLesson, oldState, TraineeLessonState.Rated);
-                });
-
-                // creates log
-                await LogStatusChange(correspondingTraineeLesson, oldState, TraineeLessonState.Rated, user);
             }
         }
 
