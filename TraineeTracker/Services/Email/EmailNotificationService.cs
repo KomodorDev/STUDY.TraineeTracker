@@ -410,7 +410,7 @@ namespace TraineeTracker.Services.Email {
                     setting.ReceiveAcceptedNotifications = false;
                     setting.ReceiveRatedNotifications = true;
                     setting.ReceiveImportChangeNotifications = true;
-                    setting.ReceiveFeedbackChangeNotifications = false;
+                    setting.ReceiveFeedbackChangeNotifications = true;
                     break;
                 case "Trainee":
                     setting.ReceiveSkippedNotifications = true;
@@ -421,6 +421,7 @@ namespace TraineeTracker.Services.Email {
                     setting.ReceiveAcceptedNotifications = true;
                     setting.ReceiveRatedNotifications = false;
                     setting.ReceiveImportChangeNotifications = true;
+                    setting.ReceiveFeedbackChangeNotifications = false;
                     break;
                 default:
                     throw new ArgumentException($"Unknown role '{role}' for default settings.");
