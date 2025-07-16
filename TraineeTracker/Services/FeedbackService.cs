@@ -318,7 +318,7 @@ namespace TraineeTracker.Services {
             // 2. Get Feedback with ReadByUsers
             var feedback = await _databaseFeedbackRepository
             .GetFeedbackByIDWithLessonAndAuthorAndReadByUsersAsync(feedbackId)
-                ?? throw new KeyNotFoundException($"Feedback mit ID {feedbackId} nicht gefunden.");
+                ?? throw new KeyNotFoundException($"Feedback with ID {feedbackId} not found.");
 
             // +++++++++++++++
             // 3. Check if currentUser has already read the Feedback
@@ -340,7 +340,7 @@ namespace TraineeTracker.Services {
             // 2. Get Feedback with ReadByUsers
             var feedback = await _databaseFeedbackRepository
                 .GetFeedbackByIDWithLessonAndAuthorAndReadByUsersAsync(feedbackId)
-                ?? throw new KeyNotFoundException($"Feedback mit ID {feedbackId} nicht gefunden.");
+                ?? throw new KeyNotFoundException($"Feedback with ID {feedbackId} not found.");
 
             // +++++++++++++++
             // 3. Check if currentUser has already read the Feedback
@@ -353,5 +353,23 @@ namespace TraineeTracker.Services {
         }
 
         // ------------------------------------------------------
+        public async Task MarkFeedbackAsUnreadForEveryoneAsync(int feedbackId) {
+
+            // +++++++++++++++
+            // 1. Load Feedback with ReadByUsers
+            var feedback = await _databaseFeedbackRepository
+                .GetFeedbackByIDWithLessonAndAuthorAndReadByUsersAsync(feedbackId)
+                ?? throw new KeyNotFoundException($"Feedback with ID {feedbackId} not found.");
+
+            // +++++++++++++++
+            // 2. Empty ReadByUsers
+            feedback.ReadByUsers.Clear();
+
+            // 3. Save
+            await _databaseFeedbackRepository.UpdateAsync(feedback);
+        }
+
+        // ------------------------------------------------------
+
     }
 }

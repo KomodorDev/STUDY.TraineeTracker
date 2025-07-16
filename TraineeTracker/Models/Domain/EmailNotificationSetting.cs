@@ -55,7 +55,12 @@ namespace TraineeTracker.Models.Domain {
         /// <summary>
         /// Indicates whether the user wants to be notified about teaching plan import changes (e.g. lessons added or removed).
         /// </summary>
-        public bool ReceiveImportChangeNotifications { get; set; } = true;
+        public bool ReceiveImportChangeNotifications { get; set; } = false;
+
+        /// <summary>
+        /// Indicates whether the user wants to be notified about feedback changes (e.g. a feedback was
+        /// </summary>
+        public bool ReceiveFeedbackChangeNotifications { get; set; } = false;
 
         /// <summary>
         /// Foreign key to the user this setting belongs to.
