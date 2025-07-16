@@ -339,7 +339,7 @@ nav.navbar .container-fluid {
 
 /* STATUS AND ROLE TAGS ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ */
 .sopro-tag {
-  height: 18.75px; /* "25" px */
+  height: 22px; /* "25" px */
   width: 82.5px;   /* "110" px */
 
   font-size: 16px;  /* "20" px */
