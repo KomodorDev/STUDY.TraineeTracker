@@ -43,25 +43,16 @@ namespace TraineeTracker.Services.Admin {
             _traineeStatisticsRepository = traineeStatisticsRepository;
         }
 
-        public async Task<AdminDashboardViewModel> BuildAdminDashboardViewModelAsync(string? selectedRole = null, string? selectedStatus = null) {
-            IEnumerable<ApplicationUser> users;
-            if (string.IsNullOrEmpty(selectedRole)) {
-                if (string.IsNullOrEmpty(selectedStatus)) {
-                    users = await _applicationUserRepository.GetAllAsync();
-                } else if (selectedStatus == "Open") {
-                    users = await _applicationUserRepository.GetAllAsync(false);
-                } else {
-                    users = await _applicationUserRepository.GetAllAsync(true);
-                }
-            } else if (string.IsNullOrEmpty(selectedStatus)) {
-                users = await _applicationUserRepository.GetUsersInRoleAsync(selectedRole);
-            } else {
-                if (selectedStatus == "Open") {
-                    users = await _applicationUserRepository.GetOpenUsersInRoleAsync(selectedRole);
-                } else {
-                    users = await _applicationUserRepository.GetClosedUsersInRoleAsync(selectedRole);
-                }
-            }
+        public async Task<AdminDashboardViewModel> BuildAdminDashboardViewModelAsync(string? selectedRole = null, string? selectedStatus = null, string? sortBy = null) {
+            IEnumerable<ApplicationUser> users = (selectedRole, selectedStatus) switch {
+                (null or "", null or "") => await _applicationUserRepository.GetAllAsync(),
+                (null or "", "Open") => await _applicationUserRepository.GetAllAsync(false),
+                (null or "", _) => await _applicationUserRepository.GetAllAsync(true),
+                (_, null or "") => await _applicationUserRepository.GetUsersInRoleAsync(selectedRole),
+                (_, "Open") => await _applicationUserRepository.GetOpenUsersInRoleAsync(selectedRole),
+                (_, _) => await _applicationUserRepository.GetClosedUsersInRoleAsync(selectedRole)
+            };
+
             var userRoles = new Dictionary<string, string>();
             foreach (var user in users) {
                 var rolesOfUser = await _applicationUserRepository.GetRolesAsync(user);
@@ -71,9 +62,18 @@ namespace TraineeTracker.Services.Admin {
                     userRoles[user.Id] = rolesOfUser.First();
                 }
             }
+
             var roles = await _roleManager.Roles.ToListAsync();
+
+            users = sortBy switch {
+                "Name" => users.OrderBy(u => u.UserName),
+                "StartDate" => users.OrderBy(u => u.TraineeStartDate),
+                "EndDate" => users.OrderBy(u => u.TraineeEndDate),
+                _ => users.OrderBy(u => userRoles[u.Id])
+            };
+
             return new AdminDashboardViewModel {
-                Users = users.OrderBy(u => u.TraineeStartDate),
+                Users = users,
                 UserRoles = userRoles,
                 Roles = roles,
                 SelectedRole = selectedRole,

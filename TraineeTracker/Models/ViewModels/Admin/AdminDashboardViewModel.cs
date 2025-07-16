@@ -9,5 +9,6 @@ namespace TraineeTracker.Models.ViewModels.Admin {
 
         public string? SelectedRole { get; set; }
         public string? SelectedStatus { get; set; }
+        public string SortBy { get; set; } = "Role";
     }
 }
