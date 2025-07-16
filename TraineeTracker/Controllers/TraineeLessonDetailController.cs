@@ -41,8 +41,8 @@ namespace TraineeTracker.Controllers {
         }
 
         [Authorize(Roles = "Admin,Mentor")]
-        [HttpDelete("delete-feedback")]
-        public async Task<IActionResult> DeleteFeedback(int feedbackId, int traineeLessonIdForReturn) {
+        [HttpPost("delete-feedback")]
+        public async Task<IActionResult> DeleteFeedback([FromForm] int feedbackId, [FromForm] int traineeLessonIdForReturn) {
             await _traineeLessonDetailService.DeleteFeedback(User, feedbackId);
 
             return await ShowTraineeLessonDetailView(traineeLessonIdForReturn);
