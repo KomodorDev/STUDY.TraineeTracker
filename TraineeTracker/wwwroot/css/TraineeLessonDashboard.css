@@ -11,7 +11,7 @@
   height: calc(100vh - 3.516rem);   /* 100% of viewport height - navbar height */
   width: 100vw;
 
-  max-width: 1920px;
+  max-width: calc(1920px - 3.516rem - 3.516rem);
   margin: 0 auto;
 }
 
