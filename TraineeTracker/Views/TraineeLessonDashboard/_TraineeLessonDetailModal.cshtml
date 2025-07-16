@@ -316,7 +316,7 @@
                         bool isLast = feedback.index == Model.Feedbacks.Count() - 1;
 
                         <p style="white-space: pre; color: #e61d47; font-weight: 900;">@feedback.value.CreateTime.ToString("dd. MMMM yyyy HH:mm:ss")  -  @feedback.value.Author.UserName?.Split('@')[0]  -  @feedback.value.Difficulty/10★</p>
-                        <p><span style="font-weight: 900;">Effort:</span> @(@feedback.value.HoursOfEffort)h</p>
+                        <p><span style="font-weight: 900;">Effort:</span> @(@feedback.value.HoursOfEffort) h</p>
                         if (!String.IsNullOrWhiteSpace(@feedback.value.Comment)) {
                             <p class="pwrap"><span style="font-weight: 900;">Previous knowledge:</span> @feedback.value.PreviousKnowledge</p>
                             <p class="pwrap" style="@(isLast ? "" : "border-bottom: 1px solid #626262;")"><span style="font-weight: 900;">Comment:</span> @feedback.value.Comment</p>
