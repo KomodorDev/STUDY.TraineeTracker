@@ -8,7 +8,7 @@
 
 <div class="modal-header">
     <p class="modal-title">
-        @Model.Lesson.SortingIndex | @*@Model.Lesson.MakandraId -*@ @Model.Lesson.Title
+        @Model.Lesson.Title
     </p>
     <button type="button" onclick="javascript:window.location.reload()" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
 </div>
@@ -235,6 +235,20 @@
                                 <button type="submit" class="sopro-button-content" style="margin-right: 1.172rem;">Update</button>
                                 <button type="reset" class="sopro-button-content" style="background-color: #626262;">Cancel</button>
                             </form>
+                            <!-- delete button-->
+                            
+                            @if (Model.ExistingFeedback != null && (User.IsInRole("Mentor") || User.IsInRole("Admin"))) {
+                                <form class="stateChangeForm"
+                                    asp-controller="TraineeLessonDetail"
+                                    asp-action="DeleteFeedback"
+                                    method="post"
+                                    onsubmit="return confirm('Are you sure you want to delete this feedback?');">
+                                    <input type="hidden" name="feedbackId" value="@Model.ExistingFeedback.FeedbackId" />
+                                    <input type="hidden" name="traineeLessonIdForReturn" value="@Model.TraineeLesson.TraineeLessonId" />
+
+                                    <button type="submit" class="sopro-button-content" style="background-color: #ffb199; margin-top: 1.172rem;">Delete</button>
+                                </form>
+                            }
                         </div>
                     } else {
                         // Open feedback form when pressing Rated
@@ -284,7 +298,7 @@
             <div id="collapse-logs" class="accordion-collapse collapse" aria-labelledby="logs"">
                 <div class="accordion-body sopro-accordion-truncate">
                     @foreach (var log in @Model.LogEntries) {
-                        <p class="pwrap" style="white-space: pre;">@log.Timestamp.ToString()  -  @log.UserName.Split('@')[0]  -  @log.OldState → @log.NewState</p>
+                        <p class="pwrap" style="white-space: pre;">@log.Timestamp.ToString("dd. MMMM yyyy HH:mm:ss")  -  @log.UserName.Split('@')[0]  -  @log.OldState → @log.NewState</p>
                     }
                 </div>
             </div>
@@ -301,7 +315,7 @@
                     @foreach (var feedback in @Model.Feedbacks.Select((value, index) => new { value, index })) {
                         bool isLast = feedback.index == Model.Feedbacks.Count() - 1;
 
-                        <p style="white-space: pre; color: #e61d47; font-weight: 900;">@feedback.value.CreateTime.ToString()  -  @feedback.value.Author.UserName?.Split('@')[0]  -  @feedback.value.Difficulty/10★</p>
+                        <p style="white-space: pre; color: #e61d47; font-weight: 900;">@feedback.value.CreateTime.ToString("dd. MMMM yyyy HH:mm:ss")  -  @feedback.value.Author.UserName?.Split('@')[0]  -  @feedback.value.Difficulty/10★</p>
                         <p><span style="font-weight: 900;">Effort:</span> @(@feedback.value.HoursOfEffort)h</p>
                         if (!String.IsNullOrWhiteSpace(@feedback.value.Comment)) {
                             <p class="pwrap"><span style="font-weight: 900;">Previous knowledge:</span> @feedback.value.PreviousKnowledge</p>
