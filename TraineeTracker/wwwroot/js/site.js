@@ -31,7 +31,7 @@ function hookUpStateChangeForms() {
           // Re-hook form events if needed
           window.hookUpStateChangeForms();
         } else {
-          alert("Failed to change state.");
+          alert("JS: Failed to change state.");
         }
       } catch (error) {
         alert("An error occured during state change.");
@@ -43,7 +43,6 @@ function hookUpStateChangeForms() {
 }
 
 window.hookUpStateChangeForms = hookUpStateChangeForms;
-
 
 
 // ------------------------------------------------------

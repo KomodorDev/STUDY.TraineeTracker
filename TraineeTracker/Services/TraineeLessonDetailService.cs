@@ -200,7 +200,7 @@ namespace TraineeTracker.Services {
                 // -> feedback doesn't exist
 
                 if (!user.IsInRole("Trainee"))
-                    throw new UnauthorizedAccessException("You cannot create a feedback as a Mentor or Admin");
+                    throw new UnauthorizedAccessException("Only Trainees can write feedbacks.");
 
                 if (correspondingTraineeLesson.State != TraineeLessonState.Accepted)
                     throw new UnauthorizedAccessException("You can write a feedback once your TraineeLesson has been accepted.");
@@ -233,6 +233,7 @@ namespace TraineeTracker.Services {
         public async Task DeleteFeedback(ClaimsPrincipal user, int feedbackId) {
             if (user.IsInRole("Trainee"))
                 throw new UnauthorizedAccessException("Trainees cannot delete feedbacks.");
+
             if (!await _databaseFeedbackrepository.ExistsAsync(feedbackId))
                 throw new FeedbackNotFoundException(feedbackId);
 

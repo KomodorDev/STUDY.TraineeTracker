@@ -10,6 +10,9 @@
 
   height: calc(100vh - 3.516rem);   /* 100% of viewport height - navbar height */
   width: 100vw;
+
+  max-width: 2200px;
+  margin: 0 auto;
 }
 
 .sopro-grid-lessons-left {
