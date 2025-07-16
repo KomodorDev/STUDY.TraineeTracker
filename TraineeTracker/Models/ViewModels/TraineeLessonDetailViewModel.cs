@@ -9,5 +9,6 @@ namespace TraineeTracker.Models.ViewModels {
         public required IEnumerable<TraineeLessonLogEntry> LogEntries { get; set; }
         public required IEnumerable<Feedback> Feedbacks { get; set; }
         public required IEnumerable<string> AllowedStateTransitions { get; set; }
+        public Feedback? ExistingFeedback { get; set; }
     }
 }
