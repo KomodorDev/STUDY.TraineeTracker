@@ -43,7 +43,9 @@ namespace TraineeTracker.Services.Admin {
             _traineeStatisticsRepository = traineeStatisticsRepository;
         }
 
-        public async Task<AdminDashboardViewModel> BuildAdminDashboardViewModelAsync(string? selectedRole = null, string? selectedStatus = null, string? sortBy = null) {
+        public async Task<AdminDashboardViewModel> BuildAdminDashboardViewModelAsync(string? selectedRole = null,
+                                                                                     string? selectedStatus = null,
+                                                                                     string? sortBy = null) {
             IEnumerable<ApplicationUser> users = (selectedRole, selectedStatus) switch {
                 (null or "", null or "") => await _applicationUserRepository.GetAllAsync(),
                 (null or "", "Open") => await _applicationUserRepository.GetAllAsync(false),
