@@ -33,6 +33,10 @@ namespace TraineeTracker.Data.ApplicationUsers {
             return await _userManager.CreateAsync(user, password);
         }
 
+        public async Task<IdentityResult> DeleteAsync(ApplicationUser user) {
+            return await _userManager.DeleteAsync(user);
+        }
+
         public async Task<bool> ExistsAsync(string userId) {
             var user = await _userManager.FindByIdAsync(userId);
             return user != null;
@@ -99,7 +103,7 @@ namespace TraineeTracker.Data.ApplicationUsers {
         }
 
         public async Task<IEnumerable<ApplicationUser>> GetOpenUsersInRoleAsync(string roleName) {
-            var usersInRole = await _userManager.GetUsersInRoleAsync(roleName);
+            var usersInRole = await GetUsersInRoleAsync(roleName);
             var userIds = usersInRole.Select(u => u.Id).ToList();
             return await _context.Users
             .Where(u => userIds.Contains(u.Id))
@@ -107,40 +111,30 @@ namespace TraineeTracker.Data.ApplicationUsers {
             .ToListAsync();
         }
 
+        public async Task<IEnumerable<ApplicationUser>> GetClosedUsersInRoleAsync(string roleName) {
+            var usersInRole = await GetUsersInRoleAsync(roleName);
+            var userIds = usersInRole.Select(u => u.Id).ToList();
+            return await _context.Users
+            .Where(u => userIds.Contains(u.Id))
+            .Where(u => u.IsClosed)
+            .ToListAsync();
+        }
+
         public async Task<IEnumerable<ApplicationUser>> GetOpenUsersInRoleWithEmailNotificationSettingAsync(string roleName) {
-
-            // Get roleId
-            var roleId = await _context.Roles
-                .Where(r => r.Name == roleName)
-                .Select(r => r.Id)
-                .FirstOrDefaultAsync();
-            // Console.WriteLine("Queried roleId: " + roleId);
-
-            if (roleId == null) {
-                return Enumerable.Empty<ApplicationUser>();
-            }
-
-            var userIds = await _context.UserRoles
-                .Where(ur => ur.RoleId == roleId)
-                .Select(ur => ur.UserId)
-                .ToListAsync();
-
-            // Get users with that roleId
-            var users = await _context.Users
-                .Where(u => userIds.Contains(u.Id) && !u.IsClosed)
+            var users = await GetOpenUsersInRoleAsync(roleName);
+            var userIds = users.Select(u => u.Id);
+            return await _context.Users
+                .Where(u => userIds.Contains(u.Id))
                 .Include(u => u.EmailNotificationSetting)
                 .ToListAsync();
-            /* 
-            foreach (var user in users) {
-                Console.WriteLine($"✅ Loaded user: {user.UserName} (Id: {user.Id})");
-            }
-            */
-            return users;
-
         }
 
         public async Task<IEnumerable<string>> GetRolesAsync(ApplicationUser user) {
-            return await _userManager.GetRolesAsync(user);
+            var roles = await _userManager.GetRolesAsync(user);
+            if (roles.Contains("Admin")) {
+                roles.Remove("Mentor");
+            }
+            return roles;
         }
 
         public async Task<ApplicationUser?> GetUserAsync(ClaimsPrincipal principal) {
@@ -148,11 +142,21 @@ namespace TraineeTracker.Data.ApplicationUsers {
         }
 
         public async Task<IEnumerable<ApplicationUser>> GetUsersInRoleAsync(string roleName) {
-            return await _userManager.GetUsersInRoleAsync(roleName);
+            var usersInRole = await _userManager.GetUsersInRoleAsync(roleName);
+            if (roleName != "Mentor") {
+                return usersInRole;
+            }
+            var filtered = new List<ApplicationUser>();
+            foreach (var user in usersInRole) {
+                if (!await IsInRoleAsync(user, "Admin")) {
+                    filtered.Add(user);
+                }
+            }
+            return filtered;
         }
 
         public async Task<IEnumerable<ApplicationUser>> GetUsersInRoleWithProcessingPausesAndTraineeLessonsAsync(string roleName) {
-            var usersInRole = await _userManager.GetUsersInRoleAsync(roleName);
+            var usersInRole = await GetUsersInRoleAsync(roleName);
             var userIds = usersInRole.Select(u => u.Id).ToList();
             return await _context.Users
             .Where(u => userIds.Contains(u.Id))
@@ -165,8 +169,13 @@ namespace TraineeTracker.Data.ApplicationUsers {
             return await _context.Users.ToListAsync();
         }
 
+        public async Task<IEnumerable<ApplicationUser>> GetAllAsync(bool isClosed) {
+            return await _context.Users.Where(u => u.IsClosed == isClosed).ToListAsync();
+        }
+
         public async Task<bool> IsInRoleAsync(ApplicationUser user, string role) {
-            return await _userManager.IsInRoleAsync(user, role);
+            var roles = await GetRolesAsync(user);
+            return roles.Contains(role);
         }
 
         public async Task<IdentityResult> UpdateAsync(ApplicationUser user) {
