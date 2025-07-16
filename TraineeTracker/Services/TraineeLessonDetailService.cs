@@ -72,6 +72,8 @@ namespace TraineeTracker.Services {
             var l = await _databaseLessonRepository.GetLessonByIdAsync(tl.LessonId) ?? throw new LessonNotFoundException(tl.LessonId);
             var tll = _databaseTraineeLessonLogEntryRepository.GetAllLogsForTraineeLesson(traineeLessonId);
             var f = await _databaseFeedbackrepository.GetAllFeedbacksForLessonWithLessonAndAuthorAndReadByUsersAsync(l);
+            var feedback = await _databaseFeedbackrepository.GetFeedbackOfTraineeLessonWithLessonAndAuthorAndReadByUsersAsync(tl);
+
             TraineeLessonStateFactory factory = new();
 
             return new TraineeLessonDetailViewModel {
@@ -82,7 +84,8 @@ namespace TraineeTracker.Services {
                 AllowedStateTransitions = factory.Create(tl.State)
                                                     .GetAllowedLessonStateTransitions(user)
                                                     .Select(s => s.ToString())
-                                                    .ToList()
+                                                    .ToList(),
+                ExistingFeedback = feedback
             };
         }
 
@@ -128,7 +131,7 @@ namespace TraineeTracker.Services {
             // update database
             await _databaseTraineeLessonRepository.UpdateAsync(oldTraineeLesson);
 
-            // sends email (different thread) and creates log
+            // sends email (different thread)
             _ = Task.Run(async () => {
                 using var scope = _scopeFactory.CreateScope();
                 var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
@@ -138,6 +141,7 @@ namespace TraineeTracker.Services {
                 await emailService.NotifyAboutStateChangeAsync(oldTraineeLesson, oldState, targetState);
             });
             
+            // creates log
             await LogStatusChange(oldTraineeLesson, oldState, targetState, user);
         }
 
@@ -166,18 +170,36 @@ namespace TraineeTracker.Services {
                 throw new Exception("FeedbackDto is null");
 
             var correspondingTraineeLesson = await _databaseTraineeLessonRepository.GetTraineeLessonByIdWithLessonAsync(feedbackDto.TraineeLessonId) ?? throw new TraineeLessonNotFoundException(feedbackDto.TraineeLessonId);
+            var oldState = correspondingTraineeLesson.State;
+            var traineeId = correspondingTraineeLesson.TraineeId;
+            var trainee = await _databaseApplicationUserRepository.FindByIdAsync(traineeId) ?? throw new UserNotFoundException();
             var existingFeedback = await _databaseFeedbackrepository.GetFeedbackOfTraineeLessonWithLessonAndAuthorAndReadByUsersAsync(correspondingTraineeLesson);
 
             if (existingFeedback != null) {
-                // feedback exists
+                // -> feedback exists
 
                 existingFeedback.Difficulty = feedbackDto.Difficulty ?? existingFeedback.Difficulty;
                 existingFeedback.PreviousKnowledge = feedbackDto.PreviousKnowledge ?? existingFeedback.PreviousKnowledge;
                 existingFeedback.HoursOfEffort = feedbackDto.HoursOfEffort ?? existingFeedback.HoursOfEffort;
 
                 await _databaseFeedbackrepository.UpdateAsync(existingFeedback);
+
+                // sends email (different thread)
+                _ = Task.Run(async () => {
+                    using var scope = _scopeFactory.CreateScope();
+                    var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+                    var emailService = scope.ServiceProvider.GetRequiredService<EmailNotificationService>();
+
+                    if (user.IsInRole("Trainee")) {
+                        await emailService.NotifyUserAsync(trainee, "Your feedback has been updated", $"Your feedback of the lesson \"{correspondingTraineeLesson.Lesson.Title}\" by you.");
+                    } else {
+                        await emailService.NotifyUserAsync(trainee, "Your feedback has been updated", $"Your feedback of the lesson \"{correspondingTraineeLesson.Lesson.Title}\" by a mentor.");
+                    }
+                });
+
+                // no log, already was in rated
             } else {
-                // feedback doesn't exist
+                // -> feedback doesn't exist
 
                 if (!user.IsInRole("Trainee"))
                     throw new UnauthorizedAccessException("You cannot create a feedback as a Mentor or Admin");
@@ -187,6 +209,7 @@ namespace TraineeTracker.Services {
 
                 var authorId = user.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? throw new Exception("ClaimTypes.NameIdentifier of user not found.");
 
+                // create feedback
                 await _databaseFeedbackrepository.CreateAsync(new Feedback {
                     Difficulty = feedbackDto.Difficulty ?? throw new ArgumentNullException(nameof(feedbackDto), "Difficulty cannot be null."),
                     PreviousKnowledge = feedbackDto.PreviousKnowledge ?? throw new ArgumentNullException(nameof(feedbackDto), "PreviousKnowledge cannot be null."),
@@ -200,12 +223,25 @@ namespace TraineeTracker.Services {
                     Author = await _databaseApplicationUserRepository.FindByIdAsync(authorId) ?? throw new UserNotFoundException($"User with id {authorId} not found."),
                     ReadByUsers = new List<ApplicationUser>()
                 });
-            }
 
-            await SaveTraineeLessonStateChange(new TraineeLessonDto {
-                TraineeLessonId = feedbackDto.TraineeLessonId,
-                TargetStateName = TraineeLessonState.Rated.ToString()
-            }, user);
+                // update state to rated
+                await SaveTraineeLessonStateChange(new TraineeLessonDto {
+                    TraineeLessonId = feedbackDto.TraineeLessonId,
+                    TargetStateName = TraineeLessonState.Rated.ToString()
+                }, user);
+
+                // sends state change email (different thread)
+                _ = Task.Run(async () => {
+                    using var scope = _scopeFactory.CreateScope();
+                    var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+                    var emailService = scope.ServiceProvider.GetRequiredService<EmailNotificationService>();
+
+                    await emailService.NotifyAboutStateChangeAsync(correspondingTraineeLesson, oldState, TraineeLessonState.Rated);
+                });
+
+                // creates log
+                await LogStatusChange(correspondingTraineeLesson, oldState, TraineeLessonState.Rated, user);
+            }
         }
 
         public async Task DeleteFeedback(ClaimsPrincipal user, int feedbackId) {
