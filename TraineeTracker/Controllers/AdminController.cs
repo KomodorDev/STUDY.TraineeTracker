@@ -11,23 +11,27 @@ namespace TraineeTracker.Controllers {
         private readonly AdminService _adminService;
         private readonly ILogger<AdminController> _logger;
 
+        // ------------------------------------------------------------------------------------------------------------
         public AdminController(AdminService adminService, ILogger<AdminController> logger) {
             _adminService = adminService;
             _logger = logger;
         }
 
+        // ------------------------------------------------------------------------------------------------------------
         [HttpGet("Dashboard")]
         public async Task<IActionResult> ShowAdminDashboardView(string? selectedRole = null, string? selectedStatus = null, string? sortBy = null) {
             var viewModel = await _adminService.BuildAdminDashboardViewModelAsync(selectedRole, selectedStatus, sortBy);
             return View("AdminDashboard", viewModel);
         }
 
+        // ------------------------------------------------------------------------------------------------------------
         [HttpGet("CreateUser")]
         public async Task<IActionResult> ShowCreateUserView() {
             var viewModel = await _adminService.BuildCreateUserViewModelAsync();
             return View("CreateUser", viewModel);
         }
 
+        // ------------------------------------------------------------------------------------------------------------
         [HttpPost("CreateUser")]
         public async Task<IActionResult> CreateUserAsync(CreateUserViewModel viewModel) {
             if (!ModelState.IsValid) {
@@ -46,6 +50,7 @@ namespace TraineeTracker.Controllers {
             return RedirectToAction("ShowAdminDashboardView");
         }
 
+        // ------------------------------------------------------------------------------------------------------------
         [HttpPost("CloseUser")]
         public async Task<IActionResult> CloseUserAsync(string userId) {
             var result = await _adminService.CloseUserAsync(userId);
@@ -55,6 +60,7 @@ namespace TraineeTracker.Controllers {
             return RedirectToAction("ShowAdminDashboardView");
         }
 
+        // ------------------------------------------------------------------------------------------------------------
         [HttpGet("ProcessingPauses")]
         public async Task<IActionResult> ShowManageProcessingPausesView(string traineeId) {
             var trainee = await _adminService.FindByIdWithProcessingPausesAsync(traineeId);
@@ -64,12 +70,14 @@ namespace TraineeTracker.Controllers {
             return View("ManageProcessingPauses", trainee);
         }
 
+        // ------------------------------------------------------------------------------------------------------------
         [HttpGet("CreateProcessingPause")]
         public async Task<IActionResult> ShowCreateProcessingPauseView(string traineeId) {
             var viewModel = await _adminService.BuildCreateProcessingPauseViewModelAsync(traineeId);
             return View("CreateProcessingPause", viewModel);
         }
 
+        // ------------------------------------------------------------------------------------------------------------
         [HttpPost("CreateProcessingPause")]
         public async Task<IActionResult> CreateProcessingPauseAsync(CreateProcessingPauseViewModel viewModel) {
             if (!ModelState.IsValid) {
@@ -84,6 +92,7 @@ namespace TraineeTracker.Controllers {
             return RedirectToAction("ShowManageProcessingPausesView", new { traineeId = viewModel.ProcessingPause.TraineeId });
         }
 
+        // ------------------------------------------------------------------------------------------------------------
         [HttpGet("EditProcessingPause")]
         public async Task<IActionResult> ShowEditProcessingPauseView(int processingPauseId) {
             var result = await _adminService.GetProcessingPauseDtoAsync(processingPauseId);
@@ -93,6 +102,7 @@ namespace TraineeTracker.Controllers {
             return View("EditProcessingPause", result.Value);
         }
 
+        // ------------------------------------------------------------------------------------------------------------
         [HttpPost("EditProcessingPause")]
         public async Task<IActionResult> EditProcessingPauseAsync(ProcessingPauseDto dto) {
             if (!ModelState.IsValid) {
@@ -107,6 +117,7 @@ namespace TraineeTracker.Controllers {
             return RedirectToAction("ShowManageProcessingPausesView", new { traineeId = dto.TraineeId });
         }
 
+        // ------------------------------------------------------------------------------------------------------------
         [HttpPost("DeleteProcessingPause")]
         public async Task<IActionResult> DeleteProcessingPauseAsync(int processingPauseId) {
             var result = await _adminService.DeleteProcessingPauseAsync(processingPauseId);
@@ -117,6 +128,7 @@ namespace TraineeTracker.Controllers {
             return RedirectToAction("ShowManageProcessingPausesView", new { TraineeId = result.Value.TraineeId });
         }
 
+        // ------------------------------------------------------------------------------------------------------------
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error() {
             return View("Error!");

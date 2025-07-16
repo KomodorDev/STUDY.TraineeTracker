@@ -46,6 +46,7 @@ namespace TraineeTracker.Services.Admin {
             _traineeStatisticsRepository = traineeStatisticsRepository;
         }
 
+        // ------------------------------------------------------------------------------------------------------------
         public async Task<AdminDashboardViewModel> BuildAdminDashboardViewModelAsync(string? selectedRole = null,
                                                                                      string? selectedStatus = null,
                                                                                      string? sortBy = null) {
@@ -83,11 +84,13 @@ namespace TraineeTracker.Services.Admin {
             };
         }
 
+        // ------------------------------------------------------------------------------------------------------------
         public async Task<CreateUserViewModel> BuildCreateUserViewModelAsync() {
             var viewModel = new CreateUserViewModel();
             return await FillCreateUserDropdownsAsync(viewModel);
         }
 
+        // ------------------------------------------------------------------------------------------------------------
         public async Task<CreateUserViewModel> FillCreateUserDropdownsAsync(CreateUserViewModel viewModel) {
             ArgumentNullException.ThrowIfNull(viewModel);
             var rolesTask = _roleManager.Roles.ToListAsync();
@@ -105,6 +108,7 @@ namespace TraineeTracker.Services.Admin {
             return viewModel;
         }
 
+        // ------------------------------------------------------------------------------------------------------------
         public async Task<ServiceResult> CreateUserAsync(ApplicationUserDto dto) {
             ArgumentNullException.ThrowIfNull(dto);
             var user = new ApplicationUser {
@@ -163,6 +167,7 @@ namespace TraineeTracker.Services.Admin {
             return ServiceResult.Success();
         }
 
+        // ------------------------------------------------------------------------------------------------------------
         public async Task<ServiceResult> CloseUserAsync(string userId) {
             await _unitOfWork.BeginTransactionAsync();
 
@@ -220,6 +225,7 @@ namespace TraineeTracker.Services.Admin {
             return ServiceResult.Success();
         }
 
+        // ------------------------------------------------------------------------------------------------------------
         public async Task<CreateProcessingPauseViewModel> BuildCreateProcessingPauseViewModelAsync(string traineeId) {
             var trainee = await _applicationUserRepository.FindByIdAsync(traineeId);
             if (trainee == null) {
@@ -236,6 +242,7 @@ namespace TraineeTracker.Services.Admin {
             };
         }
 
+        // ------------------------------------------------------------------------------------------------------------
         public async Task<ServiceResult> CreateProcessingPauseAsync(ProcessingPauseDto dto) {
             var user = await _applicationUserRepository.FindByIdAsync(dto.TraineeId);
             if (user == null) {
@@ -256,6 +263,7 @@ namespace TraineeTracker.Services.Admin {
             return ServiceResult.Success();
         }
 
+        // ------------------------------------------------------------------------------------------------------------
         public async Task<ServiceResult> UpdateProcessingPauseAsync(ProcessingPauseDto dto) {
             ArgumentNullException.ThrowIfNull(dto.ProcessingPauseId);
             var pause = await _processingPauseRepository.FindByIdAsync(dto.ProcessingPauseId.Value);
@@ -278,6 +286,7 @@ namespace TraineeTracker.Services.Admin {
             return ServiceResult.Success();
         }
 
+        // ------------------------------------------------------------------------------------------------------------
         private async Task<ServiceResult> ValidateProcessingPause(ProcessingPause processingPause, bool newProcessingPause) {
             if (processingPause.StartDate > processingPause.EndDate) {
                 return ServiceResult.Failed("Startdate after Enddate");
@@ -288,6 +297,7 @@ namespace TraineeTracker.Services.Admin {
             return ServiceResult.Success();
         }
 
+        // ------------------------------------------------------------------------------------------------------------
         public async Task<ServiceResult<ProcessingPause>> DeleteProcessingPauseAsync(int processingPauseId) {
             var pause = await _processingPauseRepository.FindByIdAsync(processingPauseId);
             if (pause == null) {
@@ -297,10 +307,12 @@ namespace TraineeTracker.Services.Admin {
             return ServiceResult<ProcessingPause>.Success(pause);
         }
 
+        // ------------------------------------------------------------------------------------------------------------
         public async Task<ApplicationUser?> FindByIdWithProcessingPausesAsync(string userId) {
             return await _applicationUserRepository.FindByIdWithProcessingPausesAsync(userId);
         }
 
+        // ------------------------------------------------------------------------------------------------------------
         public async Task<ServiceResult<ProcessingPauseDto>> GetProcessingPauseDtoAsync(int processingPauseId) {
             var pause = await _processingPauseRepository.FindByIdAsync(processingPauseId);
             if (pause == null) {
