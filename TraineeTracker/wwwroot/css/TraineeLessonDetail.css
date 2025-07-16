@@ -9,6 +9,10 @@ button {
     background: none;
 }
 
+tr {
+    cursor: pointer;
+}
+
 .sopro-lesson-modal-size {
     width: 56rem;
     max-width: 80vw;
