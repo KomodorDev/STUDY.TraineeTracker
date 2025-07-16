@@ -3,6 +3,7 @@ using TraineeTracker.Data.ApplicationUsers;
 using TraineeTracker.Models.Dtos;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using TraineeTracker.Data.EmailNotificationSettings;
+using TraineeTracker.Data.Lessons;
 
 namespace TraineeTracker.Services.Email {
 
@@ -30,6 +31,11 @@ namespace TraineeTracker.Services.Email {
         /// </summary>
         private readonly IEmailNotificationSettingRepository _databaseEmailNotificationSettingRepository;
 
+        /// <summary>
+        /// Repository for retrieving lesson specific data
+        /// </summary>
+        private readonly ILessonRepository _databaseLessonRepository;
+
         // ------------------------------------------------------
         /// <summary>
         /// Initializes a new instance of the <see cref="EmailNotificationService"/> class.
@@ -40,10 +46,11 @@ namespace TraineeTracker.Services.Email {
         /// <remarks>
         /// Code Ownership: Simon Hinterreiter (hintsimo)
         /// </remarks>
-        public EmailNotificationService(IEmailSender emailSender, IApplicationUserRepository databaseApplicationUserRepository, IEmailNotificationSettingRepository databaseEmailNotificationSettingRepository) {
+        public EmailNotificationService(IEmailSender emailSender, IApplicationUserRepository databaseApplicationUserRepository, IEmailNotificationSettingRepository databaseEmailNotificationSettingRepository, ILessonRepository databaseLessonRepository) {
             _emailSender = emailSender;
             _databaseApplicationUserRepository = databaseApplicationUserRepository;
             _databaseEmailNotificationSettingRepository = databaseEmailNotificationSettingRepository;
+            _databaseLessonRepository = databaseLessonRepository;
         }
 
         // ------------------------------------------------------
@@ -226,6 +233,70 @@ namespace TraineeTracker.Services.Email {
             }
         }
 
+        /// <summary>
+        /// Sends email notifications to mentors, admins, and the trainee when feedback is modified.
+        /// Notifications are only sent to users with open accounts and active notification settings.
+        /// </summary>
+        /// <param name="feedback">The feedback object containing lesson and author information.</param>
+        /// <param name="trueAuthor">The user who actually submitted or edited the feedback (can differ from the original author).</param>
+        /// <returns>A Task representing the asynchronous operation.</returns>
+        /// <remarks>
+        /// Code Ownership: Simon Hinterreiter (hintsimo)
+        /// </remarks>
+        // ------------------------------------------------------
+        public async Task NotifyAboutFeedbackChangeAsync(Feedback feedback, ApplicationUser trueAuthor) {
+            // 1. Lesson laden
+            var lesson = await _databaseLessonRepository
+                .GetLessonByIdAsync(feedback.LessonId);
+
+            // 2. Get Trainee
+            var trainee = await _databaseApplicationUserRepository
+                .FindByIdWithNotificationSettingAsync(feedback.AuthorId);
+
+            var traineeSetting = trainee!.EmailNotificationSetting;
+            string traineeName = trainee!.UserName!;
+            string lessonTitle = lesson!.Title;
+
+            // ++++++++++++++++++++++++++++++++++++++++++
+            // Notify Mentors and Admins
+            var mentors = await _databaseApplicationUserRepository.GetOpenUsersInRoleWithEmailNotificationSettingAsync("Mentor");
+            var admins = await _databaseApplicationUserRepository.GetOpenUsersInRoleWithEmailNotificationSettingAsync("Admin");
+
+            var thirdPersons = mentors
+                .Concat(admins)
+                .GroupBy(u => u.Id)
+                .Select(g => g.First())
+                .ToList();
+
+            foreach (var person in thirdPersons) {
+                var setting = person.EmailNotificationSetting!;
+                if (person.IsClosed || !setting.ReceiveFeedbackChangeNotifications)
+                    continue;
+
+                var subject = $"TraineeTracker: Feedback for lesson '{lessonTitle}' of '{trainee.UserName}'was changed";
+
+                var messageHtml = $@"
+                    <p>Hello {person.UserName},</p>
+                    <p>The feedback for lesson <strong>“{lessonTitle}”</strong> from trainee <strong>{traineeName}</strong> was changed by <strong>“{trueAuthor.UserName}”</strong>.</p>
+                    <p>Best regards,<br/>Your TraineeTracker Team</p>";
+
+                await _emailSender.SendEmailAsync(person.Email!, subject, messageHtml);
+            }
+
+            // ++++++++++++++++++++++++++++++++++++++++++
+            // Notify Trainee (if someone else edited it)
+            if (!trainee.IsClosed && feedback.AuthorId != trainee.Id && traineeSetting?.ReceiveFeedbackChangeNotifications == true) {
+                var subject = $"TraineeTracker: Your feedback for lesson '{lessonTitle}' was changed";
+
+                var messageHtml = $@"
+                    <p>Hello {trainee.UserName},</p>
+                    <p>Your feedback for the lesson <strong>“{lessonTitle}”</strong> was changed by <strong>“{trueAuthor.UserName}”</strong>.</p>
+                    <p>Best regards,<br/>Your TraineeTracker Team</p>";
+
+                await _emailSender.SendEmailAsync(trainee.Email!, subject, messageHtml);
+            }
+        }
+
         // ------------------------------------------------------
         /// <summary>
         /// Sends email notifications about changes to a trainee's teaching plan during an import operation.
@@ -316,6 +387,29 @@ namespace TraineeTracker.Services.Email {
             var setting = new EmailNotificationSetting();
 
             switch (role) {
+
+                case "Admin":
+                    setting.ReceiveSkippedNotifications = false;
+                    setting.ReceiveOpenNotifications = false;
+                    setting.ReceiveStartedNotifications = false;
+                    setting.ReceiveFinishedNotifications = false;
+                    setting.ReceiveRejectedNotifications = false;
+                    setting.ReceiveAcceptedNotifications = false;
+                    setting.ReceiveRatedNotifications = false;
+                    setting.ReceiveImportChangeNotifications = false;
+                    setting.ReceiveFeedbackChangeNotifications = false;
+                    break;
+                case "Mentor":
+                    setting.ReceiveSkippedNotifications = false;
+                    setting.ReceiveOpenNotifications = false;
+                    setting.ReceiveStartedNotifications = false;
+                    setting.ReceiveFinishedNotifications = true;
+                    setting.ReceiveRejectedNotifications = false;
+                    setting.ReceiveAcceptedNotifications = false;
+                    setting.ReceiveRatedNotifications = true;
+                    setting.ReceiveImportChangeNotifications = true;
+                    setting.ReceiveFeedbackChangeNotifications = false;
+                    break;
                 case "Trainee":
                     setting.ReceiveSkippedNotifications = true;
                     setting.ReceiveOpenNotifications = false;
@@ -326,19 +420,6 @@ namespace TraineeTracker.Services.Email {
                     setting.ReceiveRatedNotifications = false;
                     setting.ReceiveImportChangeNotifications = true;
                     break;
-
-                case "Mentor":
-                case "Admin":
-                    setting.ReceiveSkippedNotifications = false;
-                    setting.ReceiveOpenNotifications = false;
-                    setting.ReceiveStartedNotifications = false;
-                    setting.ReceiveFinishedNotifications = true;
-                    setting.ReceiveRejectedNotifications = false;
-                    setting.ReceiveAcceptedNotifications = false;
-                    setting.ReceiveRatedNotifications = true;
-                    setting.ReceiveImportChangeNotifications = true;
-                    break;
-
                 default:
                     throw new ArgumentException($"Unknown role '{role}' for default settings.");
             }
