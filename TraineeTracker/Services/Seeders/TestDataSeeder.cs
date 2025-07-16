@@ -65,10 +65,10 @@ namespace TraineeTracker.Services.Seeders {
 
 
             foreach (var lesson in lessons) {
-                var existing = await _databaseLessonRepository.GetLessonByIdAsync(lesson.LessonId);
+                bool alreadyExists = await _databaseLessonRepository
+                    .ExistsAsync(lesson.MakandraId, lesson.TeachingPlanId);
 
-                // Only add lesson if not existing yet
-                if (existing == null) {
+                if (!alreadyExists) {
                     await _databaseLessonRepository.CreateAsync(lesson);
                 }
             }
@@ -188,7 +188,7 @@ namespace TraineeTracker.Services.Seeders {
             foreach (var dto in userData) {
                 await _adminService.CreateUserAsync(dto);
 
-                if (dto.Email == "closed.trainee@uni-a.de") {
+                if (dto.Email == "closed.traineeTEST@uni-a.de") {
                     var user = await _databaseApplicationUserRepository.FindByEmailAsync(dto.Email);
                     if (user != null) {
                         await _adminService.CloseUserAsync(user.Id);

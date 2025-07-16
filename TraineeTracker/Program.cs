@@ -19,6 +19,7 @@ using TraineeTracker.Data.TeachingPlans;
 using TraineeTracker.Data.TraineeLessonLog;
 using TraineeTracker.Data.TraineeLessons;
 using TraineeTracker.Data.TraineeStatistics;
+using TraineeTracker.Data.UnitOfWork;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -48,6 +49,10 @@ builder.Services.AddControllersWithViews();
 
 
 // -----------------------------------------
+
+// UnitOfWork
+builder.Services.AddScoped<IUnitOfWork, EfUnitOfWork>();
+
 // Repositories
 builder.Services.AddScoped<IApplicationUserRepository, DatabaseApplicationUserRepository>();
 builder.Services.AddScoped<IEmailNotificationSettingRepository, DatabaseEmailNotificationSettingRepository>();

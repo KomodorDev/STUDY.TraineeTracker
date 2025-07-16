@@ -26,22 +26,6 @@ namespace TraineeTracker.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Lessons",
-                columns: table => new
-                {
-                    LessonId = table.Column<int>(type: "INTEGER", nullable: false)
-                        .Annotation("Sqlite:Autoincrement", true),
-                    Title = table.Column<string>(type: "TEXT", nullable: false),
-                    EstimatedEffort = table.Column<double>(type: "REAL", nullable: false),
-                    LinkUrl = table.Column<string>(type: "TEXT", nullable: false),
-                    IsInactive = table.Column<bool>(type: "INTEGER", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Lessons", x => x.LessonId);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "TeachingPlans",
                 columns: table => new
                 {
@@ -104,6 +88,7 @@ namespace TraineeTracker.Migrations
                     TraineeStartDate = table.Column<DateOnly>(type: "TEXT", nullable: true),
                     TraineeEndDate = table.Column<DateOnly>(type: "TEXT", nullable: true),
                     TeachingPlanId = table.Column<int>(type: "INTEGER", nullable: true),
+                    ApplicationUserId = table.Column<string>(type: "TEXT", nullable: true),
                     UserName = table.Column<string>(type: "TEXT", maxLength: 256, nullable: true),
                     NormalizedUserName = table.Column<string>(type: "TEXT", maxLength: 256, nullable: true),
                     Email = table.Column<string>(type: "TEXT", maxLength: 256, nullable: true),
@@ -123,6 +108,11 @@ namespace TraineeTracker.Migrations
                 {
                     table.PrimaryKey("PK_AspNetUsers", x => x.Id);
                     table.ForeignKey(
+                        name: "FK_AspNetUsers_AspNetUsers_ApplicationUserId",
+                        column: x => x.ApplicationUserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id");
+                    table.ForeignKey(
                         name: "FK_AspNetUsers_TeachingPlans_TeachingPlanId",
                         column: x => x.TeachingPlanId,
                         principalTable: "TeachingPlans",
@@ -130,24 +120,25 @@ namespace TraineeTracker.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "LessonTeachingPlan",
+                name: "Lessons",
                 columns: table => new
                 {
-                    LessonsLessonId = table.Column<int>(type: "INTEGER", nullable: false),
-                    TeachingPlansTeachingPlanId = table.Column<int>(type: "INTEGER", nullable: false)
+                    LessonId = table.Column<int>(type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    MakandraId = table.Column<string>(type: "TEXT", nullable: false),
+                    TeachingPlanId = table.Column<int>(type: "INTEGER", nullable: false),
+                    SortingIndex = table.Column<int>(type: "INTEGER", nullable: false),
+                    Title = table.Column<string>(type: "TEXT", nullable: false),
+                    EstimatedEffort = table.Column<double>(type: "REAL", nullable: false),
+                    LinkUrl = table.Column<string>(type: "TEXT", nullable: false),
+                    IsInactive = table.Column<bool>(type: "INTEGER", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_LessonTeachingPlan", x => new { x.LessonsLessonId, x.TeachingPlansTeachingPlanId });
+                    table.PrimaryKey("PK_Lessons", x => x.LessonId);
                     table.ForeignKey(
-                        name: "FK_LessonTeachingPlan_Lessons_LessonsLessonId",
-                        column: x => x.LessonsLessonId,
-                        principalTable: "Lessons",
-                        principalColumn: "LessonId",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_LessonTeachingPlan_TeachingPlans_TeachingPlansTeachingPlanId",
-                        column: x => x.TeachingPlansTeachingPlanId,
+                        name: "FK_Lessons_TeachingPlans_TeachingPlanId",
+                        column: x => x.TeachingPlanId,
                         principalTable: "TeachingPlans",
                         principalColumn: "TeachingPlanId",
                         onDelete: ReferentialAction.Cascade);
@@ -199,7 +190,8 @@ namespace TraineeTracker.Migrations
                 columns: table => new
                 {
                     UserId = table.Column<string>(type: "TEXT", nullable: false),
-                    RoleId = table.Column<string>(type: "TEXT", nullable: false)
+                    RoleId = table.Column<string>(type: "TEXT", nullable: false),
+                    ApplicationUserId = table.Column<string>(type: "TEXT", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -210,6 +202,11 @@ namespace TraineeTracker.Migrations
                         principalTable: "AspNetRoles",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_AspNetUserRoles_AspNetUsers_ApplicationUserId",
+                        column: x => x.ApplicationUserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_AspNetUserRoles_AspNetUsers_UserId",
                         column: x => x.UserId,
@@ -265,12 +262,63 @@ namespace TraineeTracker.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "ProcessingPauses",
+                columns: table => new
+                {
+                    ProcessingPauseId = table.Column<int>(type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    TraineeId = table.Column<string>(type: "TEXT", nullable: false),
+                    StartDate = table.Column<DateOnly>(type: "TEXT", nullable: false),
+                    EndDate = table.Column<DateOnly>(type: "TEXT", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ProcessingPauses", x => x.ProcessingPauseId);
+                    table.ForeignKey(
+                        name: "FK_ProcessingPauses_AspNetUsers_TraineeId",
+                        column: x => x.TraineeId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "TraineeStatisticsSnapshots",
+                columns: table => new
+                {
+                    TraineeStatisticsSnapshotId = table.Column<int>(type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    TraineeId = table.Column<string>(type: "TEXT", nullable: false),
+                    SnapshotDateTime = table.Column<DateTime>(type: "TEXT", nullable: false),
+                    DaysPresentTotal = table.Column<double>(type: "REAL", nullable: true),
+                    DaysPresentTillToday = table.Column<double>(type: "REAL", nullable: true),
+                    LessonDaysCompleted = table.Column<double>(type: "REAL", nullable: true),
+                    LessonDaysOpen = table.Column<double>(type: "REAL", nullable: true),
+                    LessonDaysBuffer = table.Column<double>(type: "REAL", nullable: true),
+                    Speed = table.Column<double>(type: "REAL", nullable: true),
+                    PredictedMissingEstimatedEffortAtEnd = table.Column<double>(type: "REAL", nullable: true),
+                    PredictedMissingActualDays = table.Column<double>(type: "REAL", nullable: true),
+                    IsUpToDate = table.Column<bool>(type: "INTEGER", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_TraineeStatisticsSnapshots", x => x.TraineeStatisticsSnapshotId);
+                    table.ForeignKey(
+                        name: "FK_TraineeStatisticsSnapshots_AspNetUsers_TraineeId",
+                        column: x => x.TraineeId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Feedbacks",
                 columns: table => new
                 {
                     FeedbackId = table.Column<int>(type: "INTEGER", nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
                     Difficulty = table.Column<int>(type: "INTEGER", nullable: false),
+                    CreateTime = table.Column<DateTime>(type: "TEXT", nullable: false),
                     PreviousKnowledge = table.Column<string>(type: "TEXT", nullable: false),
                     HoursOfEffort = table.Column<float>(type: "REAL", nullable: false),
                     Comment = table.Column<string>(type: "TEXT", nullable: true),
@@ -291,27 +339,6 @@ namespace TraineeTracker.Migrations
                         column: x => x.LessonId,
                         principalTable: "Lessons",
                         principalColumn: "LessonId",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "ProcessingPauses",
-                columns: table => new
-                {
-                    ProcessingPauseId = table.Column<int>(type: "INTEGER", nullable: false)
-                        .Annotation("Sqlite:Autoincrement", true),
-                    TraineeId = table.Column<string>(type: "TEXT", nullable: false),
-                    StartDate = table.Column<DateOnly>(type: "TEXT", nullable: false),
-                    EndDate = table.Column<DateOnly>(type: "TEXT", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_ProcessingPauses", x => x.ProcessingPauseId);
-                    table.ForeignKey(
-                        name: "FK_ProcessingPauses_AspNetUsers_TraineeId",
-                        column: x => x.TraineeId,
-                        principalTable: "AspNetUsers",
-                        principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
 
@@ -342,32 +369,6 @@ namespace TraineeTracker.Migrations
                         column: x => x.LessonId,
                         principalTable: "Lessons",
                         principalColumn: "LessonId",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "TraineeStatisticsSnapshots",
-                columns: table => new
-                {
-                    TraineeStatisticsSnapshotId = table.Column<int>(type: "INTEGER", nullable: false)
-                        .Annotation("Sqlite:Autoincrement", true),
-                    TraineeId = table.Column<string>(type: "TEXT", nullable: false),
-                    SnapshotDateTime = table.Column<DateTime>(type: "TEXT", nullable: false),
-                    DaysPresent = table.Column<double>(type: "REAL", nullable: false),
-                    LessonDaysCompleted = table.Column<double>(type: "REAL", nullable: false),
-                    LessonDaysOpen = table.Column<double>(type: "REAL", nullable: false),
-                    LessonDaysBuffer = table.Column<double>(type: "REAL", nullable: false),
-                    Speed = table.Column<double>(type: "REAL", nullable: false),
-                    DaysBufferPredicted = table.Column<double>(type: "REAL", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_TraineeStatisticsSnapshots", x => x.TraineeStatisticsSnapshotId);
-                    table.ForeignKey(
-                        name: "FK_TraineeStatisticsSnapshots_AspNetUsers_TraineeId",
-                        column: x => x.TraineeId,
-                        principalTable: "AspNetUsers",
-                        principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
 
@@ -417,6 +418,11 @@ namespace TraineeTracker.Migrations
                 column: "UserId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_AspNetUserRoles_ApplicationUserId",
+                table: "AspNetUserRoles",
+                column: "ApplicationUserId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_AspNetUserRoles_RoleId",
                 table: "AspNetUserRoles",
                 column: "RoleId");
@@ -425,6 +431,11 @@ namespace TraineeTracker.Migrations
                 name: "EmailIndex",
                 table: "AspNetUsers",
                 column: "NormalizedEmail");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_AspNetUsers_ApplicationUserId",
+                table: "AspNetUsers",
+                column: "ApplicationUserId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetUsers_TeachingPlanId",
@@ -459,9 +470,15 @@ namespace TraineeTracker.Migrations
                 column: "LessonId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_LessonTeachingPlan_TeachingPlansTeachingPlanId",
-                table: "LessonTeachingPlan",
-                column: "TeachingPlansTeachingPlanId");
+                name: "IX_Lessons_MakandraId_TeachingPlanId",
+                table: "Lessons",
+                columns: new[] { "MakandraId", "TeachingPlanId" },
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Lessons_TeachingPlanId",
+                table: "Lessons",
+                column: "TeachingPlanId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_ProcessingPauses_TraineeId",
@@ -508,9 +525,6 @@ namespace TraineeTracker.Migrations
 
             migrationBuilder.DropTable(
                 name: "FeedbackRead");
-
-            migrationBuilder.DropTable(
-                name: "LessonTeachingPlan");
 
             migrationBuilder.DropTable(
                 name: "ProcessingPauses");

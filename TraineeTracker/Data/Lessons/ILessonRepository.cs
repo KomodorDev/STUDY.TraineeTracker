@@ -3,8 +3,8 @@ using TraineeTracker.Models.Domain;
 namespace TraineeTracker.Data.Lessons {
     public interface ILessonRepository {
         Task<bool> ExistsAsync(int id);
-
-        Task<bool> ExistsAsync(Lesson lesson);
+        
+        Task<bool> ExistsAsync(string makandraId, int teachingPlanId);
 
         Task CreateAsync(Lesson lesson);
 
@@ -13,8 +13,6 @@ namespace TraineeTracker.Data.Lessons {
         Task DeleteAsync(Lesson lesson);
 
         Task<Lesson?> GetLessonByIdAsync(int id);
-
-        Task<Lesson?> GetLessonByTitleAsync(string title);
 
         Task<IEnumerable<Lesson>> GetAllLessonsAsync();
 
