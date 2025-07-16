@@ -51,6 +51,18 @@ window.hookUpStateChangeForms = hookUpStateChangeForms;
 
 
 
+// ------------------------------------------------------
+// Opening rejection reason & feedback form
+function toggleRejectionForm() {
+  const form = document.getElementById("rejectionForm");
+  form.style.display = (form.style.display === "none" || form.style.display === "") ? "block" : "none";
+}
+
+function toggleFeedbackForm() {
+  const form = document.getElementById("feedbackForm");
+  form.style.display = (form.style.display === "none" || form.style.display === "") ? "block" : "none";
+}
+
 
 // ------------------------------------------------------
 window.renderLessonChart = function(config) {
