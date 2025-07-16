@@ -112,7 +112,7 @@ a:hover {
     flex-direction: column; /* only vertically */
     align-items: flex-start;  /* align left */
 
-    row-gap: 1.172rem;  /* "25" px */
+    row-gap: 1rem;  
     padding: 1.172rem;  /* "25" px */
 
     /* scrollability */
@@ -221,6 +221,9 @@ a:hover {
   padding: 3.516rem;    /* "75" px distance to screen edges and navbar*/
   column-gap: 2.344rem; /* "50" px */
   row-gap: 1.172rem;    /* "25" px */
+
+  max-width: calc(1920px - 3.516rem - 3.516rem);
+  margin: 0 auto;
 }
 
 .sopro-grid-management.navigation {
@@ -415,7 +418,7 @@ nav.navbar .container-fluid {
 
 /* STATUS AND ROLE TAGS ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ */
 .sopro-tag {
-  height: 18.75px; /* "25" px */
+  height: 22px; /* "25" px */
   width: 82.5px;   /* "110" px */
 
   font-size: 16px;  /* "20" px */
@@ -423,7 +426,9 @@ nav.navbar .container-fluid {
   color: black;
   user-select: none; /* prevents text selection */
 
-  background-color: blue;
+  border: 1px solid black;
+
+  background-color: blue; /* debug */
 
   display: inline-flex;
   align-items: center;
@@ -433,51 +438,28 @@ nav.navbar .container-fluid {
 }
 .sopro-tag.open {
   background-color: white;
-
-  border-style: solid;
-  border-color: black;
-  border-width: 2px;
 }
 .sopro-tag.skipped {
   background-color: white;
 
-  border-style: solid;
-  border-color: #dbdbdb;
-  border-width: 2px;
+  border-color: #afafaf;
 
-  color: #dbdbdb;
+  color: #afafaf;
 }
 .sopro-tag.started {
-  /* striped pattern instead of split
-  background-image: repeating-linear-gradient(135deg, white, white 7px, #afafaf 7px, #afafaf 14px);
-  */
-  background-image: linear-gradient(to right, white 50%, #afafaf 50%);
-
-  border-style: solid;
-  border-color: black;
-  border-width: 2px;
+  background-color: #ffc0d3;
 }
 .sopro-tag.finished {
-  background-color: #afafaf;
-
-  border-style: solid;
-  border-color: black;
-  border-width: 2px;
+  background-color: #a76a7d;
 }
 .sopro-tag.rejected {
-  background-color: #e61d47;
-
-  color: white;
+  background-color: #ffb199;
 }
 .sopro-tag.accepted {
-  background-color: #ffb199;
-
-  color: white;
+  background-color: #e61d47;
 }
 .sopro-tag.rated {
-  background-color: #626262;
-
-  color: white;
+  background-color: #dbdbdb;
 }
 
 /* IDENTITY PAGES +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ */

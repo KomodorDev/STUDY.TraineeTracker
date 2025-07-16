@@ -9,7 +9,7 @@ namespace TraineeTracker.Models.ViewModels {
         public IEnumerable<ApplicationUser>? Trainees { get; set; }
 
         public string ActiveFilter { get; set; } = "all";
-        public string SortBy { get; set; } = "date_asc";
+        public string SortBy { get; set; } = "sortingIndex_asc";
 
         // Filter Statistics
         public int CountAll { get; set; }

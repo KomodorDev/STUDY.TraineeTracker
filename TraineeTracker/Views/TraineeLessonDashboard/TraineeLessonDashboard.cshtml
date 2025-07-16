@@ -28,7 +28,7 @@
                     style="display: flex; align-items: center;">
 
                     <!-- Nur Trainee Dropdown -->
-                    <select name="traineeId" class="select-wide" onchange="this.form.submit()">
+                    <select name="traineeId" class="select-wide" onchange="this.form.submit()" style="text-overflow: ellipsis;">
                         @foreach (var trainee in Model.Trainees ?? new List<ApplicationUser>())
                         {
                             <option value="@trainee.Id"
@@ -48,7 +48,7 @@
             <!-- Teachinplan-->
             <div class="sopro-inner-card">
                 <div class="header" style="font-size: 1.406rem;">
-                    @(Model.SelectedTrainee?.TeachingPlan?.Name ?? "No teachingplan")
+                    <p style="text-overflow: ellipsis; overflow: hidden;">@(Model.SelectedTrainee?.TeachingPlan?.Name ?? "No teachingplan")</p>
                 </div>
             </div>
         </section>
@@ -61,26 +61,32 @@
             <div class="sopro-inner-card flex">
                 @{
                     var stats = Model.TraineeStatisticsSnapshot;
+                    var progressBarProgress = 100* stats?.LessonDaysCompleted / (stats?.LessonDaysOpen + stats?.LessonDaysCompleted);
                 }
-                <p>Last update: just now</p>
+                <p>Snapshot Taken At: @(stats?.SnapshotDateTime.ToString("dd. MMMM yyyy HH:mm:ss") ?? "No Time") </p>
                 <p>
-                    Present: @((stats?.DaysPresentTillToday ?? -999).ToString("0.0")) days
+                    Days Present Until Today: @((stats?.DaysPresentTillToday ?? -999).ToString("0.0")) days
                 </p>
                 <p>
-                    Open: @((stats?.LessonDaysOpen ?? -999).ToString("0.0")) days
+                    Estimated Effort Remaining: @((stats?.LessonDaysOpen ?? -999).ToString("0.0")) days
                 </p>
                 <p>
-                    Buffer: @((stats?.LessonDaysBuffer ?? -999).ToString("0.0")) days
+                    Effort Buffer: @((stats?.LessonDaysBuffer ?? -999).ToString("0.0")) days
                 </p>
-                @{
-                    var speed = (stats?.Speed ?? -999).ToString("0.0");
-                }
                 <p>
-                    Progression: @speed%
+                    Progress Speed: @(((stats?.Speed ?? 0) * 100).ToString("0.00")) %
                 </p>
-                <div class="progress-bar bg-danger" role="progressbar" style="width: @speed%" aria-valuenow="50"
-                    aria-valuemin="0" aria-valuemax="100">
+                <div class="w-100">
+                    <p>Total Progress:</p>
+                    <div style="width: 100%; height: 30px; border: 2px solid #626262; border-radius: 11px; overflow: hidden; background-color: #f2f2f2;">
+                        <div class="progress-bar bg-danger" role="progressbar" 
+                            style="width: @(progressBarProgress)%; height: 100%;
+                                background-image: linear-gradient(to right, #ff0844, #ffb199);" 
+                            aria-valuenow="@progressBarProgress" aria-valuemin="0" aria-valuemax="100">
+                        </div>
+                    </div>
                 </div>
+                
         
                 <!-- Expand Button -->
                 <button id="openStatisticsModalBtn"
@@ -179,7 +185,7 @@
                 @foreach (var traineeLesson in (Model.TraineeLessons ?? throw new Exception("Empty Traineelesson ...somehow"))) {
                     <tr class="sopro-card sopro-table-format"
                         data-lesson-id="@traineeLesson.TraineeLessonId">     @* the ID that is given to the modal *@
-                        <td>@traineeLesson.Lesson.SortingIndex | @traineeLesson.Lesson.Title</td>
+                        <td>@traineeLesson.Lesson.Title</td>
                         <td><a href="@traineeLesson.Lesson.LinkUrl" target="_blank">Link↗</a></td>
                         <td>@traineeLesson.Lesson.EstimatedEffort days</td>
                         <td>
@@ -191,13 +197,6 @@
                         </td>
                     </tr>
                 }
-                <tr class="sopro-card sopro-table-format"><td>This ia an open lesson</td><td></td><td></td><td><span class="sopro-tag open">Open</span></td></tr>
-                <tr class="sopro-card sopro-table-format"><td>This ia a skipped lesson</td><td></td><td></td><td><span class="sopro-tag skipped">Skipped</span></td></tr>
-                <tr class="sopro-card sopro-table-format"><td>This ia a started lesson</td><td></td><td></td><td><span class="sopro-tag started">Started</span></td></tr>
-                <tr class="sopro-card sopro-table-format"><td>This ia a finished lesson</td><td></td><td></td><td><span class="sopro-tag finished">Finished</span></td></tr>
-                <tr class="sopro-card sopro-table-format"><td>This ia a rejected lesson</td><td></td><td></td><td><span class="sopro-tag rejected">Rejected</span></td></tr>
-                <tr class="sopro-card sopro-table-format"><td>This ia an accepted lesson</td><td></td><td></td><td><span class="sopro-tag accepted">Accepted</span></td></tr>
-                <tr class="sopro-card sopro-table-format"><td>This ia a rated lesson</td><td></td><td></td><td><span class="sopro-tag rated">Rated</span></td></tr>
             </tbody>
         </table>
     </section>

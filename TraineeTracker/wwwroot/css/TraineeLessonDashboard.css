@@ -10,6 +10,9 @@
 
   height: calc(100vh - 3.516rem);   /* 100% of viewport height - navbar height */
   width: 100vw;
+
+  max-width: calc(1920px - 3.516rem - 3.516rem);
+  margin: 0 auto;
 }
 
 .sopro-grid-lessons-left {
@@ -39,10 +42,10 @@
 
 .sopro-table-format {
     width: 100%;
-    height: 2.344rem; /* "50" px */
+    height: 3rem;   /* lesson height in table */
 
     display: grid;
-    grid-template-columns: 1fr 6.25rem 6.25rem 6.25rem; /* "25"px*/
+    grid-template-columns: 0.5fr 0.167fr 0.167fr 0.167fr;
     gap: 0;
 
     align-items: center;
