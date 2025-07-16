@@ -27,7 +27,6 @@ namespace TraineeTracker.Services {
         private IFeedbackRepository _databaseFeedbackrepository;
         // the following are not included in the viewmodel, because i dont't think we need them there?
         private IApplicationUserRepository _databaseApplicationUserRepository;
-        private EmailNotificationService _emailNotificationService;
 
         private readonly IServiceScopeFactory _scopeFactory;
 
@@ -36,14 +35,12 @@ namespace TraineeTracker.Services {
                                             ITraineeLessonLogEntryRepository databaseTraineeLessonLogEntryRepository,
                                             IFeedbackRepository databaseFeedbackRepository,
                                             IApplicationUserRepository databaseApplicationUserRepository,
-                                            EmailNotificationService emailNotificationService,
                                             IServiceScopeFactory scopeFactory) {
             _databaseLessonRepository = databaseLessonRepository;
             _databaseTraineeLessonLogEntryRepository = databaseTraineeLessonLogEntryRepository;
             _databaseTraineeLessonRepository = databaseTraineeLessonRepository;
             _databaseFeedbackrepository = databaseFeedbackRepository;
             _databaseApplicationUserRepository = databaseApplicationUserRepository;
-            _emailNotificationService = emailNotificationService;
             _scopeFactory = scopeFactory;
         }
 
@@ -186,19 +183,6 @@ namespace TraineeTracker.Services {
                 existingFeedback.HoursOfEffort = feedbackDto.HoursOfEffort ?? existingFeedback.HoursOfEffort;
 
                 await _databaseFeedbackrepository.UpdateAsync(existingFeedback);
-
-                // sends email (different thread)
-                _ = Task.Run(async () => {
-                    using var scope = _scopeFactory.CreateScope();
-                    var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-                    var emailService = scope.ServiceProvider.GetRequiredService<EmailNotificationService>();
-
-                    if (user.IsInRole("Trainee")) {
-                        await emailService.NotifyUserAsync(trainee, "Your feedback has been updated", $"Your feedback of the lesson \"{correspondingTraineeLesson.Lesson.Title}\" has been updated by you.");
-                    } else {
-                        await emailService.NotifyUserAsync(trainee, "Your feedback has been updated", $"Your feedback of the lesson \"{correspondingTraineeLesson.Lesson.Title}\" has been updated by a mentor.");
-                    }
-                });
             } else {
                 // -> feedback doesn't exist
 
@@ -217,8 +201,8 @@ namespace TraineeTracker.Services {
                     // relations
                     LessonId = correspondingTraineeLesson.LessonId,
                     Lesson = await _databaseLessonRepository.GetLessonByIdAsync(correspondingTraineeLesson.LessonId) ?? throw new LessonNotFoundException(correspondingTraineeLesson.LessonId),
-                    AuthorId = authorId,
-                    Author = await _databaseApplicationUserRepository.FindByIdAsync(authorId) ?? throw new UserNotFoundException($"User with id {authorId} not found."),
+                    AuthorId = traineeId,
+                    Author = trainee,
                     ReadByUsers = new List<ApplicationUser>()
                 });
 
@@ -240,15 +224,6 @@ namespace TraineeTracker.Services {
             await _databaseFeedbackrepository.DeleteAsync(feedbackId);
 
             var trainee = (await _databaseFeedbackrepository.GetFeedbackByIDWithLessonAndAuthorAndReadByUsersAsync(feedbackId))?.Author ?? throw new UserNotFoundException();
-
-            // sends email (different thread)
-            _ = Task.Run(async () => {
-                using var scope = _scopeFactory.CreateScope();
-                var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-                var emailService = scope.ServiceProvider.GetRequiredService<EmailNotificationService>();
-
-                await emailService.NotifyUserAsync(trainee, "Feedback deletion", "One of your feedbacks has been deleted. Contact a mentor for further information.");
-            });
         }
     }
 }
