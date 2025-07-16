@@ -143,6 +143,9 @@ a:hover {
   padding: 3.516rem;    /* "75" px distance to screen edges and navbar*/
   column-gap: 2.344rem; /* "50" px */
   row-gap: 1.172rem;    /* "25" px */
+
+  max-width: 2200px;
+  margin: 0 auto;
 }
 
 .sopro-grid-management.navigation {
