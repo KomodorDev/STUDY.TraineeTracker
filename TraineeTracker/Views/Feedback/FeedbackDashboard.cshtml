@@ -127,7 +127,8 @@
                     <tr class="feedback-summary" data-toggle-id="@feedbackId">
                         <td>@feedback.LessonTitle</td>
                         <td>@feedback.AuthorName</td>
-                        <td>@feedback.CreateTime.ToString("dd. MM. yyyy")</td>
+                        <td>@feedback.CreateTime.ToString("dd. MMMM yyyy, HH:mm")</td>
+
                         <td>
                             @if (!feedback.IsReadByCurrentUser)
                             {
