@@ -43,14 +43,8 @@ namespace TraineeTracker.Services {
             ApplicationUser appUser = appUserNullable ?? throw new InvalidOperationException("User not found.");
 
             // +++++++++++++++
-            // For Dropdown - get all activeTrainees or all Trainees for selected TeachingPlan
+            // For Dropdown - get all activeTrainees
             var activeTrainees = await _databaseApplicaionUserRepository.GetOpenUsersInRoleAsync("Trainee");
-
-            if (selectedTeachingPlanId.HasValue) {
-                activeTrainees = activeTrainees
-                    .Where(t => t.TeachingPlanId == selectedTeachingPlanId.Value)
-                    .ToList();
-            }
 
             // +++++++++++++++
             // For Dropdown: Get (all active lessons by trainee) OR [(all lessons for all teachingPlans) OR (all lessons for selected teachingPlan)]
@@ -71,17 +65,13 @@ namespace TraineeTracker.Services {
                 ApplicationUser trainee = traineeNullable ?? throw new InvalidOperationException("User not found.");
 
                 // +++++++++++++++
-                // For Dropdown - Get TeachingPlan:
-                TeachingPlan? teachingPlanNullable = await _databaseTeachingPlanRepository
-                    .GetTeachingPlanByIdAsync(
-                        trainee.TeachingPlanId ?? throw new InvalidOperationException("Trainee has no assigned TeachingPlan."));
-
-                TeachingPlan teachingPlan = teachingPlanNullable ?? throw new InvalidOperationException("TeachingPlan not found.");
-
-                teachingPlans = new List<TeachingPlan> { teachingPlan };
+                // Reset LessonId if Trainee has no Feedback for that lesson
+                if (!trainee.WrittenFeedbacks.Any(f => f.Lesson.LessonId == selectedLessonId)) {
+                    selectedLessonId = null;
+                }
 
                 // +++++++++++++++
-                // For Dropdown - Get Lessons:
+                // For Dropdown - Get Lessons of selected Trainee with Feedbacks:
                 lessons = trainee.WrittenFeedbacks
                     .Select(f => f.Lesson)
                     .OrderBy(l => l.SortingIndex)
@@ -90,6 +80,15 @@ namespace TraineeTracker.Services {
                 // +++++++++++++++
                 // Set selected TeachingPlan (a trainee only has one teachingPlan)
                 selectedTeachingPlanId = trainee.TeachingPlanId;
+
+                // +++++++++++++++
+                // For Dropdown - Reduce Teachingplan Dropdown when Trainee is selected
+                var teachingPlanNullable = await _databaseTeachingPlanRepository
+                    .GetTeachingPlanByIdAsync(trainee.TeachingPlanId!.Value);
+
+                var teachingPlan = teachingPlanNullable ?? throw new InvalidOperationException("TeachingPlan not found.");
+
+                teachingPlans = new List<TeachingPlan> { teachingPlan };
 
             } else {
                 // For Dropdown: Get all Lessons that have at least one feedback and match the selected teachingPlanId
@@ -321,7 +320,7 @@ namespace TraineeTracker.Services {
 
             // +++++++++++++++
             // Apply Sorting and Filtering
-            query = ApplySortingAndFiltering(query, sortBy, selectedTraineeId, selectedLessonId,selectedTeachingPlanId);
+            query = ApplySortingAndFiltering(query, sortBy, selectedTraineeId, selectedLessonId, selectedTeachingPlanId);
 
             // +++++++++++++++
             // Get Count of all Feedbacks in Query
