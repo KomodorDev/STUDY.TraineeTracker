@@ -87,6 +87,10 @@ namespace TraineeTracker.Services {
                     .OrderBy(l => l.SortingIndex)
                     .ToList();
 
+                // +++++++++++++++
+                // Set selected TeachingPlan
+                selectedTeachingPlanId = trainee.TeachingPlanId;
+
             } else {
                 // Get all Lessons that have at least one feedback and match the selected teachingPlanId
                 lessons = (await _databaseLessonRepository.GetAllLessonsWithFeedbacksAsync())
@@ -106,9 +110,9 @@ namespace TraineeTracker.Services {
             // +++++++++++++++
             // Get Pages for "Unread", "Read", and "All":
             Page<FeedbackDashboardDto> feedbackPage = filter switch {
-                "unread" => await GetUnreadFeedbacksAsync(appUser, page, sortBy, selectedTraineeId, selectedLessonId),
-                "read" => await GetReadFeedbacksAsync(appUser, page, sortBy, selectedTraineeId, selectedLessonId),
-                _ => await GetAllFeedbacksAsync(appUser, page, sortBy, selectedTraineeId, selectedLessonId)
+                "unread" => await GetUnreadFeedbacksAsync(appUser, page, sortBy, selectedTraineeId, selectedLessonId, selectedTeachingPlanId),
+                "read" => await GetReadFeedbacksAsync(appUser, page, sortBy, selectedTraineeId, selectedLessonId, selectedTeachingPlanId),
+                _ => await GetAllFeedbacksAsync(appUser, page, sortBy, selectedTraineeId, selectedLessonId, selectedTeachingPlanId)
             };
 
             // +++++++++++++++
@@ -192,7 +196,9 @@ namespace TraineeTracker.Services {
             int page,
             string sortBy,
             string? selectedTraineeId = null,
-            int? selectedLessonId = null) {
+            int? selectedLessonId = null,
+            int? selectedTeachingPlanId = null
+            ) {
 
             // +++++++++++++++
             // Get current userId
@@ -211,7 +217,7 @@ namespace TraineeTracker.Services {
 
             // +++++++++++++++
             // Apply Sorting and Filtering
-            query = ApplySortingAndFiltering(query, sortBy, selectedTraineeId, selectedLessonId);
+            query = ApplySortingAndFiltering(query, sortBy, selectedTraineeId, selectedLessonId, selectedTeachingPlanId);
 
             // +++++++++++++++
             // Get Count of all Feedbacks in Query
@@ -254,7 +260,8 @@ namespace TraineeTracker.Services {
             int page,
             string sortBy,
             string? selectedTraineeId = null,
-            int? selectedLessonId = null) {
+            int? selectedLessonId = null,
+            int? selectedTeachingPlanId = null) {
 
             // +++++++++++++++
             // Get all Feedbacks read by currentUser
@@ -262,7 +269,7 @@ namespace TraineeTracker.Services {
 
             // +++++++++++++++
             // Apply Sorting and Filtering
-            query = ApplySortingAndFiltering(query, sortBy, selectedTraineeId, selectedLessonId);
+            query = ApplySortingAndFiltering(query, sortBy, selectedTraineeId, selectedLessonId, selectedTeachingPlanId);
 
             // +++++++++++++++
             // Get Count of all Feedbacks in Query
@@ -305,7 +312,8 @@ namespace TraineeTracker.Services {
             int page,
             string sortBy,
             string? selectedTraineeId = null,
-            int? selectedLessonId = null) {
+            int? selectedLessonId = null,
+            int? selectedTeachingPlanId = null) {
 
             // +++++++++++++++
             // Get all Feedbacks unread by currentUser
@@ -313,7 +321,7 @@ namespace TraineeTracker.Services {
 
             // +++++++++++++++
             // Apply Sorting and Filtering
-            query = ApplySortingAndFiltering(query, sortBy, selectedTraineeId, selectedLessonId);
+            query = ApplySortingAndFiltering(query, sortBy, selectedTraineeId, selectedLessonId,selectedTeachingPlanId);
 
             // +++++++++++++++
             // Get Count of all Feedbacks in Query
