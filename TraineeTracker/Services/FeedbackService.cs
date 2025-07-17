@@ -71,7 +71,7 @@ namespace TraineeTracker.Services {
                 ApplicationUser trainee = traineeNullable ?? throw new InvalidOperationException("User not found.");
 
                 // +++++++++++++++
-                // Get TeachingPlan
+                // For Dropdown - Get TeachingPlan:
                 TeachingPlan? teachingPlanNullable = await _databaseTeachingPlanRepository
                     .GetTeachingPlanByIdAsync(
                         trainee.TeachingPlanId ?? throw new InvalidOperationException("Trainee has no assigned TeachingPlan."));
@@ -81,18 +81,18 @@ namespace TraineeTracker.Services {
                 teachingPlans = new List<TeachingPlan> { teachingPlan };
 
                 // +++++++++++++++
-                // Get Lessons
+                // For Dropdown - Get Lessons:
                 lessons = trainee.WrittenFeedbacks
                     .Select(f => f.Lesson)
                     .OrderBy(l => l.SortingIndex)
                     .ToList();
 
                 // +++++++++++++++
-                // Set selected TeachingPlan
+                // Set selected TeachingPlan (a trainee only has one teachingPlan)
                 selectedTeachingPlanId = trainee.TeachingPlanId;
 
             } else {
-                // Get all Lessons that have at least one feedback and match the selected teachingPlanId
+                // For Dropdown: Get all Lessons that have at least one feedback and match the selected teachingPlanId
                 lessons = (await _databaseLessonRepository.GetAllLessonsWithFeedbacksAsync())
                     .Where(l =>
                         l.Feedbacks != null && l.Feedbacks.Any() &&
@@ -101,7 +101,7 @@ namespace TraineeTracker.Services {
                     .ThenBy(l => l.SortingIndex)
                     .ToList();
 
-                // get all TeachingPlans
+                // For Dorpdown: Get all TeachingPlans
                 teachingPlans = (await _databaseTeachingPlanRepository.GetAllTeachingPlansAsync())
                     .OrderBy(tp => tp.TeachingPlanId)
                     .ToList();
@@ -116,7 +116,7 @@ namespace TraineeTracker.Services {
             };
 
             // +++++++++++++++
-            // Get Count Numbers
+            // For Filter Tabs - Get Count Numbers:
             var query = _databaseFeedbackRepository.GetAllFeedbacksWithLessonAndAuthorAndReadByUsers();
 
             if (!string.IsNullOrEmpty(selectedTraineeId)) {
