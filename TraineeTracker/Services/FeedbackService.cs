@@ -7,6 +7,7 @@ using TraineeTracker.Models.Domain;
 using TraineeTracker.Models.Dtos;
 using TraineeTracker.Models.ViewModels;
 using TraineeTracker.Data.Lessons;
+using TraineeTracker.Data.TeachingPlans;
 
 
 namespace TraineeTracker.Services {
@@ -15,13 +16,15 @@ namespace TraineeTracker.Services {
         private readonly IFeedbackRepository _databaseFeedbackRepository;
         private readonly IApplicationUserRepository _databaseApplicaionUserRepository;
         private readonly ILessonRepository _databaseLessonRepository;
+        private readonly ITeachingPlanRepository _databaseTeachingPlanRepository;
 
 
         // ------------------------------------------------------
-        public FeedbackService(IFeedbackRepository feedbackRepo, IApplicationUserRepository userRepo, ILessonRepository lessonRepo) {
+        public FeedbackService(IFeedbackRepository feedbackRepo, IApplicationUserRepository userRepo, ILessonRepository lessonRepo, ITeachingPlanRepository teachingPlanRepo) {
             _databaseFeedbackRepository = feedbackRepo;
             _databaseApplicaionUserRepository = userRepo;
             _databaseLessonRepository = lessonRepo;
+            _databaseTeachingPlanRepository = teachingPlanRepo;
         }
 
         // ------------------------------------------------------
@@ -31,7 +34,8 @@ namespace TraineeTracker.Services {
             int page = 1,
             string sortBy = "date_asc",
             string? selectedTraineeId = null,
-            int? selectedLessonId = null) {
+            int? selectedLessonId = null,
+            int? selectedTeachingPlanId = null) {
 
             // +++++++++++++++
             // Get current user
@@ -39,12 +43,14 @@ namespace TraineeTracker.Services {
             ApplicationUser appUser = appUserNullable ?? throw new InvalidOperationException("User not found.");
 
             // +++++++++++++++
-            // Get all activeTrainees
+            // For Dropdown - get all activeTrainees
             var activeTrainees = await _databaseApplicaionUserRepository.GetOpenUsersInRoleAsync("Trainee");
 
             // +++++++++++++++
-            // Get (all active lessons by trainee) OR (all lessons for all teachingPlans)
+            // For Dropdown: Get (all active lessons by trainee) OR [(all lessons for all teachingPlans) OR (all lessons for selected teachingPlan)]
             List<Lesson> lessons;
+            List<TeachingPlan> teachingPlans;
+
             if (!string.IsNullOrEmpty(selectedTraineeId)) {
 
                 /* 
@@ -52,38 +58,72 @@ namespace TraineeTracker.Services {
                 Console.WriteLine($"[DEBUG] sortBy: {sortBy}");
                 */
 
-                // Get Trainee and the Lessons they wrote feedback for
+                // +++++++++++++++
+                // Get Trainee
                 ApplicationUser? traineeNullable = await _databaseApplicaionUserRepository.FindByIdWithWrittenFeedbacksWithLessonAsync(selectedTraineeId!);
 
                 ApplicationUser trainee = traineeNullable ?? throw new InvalidOperationException("User not found.");
 
+                // +++++++++++++++
+                // Reset LessonId if Trainee has no Feedback for that lesson
+                if (!trainee.WrittenFeedbacks.Any(f => f.Lesson.LessonId == selectedLessonId)) {
+                    selectedLessonId = null;
+                }
+
+                // +++++++++++++++
+                // For Dropdown - Get Lessons of selected Trainee with Feedbacks:
                 lessons = trainee.WrittenFeedbacks
                     .Select(f => f.Lesson)
                     .OrderBy(l => l.SortingIndex)
                     .ToList();
+
+                // +++++++++++++++
+                // Set selected TeachingPlan (a trainee only has one teachingPlan)
+                selectedTeachingPlanId = trainee.TeachingPlanId;
+
+                // +++++++++++++++
+                // For Dropdown - Reduce Teachingplan Dropdown when Trainee is selected
+                var teachingPlanNullable = await _databaseTeachingPlanRepository
+                    .GetTeachingPlanByIdAsync(trainee.TeachingPlanId!.Value);
+
+                var teachingPlan = teachingPlanNullable ?? throw new InvalidOperationException("TeachingPlan not found.");
+
+                teachingPlans = new List<TeachingPlan> { teachingPlan };
+
             } else {
-                // Get all Lessons that have at least one feedback
+                // For Dropdown: Get all Lessons that have at least one feedback and match the selected teachingPlanId
                 lessons = (await _databaseLessonRepository.GetAllLessonsWithFeedbacksAsync())
-                    .Where(l => l.Feedbacks != null && l.Feedbacks.Any())
+                    .Where(l =>
+                        l.Feedbacks != null && l.Feedbacks.Any() &&
+                        (!selectedTeachingPlanId.HasValue || l.TeachingPlanId == selectedTeachingPlanId.Value))
                     .OrderBy(l => l.TeachingPlanId)
                     .ThenBy(l => l.SortingIndex)
+                    .ToList();
+
+                // For Dorpdown: Get all TeachingPlans
+                teachingPlans = (await _databaseTeachingPlanRepository.GetAllTeachingPlansAsync())
+                    .OrderBy(tp => tp.TeachingPlanId)
                     .ToList();
             }
 
             // +++++++++++++++
             // Get Pages for "Unread", "Read", and "All":
             Page<FeedbackDashboardDto> feedbackPage = filter switch {
-                "unread" => await GetUnreadFeedbacksAsync(appUser, page, sortBy, selectedTraineeId, selectedLessonId),
-                "read" => await GetReadFeedbacksAsync(appUser, page, sortBy, selectedTraineeId, selectedLessonId),
-                _ => await GetAllFeedbacksAsync(appUser, page, sortBy, selectedTraineeId, selectedLessonId)
+                "unread" => await GetUnreadFeedbacksAsync(appUser, page, sortBy, selectedTraineeId, selectedLessonId, selectedTeachingPlanId),
+                "read" => await GetReadFeedbacksAsync(appUser, page, sortBy, selectedTraineeId, selectedLessonId, selectedTeachingPlanId),
+                _ => await GetAllFeedbacksAsync(appUser, page, sortBy, selectedTraineeId, selectedLessonId, selectedTeachingPlanId)
             };
 
             // +++++++++++++++
-            // Get Count Numbers
+            // For Filter Tabs - Get Count Numbers:
             var query = _databaseFeedbackRepository.GetAllFeedbacksWithLessonAndAuthorAndReadByUsers();
 
             if (!string.IsNullOrEmpty(selectedTraineeId)) {
                 query = query.Where(f => f.Author.Id == selectedTraineeId);
+            }
+
+            if (selectedTeachingPlanId.HasValue) {
+                query = query.Where(f => f.Lesson.TeachingPlanId == selectedTeachingPlanId.Value);
             }
 
             if (selectedLessonId.HasValue) {
@@ -103,8 +143,10 @@ namespace TraineeTracker.Services {
 
                 Lessons = lessons,
                 ActiveTrainees = activeTrainees,
+                TeachingPlans = teachingPlans,
                 SelectedTraineeId = selectedTraineeId,
                 SelectedLessonId = selectedLessonId,
+                SelectedTeachingPlanId = selectedTeachingPlanId,
 
                 TotalFeedbackCount = totalCount,
                 ReadFeedbackCount = readCount,
@@ -117,8 +159,10 @@ namespace TraineeTracker.Services {
             IQueryable<Feedback> query,
             string sortBy,
             string? selectedTraineeId = null,
-            int? selectedLessonId = null) {
+            int? selectedLessonId = null,
+            int? selectedTeachingPlanId = null) {
 
+            // +++++++++++++++
             // Filter by Author (Trainee)
             if (!string.IsNullOrEmpty(selectedTraineeId))
                 query = query.Where(f => f.Author.Id == selectedTraineeId);
@@ -128,6 +172,13 @@ namespace TraineeTracker.Services {
             if (selectedLessonId.HasValue)
                 query = query.Where(f => f.Lesson.LessonId == selectedLessonId);
 
+            // +++++++++++++++
+            // Filter by TeachingPlan
+            if (selectedTeachingPlanId.HasValue)
+                query = query.Where(f => f.Lesson.TeachingPlanId == selectedTeachingPlanId.Value);
+
+            // +++++++++++++++
+            // Sort:
             return sortBy.ToLower() switch {
                 "author_asc" => query.OrderBy(f => f.Author.UserName),
                 "author_desc" => query.OrderByDescending(f => f.Author.UserName),
@@ -144,7 +195,9 @@ namespace TraineeTracker.Services {
             int page,
             string sortBy,
             string? selectedTraineeId = null,
-            int? selectedLessonId = null) {
+            int? selectedLessonId = null,
+            int? selectedTeachingPlanId = null
+            ) {
 
             // +++++++++++++++
             // Get current userId
@@ -163,7 +216,7 @@ namespace TraineeTracker.Services {
 
             // +++++++++++++++
             // Apply Sorting and Filtering
-            query = ApplySortingAndFiltering(query, sortBy, selectedTraineeId, selectedLessonId);
+            query = ApplySortingAndFiltering(query, sortBy, selectedTraineeId, selectedLessonId, selectedTeachingPlanId);
 
             // +++++++++++++++
             // Get Count of all Feedbacks in Query
@@ -206,7 +259,8 @@ namespace TraineeTracker.Services {
             int page,
             string sortBy,
             string? selectedTraineeId = null,
-            int? selectedLessonId = null) {
+            int? selectedLessonId = null,
+            int? selectedTeachingPlanId = null) {
 
             // +++++++++++++++
             // Get all Feedbacks read by currentUser
@@ -214,7 +268,7 @@ namespace TraineeTracker.Services {
 
             // +++++++++++++++
             // Apply Sorting and Filtering
-            query = ApplySortingAndFiltering(query, sortBy, selectedTraineeId, selectedLessonId);
+            query = ApplySortingAndFiltering(query, sortBy, selectedTraineeId, selectedLessonId, selectedTeachingPlanId);
 
             // +++++++++++++++
             // Get Count of all Feedbacks in Query
@@ -257,7 +311,8 @@ namespace TraineeTracker.Services {
             int page,
             string sortBy,
             string? selectedTraineeId = null,
-            int? selectedLessonId = null) {
+            int? selectedLessonId = null,
+            int? selectedTeachingPlanId = null) {
 
             // +++++++++++++++
             // Get all Feedbacks unread by currentUser
@@ -265,7 +320,7 @@ namespace TraineeTracker.Services {
 
             // +++++++++++++++
             // Apply Sorting and Filtering
-            query = ApplySortingAndFiltering(query, sortBy, selectedTraineeId, selectedLessonId);
+            query = ApplySortingAndFiltering(query, sortBy, selectedTraineeId, selectedLessonId, selectedTeachingPlanId);
 
             // +++++++++++++++
             // Get Count of all Feedbacks in Query
