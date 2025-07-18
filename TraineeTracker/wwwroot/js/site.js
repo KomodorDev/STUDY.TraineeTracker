@@ -23,7 +23,9 @@ function hookUpStateChangeForms() {
 
         if (response.ok) {
           const html = await response.text();
-          const modalContent = document.getElementById("TraineeLessonModalContent");
+          const modalContent =
+            document.getElementById("ImportModalContent") ||
+            document.getElementById("TraineeLessonModalContent");
 
           // Replace inner modal content only
           modalContent.innerHTML = html;
