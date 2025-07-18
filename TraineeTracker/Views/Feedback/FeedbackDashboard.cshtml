@@ -1,3 +1,5 @@
+@using TraineeTracker.Extensions
+
 @model TraineeTracker.Models.ViewModels.FeedbackDashboardViewModel
 @{
     ViewData["Title"] = "Feedback Dashboard";
@@ -12,35 +14,35 @@
 
     <!-- Header Split: Filter links / Dropdowns rechts -->
     <div class="sopro-card flex-card">
-        <div class="filter-buttons">
-            <a class="filter-btn @(Model.ActiveFilter == "all" ? "active" : "")"
-               asp-action="Dashboard"
-               asp-route-filter="all"
-               asp-route-selectedTraineeId="@Model.SelectedTraineeId"
-               asp-route-selectedLessonId="@Model.SelectedLessonId"
-               asp-route-sortBy="@Model.SortBy"
-               asp-route-page="1">
-               All (@Model.TotalFeedbackCount)
+        <div class="filter-bar-feedback">
+            <a class="filter-tab-feedback @(Model.ActiveFilter == "all" ? "active" : "")"
+            asp-action="Dashboard"
+            asp-route-filter="all"
+            asp-route-selectedTraineeId="@Model.SelectedTraineeId"
+            asp-route-selectedLessonId="@Model.SelectedLessonId"
+            asp-route-sortBy="@Model.SortBy"
+            asp-route-page="1">
+                All (@Model.TotalFeedbackCount)
             </a>
 
-            <a class="filter-btn @(Model.ActiveFilter == "unread" ? "active" : "")"
-               asp-action="Dashboard"
-               asp-route-filter="unread"
-               asp-route-selectedTraineeId="@Model.SelectedTraineeId"
-               asp-route-selectedLessonId="@Model.SelectedLessonId"
-               asp-route-sortBy="@Model.SortBy"
-               asp-route-page="1">
-               Unread (@Model.UnreadFeedbackCount)
+            <a class="filter-tab-feedback @(Model.ActiveFilter == "unread" ? "active" : "")"
+            asp-action="Dashboard"
+            asp-route-filter="unread"
+            asp-route-selectedTraineeId="@Model.SelectedTraineeId"
+            asp-route-selectedLessonId="@Model.SelectedLessonId"
+            asp-route-sortBy="@Model.SortBy"
+            asp-route-page="1">
+                Unread (@Model.UnreadFeedbackCount)
             </a>
 
-            <a class="filter-btn @(Model.ActiveFilter == "read" ? "active" : "")"
-               asp-action="Dashboard"
-               asp-route-filter="read"
-               asp-route-selectedTraineeId="@Model.SelectedTraineeId"
-               asp-route-selectedLessonId="@Model.SelectedLessonId"
-               asp-route-sortBy="@Model.SortBy"
-               asp-route-page="1">
-               Read (@Model.ReadFeedbackCount)
+            <a class="filter-tab-feedback @(Model.ActiveFilter == "read" ? "active" : "")"
+            asp-action="Dashboard"
+            asp-route-filter="read"
+            asp-route-selectedTraineeId="@Model.SelectedTraineeId"
+            asp-route-selectedLessonId="@Model.SelectedLessonId"
+            asp-route-sortBy="@Model.SortBy"
+            asp-route-page="1">
+                Read (@Model.ReadFeedbackCount)
             </a>
         </div>
 
@@ -149,9 +151,9 @@
                     </tr>
                     <tr class="feedback-detail" id="detail-@feedbackId" style="display:none">
                         <td colspan="4">
-                            <p><strong>Difficulty:</strong> @feedback.Difficulty</p>
-                            <p><strong>Previous knowledge:</strong> @feedback.PreviousKnowledge</p>
-                            <p><strong>Effort:</strong> @feedback.HoursOfEffort hours</p>
+                            <p><strong>Difficulty:</strong> @feedback.Difficulty.GetDisplayName()</p>
+                            <p><strong>Previous Knowledge:</strong> @feedback.PreviousKnowledge.GetDisplayName()</p>
+                            <p><strong>hours of Effort:</strong> @feedback.HoursOfEffort hours</p>
                             <p><strong>Comments:</strong> @feedback.Comment</p>
                         </td>
                     </tr>
