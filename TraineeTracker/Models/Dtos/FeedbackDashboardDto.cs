@@ -15,9 +15,9 @@ namespace TraineeTracker.Models.Dtos {
 
         public string? Comment { get; set; }
 
-        public LessonDifficulty? Difficulty { get; set; }
+        public LessonDifficulty Difficulty { get; set; }
 
-        public PreviousKnowledgeLevel? PreviousKnowledge { get; set; }
+        public PreviousKnowledgeLevel PreviousKnowledge { get; set; }
 
         public float? HoursOfEffort { get; set; }
     }
