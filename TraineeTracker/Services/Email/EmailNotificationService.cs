@@ -170,7 +170,7 @@ namespace TraineeTracker.Services.Email {
         /// <remarks>
         /// Code Ownership: Simon Hinterreiter (hintsimo)
         /// </remarks>
-        public async Task NotifyAboutStateChangeAsync(TraineeLesson traineeLesson, TraineeLessonState oldState, TraineeLessonState newState) {
+        public async Task NotifyAboutStateChangeAsync(TraineeLesson traineeLesson, TraineeLessonState oldState, TraineeLessonState newState, Feedback? feedback = null) {
 
             // Get Trainee
             var trainee = await _databaseApplicationUserRepository.FindByIdWithNotificationSettingAsync(traineeLesson.TraineeId);
@@ -185,6 +185,8 @@ namespace TraineeTracker.Services.Email {
             if (newState == TraineeLessonState.Rejected && !string.IsNullOrWhiteSpace(traineeLesson.RejectionReason)) {
                 rejectionNote = $"<p><strong>Rejection Reason:</strong> {rejectedReason}</p>";
             }
+
+            // Feedback Note:
 
             // ++++++++++++++++++++++++++++++++++++++++++
             // Notify Mentors and Admins
@@ -246,7 +248,7 @@ namespace TraineeTracker.Services.Email {
         /// Code Ownership: Simon Hinterreiter (hintsimo)
         /// </remarks>
         // ------------------------------------------------------
-        public async Task NotifyAboutFeedbackChangeAsync(Feedback feedback, ApplicationUser trueAuthor) {
+        public async Task NotifyAboutFeedbackChangeAsync(Feedback feedback, ApplicationUser trueAuthor, bool deleted = false) {
             // 1. Lesson laden
             var lesson = await _databaseLessonRepository
                 .GetLessonByIdAsync(feedback.LessonId);
