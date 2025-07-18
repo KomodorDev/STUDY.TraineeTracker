@@ -124,6 +124,7 @@ public class TraineeStatisticsServiceTests {
         Assert.Equal(11.9, result, precision: 1);   //(Finished = 5*0.7, Accepted = 4, Rejected = 3*0.8, Rated = 2 → Sum = 11.9)
     }
 
+    // --------------------------------------------------
     [Fact]
     public async Task CalculateLessonDaysOpenAsync_ShouldReturnCorrectOpenEffort()
     {
@@ -143,6 +144,27 @@ public class TraineeStatisticsServiceTests {
 
         // Test 4
         Assert.Equal(12.1, result, precision: 1);   //(Total effort = 5+4+3+2+10 = 24, Skipped ignored. Completed = 11.9 → Open = 12.1)
+    }
+
+    // --------------------------------------------------
+    [Fact]
+    public void CalculateLessonDaysBuffer_ShouldReturnCorrectDifference()
+    {
+        var service = new TraineeStatisticsService(
+            traineeStatisticsRepository: null!,
+            traineeLessonRepository: null!,
+            httpClient: null!,
+            userManager: null!,
+            processingPauseRepository: null!
+        );
+
+        double daysPresentTillToday = 10.0;
+        double lessonDaysCompleted = 12.5;
+
+        var result = service.CalculateLessonDaysBuffer(daysPresentTillToday, lessonDaysCompleted);
+
+        // Test 5
+        Assert.Equal(2.5, result, precision: 1);    // 12.5 - 10 = 2.5
     }
 
     // --------------------------------------------------
