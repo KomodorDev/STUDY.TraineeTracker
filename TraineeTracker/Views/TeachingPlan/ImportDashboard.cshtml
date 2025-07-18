@@ -35,13 +35,16 @@
                   <span class="plan-meta">Last Updated: @plan.LastUpdated.ToString("dd.MM.yyyy")</span>
               
                   <div class="plan-actions">
-                      <!-- Update -->
-                      <form asp-action="UpdateTeachingPlan" method="post" enctype="multipart/form-data" style="align-items: center; padding-right: 1.172rem;">
-                      @Html.AntiForgeryToken()
-                      <input type="hidden" name="ExistingTeachingPlanId" value="@plan.TeachingPlanId" />
-                      <input type="file" name="NewPlanFile" required />
-                      <button type="submit" class="sopro-button-content" style="background-color: #FFB199;">Update</button>
-                      </form>
+                      <!-- Update / open modal -->
+                      <button 
+                        type="button" 
+                        class="sopro-button-content" 
+                        style="background-color: #FFB199;" 
+                        data-bs-toggle="modal" 
+                        data-bs-target="#importDetailModal">
+                        Update
+                      </button>
+
                       <!-- Delete -->
                       <form asp-action="DeleteTeachingPlan" method="post" onsubmit="return confirm('Confirm deletion?');">
                         @Html.AntiForgeryToken()
@@ -63,3 +66,55 @@
   </div>
 </div>
 
+<!-- modal -->
+<div id="importDetailModal" class="modal fade" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-dialog-centered" style=""> @* define modal size here *@
+        <div class="modal-content sopro-card" id="ImportModalContent" style="box-shadow: none;">
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        /* open modal */
+        document.querySelectorAll('button.update-btn').forEach(button => {
+            row.addEventListener('click', function () {
+                const lessonId = this.getAttribute('data-plan-id');
+
+                // loading cursor
+                document.body.style.cursor = 'wait';
+
+                fetch(`/Teachingplan/${planId}`)   // this would work for a method with [HttpGet("{planId}")]
+                    .then(response => response.text())
+                    .then(html => {
+                        // Inject response directly into existing modal content div
+                        document.getElementById('ImportModalContent').innerHTML = html;
+
+                        // Show the existing modal
+                        const modalElement = document.getElementById('importDetailModal');
+                        const modal = new bootstrap.Modal(modalElement);
+                        modal.show();
+
+                        // Hook up any dynamic event handlers inside the modal content
+                        if (typeof window.hookUpStateChangeForms === 'function') {
+                            window.hookUpStateChangeForms();
+                        }
+                    })
+                    .catch(err => console.error("Failed to load modal", err))
+                    .finally(() => {
+                        // reset cursor
+                        document.body.style.cursor = 'default';
+                    });
+            });
+        });
+
+        /* reload page after closing modal */
+        const modalEl = document.getElementById('importDetailModal');
+
+        if (modalEl) {
+            modalEl.addEventListener('hidden.bs.modal', () => {
+                location.reload();
+            });
+        }
+    </script>
+}
