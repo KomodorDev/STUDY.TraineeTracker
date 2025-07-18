@@ -184,10 +184,15 @@ namespace TraineeTracker.Services.Admin {
                         code = token
                     },
                     protocol: "https");
-                await _emailNotificationService.NotifyUserAsync(
-                    user,
-                    "Confirm your email to set your password",
-                    $"Please confirm your account by <a href='{confirmationLink}'>clicking here</a>.\nYou will be redirected to set your password after.");
+                try {
+                    await _emailNotificationService.NotifyUserAsync(
+                        user,
+                        "Confirm your email to set your password",
+                        $"Please confirm your account by <a href='{confirmationLink}'>clicking here</a>.\nYou will be redirected to set your password after.");
+                }
+                catch (Exception ex) {
+                    return ServiceResult.Failed(ex.Message);
+                }
             }
 
             return ServiceResult.Success();
