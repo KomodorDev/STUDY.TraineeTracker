@@ -222,8 +222,6 @@ namespace TraineeTracker.Services {
                 throw new FeedbackNotFoundException(feedbackId);
 
             await _databaseFeedbackrepository.DeleteAsync(feedbackId);
-
-            var trainee = (await _databaseFeedbackrepository.GetFeedbackByIDWithLessonAndAuthorAndReadByUsersAsync(feedbackId))?.Author ?? throw new UserNotFoundException();
         }
     }
 }
