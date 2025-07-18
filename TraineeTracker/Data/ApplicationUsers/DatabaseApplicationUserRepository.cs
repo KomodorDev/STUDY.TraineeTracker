@@ -102,6 +102,10 @@ namespace TraineeTracker.Data.ApplicationUsers {
                 .FirstOrDefaultAsync(u => u.Id == userId);
         }
 
+        public async Task<string> GenerateEmailConfirmationTokenAsync(ApplicationUser user) {
+            return await _userManager.GenerateEmailConfirmationTokenAsync(user);
+        }
+
         public async Task<IEnumerable<ApplicationUser>> GetOpenUsersInRoleAsync(string roleName) {
             var usersInRole = await GetUsersInRoleAsync(roleName);
             var userIds = usersInRole.Select(u => u.Id).ToList();

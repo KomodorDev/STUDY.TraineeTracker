@@ -186,7 +186,7 @@ namespace TraineeTracker.Services.Seeders {
             };
 
             foreach (var dto in userData) {
-                await _adminService.CreateUserAsync(dto);
+                await _adminService.CreateUserAsync(dto, true);
 
                 if (dto.Email == "closed.traineeTEST@uni-a.de") {
                     var user = await _databaseApplicationUserRepository.FindByEmailAsync(dto.Email);

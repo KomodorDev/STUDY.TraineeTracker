@@ -1,20 +1,24 @@
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.AspNetCore.WebUtilities;
+using Microsoft.EntityFrameworkCore;
+using System.Text;
 using TraineeTracker.Data.ApplicationUsers;
 using TraineeTracker.Data.ProcessingPauses;
-using TraineeTracker.Services.Email;
-using TraineeTracker.Models.Domain;
-using TraineeTracker.Models.Dtos;
 using TraineeTracker.Data.Feedbacks;
 using TraineeTracker.Data.TeachingPlans;
 using TraineeTracker.Data.TraineeStatistics;
+using TraineeTracker.Data.UnitOfWork;
+using TraineeTracker.Models.Domain;
+using TraineeTracker.Models.Dtos;
 using TraineeTracker.Models.ViewModels.Admin;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
-using TraineeTracker.Data;
+using TraineeTracker.Services.Email;
 
 namespace TraineeTracker.Services.Admin {
     public class AdminService {
         private readonly IUnitOfWork _unitOfWork;
+
         private readonly IApplicationUserRepository _applicationUserRepository;
         private readonly IProcessingPauseRepository _processingPauseRepository;
         private readonly RoleManager<IdentityRole> _roleManager;
@@ -109,12 +113,15 @@ namespace TraineeTracker.Services.Admin {
         }
 
         // ------------------------------------------------------------------------------------------------------------
-        public async Task<ServiceResult> CreateUserAsync(ApplicationUserDto dto) {
+        public async Task<ServiceResult> CreateUserAsync(ApplicationUserDto dto, bool isSeeder, IUrlHelper? urlHelper = null) {
             ArgumentNullException.ThrowIfNull(dto);
+            if (!isSeeder && urlHelper == null) {
+                throw new ArgumentNullException(nameof(urlHelper), "urlHelper must be provided if isSeeder is false");
+            }
             var user = new ApplicationUser {
                 UserName = dto.Email,
                 Email = dto.Email,
-                EmailConfirmed = true,
+                EmailConfirmed = isSeeder ? true : false,
                 EmailNotificationSetting = _emailNotificationService.CreateDefaultEmailNotificationSetting(dto.Role)
             };
 
@@ -161,6 +168,30 @@ namespace TraineeTracker.Services.Admin {
                         errors = result.Errors.Concat(deleteResult.Errors);
                     }
                     return ServiceResult.Failed(errors.Select(e => e.Description).ToArray());
+                }
+            }
+
+            if (!isSeeder) {
+                ArgumentNullException.ThrowIfNull(urlHelper);
+                var token = await _applicationUserRepository.GenerateEmailConfirmationTokenAsync(user);
+                token = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(token));
+                var confirmationLink = urlHelper.Page(
+                    "/Account/ConfirmEmail",
+                    pageHandler: null,
+                    values: new {
+                        area = "Identity",
+                        userId = user.Id,
+                        code = token
+                    },
+                    protocol: "https");
+                try {
+                    await _emailNotificationService.NotifyUserAsync(
+                        user,
+                        "Confirm your email to set your password",
+                        $"Please confirm your account by <a href='{confirmationLink}'>clicking here</a>.\nYou will be redirected to set your password after.");
+                }
+                catch (Exception ex) {
+                    return ServiceResult.Failed(ex.Message);
                 }
             }
 

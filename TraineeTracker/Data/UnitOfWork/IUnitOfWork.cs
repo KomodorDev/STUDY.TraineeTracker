@@ -1,4 +1,4 @@
-namespace TraineeTracker.Data
+namespace TraineeTracker.Data.UnitOfWork
 {
     public interface IUnitOfWork {
         Task BeginTransactionAsync();
