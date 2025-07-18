@@ -183,7 +183,7 @@ namespace TraineeTracker.Services {
 
         public async Task SaveFeedback(FeedbackDto feedbackDto, ClaimsPrincipal user) {
             await CheckHasAccess(user, feedbackDto.TraineeLessonId);    // it is basically a state change, hence checking this beforehand
-
+            
             if (feedbackDto == null)
                 throw new Exception("FeedbackDto is null");
 
@@ -192,7 +192,7 @@ namespace TraineeTracker.Services {
             var traineeId = correspondingTraineeLesson.TraineeId;
             var trainee = await _databaseApplicationUserRepository.FindByIdAsync(traineeId) ?? throw new UserNotFoundException();
             var existingFeedback = await _databaseFeedbackrepository.GetFeedbackOfTraineeLessonWithLessonAndAuthorAndReadByUsersAsync(correspondingTraineeLesson);
-
+            
             if (existingFeedback != null) {
                 // -> feedback exists
 
@@ -202,6 +202,8 @@ namespace TraineeTracker.Services {
 
                 await _databaseFeedbackrepository.UpdateAsync(existingFeedback);
 
+                var applicationUser = await _databaseApplicationUserRepository.GetUserAsync(user) ?? throw new UserNotFoundException();
+
                 // sends email (different thread)
                 _ = Task.Run(async () => {
                     using var scope = _scopeFactory.CreateScope();
@@ -209,11 +211,11 @@ namespace TraineeTracker.Services {
                     var emailService = scope.ServiceProvider.GetRequiredService<EmailNotificationService>();
 
 
-                    await emailService.NotifyAboutFeedbackChangeAsync(existingFeedback, await _databaseApplicationUserRepository.GetUserAsync(user) ?? throw new UserNotFoundException());
+                    await emailService.NotifyAboutFeedbackChangeAsync(existingFeedback, applicationUser);
                 });
             } else {
                 // -> feedback doesn't exist
-
+                
                 if (correspondingTraineeLesson.State != TraineeLessonState.Accepted)
                     throw new UnauthorizedAccessException("You can write a feedback once your TraineeLesson has been accepted.");
 
