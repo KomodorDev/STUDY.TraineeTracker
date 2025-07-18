@@ -75,15 +75,45 @@ namespace TraineeTracker.Controllers {
             }
 
         }
+        // ------------------------------------------------------
+        [Authorize(Roles = "Admin,Mentor")]
+        [HttpGet("Preview/{planId}")]
+        public async Task<IActionResult> LoadPreviewModal(int planId) {
+            Console.WriteLine($"[DEBUG] Controller: Called LoadPreviewModal");
+            Console.WriteLine($"[DEBUG] Received TeachingPlanId: {planId}");
+            var dto = new TeachingPlanDto {
+                ExistingTeachingPlanId = planId
+            };
+
+            var viewModel = await _teachingPlanService.BuildImportPreviewViewModelAsync(dto);
+            return PartialView("_ImportPreviewModal", viewModel);
+        }
 
         // ------------------------------------------------------
         [Authorize(Roles = "Admin,Mentor")]
-        [HttpGet("{planId}")]
+        [HttpPost("Preview")]
+        public async Task<IActionResult> UpdatePreviewModal(TeachingPlanDto dto) {
+            Console.WriteLine($"[DEBUG] Controller: Called UpdatePreviewModal");
+            Console.WriteLine($"[DEBUG] Controller: Received TeachingPlanId: {dto.ExistingTeachingPlanId}");
+
+            var viewModel = await _teachingPlanService.BuildImportPreviewViewModelAsync(dto);
+            Console.WriteLine($"[DEBUG] TeachingPlanController - UpdatePreviewModel: Built viewModel");
+
+            Console.WriteLine($"[DEBUG] NewActiveLessons: {viewModel.NewActiveLessons.Count}");
+            Console.WriteLine($"[DEBUG] NewInactiveLessons: {viewModel.NewInactiveLessons.Count}");
+            Console.WriteLine($"[DEBUG] ReactivatedLessons: {viewModel.ExistingReactivatedLessons.Count}");
+            Console.WriteLine($"[DEBUG] DeactivatedLessons: {viewModel.ExistingDeactivatedLessons.Count}");
+            
+            return PartialView("_ImportPreviewModal", viewModel);
+        }
+
+        // ------------------------------------------------------
+        [Authorize(Roles = "Admin,Mentor")]
+        [HttpPost("Update")]
         // [ValidateAntiForgeryToken]
-        public async Task<IActionResult> UpdateTeachingPlanModal(int planId) {
-
-            return PartialView("~/Views/TeachingPlan/_ImportModal.cshtml");
-
+        public async Task<IActionResult> UpdateTeachingPlanModal(TeachingPlanDto dto) {
+            var viewModel = await _teachingPlanService.BuildImportPreviewViewModelAsync(dto);
+            return PartialView("_ImportPreviewModal", viewModel);
         }
 
         // ------------------------------------------------------
