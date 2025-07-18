@@ -6,25 +6,17 @@ namespace TraineeTracker.Models.Domain {
         public int FeedbackId { get; set; }
 
         [Range(1, 10)]
-        public required int Difficulty {
-            get; set;
-        }
+        public required LessonDifficulty Difficulty { get; set; }
 
         public DateTime CreateTime { get; set; } = DateTime.UtcNow;
 
+        public required PreviousKnowledgeLevel PreviousKnowledge { get; set; }
 
-        public required string PreviousKnowledge { get; set; }
+        public required float HoursOfEffort { get; set; }
 
-        public required float HoursOfEffort {
-            get; set;
-        }
-
-        public string? Comment {
-            get; set;
-        }
+        public string? Comment { get; set; }
 
         // --- Beziehungen ---
-
         public int LessonId { get; set; }
         public required Lesson Lesson { get; set; }
 
