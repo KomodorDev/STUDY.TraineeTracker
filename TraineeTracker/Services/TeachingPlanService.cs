@@ -32,7 +32,10 @@ namespace TraineeTracker.Services {
 
         // ---------------------------------------------------
         public async Task<ImportDashboardViewModel> BuildImportDashboardViewModelAsync() {
+            // a) Get all Teachingplans
             var allPlans = await _databaseTeachingPlanRepository.GetAllTeachingPlansWithLessonsAndTraineesAsync();
+
+            // b) Build Import Dashboard with all Teachingplans
             return new ImportDashboardViewModel {
                 ExistingTeachingPlans = allPlans.Select(tp => new ExistingTeachingPlanViewModel {
                     TeachingPlanId = tp.TeachingPlanId,
@@ -46,14 +49,16 @@ namespace TraineeTracker.Services {
 
         // ---------------------------------------------------
         public async Task ImportNewTeachingPlan(TeachingPlanDto dto) {
+            // a) Validate Dto attributes
             ValidateFile(dto.NewPlanFile);
             ValidateName(dto.NewPlanName!);
 
+            // b) Get jsonstring out of file, deserialize json string and validate lessonDto
             var json = await ReadJsonAsync(dto.NewPlanFile);
             var lessonDtos = DeserializeLessonDtos(json);
             ValidateLessonDtos(lessonDtos);
 
-            // Create TeachingPlan:
+            // c) Create TeachingPlan:
             var teachingPlan = new TeachingPlan {
                 Name = dto.NewPlanName!,
                 LastUpdated = DateTime.UtcNow,
@@ -61,7 +66,7 @@ namespace TraineeTracker.Services {
 
             await _databaseTeachingPlanRepository.CreateAsync(teachingPlan);
 
-            // Create Lessons for TeachingPlan:
+            // d) Create Lessons for TeachingPlan:
             var lessons = CreateLessons(lessonDtos, teachingPlan.TeachingPlanId);
             foreach (var lesson in lessons) {
                 await _databaseLessonRepository.CreateAsync(lesson);
