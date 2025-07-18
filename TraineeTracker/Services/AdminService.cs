@@ -172,6 +172,7 @@ namespace TraineeTracker.Services.Admin {
             }
 
             if (!isSeeder) {
+                ArgumentNullException.ThrowIfNull(urlHelper);
                 var token = await _applicationUserRepository.GenerateEmailConfirmationTokenAsync(user);
                 token = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(token));
                 var confirmationLink = urlHelper.Page(
