@@ -89,7 +89,7 @@ namespace TraineeTracker.Services {
             };
         }
 
-        public async Task SaveTraineeLessonStateChange(TraineeLessonDto traineeLessonUpdate, ClaimsPrincipal user, Feedback? feedback) {
+        public async Task SaveTraineeLessonStateChange(TraineeLessonDto traineeLessonUpdate, ClaimsPrincipal user, Feedback? feedback = null) {
             await CheckHasAccess(user, traineeLessonUpdate.TraineeLessonId);
 
             var oldTraineeLesson = await _databaseTraineeLessonRepository.GetTraineeLessonByIdWithLessonAsync(traineeLessonUpdate.TraineeLessonId) ?? throw new TraineeLessonNotFoundException(traineeLessonUpdate.TraineeLessonId);
