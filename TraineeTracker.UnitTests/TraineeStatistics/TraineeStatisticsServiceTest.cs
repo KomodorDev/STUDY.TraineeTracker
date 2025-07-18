@@ -206,26 +206,75 @@ public class TraineeStatisticsServiceTests {
         );
         Assert.Equal(0, result1); // 10 remaining days * 1.0 = 10 => 10 - 10 = 0
 
-        //negative Effort Buffer
+        // negative Effort Buffer
         double? result2 = service.CalculatePredictedMissingEstimatedEffortAtEnd(
             daysPresentTillToday: 10,
             daysPresentTotal: 20,
             estimatedEffortOpen: 13,
-            speed: 1.0
+            speed: 0.7
         );
-        Assert.Equal(-3, result2); // 10 * 1.0 = 10 => 10 - 13 = -3
+        Assert.Equal(-6, result2); // 10 * 0.7 = 7 => 7 - 13 = -6
 
-        //positive Effort Buffer
+        // positive Effort Buffer
         double? result3 = service.CalculatePredictedMissingEstimatedEffortAtEnd(
             daysPresentTillToday: 5,
             daysPresentTotal: 15,
             estimatedEffortOpen: 5,
+            speed: 1.5
+        );
+        Assert.Equal(10, result3); // 10 days * 1.5 = 15 => 15 - 5 = 10
+
+        // speed = 0 => return null
+        double? result4 = service.CalculatePredictedMissingEstimatedEffortAtEnd(
+            daysPresentTillToday: 10,
+            daysPresentTotal: 20,
+            estimatedEffortOpen: 10,
+            speed: 0
+        );
+        Assert.Null(result4);
+    }
+
+    // --------------------------------------------------
+    [Fact]
+    public void CalculatePredictedMissingActualDaysAtEndTest()
+    {
+        var service = new TraineeStatisticsService(
+            traineeStatisticsRepository: null!,
+            traineeLessonRepository: null!,
+            httpClient: null!,
+            userManager: null!,
+            processingPauseRepository: null!
+        );
+
+        // 0 Actual Buffer
+        double? result1 = service.CalculatePredictedMissingActualDaysAtEnd(
+            daysPresentTillToday: 10,
+            daysPresentTotal: 20,
+            estimatedEffortOpen: 10,
             speed: 1.0
         );
-        Assert.Equal(5, result3); // 10 days * 1.0 = 10 => 10 - 5 = 5
+        Assert.Equal(0, result1); // missingEffort = 0 → 0 / 1 = 0
 
-        //speed = 0 => return null
-        double? result4 = service.CalculatePredictedMissingEstimatedEffortAtEnd(
+        // negative Actual Buffer
+        double? result2 = service.CalculatePredictedMissingActualDaysAtEnd(
+            daysPresentTillToday: 10,
+            daysPresentTotal: 20,
+            estimatedEffortOpen: 15,
+            speed: 0.5
+        );
+        Assert.Equal(-20, result2); // 10 * 0.5 = 5 => 5 - 15 = -10 => -10 / 0.5 = -20
+
+        // positive Actual Buffer
+        double? result3 = service.CalculatePredictedMissingActualDaysAtEnd(
+            daysPresentTillToday: 10,
+            daysPresentTotal: 20,
+            estimatedEffortOpen: 5,
+            speed: 1.25
+        );
+        Assert.Equal(6, result3); // 10 * 1.25 = 12.5 => 12.5 - 5 = 7.5 => 7.5 / 1.25 = 6
+
+        // speed = 0 => return null
+        double? result4 = service.CalculatePredictedMissingActualDaysAtEnd(
             daysPresentTillToday: 10,
             daysPresentTotal: 20,
             estimatedEffortOpen: 10,
