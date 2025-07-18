@@ -197,6 +197,7 @@ public class TraineeStatisticsServiceTests {
             processingPauseRepository: null!
         );
 
+        // Test 7
         // 0 Effort Buffer
         double? result1 = service.CalculatePredictedMissingEstimatedEffortAtEnd(
             daysPresentTillToday: 10,
@@ -246,6 +247,7 @@ public class TraineeStatisticsServiceTests {
             processingPauseRepository: null!
         );
 
+        // Test 8
         // 0 Actual Buffer
         double? result1 = service.CalculatePredictedMissingActualDaysAtEnd(
             daysPresentTillToday: 10,
