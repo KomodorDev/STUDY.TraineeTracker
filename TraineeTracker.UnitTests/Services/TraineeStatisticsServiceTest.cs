@@ -10,6 +10,7 @@ using TraineeTracker.Services;
 using TraineeTracker.Models.Domain;
 using TraineeTracker.Data.TraineeStatistics;
 using TraineeTracker.Data.TraineeLessons;
+using TraineeTracker.Data.ProcessingPauses;
 using System.Threading;
 using System.Net.Http.Headers;
 
@@ -19,11 +20,13 @@ public class TraineeStatisticsServiceTests {
     [Fact]
     public async Task GetPresentDaysAsyncTest() {
         var httpClient = new HttpClient();
+        var pauseRepo = new FakeProcessingPauseRepository();
         var service = new TraineeStatisticsService(
             traineeStatisticsRepository: null!,
             traineeLessonRepository: null!,
             httpClient: httpClient,
-            userManager: null!
+            userManager: null!,
+            processingPauseRepository: pauseRepo
         );
 
         var start = new DateOnly(2021, 9, 1);
@@ -90,13 +93,14 @@ public class TraineeStatisticsServiceTests {
         var userManager = new FakeUserManager(trainee);
         var statsRepo = new FakeTraineeStatisticsRepository(trainee);
         var lessonRepo = new FakeTraineeLessonRepository();
+        var pauseRepo = new FakeProcessingPauseRepository();
 
-        var service = new TraineeStatisticsService(statsRepo, lessonRepo, httpClient, userManager);
+        var service = new TraineeStatisticsService(statsRepo, lessonRepo, httpClient, userManager, pauseRepo);
 
         var snapshot = await service.BuildLatestTraineeStatisticsSnapshotAsync(traineeId);
 
         // Test 2
-        Assert.Equal(10, snapshot.DaysPresent); // 20 total - 5 - 5 pause = 10
+        Assert.Equal(10, snapshot.DaysPresentTotal); // 20 total - 5 - 5 pause = 10
     }
 
     // --------------------------------------------------
@@ -164,19 +168,37 @@ public class TraineeStatisticsServiceTests {
         }
 
         Task ITraineeStatisticsRepository.CreateAsync(TraineeStatisticsSnapshot snapshot) {
-            return Task.FromResult(snapshot); // oder ein neuer Snapshot, wenn gewünscht
+            return Task.FromResult(snapshot); 
         }
 
-        Task ITraineeStatisticsRepository.UpdateAsync(TraineeStatisticsSnapshot snapshot) {
-            throw new NotImplementedException();
+        public Task UpdateAsync(TraineeStatisticsSnapshot snapshot)
+        {
+            return Task.CompletedTask;
         }
 
         Task ITraineeStatisticsRepository.DeleteAsync(TraineeStatisticsSnapshot snapshot) {
             throw new NotImplementedException();
         }
 
-        Task<TraineeStatisticsSnapshot> ITraineeStatisticsRepository.GetTraineeStatisticsSnapshotAsync(string traineeId) {
-            throw new NotImplementedException();
+        public Task<TraineeStatisticsSnapshot> GetTraineeStatisticsSnapshotAsync(string traineeId)
+        {
+            var snapshot = new TraineeStatisticsSnapshot
+            {
+                TraineeId = traineeId,
+                Trainee = _user,
+                SnapshotDateTime = DateTime.Now,
+                DaysPresentTotal = 10,
+                DaysPresentTillToday = 10,
+                LessonDaysCompleted = 0,
+                LessonDaysOpen = 0,
+                LessonDaysBuffer = 0,
+                Speed = 0,
+                PredictedMissingEstimatedEffortAtEnd = 0,
+                PredictedMissingActualDays = 0,
+                IsUpToDate = true
+            };
+
+            return Task.FromResult(snapshot);
         }
     }
 
@@ -205,4 +227,42 @@ public class TraineeStatisticsServiceTests {
     }
 
     // --------------------------------------------------
+    private class FakeProcessingPauseRepository : IProcessingPauseRepository
+    {
+        private readonly List<ProcessingPause> _pauses = new();
+
+        public Task CreateAsync(ProcessingPause processingPause)
+        {
+            _pauses.Add(processingPause);
+            return Task.CompletedTask;
+        }
+
+        public Task<bool> ExistsAsync(ProcessingPause processingPause)
+        {
+            var exists = _pauses.Contains(processingPause);
+            return Task.FromResult(exists);
+        }
+
+        public Task<ProcessingPause?> FindByIdAsync(int processingPauseId)
+        {
+            return Task.FromResult<ProcessingPause?>(null);
+        }
+
+        public Task UpdateAsync(ProcessingPause processingPause)
+        {
+            return Task.CompletedTask;
+        }
+
+        public Task DeleteAsync(ProcessingPause processingPause)
+        {
+            _pauses.Remove(processingPause);
+            return Task.CompletedTask;
+        }
+
+        public Task<IEnumerable<ProcessingPause>> GetAllPausesAsync(string traineeId)
+        {
+            var result = _pauses.Where(p => p.TraineeId == traineeId);
+            return Task.FromResult<IEnumerable<ProcessingPause>>(result);
+        }
+    }
 }
