@@ -14,7 +14,7 @@
     <button type="button" onclick="javascript:window.location.reload()" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
 </div>
 <!-- modal body-->
-<div class="modal-body sopro-inner-card" style="padding-top: 9px;">
+<div class="modal-body sopro-inner-card" style="padding-top: 9px; overflow-y: auto; max-height: 70vh;">
     <form asp-action="UpdatePreviewModal"
         asp-controller="TeachingPlan"
         method="post"
@@ -33,7 +33,6 @@
             Check Preview
         </button>
     </form>
-
 
     @* Optional: Liste der Änderungen anzeigen, wenn vorhanden *@
     @if (Model.NewActiveLessons.Any() || Model.NewInactiveLessons.Any() ||
@@ -77,5 +76,23 @@
                 </ul>
             }
         </div>
+
+        <!-- Update Button -->
+        <form asp-action="UpdateTeachingPlan"
+            asp-controller="TeachingPlan"
+            method="post"
+            enctype="multipart/form-data"
+            class="import-form"
+            style="display: flex; flex-direction: column; gap: 1rem;">
+            
+            @Html.AntiForgeryToken()
+
+            <input type="hidden" name="ExistingTeachingPlanId" value="@Model.TeachingPlanId" />
+            <input type="hidden" name="TempFileName" value="@Model.TempFileName" />
+
+            <button type="submit" class="sopro-button-content" style="background-color: #e61d47;">
+                Confirm Update
+            </button>
+        </form>
     }
 </div>
