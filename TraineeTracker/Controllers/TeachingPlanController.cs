@@ -37,9 +37,9 @@ namespace TraineeTracker.Controllers {
                 return RedirectToAction(nameof(ShowImportDashboardView));
             }
             */
-    
+
             try {
-            Console.WriteLine($"[DEBUG] Controller: Called ImportTeachingPlan");
+                Console.WriteLine($"[DEBUG] Controller: Called ImportTeachingPlan");
                 await _teachingPlanService.ImportNewTeachingPlan(dto);
                 return RedirectToAction(nameof(ShowImportDashboardView));
             }
@@ -56,7 +56,7 @@ namespace TraineeTracker.Controllers {
         // [ValidateAntiForgeryToken]
         public async Task<IActionResult> UpdateTeachingPlan(TeachingPlanDto dto) {
 
-            try{
+            try {
                 Console.WriteLine($"[DEBUG] Controller: Called UpdateTeachingPlan");
                 if (dto.NewPlanFile == null) {
                     Console.WriteLine($"[DEBUG] Controller: NewPlanFile is null");
@@ -68,30 +68,39 @@ namespace TraineeTracker.Controllers {
                 await _teachingPlanService.UpdateTeachingPlan(dto);
                 return RedirectToAction(nameof(ShowImportDashboardView));
             }
-            catch(Exception dex){
+            catch (Exception dex) {
                 // Business-Fehler anzeigen
                 TempData["ImportError"] = dex.Message;
                 return RedirectToAction(nameof(ShowImportDashboardView));
             }
-            
+
         }
 
+        // ------------------------------------------------------
+        [Authorize(Roles = "Admin,Mentor")]
+        [HttpGet("{planId}")]
+        // [ValidateAntiForgeryToken]
+        public async Task<IActionResult> UpdateTeachingPlanModal(int planId) {
+
+            return PartialView("~/Views/TeachingPlan/_ImportModal.cshtml");
+
+        }
 
         // ------------------------------------------------------
         [Authorize(Roles = "Admin,Mentor")]
         [HttpPost("DeleteTeachingPlan")]
         // [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteTeachingPlan(int existingTeachingPlanId) {
-            try{
+            try {
                 await _teachingPlanService.DeleteTeachingPlan(existingTeachingPlanId);
                 return RedirectToAction(nameof(ShowImportDashboardView));
             }
-            catch(Exception dex){
+            catch (Exception dex) {
                 // Business-Fehler anzeigen
                 TempData["ImportError"] = dex.Message;
                 return RedirectToAction(nameof(ShowImportDashboardView));
             }
-            
+
         }
 
         // ------------------------------------------------------
