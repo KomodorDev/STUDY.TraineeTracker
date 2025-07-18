@@ -104,6 +104,126 @@ public class TraineeStatisticsServiceTests {
     }
 
     // --------------------------------------------------
+    [Fact]
+    public async Task CalculateLessonDaysCompletedAsync_ShouldReturnWeightedEffortSum()
+    {
+        var traineeId = "trainee-123";
+        var trainee = new ApplicationUser
+        {
+            Id = traineeId,
+            Email = "test@example.com",
+            EmailNotificationSetting = new EmailNotificationSetting()
+        };
+
+        var lessons = new List<TraineeLesson>
+        {
+            new TraineeLesson {
+                TraineeId = traineeId,
+                Trainee = trainee,
+                LessonId = 1,
+                Lesson = new Lesson {
+                    LessonId = 1,
+                    EstimatedEffort = 5,
+                    MakandraId = "1",
+                    TeachingPlanId = 1,
+                    SortingIndex = 1,
+                    Title = "Lesson 1",
+                    LinkUrl = "http://example.com/1"
+                },
+                State = TraineeLessonState.Finished
+            },
+            new TraineeLesson {
+                TraineeId = traineeId,
+                Trainee = trainee,
+                LessonId = 2,
+                Lesson = new Lesson {
+                    LessonId = 2,
+                    EstimatedEffort = 4,
+                    MakandraId = "2",
+                    TeachingPlanId = 1,
+                    SortingIndex = 2,
+                    Title = "Lesson 2",
+                    LinkUrl = "http://example.com/2"
+                },
+                State = TraineeLessonState.Accepted
+            },
+            new TraineeLesson {
+                TraineeId = traineeId,
+                Trainee = trainee,
+                LessonId = 3,
+                Lesson = new Lesson {
+                    LessonId = 3,
+                    EstimatedEffort = 3,
+                    MakandraId = "3",
+                    TeachingPlanId = 1,
+                    SortingIndex = 3,
+                    Title = "Lesson 3",
+                    LinkUrl = "http://example.com/3"
+                },
+                State = TraineeLessonState.Rejected
+            },
+            new TraineeLesson {
+                TraineeId = traineeId,
+                Trainee = trainee,
+                LessonId = 4,
+                Lesson = new Lesson {
+                    LessonId = 4,
+                    EstimatedEffort = 2,
+                    MakandraId = "4",
+                    TeachingPlanId = 1,
+                    SortingIndex = 4,
+                    Title = "Lesson 4",
+                    LinkUrl = "http://example.com/4"
+                },
+                State = TraineeLessonState.Rated
+            },
+            new TraineeLesson {
+                TraineeId = traineeId,
+                Trainee = trainee,
+                LessonId = 5,
+                Lesson = new Lesson {
+                    LessonId = 5,
+                    EstimatedEffort = 10,
+                    MakandraId = "5",
+                    TeachingPlanId = 1,
+                    SortingIndex = 5,
+                    Title = "Lesson 5",
+                    LinkUrl = "http://example.com/5"
+                },
+                State = TraineeLessonState.Open
+            },
+            new TraineeLesson {
+                TraineeId = traineeId,
+                Trainee = trainee,
+                LessonId = 6,
+                Lesson = new Lesson {
+                    LessonId = 6,
+                    EstimatedEffort = 99,
+                    MakandraId = "6",
+                    TeachingPlanId = 1,
+                    SortingIndex = 6,
+                    Title = "Lesson 6",
+                    LinkUrl = "http://example.com/6"
+                },
+                State = TraineeLessonState.Skipped
+            }
+        };
+
+        var lessonRepo = new FakeTraineeLessonRepository(lessons);
+        var service = new TraineeStatisticsService(
+            traineeStatisticsRepository: null!,
+            traineeLessonRepository: lessonRepo,
+            httpClient: null!,
+            userManager: null!,
+            processingPauseRepository: null!
+        );
+
+        var result = await service.CalculateLessonDaysCompletedAsync(traineeId);
+
+        Assert.Equal(11.9, result, precision: 1);
+    }
+
+    // --------------------------------------------------
     private class FakeHttpMessageHandler : HttpMessageHandler {
         private readonly Func<HttpRequestMessage, HttpResponseMessage> _responder;
 
@@ -204,8 +324,14 @@ public class TraineeStatisticsServiceTests {
 
     // --------------------------------------------------
     private class FakeTraineeLessonRepository : ITraineeLessonRepository {
+         private readonly IEnumerable<TraineeLesson> _lessons;
+
+        public FakeTraineeLessonRepository(IEnumerable<TraineeLesson>? lessons = null)
+        {
+            _lessons = lessons ?? new List<TraineeLesson>();
+        }
         public Task<IEnumerable<TraineeLesson>> GetAllTraineeLessonsOfTraineeWithLessonAsync(string traineeId)
-            => Task.FromResult<IEnumerable<TraineeLesson>>(new List<TraineeLesson>());
+            => Task.FromResult(_lessons.Where(l => l.TraineeId == traineeId));
 
         public Task<IEnumerable<TraineeLesson>> GetAllTraineeLessonsOfLessonWithLessonAsync(int lessonId)
             => Task.FromResult<IEnumerable<TraineeLesson>>(new List<TraineeLesson>());
