@@ -210,15 +210,20 @@
                                 <input type="hidden" name="TraineeLessonId" value=@Model.TraineeLesson.TraineeLessonId />
                                 <input type="hidden" name="TargetStateName" value="Rated" />
 
-                                <label for="difficulty">Difficulty (1-10):</label>
+                                <label for="difficulty">Difficulty:</label>
                                 <br>
-                                <input type="number" id="difficulty" name="difficulty" min="1" max="10" required style="width: 75px; border-radius: 11px;"
-                                    value="@Model.ExistingFeedback?.Difficulty">
+                                @Html.DropDownList("Difficulty",
+                                    new SelectList(Model.DifficultyOptions, "Value", "Text", Model.ExistingFeedback?.Difficulty),
+                                    string.IsNullOrEmpty(Model.ExistingFeedback?.Difficulty.ToString()) ? "-- Select Lesson Difficulty --" : null,
+                                    new { @class = "form-control", style = "width: 100%; border-radius: 11px;" })
                                 <br>
 
                                 <label for="previousKnowledge">Previous Knowledge:</label>
                                 <br>
-                                <textarea id="previousKnowledge" name="previousKnowledge" rows="2" style="width: 100%; border-radius: 11px;" required>@Model.ExistingFeedback?.PreviousKnowledge</textarea>
+                                @Html.DropDownList("PreviousKnowledge",
+                                    new SelectList(Model.PreviousKnowledgeOptions, "Value", "Text", Model.ExistingFeedback?.PreviousKnowledge),
+                                    string.IsNullOrEmpty(Model.ExistingFeedback?.PreviousKnowledge.ToString()) ? "-- Select Lesson Difficulty --" : null,
+                                    new { @class = "form-control", style = "width: 100%; border-radius: 11px;" })
                                 <br>
 
                                 <label for="hoursOfEffort">Hours of Effort:</label>
@@ -260,19 +265,26 @@
                                 method="post">
                                 <input type="hidden" name="TraineeLessonId" value=@Model.TraineeLesson.TraineeLessonId />
 
-                                <label for="difficulty">Difficulty (1-10):</label>
+                                <label for="difficulty">Difficulty:</label>
                                 <br>
-                                <input type="number" id="difficulty" name="difficulty" min="1" max="10" required style="width: 75px; border-radius: 11px;">
+                                @Html.DropDownList("Difficulty",
+                                    Model.DifficultyOptions,
+                                    "-- Select Lesson Difficulty --",
+                                    new { @class = "form-control", style = "width: 100%; border-radius: 11px;", required = "required" })
                                 <br>
 
                                 <label for="previousKnowledge">Previous Knowledge:</label>
                                 <br>
-                                <textarea id="previousKnowledge" name="previousKnowledge" rows="2" style="width: 100%; border-radius: 11px;" placeholder="e.g. I already learned that in a hobby project" required></textarea>
+                                @Html.DropDownList("PreviousKnowledge",
+                                    Model.PreviousKnowledgeOptions,
+                                    "-- Select Previous Knowledge --",
+                                    new { @class = "form-control", style = "width: 100%; border-radius: 11px;", required = "required"})
                                 <br>
 
                                 <label for="hoursOfEffort">Hours of Effort:</label>
                                 <br>
                                 <input type="number" id="hoursOfEffort" name="hoursOfEffort" step="0.1" min="0" required style="width: 75px; border-radius: 11px;">
+                                <br>
                                 <br>
 
                                 <label for="comment">Comment (optional):</label>

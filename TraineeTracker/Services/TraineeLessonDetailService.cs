@@ -1,6 +1,7 @@
-// class by schleale
-
 using System.Security.Claims;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using System.Reflection;
+using System.ComponentModel.DataAnnotations;
 
 using TraineeTracker.Data.Feedbacks;
 using TraineeTracker.Data.Lessons;
@@ -85,11 +86,28 @@ namespace TraineeTracker.Services {
                                                     .GetAllowedLessonStateTransitions(user)
                                                     .Select(s => s.ToString())
                                                     .ToList(),
-                ExistingFeedback = feedback
+                ExistingFeedback = feedback,
+                PreviousKnowledgeOptions = Enum.GetValues(typeof(PreviousKnowledgeLevel))
+                    .Cast<PreviousKnowledgeLevel>()
+                    .Select(e => new SelectListItem {
+                        Value = e.ToString(),
+                        Text = e.GetType()
+                                .GetMember(e.ToString())
+                                .First()
+                                .GetCustomAttribute<DisplayAttribute>()?.Name ?? e.ToString()
+                    }),
+                DifficultyOptions = Enum.GetValues(typeof(LessonDifficulty))
+                    .Cast<LessonDifficulty>()
+                    .Select(e => new SelectListItem
+                    {
+                        Value = e.ToString(),
+                        Text = e.GetType().GetMember(e.ToString())[0]
+                            .GetCustomAttribute<DisplayAttribute>()?.Name ?? e.ToString()
+                    }).ToList()
             };
         }
 
-        public async Task SaveTraineeLessonStateChange(TraineeLessonDto traineeLessonUpdate, ClaimsPrincipal user, Feedback? feedback) {
+        public async Task SaveTraineeLessonStateChange(TraineeLessonDto traineeLessonUpdate, ClaimsPrincipal user, Feedback? feedback = null) {
             await CheckHasAccess(user, traineeLessonUpdate.TraineeLessonId);
 
             var oldTraineeLesson = await _databaseTraineeLessonRepository.GetTraineeLessonByIdWithLessonAsync(traineeLessonUpdate.TraineeLessonId) ?? throw new TraineeLessonNotFoundException(traineeLessonUpdate.TraineeLessonId);

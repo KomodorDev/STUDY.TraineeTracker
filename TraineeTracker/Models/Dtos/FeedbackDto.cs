@@ -1,13 +1,14 @@
 using System.ComponentModel.DataAnnotations;
+using TraineeTracker.Models.Domain;
 
 namespace TraineeTracker.Models.Dtos {
     public class FeedbackDto {
         [Range(1, 10)]
-        public int? Difficulty {
+        public LessonDifficulty? Difficulty {
             get; set;
         }
 
-        public string? PreviousKnowledge {
+        public PreviousKnowledgeLevel? PreviousKnowledge {
             get; set;
         }
 
