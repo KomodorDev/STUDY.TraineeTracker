@@ -400,6 +400,8 @@ namespace TraineeTracker.Services {
 
         // ---------------------------------------------------
         private async Task CreateTraineeLessonsAsync(ApplicationUser trainee, IEnumerable<Lesson> lessons) {
+
+            // Create Lessons which are inactive
             foreach (var lesson in lessons.Where(l => !l.IsInactive)) {
                 var tl = new TraineeLesson {
                     TraineeId = trainee.Id,
