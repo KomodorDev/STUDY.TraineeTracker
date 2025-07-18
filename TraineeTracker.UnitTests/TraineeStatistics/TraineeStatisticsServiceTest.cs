@@ -168,6 +168,24 @@ public class TraineeStatisticsServiceTests {
     }
 
     // --------------------------------------------------
+        [Fact]
+    public void CalculateSpeed_ShouldReturnExpectedResults() {
+        var service = new TraineeStatisticsService(
+            traineeStatisticsRepository: null!,
+            traineeLessonRepository: null!,
+            httpClient: null!,
+            userManager: null!,
+            processingPauseRepository: null!
+        );
+
+        // Test 6
+        Assert.Equal(1.5, service.CalculateSpeed(10, 15), precision: 2);  // 15 / 10 = 1.5
+        Assert.Equal(0.5, service.CalculateSpeed(20, 10), precision: 2);  // 10 / 20 = 0.5
+        Assert.Equal(0, service.CalculateSpeed(0, 10), precision: 2);     // Division by zero
+        Assert.Equal(0, service.CalculateSpeed(5, 0), precision: 2);      // 0 lessonDaysCompleted
+    }
+
+    // --------------------------------------------------
     private class FakeHttpMessageHandler : HttpMessageHandler {
         private readonly Func<HttpRequestMessage, HttpResponseMessage> _responder;
 
