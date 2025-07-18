@@ -121,7 +121,28 @@ public class TraineeStatisticsServiceTests {
         var result = await service.CalculateLessonDaysCompletedAsync(trainee.Id);
 
         // Test 3
-        Assert.Equal(11.9, result, precision: 1); 
+        Assert.Equal(11.9, result, precision: 1);   //(Finished = 5*0.7, Accepted = 4, Rejected = 3*0.8, Rated = 2 → Sum = 11.9)
+    }
+
+    [Fact]
+    public async Task CalculateLessonDaysOpenAsync_ShouldReturnCorrectOpenEffort()
+    {
+        var trainee = TestDataFactory.CreateTestTrainee();
+        var lessons = TestDataFactory.CreateTestTraineeLessons(trainee);
+
+        var lessonRepo = new FakeTraineeLessonRepository(lessons);
+        var service = new TraineeStatisticsService(
+            traineeStatisticsRepository: null!,
+            traineeLessonRepository: lessonRepo,
+            httpClient: null!,
+            userManager: null!,
+            processingPauseRepository: null!
+        );
+
+        var result = await service.CalculateLessonDaysOpenAsync(trainee.Id);
+
+        // Test 4
+        Assert.Equal(12.1, result, precision: 1);   //(Total effort = 5+4+3+2+10 = 24, Skipped ignored. Completed = 11.9 → Open = 12.1)
     }
 
     // --------------------------------------------------
