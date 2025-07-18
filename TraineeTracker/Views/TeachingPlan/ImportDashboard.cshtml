@@ -4,8 +4,12 @@
     Layout = "_Layout";
 }
 
-<link rel="stylesheet" href="~/css/site.css" />
-<link rel="stylesheet" href="~/css/ImportDashboard_temp.css?v=@DateTime.Now.Ticks" />
+@section Styles {
+    <link rel="stylesheet" href="~/css/site.css" />
+    <link rel="stylesheet" href="~/css/ImportDashboard_temp.css?v=@DateTime.Now.Ticks" />
+    <link rel="stylesheet" href="~/css/TraineeLessonDetail.css" asp-append-version="true" />
+
+}
 
 <div class="sopro-grid-management">
   <div class="sopro-card">
@@ -37,11 +41,9 @@
                   <div class="plan-actions">
                       <!-- Update / open modal -->
                       <button 
-                        type="button" 
-                        class="sopro-button-content" 
-                        style="background-color: #FFB199;" 
-                        data-bs-toggle="modal" 
-                        data-bs-target="#importDetailModal">
+                        type="button"
+                        class="sopro-button-content update-btn"
+                        data-plan-id="@plan.TeachingPlanId">
                         Update
                       </button>
 
@@ -75,46 +77,45 @@
 </div>
 
 @section Scripts {
-    <script>
-        /* open modal */
-        document.querySelectorAll('button.update-btn').forEach(button => {
-            row.addEventListener('click', function () {
-                const lessonId = this.getAttribute('data-plan-id');
+  <script>
+      document.querySelectorAll('button.update-btn').forEach(button => {
+          button.addEventListener('click', function () {
+              const planId = this.getAttribute('data-plan-id');
+              console.log("DEBUG: clicked planId =", planId);
 
-                // loading cursor
-                document.body.style.cursor = 'wait';
 
-                fetch(`/Teachingplan/${planId}`)   // this would work for a method with [HttpGet("{planId}")]
-                    .then(response => response.text())
-                    .then(html => {
-                        // Inject response directly into existing modal content div
-                        document.getElementById('ImportModalContent').innerHTML = html;
+              document.body.style.cursor = 'wait';
 
-                        // Show the existing modal
-                        const modalElement = document.getElementById('importDetailModal');
-                        const modal = new bootstrap.Modal(modalElement);
-                        modal.show();
+              fetch(`/TeachingPlan/Preview/${planId}`)
+              .then(response => {
+                  if (!response.ok) throw new Error("Failed to fetch modal content");
+                  return response.text();
+              })
+              .then(html => {
+                  document.getElementById('ImportModalContent').innerHTML = html;
 
-                        // Hook up any dynamic event handlers inside the modal content
-                        if (typeof window.hookUpStateChangeForms === 'function') {
-                            window.hookUpStateChangeForms();
-                        }
-                    })
-                    .catch(err => console.error("Failed to load modal", err))
-                    .finally(() => {
-                        // reset cursor
-                        document.body.style.cursor = 'default';
-                    });
-            });
-        });
+                  const modalElement = document.getElementById('importDetailModal');
+                  const modal = new bootstrap.Modal(modalElement);
+                  modal.show();
 
-        /* reload page after closing modal */
-        const modalEl = document.getElementById('importDetailModal');
+                  if (typeof window.hookUpStateChangeForms === 'function') {
+                      window.hookUpStateChangeForms();
+                  }
+              })
+              .catch(err => console.error("Failed to load modal", err))
+              .finally(() => {
+                  document.body.style.cursor = 'default';
+              });
+          });
+      });
 
-        if (modalEl) {
-            modalEl.addEventListener('hidden.bs.modal', () => {
-                location.reload();
-            });
-        }
-    </script>
+      /* reload page after closing modal */
+      const modalEl = document.getElementById('importDetailModal');
+
+      if (modalEl) {
+          modalEl.addEventListener('hidden.bs.modal', () => {
+              location.reload();
+          });
+      }
+  </script>
 }
