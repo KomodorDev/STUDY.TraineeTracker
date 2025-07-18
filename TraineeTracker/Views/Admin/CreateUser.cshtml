@@ -28,15 +28,6 @@
 
             <div class="sopro-card small-header form">
                 <div class="form-header">
-                    <label asp-for="User.Password"></label>
-                </div>
-                <input asp-for="User.Password" type="password" class="sopro-inner-card form" autocomplete="new-password"
-                    aria-required="true" placeholder="Password" />
-                <span asp-validation-for="User.Password" class="text-danger"></span>
-            </div>
-
-            <div class="sopro-card small-header form">
-                <div class="form-header">
                     <label asp-for="User.Role"></label>
                 </div>
                 <select asp-for="User.Role" class="sopro-inner-card form" aria-required="true" asp-items="Model.Roles">
