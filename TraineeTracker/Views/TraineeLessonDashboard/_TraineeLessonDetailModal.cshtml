@@ -213,16 +213,16 @@
                                 <label for="difficulty">Difficulty:</label>
                                 <br>
                                 @Html.DropDownList("Difficulty",
-                                    Model.DifficultyOptions,
-                                    "-- Select Lesson Difficulty --",
+                                    new SelectList(Model.DifficultyOptions, "Value", "Text", Model.ExistingFeedback?.Difficulty),
+                                    string.IsNullOrEmpty(Model.ExistingFeedback?.Difficulty.ToString()) ? "-- Select Lesson Difficulty --" : null,
                                     new { @class = "form-control", style = "width: 100%; border-radius: 11px;" })
                                 <br>
 
                                 <label for="previousKnowledge">Previous Knowledge:</label>
                                 <br>
                                 @Html.DropDownList("PreviousKnowledge",
-                                    Model.PreviousKnowledgeOptions,
-                                    "-- Select Previous Knowledge --",
+                                    new SelectList(Model.PreviousKnowledgeOptions, "Value", "Text", Model.ExistingFeedback?.PreviousKnowledge),
+                                    string.IsNullOrEmpty(Model.ExistingFeedback?.PreviousKnowledge.ToString()) ? "-- Select Lesson Difficulty --" : null,
                                     new { @class = "form-control", style = "width: 100%; border-radius: 11px;" })
                                 <br>
 
