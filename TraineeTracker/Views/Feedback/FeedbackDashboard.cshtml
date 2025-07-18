@@ -3,11 +3,10 @@
     ViewData["Title"] = "Feedback Dashboard";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
-
+@section Styles {
 <link rel="stylesheet" href="~/css/FeedbackDashboard_temp.css?v=@DateTime.Now.Ticks" />
-
 @* <link rel="stylesheet" href="~/css/FeedbackDashboard_temp.css" /> *@
-
+}
 
 <div class="sopro-grid-management" style="height: 100%">
 
@@ -55,6 +54,22 @@
                     <option value="@trainee.Id"
                             selected="@(trainee.Id == Model.SelectedTraineeId ? "selected" : null)">
                         @trainee.UserName
+                    </option>
+                }
+            </select>
+
+            <!-- TeachingPlan Dropdown -->
+            <select name="selectedTeachingPlanId" class="feedback-select-wide" onchange="this.form.submit()">
+                <option value=""
+                        disabled="@(Model.SelectedTraineeId != null ? "disabled" : null)"
+                        selected="@(string.IsNullOrEmpty(Model.SelectedTeachingPlanId?.ToString()) ? "selected" : null)">
+                    All Teaching Plans
+                </option>
+                @foreach (var plan in Model.TeachingPlans)
+                {
+                    <option value="@plan.TeachingPlanId"
+                            selected="@(Model.SelectedTeachingPlanId == plan.TeachingPlanId ? "selected" : null)">
+                        @plan.Name
                     </option>
                 }
             </select>
@@ -111,7 +126,8 @@
                     <tr class="feedback-summary" data-toggle-id="@feedbackId">
                         <td>@feedback.LessonTitle</td>
                         <td>@feedback.AuthorName</td>
-                        <td>@feedback.CreateTime.ToString("dd. MM. yyyy")</td>
+                        <td>@feedback.CreateTime.ToString("dd. MMMM yyyy, HH:mm")</td>
+
                         <td>
                             @if (!feedback.IsReadByCurrentUser)
                             {

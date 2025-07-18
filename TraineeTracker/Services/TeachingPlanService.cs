@@ -5,7 +5,7 @@ using TraineeTracker.Data.TraineeLessons;
 using TraineeTracker.Data.TeachingPlans;
 using TraineeTracker.Models.Domain;
 using TraineeTracker.Models.Dtos;
-using TraineeTracker.Models.ViewModels.TeachingPlan;
+using TraineeTracker.Models.ViewModels.TeachingPlanViewModels;
 using TraineeTracker.Services.Email;
 
 namespace TraineeTracker.Services {

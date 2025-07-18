@@ -15,9 +15,12 @@ namespace TraineeTracker.Models.ViewModels {
         public IEnumerable<ApplicationUser> ActiveTrainees { get; set; } = [];
         public IEnumerable<Lesson> Lessons { get; set; } = [];
 
+        public IEnumerable<TeachingPlan> TeachingPlans { get; set; } = [];
+
         // Currently selected filters (optional but helpful for form state)
         public string? SelectedTraineeId { get; set; }
         public int? SelectedLessonId { get; set; }
+        public int? SelectedTeachingPlanId { get; set; }
 
         // Gesamtzahlen für UI
         public int TotalFeedbackCount { get; set; }

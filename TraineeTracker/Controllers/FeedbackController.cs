@@ -22,12 +22,13 @@ namespace TraineeTracker.Controllers {
                     int page = 1,
                     string sortBy = "date_asc",
                     string? selectedTraineeId = null,
-                    int? selectedLessonId = null) {
+                    int? selectedLessonId = null,
+                    int? selectedTeachingPlanId = null) {
 
             // +++++++++++++++
             // Build ViewModel
             var viewModel = await _feedbackService.BuildFeedbackDashboardViewModelAsync(
-                User, filter, page, sortBy, selectedTraineeId, selectedLessonId);
+                User, filter, page, sortBy, selectedTraineeId, selectedLessonId, selectedTeachingPlanId);
 
             // +++++++++++++++
             // Return View
@@ -43,9 +44,9 @@ namespace TraineeTracker.Controllers {
             string filter = "all",
             int page = 1,
             string sortBy = "date_asc",
-            bool ascending = false,
             string? selectedTraineeId = null,
-            int? selectedLessonId = null) {
+            int? selectedLessonId = null,
+            int? selectedTeachingPlanId = null) {
 
             // +++++++++++++++
             // Mark Feedback As Read
@@ -61,7 +62,8 @@ namespace TraineeTracker.Controllers {
                     page,
                     sortBy,
                     selectedTraineeId,
-                    selectedLessonId
+                    selectedLessonId,
+                    selectedTeachingPlanId
                 });
         }
 
@@ -76,7 +78,8 @@ namespace TraineeTracker.Controllers {
             string sortBy = "date_asc",
             bool ascending = false,
             string? selectedTraineeId = null,
-            int? selectedLessonId = null) {
+            int? selectedLessonId = null,
+            int? selectedTeachingPlanId = null) {
 
             // +++++++++++++++
             // Mark Feedback As Unread
@@ -92,7 +95,8 @@ namespace TraineeTracker.Controllers {
                     page,
                     sortBy,
                     selectedTraineeId,
-                    selectedLessonId
+                    selectedLessonId,
+                    selectedTeachingPlanId
                 });
         }
 
