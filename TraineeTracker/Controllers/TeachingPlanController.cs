@@ -56,25 +56,14 @@ namespace TraineeTracker.Controllers {
         // [ValidateAntiForgeryToken]
         public async Task<IActionResult> UpdateTeachingPlan(TeachingPlanDto dto) {
 
-            try {
-                Console.WriteLine($"[DEBUG] Controller: Called UpdateTeachingPlan");
-                if (dto.NewPlanFile == null) {
-                    Console.WriteLine($"[DEBUG] Controller: NewPlanFile is null");
-                    ModelState.AddModelError(nameof(dto.NewPlanFile), "Bitte eine Datei auswählen");
-                    var existingTeachingPlans = await _teachingPlanService.BuildImportDashboardViewModelAsync();
-                    return View("ImportDashboard", existingTeachingPlans);
-                }
+            Console.WriteLine($"[DEBUG] Controller: Called UpdateTeachingPlan");
+            Console.WriteLine($"[DEBUG] Controller: TeachingPlanId = {dto.ExistingTeachingPlanId}");
+            Console.WriteLine($"[DEBUG] Controller: TempFileName = {dto.TempFileName}");
 
-                await _teachingPlanService.UpdateTeachingPlan(dto);
-                return RedirectToAction(nameof(ShowImportDashboardView));
-            }
-            catch (Exception dex) {
-                // Business-Fehler anzeigen
-                TempData["ImportError"] = dex.Message;
-                return RedirectToAction(nameof(ShowImportDashboardView));
-            }
-
+            await _teachingPlanService.UpdateTeachingPlan(dto);
+            return RedirectToAction(nameof(ShowImportDashboardView));
         }
+
         // ------------------------------------------------------
         [Authorize(Roles = "Admin,Mentor")]
         [HttpGet("Preview/{planId}")]
@@ -103,16 +92,7 @@ namespace TraineeTracker.Controllers {
             Console.WriteLine($"[DEBUG] NewInactiveLessons: {viewModel.NewInactiveLessons.Count}");
             Console.WriteLine($"[DEBUG] ReactivatedLessons: {viewModel.ExistingReactivatedLessons.Count}");
             Console.WriteLine($"[DEBUG] DeactivatedLessons: {viewModel.ExistingDeactivatedLessons.Count}");
-            
-            return PartialView("_ImportPreviewModal", viewModel);
-        }
 
-        // ------------------------------------------------------
-        [Authorize(Roles = "Admin,Mentor")]
-        [HttpPost("Update")]
-        // [ValidateAntiForgeryToken]
-        public async Task<IActionResult> UpdateTeachingPlanModal(TeachingPlanDto dto) {
-            var viewModel = await _teachingPlanService.BuildImportPreviewViewModelAsync(dto);
             return PartialView("_ImportPreviewModal", viewModel);
         }
 
