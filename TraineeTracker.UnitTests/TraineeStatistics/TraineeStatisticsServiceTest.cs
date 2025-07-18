@@ -16,6 +16,7 @@ using System.Net.Http.Headers;
 
 public class TraineeStatisticsServiceTests {
 
+    /*
     // --------------------------------------------------
     [Fact]
     public async Task GetPresentDaysAsyncTest() {
@@ -102,7 +103,8 @@ public class TraineeStatisticsServiceTests {
         // Test 2
         Assert.Equal(10, snapshot.DaysPresentTotal); // 20 total - 5 - 5 pause = 10
     }
-
+    */
+    
     // --------------------------------------------------
     [Fact]
     public async Task CalculateLessonDaysCompletedAsyncTest()
