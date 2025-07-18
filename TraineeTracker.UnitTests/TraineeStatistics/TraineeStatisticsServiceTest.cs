@@ -105,7 +105,7 @@ public class TraineeStatisticsServiceTests {
 
     // --------------------------------------------------
     [Fact]
-    public async Task CalculateLessonDaysCompletedAsync_ShouldReturnWeightedEffortSum()
+    public async Task CalculateLessonDaysCompletedAsyncTest()
     {
         var trainee = TestDataFactory.CreateTestTrainee();
         var lessons = TestDataFactory.CreateTestTraineeLessons(trainee);
@@ -126,7 +126,7 @@ public class TraineeStatisticsServiceTests {
 
     // --------------------------------------------------
     [Fact]
-    public async Task CalculateLessonDaysOpenAsync_ShouldReturnCorrectOpenEffort()
+    public async Task CalculateLessonDaysOpenAsyncTest()
     {
         var trainee = TestDataFactory.CreateTestTrainee();
         var lessons = TestDataFactory.CreateTestTraineeLessons(trainee);
@@ -148,7 +148,7 @@ public class TraineeStatisticsServiceTests {
 
     // --------------------------------------------------
     [Fact]
-    public void CalculateLessonDaysBuffer_ShouldReturnCorrectDifference()
+    public void CalculateLessonDaysBufferTest()
     {
         var service = new TraineeStatisticsService(
             traineeStatisticsRepository: null!,
@@ -168,8 +168,8 @@ public class TraineeStatisticsServiceTests {
     }
 
     // --------------------------------------------------
-        [Fact]
-    public void CalculateSpeed_ShouldReturnExpectedResults() {
+    [Fact]
+    public void CalculateSpeedTest() {
         var service = new TraineeStatisticsService(
             traineeStatisticsRepository: null!,
             traineeLessonRepository: null!,
@@ -183,6 +183,55 @@ public class TraineeStatisticsServiceTests {
         Assert.Equal(0.5, service.CalculateSpeed(20, 10), precision: 2);  // 10 / 20 = 0.5
         Assert.Equal(0, service.CalculateSpeed(0, 10), precision: 2);     // Division by zero
         Assert.Equal(0, service.CalculateSpeed(5, 0), precision: 2);      // 0 lessonDaysCompleted
+    }
+
+    // --------------------------------------------------
+    [Fact]
+    public void CalculatePredictedMissingEstimatedEffortAtEndTest()
+    {
+        var service = new TraineeStatisticsService(
+            traineeStatisticsRepository: null!,
+            traineeLessonRepository: null!,
+            httpClient: null!,
+            userManager: null!,
+            processingPauseRepository: null!
+        );
+
+        // 0 Effort Buffer
+        double? result1 = service.CalculatePredictedMissingEstimatedEffortAtEnd(
+            daysPresentTillToday: 10,
+            daysPresentTotal: 20,
+            estimatedEffortOpen: 10,
+            speed: 1.0
+        );
+        Assert.Equal(0, result1); // 10 remaining days * 1.0 = 10 => 10 - 10 = 0
+
+        //negative Effort Buffer
+        double? result2 = service.CalculatePredictedMissingEstimatedEffortAtEnd(
+            daysPresentTillToday: 10,
+            daysPresentTotal: 20,
+            estimatedEffortOpen: 13,
+            speed: 1.0
+        );
+        Assert.Equal(-3, result2); // 10 * 1.0 = 10 => 10 - 13 = -3
+
+        //positive Effort Buffer
+        double? result3 = service.CalculatePredictedMissingEstimatedEffortAtEnd(
+            daysPresentTillToday: 5,
+            daysPresentTotal: 15,
+            estimatedEffortOpen: 5,
+            speed: 1.0
+        );
+        Assert.Equal(5, result3); // 10 days * 1.0 = 10 => 10 - 5 = 5
+
+        //speed = 0 => return null
+        double? result4 = service.CalculatePredictedMissingEstimatedEffortAtEnd(
+            daysPresentTillToday: 10,
+            daysPresentTotal: 20,
+            estimatedEffortOpen: 10,
+            speed: 0
+        );
+        Assert.Null(result4);
     }
 
     // --------------------------------------------------
