@@ -68,7 +68,7 @@ namespace TraineeTracker.Services.Email {
             // 1. Load setting
             var setting = await _databaseEmailNotificationSettingRepository.GetByUserIdAsync(userId);
 
-            // 2, Update Setting
+            // 2. Update Setting
             setting.ReceiveSkippedNotifications = update.ReceiveSkippedNotifications;
             setting.ReceiveOpenNotifications = update.ReceiveOpenNotifications;
             setting.ReceiveStartedNotifications = update.ReceiveStartedNotifications;
@@ -161,17 +161,23 @@ namespace TraineeTracker.Services.Email {
         // ------------------------------------------------------
         /// <summary>
         /// Sends email notifications to the trainee, mentors, and admins when the state of a lesson changes.
-        /// Notifications are sent based on individual user settings and only to users with open accounts.
+        /// The email includes information about the old and new state, an optional rejection reason, and any submitted feedback.
+        /// Notifications are sent only to users with open accounts and active notification settings.
         /// </summary>
-        /// <param name="traineeLesson">The lesson whose state has changed, including the trainee and lesson details.</param>
+        /// <param name="traineeLesson">The lesson whose state has changed, including trainee and lesson details.</param>
         /// <param name="oldState">The previous state of the lesson before the change.</param>
         /// <param name="newState">The new state of the lesson after the change.</param>
+        /// <param name="feedback">
+        /// Optional feedback submitted by the trainee if the TraineeLesson was set to rated.
+        /// If present, the feedback details (difficulty, prior knowledge, effort, comment) are included in the email.
+        /// </param>
         /// <returns>A Task representing the asynchronous operation.</returns>
         /// <remarks>
         /// Code Ownership: Simon Hinterreiter (hintsimo)
         /// </remarks>
         public async Task NotifyAboutStateChangeAsync(TraineeLesson traineeLesson, TraineeLessonState oldState, TraineeLessonState newState, Feedback? feedback = null) {
 
+            // +++++++++++++++
             // Get Trainee
             var trainee = await _databaseApplicationUserRepository.FindByIdWithNotificationSettingAsync(traineeLesson.TraineeId);
 
@@ -179,6 +185,7 @@ namespace TraineeTracker.Services.Email {
             string traineeName = trainee!.UserName!;
             string lessonTitle = traineeLesson.Lesson.Title;
 
+            // +++++++++++++++
             // Rejected Note:
             string rejectedReason = traineeLesson.RejectionReason!;
             var rejectionNote = "";
@@ -186,13 +193,30 @@ namespace TraineeTracker.Services.Email {
                 rejectionNote = $"<p><strong>Rejection Reason:</strong> {rejectedReason}</p>";
             }
 
+            // +++++++++++++++
             // Feedback Note:
+            string feedbackNote = "";
+            if (feedback is not null) {
+                feedbackNote = $@"
+                    <hr/>
+                    <p><strong>Feedback submitted by {traineeName}:</strong></p>
+                    <ul>
+                        <li><strong>Difficulty:</strong> {feedback.Difficulty}</li>
+                        <li><strong>Previous Knowledge:</strong> {feedback.PreviousKnowledge}</li>
+                        <li><strong>Hours of Effort:</strong> {feedback.HoursOfEffort} h</li>
+                    </ul>";
+
+                if (!string.IsNullOrWhiteSpace(feedback.Comment)) {
+                    feedbackNote += $@"<p><strong>Comment:</strong><br/>{feedback.Comment}</p>";
+                }
+            }
 
             // ++++++++++++++++++++++++++++++++++++++++++
-            // Notify Mentors and Admins
+            // A. Notify Mentors and Admins
             var mentors = await _databaseApplicationUserRepository.GetOpenUsersInRoleWithEmailNotificationSettingAsync("Mentor");
             var admins = await _databaseApplicationUserRepository.GetOpenUsersInRoleWithEmailNotificationSettingAsync("Admin");
 
+            // +++++++++++++++
             // Concat
             var thirdPersons = mentors
                 .Concat(admins)
@@ -215,13 +239,14 @@ namespace TraineeTracker.Services.Email {
                     <p><strong>Previous:</strong> {oldState}<br/>
                     <strong>New:</strong> {newState}</p>
                     {rejectionNote}
+                    {feedbackNote}
                     <p>Best regards,<br/>Your TraineeTracker Team</p>";
 
                 await _emailSender.SendEmailAsync(person.Email!, subject, messageHtml);
             }
 
             // ++++++++++++++++++++++++++++++++++++++++++
-            // Notifiy Trainee
+            // B. Notifiy Trainee
             if (!trainee.IsClosed && ShouldNotify(traineeSetting, newState)) {
                 var subject = $"TraineeTracker: Lesson '{lessonTitle}' changed from {oldState} to {newState}";
 
@@ -231,6 +256,7 @@ namespace TraineeTracker.Services.Email {
                     <p><strong>Previous:</strong> {oldState}<br/>
                     <strong>New:</strong> {newState}</p>
                     {rejectionNote}
+                    {feedbackNote}
                     <p>Best regards,<br/>Your TraineeTracker Team</p>";
 
                 await _emailSender.SendEmailAsync(trainee.Email!, subject, messageHtml);
@@ -238,21 +264,30 @@ namespace TraineeTracker.Services.Email {
         }
 
         /// <summary>
-        /// Sends email notifications to mentors, admins, and the trainee when feedback is modified.
+        /// Sends email notifications to mentors, admins, and the trainee when feedback for a lesson is changed or deleted.
+        /// The email includes a summary of the updated feedback or a deletion notice. 
         /// Notifications are only sent to users with open accounts and active notification settings.
         /// </summary>
-        /// <param name="feedback">The feedback object containing lesson and author information.</param>
-        /// <param name="trueAuthor">The user who actually submitted or edited the feedback (can differ from the original author).</param>
+        /// <param name="feedback">The feedback object containing lesson, author, and content details.</param>
+        /// <param name="trueAuthor">The user who actually submitted or edited the feedback (may differ from the original author).</param>
+        /// <param name="deleted">
+        /// Indicates whether the feedback was deleted.
+        /// If true, the notification states that the feedback was removed.
+        /// If false, the updated feedback content is included in the message.
+        /// </param>
         /// <returns>A Task representing the asynchronous operation.</returns>
         /// <remarks>
         /// Code Ownership: Simon Hinterreiter (hintsimo)
         /// </remarks>
         // ------------------------------------------------------
         public async Task NotifyAboutFeedbackChangeAsync(Feedback feedback, ApplicationUser trueAuthor, bool deleted = false) {
-            // 1. Lesson laden
+
+            // +++++++++++++++
+            // 1. Get Lesson
             var lesson = await _databaseLessonRepository
                 .GetLessonByIdAsync(feedback.LessonId);
 
+            // +++++++++++++++
             // 2. Get Trainee
             var trainee = await _databaseApplicationUserRepository
                 .FindByIdWithNotificationSettingAsync(feedback.AuthorId);
@@ -261,8 +296,30 @@ namespace TraineeTracker.Services.Email {
             string traineeName = trainee!.UserName!;
             string lessonTitle = lesson!.Title;
 
+            // +++++++++++++++
+            // FeedbackNote:
+            string feedbackNote = "";
+            if (deleted) {
+                feedbackNote = $@"
+                    <hr/>
+                    <p><strong>Updated Feedback:</strong> Feedback was deleted.</p>";
+            } else {
+                feedbackNote = $@"
+                    <hr/>
+                    <p><strong>Updated Feedback:</strong></p>
+                    <ul>
+                        <li><strong>Difficulty:</strong> {feedback.Difficulty}</li>
+                        <li><strong>Previous Knowledge:</strong> {feedback.PreviousKnowledge}</li>
+                        <li><strong>Hours of Effort:</strong> {feedback.HoursOfEffort} h</li>
+                    </ul>";
+
+                if (!string.IsNullOrWhiteSpace(feedback.Comment)) {
+                    feedbackNote += $@"<p><strong>Comment:</strong><br/>{feedback.Comment}</p>";
+                }
+            }
+
             // ++++++++++++++++++++++++++++++++++++++++++
-            // Notify Mentors and Admins
+            // A. Notify Mentors and Admins
             var mentors = await _databaseApplicationUserRepository.GetOpenUsersInRoleWithEmailNotificationSettingAsync("Mentor");
             var admins = await _databaseApplicationUserRepository.GetOpenUsersInRoleWithEmailNotificationSettingAsync("Admin");
 
@@ -282,19 +339,21 @@ namespace TraineeTracker.Services.Email {
                 var messageHtml = $@"
                     <p>Hello {person.UserName},</p>
                     <p>The feedback for lesson <strong>“{lessonTitle}”</strong> from trainee <strong>{traineeName}</strong> was changed by <strong>“{trueAuthor.UserName}”</strong>.</p>
+                    {feedbackNote}
                     <p>Best regards,<br/>Your TraineeTracker Team</p>";
 
                 await _emailSender.SendEmailAsync(person.Email!, subject, messageHtml);
             }
 
             // ++++++++++++++++++++++++++++++++++++++++++
-            // Notify Trainee (if someone else edited it)
+            // B. Notify Trainee (if someone else edited it)
             if (!trainee.IsClosed && feedback.AuthorId != trainee.Id && traineeSetting?.ReceiveFeedbackChangeNotifications == true) {
                 var subject = $"TraineeTracker: Your feedback for lesson '{lessonTitle}' was changed";
 
                 var messageHtml = $@"
                     <p>Hello {trainee.UserName},</p>
                     <p>Your feedback for the lesson <strong>“{lessonTitle}”</strong> was changed by <strong>“{trueAuthor.UserName}”</strong>.</p>
+                    {feedbackNote}
                     <p>Best regards,<br/>Your TraineeTracker Team</p>";
 
                 await _emailSender.SendEmailAsync(trainee.Email!, subject, messageHtml);
@@ -330,7 +389,7 @@ namespace TraineeTracker.Services.Email {
             var changes = "";
 
             // ++++++++++++++++++++++++++++++++++++++++++
-            // Notifiy Trainee
+            // A. Notifiy Trainee
             var setting = await _databaseEmailNotificationSettingRepository.GetByUserIdAsync(trainee.Id);
             if (setting.ReceiveImportChangeNotifications && (added.Any() || removed.Any())) {
                 var subject = "TraineeTracker: Your teaching plan has been updated";
@@ -355,7 +414,7 @@ namespace TraineeTracker.Services.Email {
             }
 
             // ++++++++++++++++++++++++++++++++++++++++++
-            // Notify Mentors and Admins
+            // B. Notify Mentors and Admins
             if (added.Any() || removed.Any()) {
                 var subject = $"TraineeTracker: Changes to {trainee.UserName}'s teachinglan";
 
