@@ -270,7 +270,7 @@
                                 @Html.DropDownList("Difficulty",
                                     Model.DifficultyOptions,
                                     "-- Select Lesson Difficulty --",
-                                    new { @class = "form-control", style = "width: 100%; border-radius: 11px;" })
+                                    new { @class = "form-control", style = "width: 100%; border-radius: 11px;", required = "required" })
                                 <br>
 
                                 <label for="previousKnowledge">Previous Knowledge:</label>
@@ -278,7 +278,7 @@
                                 @Html.DropDownList("PreviousKnowledge",
                                     Model.PreviousKnowledgeOptions,
                                     "-- Select Previous Knowledge --",
-                                    new { @class = "form-control", style = "width: 100%; border-radius: 11px;" })
+                                    new { @class = "form-control", style = "width: 100%; border-radius: 11px;", required = "required"})
                                 <br>
 
                                 <label for="hoursOfEffort">Hours of Effort:</label>
