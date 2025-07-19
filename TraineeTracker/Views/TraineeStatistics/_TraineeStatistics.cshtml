@@ -275,7 +275,7 @@
     var stackedLessons = orderedLessons.Select(l =>
     {
         var value = l.WeightedEffort > 0 ? l.WeightedEffort : l.EstimatedEffort;
-        if (value <= 0) value = 0.1;
+        if (value <= 0) value = 0.00000001;
 
         var start = basePos;
         basePos += value;
@@ -302,7 +302,7 @@
         {
             var start = lastExtraEnd;
             var value = l.EstimatedEffort - l.WeightedEffort;
-            if (value <= 0) value = 0;
+            if (value <= 0) value = 0.00000001;
 
             lastExtraEnd += value;
 
@@ -324,7 +324,7 @@
 
     var finalFragments = openAndStarted.Select(l => {
         var value = l.WeightedEffort > 0 ? l.WeightedEffort : l.EstimatedEffort;
-        if (value <= 0) value = 0.1;
+        if (value <= 0) value = 0.00000001;
 
         var start = finalBasePos;
         finalBasePos += value;
