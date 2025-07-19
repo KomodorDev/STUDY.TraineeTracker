@@ -341,7 +341,7 @@ namespace TraineeTracker.Services {
                 // +++++++++++++++
                 // b) Add
                 var addedTraineeLessons = new List<TraineeLesson>();
-                foreach (var lesson in addedLessons) {
+                foreach (var lesson in addedLessons.Where(l => !l.IsInactive)) {
                     var tl = new TraineeLesson {
                         TraineeId = trainee.Id,
                         Trainee = trainee,
@@ -366,7 +366,7 @@ namespace TraineeTracker.Services {
 
                 // +++++++++++++++
                 // c) Notifications
-                _ =_emailNotificationService
+                _ = _emailNotificationService
                     .NotifyAboutImportChangeAsync(trainee, removedTraineeLessons, addedTraineeLessons);
             }
         }
