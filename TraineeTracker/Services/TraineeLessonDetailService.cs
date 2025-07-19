@@ -31,18 +31,22 @@ namespace TraineeTracker.Services {
 
         private readonly IServiceScopeFactory _scopeFactory;
 
+        private FeedbackService _feedbackService;
+
         public TraineeLessonDetailService(ILessonRepository databaseLessonRepository,
                                             ITraineeLessonRepository databaseTraineeLessonRepository,
                                             ITraineeLessonLogEntryRepository databaseTraineeLessonLogEntryRepository,
                                             IFeedbackRepository databaseFeedbackRepository,
                                             IApplicationUserRepository databaseApplicationUserRepository,
-                                            IServiceScopeFactory scopeFactory) {
+                                            IServiceScopeFactory scopeFactory,
+                                            FeedbackService feedbackService) {
             _databaseLessonRepository = databaseLessonRepository;
             _databaseTraineeLessonLogEntryRepository = databaseTraineeLessonLogEntryRepository;
             _databaseTraineeLessonRepository = databaseTraineeLessonRepository;
             _databaseFeedbackrepository = databaseFeedbackRepository;
             _databaseApplicationUserRepository = databaseApplicationUserRepository;
             _scopeFactory = scopeFactory;
+            _feedbackService = feedbackService;
         }
 
         private async Task CheckHasAccess(ClaimsPrincipal user, int traineeLessonId) {
@@ -201,6 +205,9 @@ namespace TraineeTracker.Services {
                 existingFeedback.HoursOfEffort = feedbackDto.HoursOfEffort ?? existingFeedback.HoursOfEffort;
 
                 await _databaseFeedbackrepository.UpdateAsync(existingFeedback);
+
+                // mark changed feedback as unread
+                await _feedbackService.MarkFeedbackAsUnreadForEveryoneAsync(existingFeedback.FeedbackId);
 
                 // sends email (different thread)
                 _ = Task.Run(async () => {
