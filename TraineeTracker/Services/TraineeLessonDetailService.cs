@@ -31,6 +31,9 @@ namespace TraineeTracker.Services {
 
         private readonly IServiceScopeFactory _scopeFactory;
 
+        /// <summary>
+        /// Service for marking feedbacks as unread after they have been changed
+        /// </summary>
         private FeedbackService _feedbackService;
 
         public TraineeLessonDetailService(ILessonRepository databaseLessonRepository,
