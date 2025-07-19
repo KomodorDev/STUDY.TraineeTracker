@@ -5,7 +5,6 @@ namespace TraineeTracker.Models.Domain {
     public class Feedback {
         public int FeedbackId { get; set; }
 
-        [Range(1, 10)]
         public required LessonDifficulty Difficulty { get; set; }
 
         public DateTime CreateTime { get; set; } = DateTime.UtcNow;

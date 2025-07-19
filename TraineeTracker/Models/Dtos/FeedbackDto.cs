@@ -3,7 +3,7 @@ using TraineeTracker.Models.Domain;
 
 namespace TraineeTracker.Models.Dtos {
     public class FeedbackDto {
-        [Range(1, 10)]
+        
         public LessonDifficulty? Difficulty {
             get; set;
         }
