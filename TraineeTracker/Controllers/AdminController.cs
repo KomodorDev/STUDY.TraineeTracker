@@ -11,34 +11,44 @@ namespace TraineeTracker.Controllers {
         private readonly AdminService _adminService;
         private readonly ILogger<AdminController> _logger;
 
-        // ------------------------------------------------------------------------------------------------------------
+        // ------------------------------------------------------
         public AdminController(AdminService adminService, ILogger<AdminController> logger) {
             _adminService = adminService;
             _logger = logger;
         }
 
-        // ------------------------------------------------------------------------------------------------------------
+        // ------------------------------------------------------
         [HttpGet("Dashboard")]
-        public async Task<IActionResult> ShowAdminDashboardView(string? selectedRole = null, string? selectedStatus = null, string? sortBy = null) {
-            var viewModel = await _adminService.BuildAdminDashboardViewModelAsync(selectedRole, selectedStatus, sortBy);
+        public async Task<IActionResult> ShowAdminDashboardView(
+            int page = 1,
+            string? filterRole = "all",
+            string? filterStatus = "open",
+            string? sortBy = "role_asc") {
+
+            var viewModel = await _adminService.BuildAdminDashboardViewModelAsync(page, filterRole, filterStatus, sortBy);
             return View("AdminDashboard", viewModel);
         }
 
-        // ------------------------------------------------------------------------------------------------------------
+        // ------------------------------------------------------
         [HttpGet("CreateUser")]
         public async Task<IActionResult> ShowCreateUserView() {
             var viewModel = await _adminService.BuildCreateUserViewModelAsync();
             return View("CreateUser", viewModel);
         }
 
-        // ------------------------------------------------------------------------------------------------------------
+        // ------------------------------------------------------
         [HttpPost("CreateUser")]
         public async Task<IActionResult> CreateUserAsync(CreateUserViewModel viewModel) {
-            if (!ModelState.IsValid) {
+
+            // 1. No submission yet:
+            if (!viewModel.ConfirmSubmission) {
                 viewModel = await _adminService.FillCreateUserDropdownsAsync(viewModel);
                 return View("CreateUser", viewModel);
             }
+
+            // 2. User wants to submit:
             var result = await _adminService.CreateUserAsync(viewModel.User, false, Url);
+
             if (!result.Succeeded) {
                 var modelTask = _adminService.FillCreateUserDropdownsAsync(viewModel);
                 foreach (var message in result.ErrorMessages) {
@@ -50,7 +60,7 @@ namespace TraineeTracker.Controllers {
             return RedirectToAction("ShowAdminDashboardView");
         }
 
-        // ------------------------------------------------------------------------------------------------------------
+        // ------------------------------------------------------
         [HttpPost("CloseUser")]
         public async Task<IActionResult> CloseUserAsync(string userId) {
             var result = await _adminService.CloseUserAsync(userId);
@@ -60,64 +70,71 @@ namespace TraineeTracker.Controllers {
             return RedirectToAction("ShowAdminDashboardView");
         }
 
-        // ------------------------------------------------------------------------------------------------------------
+        // ------------------------------------------------------
         [HttpGet("ProcessingPauses")]
         public async Task<IActionResult> ShowManageProcessingPausesView(string traineeId) {
-            var trainee = await _adminService.FindByIdWithProcessingPausesAsync(traineeId);
-            if (trainee == null) {
-                return NotFound();
-            }
-            return View("ManageProcessingPauses", trainee);
+            var viewModel = await _adminService.BuildManageProcessingPausesViewModelAsync(traineeId);
+
+            return View("ManageProcessingPauses", viewModel);
         }
 
-        // ------------------------------------------------------------------------------------------------------------
-        [HttpGet("CreateProcessingPause")]
-        public async Task<IActionResult> ShowCreateProcessingPauseView(string traineeId) {
-            var viewModel = await _adminService.BuildCreateProcessingPauseViewModelAsync(traineeId);
-            return View("CreateProcessingPause", viewModel);
-        }
-
-        // ------------------------------------------------------------------------------------------------------------
+        // ------------------------------------------------------
         [HttpPost("CreateProcessingPause")]
-        public async Task<IActionResult> CreateProcessingPauseAsync(CreateProcessingPauseViewModel viewModel) {
+        public async Task<IActionResult> CreateProcessingPauseAsync(ProcessingPauseDto dto) {
+
+            Console.WriteLine("==> CreateProcessingPauseAsync called");
+
             if (!ModelState.IsValid) {
-                return View("CreateProcessingPause", viewModel);
+                var rebuild = await _adminService.BuildManageProcessingPausesViewModelAsync(dto.TraineeId);
+
+                // Add back the new ProcessingPause
+                rebuild!.NewProcessingPause = dto;
+                return View("ManageProcessingPauses", rebuild);
             }
-            var result = await _adminService.CreateProcessingPauseAsync(viewModel.ProcessingPause);
+
+            Console.WriteLine("ModelState is valid. Attempting to create ProcessingPause...");
+            var result = await _adminService.CreateProcessingPauseAsync(dto);
+
             if (!result.Succeeded) {
+                Console.WriteLine("Creation failed. Rebuilding view model...");
+
+                var rebuild = await _adminService.BuildManageProcessingPausesViewModelAsync(dto.TraineeId);
+                if (rebuild is null)
+                    return NotFound();
+
+                rebuild.NewProcessingPause = dto;
                 foreach (var message in result.ErrorMessages)
                     ModelState.AddModelError("", message);
-                return View("CreateProcessingPause", viewModel);
+
+                return View("ManageProcessingPauses", rebuild);
             }
-            return RedirectToAction("ShowManageProcessingPausesView", new { traineeId = viewModel.ProcessingPause.TraineeId });
+
+            Console.WriteLine("Creation succeeded. Redirecting...");
+            return RedirectToAction("ShowManageProcessingPausesView", new { traineeId = dto.TraineeId });
         }
 
-        // ------------------------------------------------------------------------------------------------------------
-        [HttpGet("EditProcessingPause")]
-        public async Task<IActionResult> ShowEditProcessingPauseView(int processingPauseId) {
-            var result = await _adminService.GetProcessingPauseDtoAsync(processingPauseId);
-            if (!result.Succeeded) {
-                return NotFound();
-            }
-            return View("EditProcessingPause", result.Value);
-        }
-
-        // ------------------------------------------------------------------------------------------------------------
+        // ------------------------------------------------------
         [HttpPost("EditProcessingPause")]
         public async Task<IActionResult> EditProcessingPauseAsync(ProcessingPauseDto dto) {
             if (!ModelState.IsValid) {
-                return View("EditProcessingPause", dto);
+                // We buld a new viewModel and return
+                var viewModel = await _adminService.BuildManageProcessingPausesViewModelAsync(dto.TraineeId);
+                return View("ManageProcessingPauses", viewModel);
             }
+
             var result = await _adminService.UpdateProcessingPauseAsync(dto);
             if (!result.Succeeded) {
                 foreach (var message in result.ErrorMessages)
                     ModelState.AddModelError("", message);
-                return View("EditProcessingPause", dto);
+
+                var viewModel = await _adminService.BuildManageProcessingPausesViewModelAsync(dto.TraineeId);
+                return View("ManageProcessingPauses", viewModel);
             }
+
             return RedirectToAction("ShowManageProcessingPausesView", new { traineeId = dto.TraineeId });
         }
 
-        // ------------------------------------------------------------------------------------------------------------
+        // ------------------------------------------------------
         [HttpPost("DeleteProcessingPause")]
         public async Task<IActionResult> DeleteProcessingPauseAsync(int processingPauseId) {
             var result = await _adminService.DeleteProcessingPauseAsync(processingPauseId);
@@ -128,10 +145,12 @@ namespace TraineeTracker.Controllers {
             return RedirectToAction("ShowManageProcessingPausesView", new { TraineeId = result.Value.TraineeId });
         }
 
-        // ------------------------------------------------------------------------------------------------------------
+        // ------------------------------------------------------
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error() {
             return View("Error!");
         }
+
+        // ------------------------------------------------------
     }
 }
