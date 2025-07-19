@@ -104,7 +104,7 @@ public class TraineeStatisticsServiceTests {
         Assert.Equal(10, snapshot.DaysPresentTotal); // 20 total - 5 - 5 pause = 10
     }
     */
-    
+
     // --------------------------------------------------
     [Fact]
     public async Task CalculateLessonDaysCompletedAsyncTest()
@@ -417,42 +417,39 @@ public class TraineeStatisticsServiceTests {
     }
 
     // --------------------------------------------------
-    private class FakeProcessingPauseRepository : IProcessingPauseRepository
-    {
+    private class FakeProcessingPauseRepository : IProcessingPauseRepository {
         private readonly List<ProcessingPause> _pauses = new();
 
-        public Task CreateAsync(ProcessingPause processingPause)
-        {
+        public Task CreateAsync(ProcessingPause processingPause) {
             _pauses.Add(processingPause);
             return Task.CompletedTask;
         }
 
-        public Task<bool> ExistsAsync(ProcessingPause processingPause)
-        {
+        public Task<bool> ExistsAsync(ProcessingPause processingPause) {
             var exists = _pauses.Contains(processingPause);
             return Task.FromResult(exists);
         }
 
-        public Task<ProcessingPause?> FindByIdAsync(int processingPauseId)
-        {
+        public Task<ProcessingPause?> FindByIdAsync(int processingPauseId) {
             return Task.FromResult<ProcessingPause?>(null);
         }
 
-        public Task UpdateAsync(ProcessingPause processingPause)
-        {
+        public Task UpdateAsync(ProcessingPause processingPause) {
             return Task.CompletedTask;
         }
 
-        public Task DeleteAsync(ProcessingPause processingPause)
-        {
+        public Task DeleteAsync(ProcessingPause processingPause) {
             _pauses.Remove(processingPause);
             return Task.CompletedTask;
         }
 
-        public Task<IEnumerable<ProcessingPause>> GetAllPausesAsync(string traineeId)
-        {
+        public Task<IEnumerable<ProcessingPause>> GetAllPausesAsync(string traineeId) {
             var result = _pauses.Where(p => p.TraineeId == traineeId);
             return Task.FromResult<IEnumerable<ProcessingPause>>(result);
+        }
+
+        public Task<bool> OverlapsAsync(ProcessingPause pause, bool excludeSelf) {
+            return Task.FromResult(false);
         }
     }
 }
