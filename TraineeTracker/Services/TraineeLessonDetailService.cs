@@ -31,6 +31,9 @@ namespace TraineeTracker.Services {
 
         private readonly IServiceScopeFactory _scopeFactory;
 
+        /// <summary>
+        /// Service for marking feedbacks as unread after they have been changed
+        /// </summary>
         private FeedbackService _feedbackService;
 
         public TraineeLessonDetailService(ILessonRepository databaseLessonRepository,
@@ -203,6 +206,7 @@ namespace TraineeTracker.Services {
                 existingFeedback.Difficulty = feedbackDto.Difficulty ?? existingFeedback.Difficulty;
                 existingFeedback.PreviousKnowledge = feedbackDto.PreviousKnowledge ?? existingFeedback.PreviousKnowledge;
                 existingFeedback.HoursOfEffort = feedbackDto.HoursOfEffort ?? existingFeedback.HoursOfEffort;
+                existingFeedback.Comment = feedbackDto.Comment;
 
                 await _databaseFeedbackrepository.UpdateAsync(existingFeedback);
 
