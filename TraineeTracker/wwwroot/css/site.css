@@ -123,7 +123,7 @@ a:hover {
 }
 /* other scrollbar stuff, for chrome, safari & edge */
 .sopro-inner-card::-webkit-scrollbar {
-  width: 20px;
+  width: 7px;
 }
 .sopro-inner-card::-webkit-scrollbar-thumb {
   background-color: #626262;

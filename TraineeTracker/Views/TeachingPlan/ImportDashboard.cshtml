@@ -4,8 +4,12 @@
     Layout = "_Layout";
 }
 
-<link rel="stylesheet" href="~/css/site.css" />
-<link rel="stylesheet" href="~/css/ImportDashboard_temp.css?v=@DateTime.Now.Ticks" />
+@section Styles {
+    <link rel="stylesheet" href="~/css/site.css" />
+    <link rel="stylesheet" href="~/css/ImportDashboard_temp.css?v=@DateTime.Now.Ticks" />
+    <link rel="stylesheet" href="~/css/TraineeLessonDetail.css" asp-append-version="true" />
+
+}
 
 <div class="sopro-grid-management">
   <div class="sopro-card">
@@ -35,13 +39,15 @@
                   <span class="plan-meta">Last Updated: @plan.LastUpdated.ToString("dd.MM.yyyy")</span>
               
                   <div class="plan-actions">
-                      <!-- Update -->
-                      <form asp-action="UpdateTeachingPlan" method="post" enctype="multipart/form-data" style="align-items: center; padding-right: 1.172rem;">
-                      @Html.AntiForgeryToken()
-                      <input type="hidden" name="ExistingTeachingPlanId" value="@plan.TeachingPlanId" />
-                      <input type="file" name="NewPlanFile" required />
-                      <button type="submit" class="sopro-button-content" style="background-color: #FFB199;">Update</button>
-                      </form>
+                      <!-- Update / open modal -->
+                      <button 
+                        type="button"
+                        class="sopro-button-content update-btn"
+                        data-plan-id="@plan.TeachingPlanId"
+                        style="margin-right: 10px;">
+                        Update
+                      </button>
+
                       <!-- Delete -->
                       <form asp-action="DeleteTeachingPlan" method="post" onsubmit="return confirm('Confirm deletion?');">
                         @Html.AntiForgeryToken()
@@ -63,3 +69,54 @@
   </div>
 </div>
 
+<!-- modal -->
+<div id="importDetailModal" class="modal fade" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-dialog-centered sopro-import-modal-size" >
+        <div class="modal-content sopro-card" id="ImportModalContent" style="box-shadow: none;">
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+  <script>
+      document.querySelectorAll('button.update-btn').forEach(button => {
+          button.addEventListener('click', function () {
+              const planId = this.getAttribute('data-plan-id');
+              console.log("DEBUG: clicked planId =", planId);
+
+
+              document.body.style.cursor = 'wait';
+
+              fetch(`/TeachingPlan/Preview/${planId}`)
+              .then(response => {
+                  if (!response.ok) throw new Error("Failed to fetch modal content");
+                  return response.text();
+              })
+              .then(html => {
+                  document.getElementById('ImportModalContent').innerHTML = html;
+
+                  const modalElement = document.getElementById('importDetailModal');
+                  const modal = new bootstrap.Modal(modalElement);
+                  modal.show();
+
+                  if (typeof window.hookUpStateChangeForms === 'function') {
+                      window.hookUpStateChangeForms();
+                  }
+              })
+              .catch(err => console.error("Failed to load modal", err))
+              .finally(() => {
+                  document.body.style.cursor = 'default';
+              });
+          });
+      });
+
+      /* reload page after closing modal */
+      const modalEl = document.getElementById('importDetailModal');
+
+      if (modalEl) {
+          modalEl.addEventListener('hidden.bs.modal', () => {
+              location.reload();
+          });
+      }
+  </script>
+}
