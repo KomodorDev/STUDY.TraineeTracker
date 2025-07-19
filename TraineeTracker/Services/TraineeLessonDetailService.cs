@@ -203,6 +203,7 @@ namespace TraineeTracker.Services {
                 existingFeedback.Difficulty = feedbackDto.Difficulty ?? existingFeedback.Difficulty;
                 existingFeedback.PreviousKnowledge = feedbackDto.PreviousKnowledge ?? existingFeedback.PreviousKnowledge;
                 existingFeedback.HoursOfEffort = feedbackDto.HoursOfEffort ?? existingFeedback.HoursOfEffort;
+                existingFeedback.Comment = feedbackDto.Comment;
 
                 await _databaseFeedbackrepository.UpdateAsync(existingFeedback);
 
