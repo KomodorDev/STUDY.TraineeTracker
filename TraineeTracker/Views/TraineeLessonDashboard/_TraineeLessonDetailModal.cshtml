@@ -191,7 +191,8 @@
 
                             <label for="rejectionReason">Rejection reason:</label>
                             <br>
-                            <textarea name="rejectionReason" rows="4" style="height: 68px; width: 100%; border-radius: 11px; margin-bottom: 1.172rem;" required>@Model.TraineeLesson.RejectionReason</textarea>
+                            <textarea name="rejectionReason" rows="4" style="height: 68px; width: 100%; border-radius: 11px; margin-bottom: 1.172rem; border: 1px solid black;"
+                                required>@Model.TraineeLesson.RejectionReason</textarea>
                             <br>
 
                             <button type="submit" class="sopro-button-content" style="margin-right: 1.172rem;">Submit</button>
@@ -215,7 +216,7 @@
                                 @Html.DropDownList("Difficulty",
                                     new SelectList(Model.DifficultyOptions, "Value", "Text", Model.ExistingFeedback?.Difficulty),
                                     string.IsNullOrEmpty(Model.ExistingFeedback?.Difficulty.ToString()) ? "-- Select Lesson Difficulty --" : null,
-                                    new { @class = "form-control", style = "width: 100%; border-radius: 11px;" })
+                                    new { @class = "form-control", style = "width: 100%; border-radius: 11px; border: 1px solid black;" })
                                 <br>
 
                                 <label for="previousKnowledge">Previous Knowledge:</label>
@@ -223,18 +224,18 @@
                                 @Html.DropDownList("PreviousKnowledge",
                                     new SelectList(Model.PreviousKnowledgeOptions, "Value", "Text", Model.ExistingFeedback?.PreviousKnowledge),
                                     string.IsNullOrEmpty(Model.ExistingFeedback?.PreviousKnowledge.ToString()) ? "-- Select Lesson Difficulty --" : null,
-                                    new { @class = "form-control", style = "width: 100%; border-radius: 11px;" })
+                                    new { @class = "form-control", style = "width: 100%; border-radius: 11px; border: 1px solid black;" })
                                 <br>
 
                                 <label for="hoursOfEffort">Hours of Effort:</label>
                                 <br>
-                                <input type="number" id="hoursOfEffort" name="hoursOfEffort" step="0.1" min="0" required style="width: 75px; border-radius: 11px;"
+                                <input type="number" id="hoursOfEffort" name="hoursOfEffort" step="0.1" min="0" required style="width: 75px; border-radius: 11px; border: 1px solid black;"
                                     value="@Model.ExistingFeedback?.HoursOfEffort">
                                 <br>
 
                                 <label for="comment">Comment (optional):</label>
                                 <br>
-                                <textarea id="comment" name="comment" rows="2" style="width: 100%; margin-bottom: 1.172rem; border-radius: 11px;">@Model.ExistingFeedback?.Comment</textarea>
+                                <textarea id="comment" name="comment" rows="2" style="width: 100%; margin-bottom: 1.172rem; border-radius: 11px; border: 1px solid black;">@Model.ExistingFeedback?.Comment</textarea>
                                 <br>
 
                                 <button type="submit" class="sopro-button-content" style="margin-right: 1.172rem;">Update</button>
@@ -270,7 +271,7 @@
                                 @Html.DropDownList("Difficulty",
                                     Model.DifficultyOptions,
                                     "-- Select Lesson Difficulty --",
-                                    new { @class = "form-control", style = "width: 100%; border-radius: 11px;", required = "required" })
+                                    new { @class = "form-control", style = "width: 100%; border-radius: 11px; border: 1px solid black;", required = "required" })
                                 <br>
 
                                 <label for="previousKnowledge">Previous Knowledge:</label>
@@ -278,18 +279,18 @@
                                 @Html.DropDownList("PreviousKnowledge",
                                     Model.PreviousKnowledgeOptions,
                                     "-- Select Previous Knowledge --",
-                                    new { @class = "form-control", style = "width: 100%; border-radius: 11px;", required = "required"})
+                                    new { @class = "form-control", style = "width: 100%; border-radius: 11px; border: 1px solid black;", required = "required"})
                                 <br>
 
                                 <label for="hoursOfEffort">Hours of Effort:</label>
                                 <br>
-                                <input type="number" id="hoursOfEffort" name="hoursOfEffort" step="0.1" min="0" required style="width: 75px; border-radius: 11px;">
+                                <input type="number" id="hoursOfEffort" name="hoursOfEffort" step="0.1" min="0" required style="width: 75px; border-radius: 11px; border: 1px solid black;">
                                 <br>
                                 <br>
 
                                 <label for="comment">Comment (optional):</label>
                                 <br>
-                                <textarea id="comment" name="comment" rows="2" style="width: 100%; margin-bottom: 1.172rem; border-radius: 11px;" placeholder="e.g. Good structure, helpful hands-on tasks"></textarea>
+                                <textarea id="comment" name="comment" rows="2" style="width: 100%; margin-bottom: 1.172rem; border-radius: 11px; border: 1px solid black;" placeholder="e.g. Good structure, helpful hands-on tasks"></textarea>
                                 <br>
 
                                 <button type="submit" class="sopro-button-content" style="margin-right: 1.172rem;">Submit</button>
