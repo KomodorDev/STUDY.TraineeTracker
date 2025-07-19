@@ -73,6 +73,7 @@ namespace TraineeTracker.Services {
                 // Lesson Lists
                 FinishedLessons = lessons
                     .Where(l => l.State == TraineeLessonState.Finished)
+                    .OrderBy(l => l.Lesson.SortingIndex)
                     .Select(l => new TraineeLessonViewModel {
                         Title = l.Lesson.Title,
                         EstimatedEffort = l.Lesson.EstimatedEffort,
@@ -81,6 +82,7 @@ namespace TraineeTracker.Services {
                     }).ToList(),
                 AcceptedLessons = lessons
                     .Where(l => l.State == TraineeLessonState.Accepted)
+                    .OrderBy(l => l.Lesson.SortingIndex)
                     .Select(l => new TraineeLessonViewModel {
                         Title = l.Lesson.Title,
                         EstimatedEffort = l.Lesson.EstimatedEffort,
@@ -89,6 +91,7 @@ namespace TraineeTracker.Services {
                     }).ToList(),
                 RatedLessons = lessons
                     .Where(l => l.State == TraineeLessonState.Rated)
+                    .OrderBy(l => l.Lesson.SortingIndex)
                     .Select(l => new TraineeLessonViewModel {
                         Title = l.Lesson.Title,
                         EstimatedEffort = l.Lesson.EstimatedEffort,
@@ -97,6 +100,7 @@ namespace TraineeTracker.Services {
                     }).ToList(),
                 RejectedLessons = lessons
                     .Where(l => l.State == TraineeLessonState.Rejected)
+                    .OrderBy(l => l.Lesson.SortingIndex)
                     .Select(l => new TraineeLessonViewModel {
                         Title = l.Lesson.Title,
                         EstimatedEffort = l.Lesson.EstimatedEffort,
@@ -105,6 +109,7 @@ namespace TraineeTracker.Services {
                     }).ToList(),
                 OpenLessons = lessons
                     .Where(l => l.State == TraineeLessonState.Open)
+                    .OrderBy(l => l.Lesson.SortingIndex)
                     .Select(l => new TraineeLessonViewModel {
                         Title = l.Lesson.Title,
                         EstimatedEffort = l.Lesson.EstimatedEffort,
@@ -113,6 +118,7 @@ namespace TraineeTracker.Services {
                     }).ToList(),
                 StartedLessons = lessons
                     .Where(l => l.State == TraineeLessonState.Started)
+                    .OrderBy(l => l.Lesson.SortingIndex)
                     .Select(l => new TraineeLessonViewModel {
                         Title = l.Lesson.Title,
                         EstimatedEffort = l.Lesson.EstimatedEffort,
