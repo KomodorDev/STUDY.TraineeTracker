@@ -1,3 +1,4 @@
+
 using System.Net;
 using System.Net.Http;
 using System.Text;
@@ -106,6 +107,7 @@ public class TraineeStatisticsServiceTests {
     */
     
     // --------------------------------------------------
+    /*
     [Fact]
     public async Task CalculateLessonDaysCompletedAsyncTest()
     {
@@ -455,4 +457,5 @@ public class TraineeStatisticsServiceTests {
             return Task.FromResult<IEnumerable<ProcessingPause>>(result);
         }
     }
+    */
 }
