@@ -182,3 +182,13 @@ h3 {
     display: none;
   }
 }
+
+/* Modal Size */
+.sopro-import-modal-size {
+  width: 56rem;
+  max-width: 80vw;
+
+  height: 34.61rem;
+
+  overflow: hidden;
+}
