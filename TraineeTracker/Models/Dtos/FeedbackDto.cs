@@ -4,15 +4,15 @@ using TraineeTracker.Models.Domain;
 namespace TraineeTracker.Models.Dtos {
     public class FeedbackDto {
         
-        public LessonDifficulty? Difficulty {
+        public required LessonDifficulty Difficulty {
             get; set;
         }
 
-        public PreviousKnowledgeLevel? PreviousKnowledge {
+        public required PreviousKnowledgeLevel PreviousKnowledge {
             get; set;
         }
 
-        public float? HoursOfEffort {
+        public float HoursOfEffort {
             get; set;
         }
 
