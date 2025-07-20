@@ -12,7 +12,7 @@ namespace TraineeTracker.Models.Dtos {
             get; set;
         }
 
-        public float HoursOfEffort {
+        public required float HoursOfEffort {
             get; set;
         }
 
