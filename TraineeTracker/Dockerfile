@@ -10,7 +10,7 @@ USER appuser
 
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 
-WORKDIR /src
+WORKDIR /app
 
 COPY ["TraineeTracker.csproj", "./"]
 RUN dotnet restore "TraineeTracker.csproj"
@@ -25,7 +25,6 @@ COPY . .
 # SAH: Sicherstellen, dass es den Ordner "persistence " gibt
 RUN mkdir -p persistence
 
-# RUN dotnet ef database update
 
 RUN dotnet publish "TraineeTracker.csproj" -c Release -o /app/publish /p:UseAppHost=false
 
