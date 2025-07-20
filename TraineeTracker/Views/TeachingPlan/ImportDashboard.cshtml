@@ -1,0 +1,122 @@
+@model TraineeTracker.Models.ViewModels.TeachingPlanViewModels.ImportDashboardViewModel
+@{
+    ViewData["Title"] = "Import Dashboard";
+    Layout = "_Layout";
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/site.css" />
+    <link rel="stylesheet" href="~/css/ImportDashboard_temp.css?v=@DateTime.Now.Ticks" />
+    <link rel="stylesheet" href="~/css/TraineeLessonDetail.css" asp-append-version="true" />
+
+}
+
+<div class="sopro-grid-management">
+  <div class="sopro-card">
+        <form asp-action="ImportNewTeachingPlan"
+            asp-controller="TeachingPlan"
+            method="post"
+            enctype="multipart/form-data"
+            class="import-form">
+        @Html.AntiForgeryToken()
+        <input type="text" name="NewPlanName" placeholder="New plan name" required />
+        <input type="file" name="NewPlanFile" required />
+        <button type="submit" class="sopro-button-header">Import</button>
+        </form>
+  </div>
+  
+  <div class="sopro-card">
+      <div class="plan-list-container">
+        @if (Model.ExistingTeachingPlans == null || !Model.ExistingTeachingPlans.Any()) {
+          <div class="no-plans">Keine Lehrpläne gefunden.</div>
+        } else {
+          @foreach (var plan in Model.ExistingTeachingPlans) {
+            <div class="sopro-card teachingplan-card">
+              <div class="plan-info">
+                  <h3 class="plan-name">@plan.Name</h3>
+                  <span class="plan-meta">Trainees: @plan.TraineeCount</span>
+                  <span class="plan-meta">Lessons: @plan.LessonCount</span>
+                  <span class="plan-meta">Last Updated: @plan.LastUpdated.ToString("dd.MM.yyyy")</span>
+              
+                  <div class="plan-actions">
+                      <!-- Update / open modal -->
+                      <button 
+                        type="button"
+                        class="sopro-button-content update-btn"
+                        data-plan-id="@plan.TeachingPlanId"
+                        style="margin-right: 10px;">
+                        Update
+                      </button>
+
+                      <!-- Delete -->
+                      <form asp-action="DeleteTeachingPlan" method="post" onsubmit="return confirm('Confirm deletion?');">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" name="existingTeachingPlanId" value="@plan.TeachingPlanId" />
+                        <button 
+                          type="submit" 
+                          class="sopro-button-content" 
+                          disabled="@(plan.TraineeCount != 0)" 
+                          title="Deletion not possible: Trainee count > 0">
+                          Delete
+                        </button>
+                      </form>
+                  </div>
+              </div>
+            </div>
+          }
+        }
+    </div>
+  </div>
+</div>
+
+<!-- modal -->
+<div id="importDetailModal" class="modal fade" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-dialog-centered sopro-import-modal-size" >
+        <div class="modal-content sopro-card" id="ImportModalContent" style="box-shadow: none;">
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+  <script>
+      document.querySelectorAll('button.update-btn').forEach(button => {
+          button.addEventListener('click', function () {
+              const planId = this.getAttribute('data-plan-id');
+              console.log("DEBUG: clicked planId =", planId);
+
+
+              document.body.style.cursor = 'wait';
+
+              fetch(`/TeachingPlan/Preview/${planId}`)
+              .then(response => {
+                  if (!response.ok) throw new Error("Failed to fetch modal content");
+                  return response.text();
+              })
+              .then(html => {
+                  document.getElementById('ImportModalContent').innerHTML = html;
+
+                  const modalElement = document.getElementById('importDetailModal');
+                  const modal = new bootstrap.Modal(modalElement);
+                  modal.show();
+
+                  if (typeof window.hookUpStateChangeForms === 'function') {
+                      window.hookUpStateChangeForms();
+                  }
+              })
+              .catch(err => console.error("Failed to load modal", err))
+              .finally(() => {
+                  document.body.style.cursor = 'default';
+              });
+          });
+      });
+
+      /* reload page after closing modal */
+      const modalEl = document.getElementById('importDetailModal');
+
+      if (modalEl) {
+          modalEl.addEventListener('hidden.bs.modal', () => {
+              location.reload();
+          });
+      }
+  </script>
+}

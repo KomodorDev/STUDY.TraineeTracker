@@ -1,0 +1,53 @@
+@model TraineeTracker.Models.ViewModels.Admin.CreateProcessingPauseViewModel;
+
+@{
+    ViewData["Title"] = $"Create Processing Pause for {Model.UserName}";
+}
+
+<thead>
+    <link rel="stylesheet" href="~/css/AdminDashboard_temp.css">
+</thead>
+
+<div class="sopro-grid-management">
+    <div class="sopro-card">
+        <div class="header thiccboi form">@ViewData["Title"]</div>
+    </div>
+    <div class="sopro-card scroll">
+        <form asp-action="CreateProcessingPause" method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+            <div class="sopro-card small-header form">
+                <div class="form-header">
+                    <label asp-for="ProcessingPause.StartDate"></label>
+                </div>
+                <input asp-for="ProcessingPause.StartDate" class="sopro-inner-card form" type="date"
+                    aria-required="true" />
+                <span asp-validation-for="ProcessingPause.StartDate" class="text-danger"></span>
+            </div>
+
+            <div class="sopro-card small-header form">
+                <div class="form-header">
+                    <label asp-for="ProcessingPause.EndDate"></label>
+                </div>
+                <input asp-for="ProcessingPause.EndDate" class="sopro-inner-card form" type="date"
+                    aria-required="true" />
+                <span asp-validation-for="ProcessingPause.EndDate" class="text-danger"></span>
+            </div>
+
+            <input type="hidden" asp-for="ProcessingPause.TraineeId" />
+            <input type="hidden" asp-for="UserName" />
+
+            <div class="sopro-card form-buttons">
+                <button type="submit" class="sopro-btn sopro-btn-prim sopro-button-content">Create</button>
+                <a asp-action="ShowManageProcessingPausesView" asp-route-traineeId="@Model.ProcessingPause.TraineeId"
+                    class="sopro-btn sopro-btn-sec sopro-button-content">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

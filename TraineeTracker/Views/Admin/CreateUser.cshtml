@@ -1,0 +1,80 @@
+@model TraineeTracker.Models.ViewModels.Admin.CreateUserViewModel;
+
+@{
+    ViewData["Title"] = "Create User";
+}
+
+<thead>
+    <link rel="stylesheet" href="~/css/AdminDashboard_temp.css">
+</thead>
+
+
+<div class="sopro-grid-management">
+    <div class="sopro-card">
+        <div class="header thiccboi form">@ViewData["Title"]</div>
+    </div>
+    <div class="sopro-card scroll">
+        <form asp-action="CreateUser" method="post">
+            <div asp-validation-summary="ModelOnly"></div>
+
+            <div class="sopro-card small-header form">
+                <div class="form-header">
+                    <label asp-for="User.Email"></label>
+                </div>
+                <input asp-for="User.Email" class="sopro-inner-card form" autocomplete="username" aria-required="true"
+                    placeholder="firstname.lastname@makandra.de" />
+                <span asp-validation-for="User.Email" class="text-danger"></span>
+            </div>
+
+            <div class="sopro-card small-header form">
+                <div class="form-header">
+                    <label asp-for="User.Role"></label>
+                </div>
+                <select asp-for="User.Role" class="sopro-inner-card form" aria-required="true" asp-items="Model.Roles">
+                    <option value="">Select role...</option>
+                </select>
+                <span asp-validation-for="User.Role" class="text-danger"></span>
+            </div>
+
+            <!-- Optional for trainees -->
+
+            <div class="sopro-card small-header form">
+                <div class="form-header">
+                    <label asp-for="User.TraineeStartDate"></label>
+                </div>
+                <input asp-for="User.TraineeStartDate" type="date" class="sopro-inner-card form" aria-required="true" />
+                <span asp-validation-for="User.TraineeStartDate" class="text-danger"></span>
+            </div>
+
+            <div class="sopro-card small-header form">
+                <div class="form-header">
+                    <label asp-for="User.TraineeEndDate"></label>
+                </div>
+                <input asp-for="User.TraineeEndDate" type="date" class="sopro-inner-card form" aria-required="true" />
+                <span asp-validation-for="User.TraineeEndDate" class="text-danger"></span>
+            </div>
+
+            <div class="sopro-card small-header form">
+                <div class="form-header">
+                    <label asp-for="User.TeachingPlanId"></label>
+                </div>
+                <select asp-for="User.TeachingPlanId" class="sopro-inner-card form" aria-required="true"
+                    asp-items="Model.TeachingPlans">
+                    <option value="">Select Teachingplan...</option>
+                </select>
+                <span asp-validation-for="User.TeachingPlanId" class="text-danger"></span>
+            </div>
+
+            <div class="sopro-card form-buttons">
+                <button type="submit" class="sopro-btn sopro-btn-prim sopro-button-content">Create</button>
+                <a asp-action="ShowAdminDashboardView" class="sopro-btn sopro-btn-sec sopro-button-content">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

@@ -1,0 +1,194 @@
+/* by blaskale with help of schleale */
+
+h3 {
+  font-size: 1.406rem;
+  font-weight: 900;
+  margin-bottom: 3px;
+}
+
+.sopro-grid-management > .sopro-card:first-child {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 1rem;
+}
+
+/* Container für das gesamte Dashboard */
+.import-dashboard-container {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0;
+  padding: 2rem;
+  background: #f4f4f4;             /* Platzhalter–Farbe, anpassen nach CI */
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  display: grid;
+  grid-template-rows: auto 1fr;    /* Header oben, Liste füllt restliche Höhe */
+  height: calc(100vh - 4rem);      /* Vollbild-Höhe minus margin */
+}
+
+.import-form {
+  display: grid;
+  grid-template-columns: 1fr auto auto; /* Textfeld | File-Input | Button */
+  align-items: center;
+  gap: 1rem;
+
+  height: 45px;
+}
+.import-form > * {
+  border-radius: 11px;
+  height: 100%;
+}
+
+/* Inputs im Import-Form */
+.import-form input[type="text"],
+.import-form input[type="file"] {
+  padding: 0.5rem;
+  border: 1px solid #ccc;            /* neutraler Rahmen */
+}
+
+.import-btn{
+    background-color: red;
+    color: black;
+}
+
+/* Import-Button */
+.import-form .import-btn {
+  padding: 0.6rem 1.2rem;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  /* background/Farbe erst später definieren */
+}
+
+/* Container für die Liste der Teaching Plans */
+.plan-list-container {
+  overflow-y: scroll;
+  padding: 1.172rem;
+  border-radius: 0 0 8px 8px;
+
+  row-gap: 1.172rem;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Anzeige, wenn keine Pläne existieren */
+.no-plans {
+  text-align: center;
+  color: #666;
+  padding: 2rem;
+  font-style: italic;
+}
+
+/* Einzelne Plan-Box */
+.plan-box {
+  display: grid;
+  grid-template-columns: minmax(0, 0.5fr) 0.5fr 0.5fr 0.5fr auto;
+  align-items: center;
+  gap: 1rem;
+  border: 1px solid #bebdbd;    /* dünner grauer Rahmen */
+  border-radius: 4px;        /* leicht gerundete Ecken */
+  margin-bottom: 0.75rem;    /* Abstand zur nächsten Zeile */
+  padding: 0.75rem;          /* Innenabstand für mehr Luft */
+}
+
+.plan-box:hover {
+  border-color: #999;        /* dunklerer Rahmen beim Überfahren */
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.plan-info {
+  display: grid;
+  align-items: center;
+  padding-left: 1.172rem;
+  width: 100%;
+  grid-template-columns: minmax(0, 0.5fr) 0.5fr 0.5fr 0.5fr auto;
+  padding-right: 1.172rem;
+  gap: 1.172rem;
+  text-wrap: nowrap;
+}
+
+.plan-box > .plan-name {
+  grid-column: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+
+  font-size: 1.406rem;
+  margin-bottom: 4px;
+}
+
+.plan-box > .plan-meta:nth-of-type(1) {
+  grid-column: 2;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.plan-box > .plan-meta:nth-of-type(2) {
+  grid-column: 3;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.plan-box > .plan-meta:nth-of-type(3) {
+  grid-column: 4;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.plan-actions {
+  display: flex;
+  margin-left: 1rem;
+  justify-content: right;
+}
+
+.plan-actions form {
+  display: flex;
+}
+
+.plan-actions .update-btn,
+.plan-actions .delete-btn {
+  padding: 0.4rem 0.8rem;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.sopro-card.teachingplan-card {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+
+  height: 3.516rem;
+  width: 100%;
+}
+
+@media (max-width: 1475px) {
+  .plan-info > .plan-meta:nth-of-type(1), /* Trainees */
+  .plan-info > .plan-meta:nth-of-type(2)  /* Lessons */ {
+    display: none;
+  }
+
+  .plan-info {
+    grid-template-columns: minmax(0, 1fr) 1fr auto;
+  }
+}
+
+@media (max-width: 1100px) {
+  .plan-info > .plan-meta:nth-of-type(3)  /* LastUpdated */ {
+    display: none;
+  }
+}
+
+/* Modal Size */
+.sopro-import-modal-size {
+  width: 56rem;
+  max-width: 80vw;
+
+  height: 34.61rem;
+
+  overflow: hidden;
+}
