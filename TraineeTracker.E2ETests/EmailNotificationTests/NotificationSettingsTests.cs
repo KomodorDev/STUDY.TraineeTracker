@@ -7,12 +7,12 @@ namespace TraineeTracker.E2ETests {
     /// End-to-end test for the notification settings page.
     /// </summary>
     /// <remarks>Code Ownnership: Simon Hinterreiter (hintsimo)</remarks>
-    public class NotificationSettingsTests : IDisposable {
+    public class NotificationSettingsTests : IClassFixture<BrowserFixture> {
 
         private readonly IWebDriver _driver;
 
-        public NotificationSettingsTests(BrowserFixture fixture)
-        {
+        // ------------------------------------------------------
+        public NotificationSettingsTests(BrowserFixture fixture) {
             _driver = fixture.Driver;
         }
 
@@ -61,11 +61,7 @@ namespace TraineeTracker.E2ETests {
             // Assert - Test 1
             Assert.Equal(!initialState, newCheckbox.Selected);
         }
-        // ------------------------------------------------------
-        public void Dispose() {
-            _driver.Quit();
-            _driver.Dispose();
-        }
+
         // ------------------------------------------------------
     }
 }
