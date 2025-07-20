@@ -165,20 +165,19 @@
     overflow: visible;   /* falls Inhalte nach außen ragen könnten */
   }
 
-
 /* Filters (hintsimo, revised by schleale) */
-.filter-bar {
+.filter-bar-feedback {
     display: flex;
     align-items: center;
     height: auto;  
     justify-content: center;
-    border: 2px solid black;
+    border: 1px solid black;
     border-radius: 11px;
     overflow: hidden;
-    width: 100%;
+    width: auto;
 }
 
-.filter-tab {
+.filter-tab-feedback {
     display: flex;
     align-items: center;
     padding: 0.6rem 1.2rem;
@@ -192,21 +191,22 @@
     text-align: center;
     white-space: nowrap;
 
-    width: 100%;
+    min-width: 120px;
+    width: auto;
 }
-.filter-tab:last-child {
+.filter-tab-feedback:last-child {
     border-right: none;
 }
-.filter-tab:hover {
+.filter-tab-feedback:hover {
     background: #f8f9fa;
     color: black;
     text-decoration: underline;
 }
-.filter-tab.active {
+.filter-tab-feedback.active {
     background: #ffe3e3;
     color: #e61d47;
 }
-.filter-tab.active:hover {
+.filter-tab-feedback.active:hover {
     background: #ffe3e3;
 }
 

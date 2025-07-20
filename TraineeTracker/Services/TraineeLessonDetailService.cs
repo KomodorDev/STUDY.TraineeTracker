@@ -1,4 +1,7 @@
 using System.Security.Claims;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using System.Reflection;
+using System.ComponentModel.DataAnnotations;
 
 using TraineeTracker.Data.Feedbacks;
 using TraineeTracker.Data.Lessons;
@@ -51,6 +54,11 @@ namespace TraineeTracker.Services {
         /// </summary>
         private readonly IServiceScopeFactory _scopeFactory;
 
+        /// <summary>
+        /// Service for marking feedbacks as unread after they have been changed
+        /// </summary>
+        private FeedbackService _feedbackService;
+
         // ------------------------------------------------------
         /// <summary>
         /// Initializes a new instance of the <see cref="TraineeLessonDetailService"/> class.
@@ -69,13 +77,15 @@ namespace TraineeTracker.Services {
                                             ITraineeLessonLogEntryRepository databaseTraineeLessonLogEntryRepository,
                                             IFeedbackRepository databaseFeedbackRepository,
                                             IApplicationUserRepository databaseApplicationUserRepository,
-                                            IServiceScopeFactory scopeFactory) {
+                                            IServiceScopeFactory scopeFactory,
+                                            FeedbackService feedbackService) {
             _databaseLessonRepository = databaseLessonRepository;
             _databaseTraineeLessonLogEntryRepository = databaseTraineeLessonLogEntryRepository;
             _databaseTraineeLessonRepository = databaseTraineeLessonRepository;
             _databaseFeedbackrepository = databaseFeedbackRepository;
             _databaseApplicationUserRepository = databaseApplicationUserRepository;
             _scopeFactory = scopeFactory;
+            _feedbackService = feedbackService;
         }
 
         // --------------------------------------------------
@@ -145,7 +155,24 @@ namespace TraineeTracker.Services {
                                                     .GetAllowedLessonStateTransitions(user)
                                                     .Select(s => s.ToString())
                                                     .ToList(),
-                ExistingFeedback = feedback
+                ExistingFeedback = feedback,
+                PreviousKnowledgeOptions = Enum.GetValues(typeof(PreviousKnowledgeLevel))
+                    .Cast<PreviousKnowledgeLevel>()
+                    .Select(e => new SelectListItem {
+                        Value = e.ToString(),
+                        Text = e.GetType()
+                                .GetMember(e.ToString())
+                                .First()
+                                .GetCustomAttribute<DisplayAttribute>()?.Name ?? e.ToString()
+                    }),
+                DifficultyOptions = Enum.GetValues(typeof(LessonDifficulty))
+                    .Cast<LessonDifficulty>()
+                    .Select(e => new SelectListItem
+                    {
+                        Value = e.ToString(),
+                        Text = e.GetType().GetMember(e.ToString())[0]
+                            .GetCustomAttribute<DisplayAttribute>()?.Name ?? e.ToString()
+                    }).ToList()
             };
         }
 
@@ -163,7 +190,7 @@ namespace TraineeTracker.Services {
         /// <remarks>
         /// Code Ownership: Alexander Schlemmer (schleale)
         /// </remarks>
-        public async Task SaveTraineeLessonStateChange(TraineeLessonDto traineeLessonUpdate, ClaimsPrincipal user) {
+        public async Task SaveTraineeLessonStateChange(TraineeLessonDto traineeLessonUpdate, ClaimsPrincipal user, Feedback? feedback = null) {
             await CheckHasAccess(user, traineeLessonUpdate.TraineeLessonId);
 
             var oldTraineeLesson = await _databaseTraineeLessonRepository.GetTraineeLessonByIdWithLessonAsync(traineeLessonUpdate.TraineeLessonId) ?? throw new TraineeLessonNotFoundException(traineeLessonUpdate.TraineeLessonId);
@@ -212,7 +239,7 @@ namespace TraineeTracker.Services {
                 var emailService = scope.ServiceProvider.GetRequiredService<EmailNotificationService>();
 
 
-                await emailService.NotifyAboutStateChangeAsync(oldTraineeLesson, oldState, targetState);
+                await emailService.NotifyAboutStateChangeAsync(oldTraineeLesson, oldState, targetState, feedback);
             });
 
             // creates log
@@ -270,7 +297,7 @@ namespace TraineeTracker.Services {
         /// </remarks>
         public async Task SaveFeedback(FeedbackDto feedbackDto, ClaimsPrincipal user) {
             // it is basically a state change, hence checking this beforehand
-            await CheckHasAccess(user, feedbackDto.TraineeLessonId);    
+            await CheckHasAccess(user, feedbackDto.TraineeLessonId); 
 
             if (feedbackDto == null)
                 throw new Exception("FeedbackDto is null");
@@ -279,23 +306,38 @@ namespace TraineeTracker.Services {
             var traineeId = correspondingTraineeLesson.TraineeId;
             var trainee = await _databaseApplicationUserRepository.FindByIdAsync(traineeId) ?? throw new UserNotFoundException();
             var existingFeedback = await _databaseFeedbackrepository.GetFeedbackOfTraineeLessonWithLessonAndAuthorAndReadByUsersAsync(correspondingTraineeLesson);
-
+            
             if (existingFeedback != null) {
                 // -> feedback exists
 
                 existingFeedback.Difficulty = feedbackDto.Difficulty ?? existingFeedback.Difficulty;
                 existingFeedback.PreviousKnowledge = feedbackDto.PreviousKnowledge ?? existingFeedback.PreviousKnowledge;
                 existingFeedback.HoursOfEffort = feedbackDto.HoursOfEffort ?? existingFeedback.HoursOfEffort;
+                existingFeedback.Comment = feedbackDto.Comment;
 
                 await _databaseFeedbackrepository.UpdateAsync(existingFeedback);
+
+                // mark changed feedback as unread
+                await _feedbackService.MarkFeedbackAsUnreadForEveryoneAsync(existingFeedback.FeedbackId);
+                
+                var applicationUser = await _databaseApplicationUserRepository.GetUserAsync(user) ?? throw new UserNotFoundException();
+
+                // sends email (different thread)
+                _ = Task.Run(async () => {
+                    using var scope = _scopeFactory.CreateScope();
+                    var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+                    var emailService = scope.ServiceProvider.GetRequiredService<EmailNotificationService>();
+
+
+                    await emailService.NotifyAboutFeedbackChangeAsync(existingFeedback, applicationUser);
+                });
             } else {
                 // -> feedback doesn't exist
-
+                
                 if (correspondingTraineeLesson.State != TraineeLessonState.Accepted)
                     throw new UnauthorizedAccessException("You can write a feedback once your TraineeLesson has been accepted.");
 
-                // create feedback
-                await _databaseFeedbackrepository.CreateAsync(new Feedback {
+                var feedback = new Feedback {
                     Difficulty = feedbackDto.Difficulty ?? throw new ArgumentNullException(nameof(feedbackDto), "Difficulty cannot be null."),
                     PreviousKnowledge = feedbackDto.PreviousKnowledge ?? throw new ArgumentNullException(nameof(feedbackDto), "PreviousKnowledge cannot be null."),
                     HoursOfEffort = feedbackDto.HoursOfEffort ?? throw new ArgumentNullException(nameof(feedbackDto), "HoursOfEffort cannot be null."),
@@ -307,13 +349,16 @@ namespace TraineeTracker.Services {
                     AuthorId = traineeId,
                     Author = trainee,
                     ReadByUsers = new List<ApplicationUser>()
-                });
+                };
+
+                // create feedback
+                await _databaseFeedbackrepository.CreateAsync(feedback);
 
                 // update state to rated, also sends email and creates log
                 await SaveTraineeLessonStateChange(new TraineeLessonDto {
                     TraineeLessonId = feedbackDto.TraineeLessonId,
                     TargetStateName = TraineeLessonState.Rated.ToString()
-                }, user);
+                }, user, feedback);
             }
         }
 
@@ -336,7 +381,20 @@ namespace TraineeTracker.Services {
             if (!await _databaseFeedbackrepository.ExistsAsync(feedbackId))
                 throw new FeedbackNotFoundException(feedbackId);
 
+            var deletedFeedback = await _databaseFeedbackrepository.GetFeedbackByIDWithLessonAndAuthorAndReadByUsersAsync(feedbackId) ?? throw new FeedbackNotFoundException();
+
             await _databaseFeedbackrepository.DeleteAsync(feedbackId);
+
+            var emailUser = await _databaseApplicationUserRepository.GetUserAsync(user) ?? throw new UserNotFoundException();
+
+            // sends email (different thread)
+            _ = Task.Run(async () => {
+                using var scope = _scopeFactory.CreateScope();
+                var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+                var emailService = scope.ServiceProvider.GetRequiredService<EmailNotificationService>();
+
+                await emailService.NotifyAboutFeedbackChangeAsync(deletedFeedback, emailUser, true);
+            });
         }
     }
 }
