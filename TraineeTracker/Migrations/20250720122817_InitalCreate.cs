@@ -190,8 +190,7 @@ namespace TraineeTracker.Migrations
                 columns: table => new
                 {
                     UserId = table.Column<string>(type: "TEXT", nullable: false),
-                    RoleId = table.Column<string>(type: "TEXT", nullable: false),
-                    ApplicationUserId = table.Column<string>(type: "TEXT", nullable: true)
+                    RoleId = table.Column<string>(type: "TEXT", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -202,11 +201,6 @@ namespace TraineeTracker.Migrations
                         principalTable: "AspNetRoles",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_AspNetUserRoles_AspNetUsers_ApplicationUserId",
-                        column: x => x.ApplicationUserId,
-                        principalTable: "AspNetUsers",
-                        principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_AspNetUserRoles_AspNetUsers_UserId",
                         column: x => x.UserId,
@@ -249,6 +243,7 @@ namespace TraineeTracker.Migrations
                     ReceiveAcceptedNotifications = table.Column<bool>(type: "INTEGER", nullable: false),
                     ReceiveRatedNotifications = table.Column<bool>(type: "INTEGER", nullable: false),
                     ReceiveImportChangeNotifications = table.Column<bool>(type: "INTEGER", nullable: false),
+                    ReceiveFeedbackChangeNotifications = table.Column<bool>(type: "INTEGER", nullable: false),
                     UserId = table.Column<string>(type: "TEXT", nullable: true)
                 },
                 constraints: table =>
@@ -319,7 +314,7 @@ namespace TraineeTracker.Migrations
                         .Annotation("Sqlite:Autoincrement", true),
                     Difficulty = table.Column<int>(type: "INTEGER", nullable: false),
                     CreateTime = table.Column<DateTime>(type: "TEXT", nullable: false),
-                    PreviousKnowledge = table.Column<string>(type: "TEXT", nullable: false),
+                    PreviousKnowledge = table.Column<int>(type: "INTEGER", nullable: false),
                     HoursOfEffort = table.Column<float>(type: "REAL", nullable: false),
                     Comment = table.Column<string>(type: "TEXT", nullable: true),
                     LessonId = table.Column<int>(type: "INTEGER", nullable: false),
@@ -416,11 +411,6 @@ namespace TraineeTracker.Migrations
                 name: "IX_AspNetUserLogins_UserId",
                 table: "AspNetUserLogins",
                 column: "UserId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_AspNetUserRoles_ApplicationUserId",
-                table: "AspNetUserRoles",
-                column: "ApplicationUserId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetUserRoles_RoleId",
