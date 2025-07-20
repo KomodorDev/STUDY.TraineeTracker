@@ -18,19 +18,21 @@ namespace TraineeTracker.UnitTests.TraineeLessonTests {
 
                         // ---
                         var trainee = TestDataFactoryTraineeLessons.CreateTestApplicationUser(1);
-                        var mentor = TestDataFactoryTraineeLessons.CreateTestApplicationUser(2);
+                        var user;
 
                         var lesson = TestDataFactoryTraineeLessons.CreateTestLesson(1);
                         var traineeLesson = TestDataFactoryTraineeLessons.CreateTestTraineeLesson(trainee, lesson);
 
-                        // ---
-                        await service.SaveTraineeLessonStateChange(new TraineeLessonDto {
+                        var traineeLessonDto = (new TraineeLessonDto {
                                 TraineeLessonId = traineeLesson.TraineeLessonId,
                                 TraineeId = trainee.Id,
                                 LessonId = lesson.LessonId,
                                 TargetStateName = TraineeLessonState.Accepted.ToString(),
                                 RejectionReason = null
-                        },);
+                        }
+
+                        // ---
+                        await service.SaveTraineeLessonStateChange(traineeLessonDto, user);
                 }
 
                 // ----------------------------------------------------
@@ -40,6 +42,7 @@ namespace TraineeTracker.UnitTests.TraineeLessonTests {
 
                         // ---
                         var trainee = TestDataFactoryTraineeLessons.CreateTestApplicationUser(1);
+                        var user;
 
                         var lesson = TestDataFactoryTraineeLessons.CreateTestLesson(1);
                         var traineeLesson = TestDataFactoryTraineeLessons.CreateTestTraineeLesson(trainee, lesson);
@@ -48,10 +51,10 @@ namespace TraineeTracker.UnitTests.TraineeLessonTests {
                                 Difficulty = LessonDifficulty.VeryEasy,
                                 PreviousKnowledge = PreviousKnowledgeLevel.None,
                                 HoursOfEffort = (float) 1.1,
-                                TraineeLessonId = 
+                                TraineeLessonId = traineeLesson.TraineeLessonId
                         };
 
-                        await service.SaveFeedback(feedbackDto, );
+                        await service.SaveFeedback(feedbackDto, user);
                 }
         }
 }
