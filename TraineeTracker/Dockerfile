@@ -25,7 +25,6 @@ COPY . .
 # SAH: Sicherstellen, dass es den Ordner "persistence " gibt
 RUN mkdir -p persistence
 
-# RUN dotnet ef database update
 
 RUN dotnet publish "TraineeTracker.csproj" -c Release -o /app/publish /p:UseAppHost=false
 
