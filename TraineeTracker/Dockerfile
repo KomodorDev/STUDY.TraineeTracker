@@ -10,7 +10,7 @@ USER appuser
 
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 
-WORKDIR /src
+WORKDIR /app
 
 COPY ["TraineeTracker.csproj", "./"]
 RUN dotnet restore "TraineeTracker.csproj"

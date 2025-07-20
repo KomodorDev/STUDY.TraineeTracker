@@ -1,11 +1,11 @@
 services:
   traineetracker:
-    image: gitlab.isse.de:5050/lehre/sopro/2025-sose/gruppen/team-07/traineetracker
+    image: gitlab.isse.de:5050/lehre/sopro/2025-sose/gruppen/team-07/traineetracker:kaniko-docker
     container_name: traineetracker
     ports:
       - "5000:5000"
     volumes:
-      - traineetracker_data:/TraineeTracker/persistence
+      - traineetracker_data:/app/persistence
     restart: always
 
 volumes:
