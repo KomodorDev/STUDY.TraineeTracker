@@ -1,6 +1,11 @@
 using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity.UI.Services;
+using Microsoft.AspNetCore.Localization;
+
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
+
+using System.Globalization;
 
 using TraineeTracker.Models.Domain;
 
@@ -21,9 +26,10 @@ using TraineeTracker.Data.TraineeLessons;
 using TraineeTracker.Data.TraineeStatistics;
 using TraineeTracker.Data.UnitOfWork;
 
-
+// -----------------------------------------
 var builder = WebApplication.CreateBuilder(args);
 
+// -----------------------------------------
 // Add services to the container.
 var environment = builder.Environment;  // NEU: Environment auslesen
 Console.WriteLine($"🌍 Environment: {environment.EnvironmentName}");
@@ -41,6 +47,7 @@ if (environment.IsDevelopment()) {
 
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
+// -----------------------------------------
 // Identity konfigurieren
 builder.Services.AddDefaultIdentity<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = true)
     .AddRoles<IdentityRole>()
@@ -92,9 +99,26 @@ builder.Services.AddScoped<RolesSeeder>();
 builder.Services.AddScoped<TestDataSeeder>();
 
 // ----------------------------------------
+// Set culture settings
+var defaultCulture = new CultureInfo("en-US");
+CultureInfo.DefaultThreadCurrentCulture = defaultCulture;
+CultureInfo.DefaultThreadCurrentUICulture = defaultCulture;
 
+builder.Services.Configure<RequestLocalizationOptions>(options =>
+{
+    options.DefaultRequestCulture = new RequestCulture(defaultCulture);
+    options.SupportedCultures = new[] { defaultCulture };
+    options.SupportedUICultures = new[] { defaultCulture };
+});
 
+// ----------------------------------------
+// Build
 var app = builder.Build();
+
+// ----------------------------------------
+// Apply culture settings
+var localizationOptions = app.Services.GetRequiredService<IOptions<RequestLocalizationOptions>>();
+app.UseRequestLocalization(localizationOptions.Value);
 
 // ----------------------------------------
 // Ensure DB is there:

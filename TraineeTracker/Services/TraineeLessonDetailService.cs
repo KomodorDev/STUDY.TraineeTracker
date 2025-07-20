@@ -310,9 +310,9 @@ namespace TraineeTracker.Services {
             if (existingFeedback != null) {
                 // -> feedback exists
 
-                existingFeedback.Difficulty = feedbackDto.Difficulty ?? existingFeedback.Difficulty;
-                existingFeedback.PreviousKnowledge = feedbackDto.PreviousKnowledge ?? existingFeedback.PreviousKnowledge;
-                existingFeedback.HoursOfEffort = feedbackDto.HoursOfEffort ?? existingFeedback.HoursOfEffort;
+                existingFeedback.Difficulty = feedbackDto.Difficulty;
+                existingFeedback.PreviousKnowledge = feedbackDto.PreviousKnowledge;
+                existingFeedback.HoursOfEffort = feedbackDto.HoursOfEffort;
                 existingFeedback.Comment = feedbackDto.Comment;
 
                 await _databaseFeedbackrepository.UpdateAsync(existingFeedback);
@@ -338,9 +338,9 @@ namespace TraineeTracker.Services {
                     throw new UnauthorizedAccessException("You can write a feedback once your TraineeLesson has been accepted.");
 
                 var feedback = new Feedback {
-                    Difficulty = feedbackDto.Difficulty ?? throw new ArgumentNullException(nameof(feedbackDto), "Difficulty cannot be null."),
-                    PreviousKnowledge = feedbackDto.PreviousKnowledge ?? throw new ArgumentNullException(nameof(feedbackDto), "PreviousKnowledge cannot be null."),
-                    HoursOfEffort = feedbackDto.HoursOfEffort ?? throw new ArgumentNullException(nameof(feedbackDto), "HoursOfEffort cannot be null."),
+                    Difficulty = feedbackDto.Difficulty,
+                    PreviousKnowledge = feedbackDto.PreviousKnowledge,
+                    HoursOfEffort = feedbackDto.HoursOfEffort,
                     Comment = feedbackDto.Comment,
 
                     // relations
