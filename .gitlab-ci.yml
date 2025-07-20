@@ -105,7 +105,7 @@ portainer:
   stage: portainer
   image: curlimages/curl:latest
   variables:
-    CONTAINER_WEB_HOOK: https://portainer.isse.de/api/webhooks/3373d9db-3bef-4416-bc10-40bb0cca7f2e
+    CONTAINER_WEB_HOOK: https://portainer.isse.de/api/webhooks/5bfe7c83-2472-4647-bcd9-63bf21fb0895
   tags:
     - sopro
   script:
