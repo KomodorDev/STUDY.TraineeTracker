@@ -63,7 +63,7 @@ namespace TraineeTracker.Services.Email {
         /// <remarks>
         /// Code Ownership: Simon Hinterreiter (hintsimo)
         /// </remarks>
-        public async Task SaveNotificationSettingChange(string userId, NotificationSettingDto update) {
+        public async Task SaveNotificationSettingChange(string userId, EmailNotificationSettingDto update) {
 
             // 1. Load setting
             var setting = await _databaseEmailNotificationSettingRepository.GetByUserIdAsync(userId);
@@ -96,10 +96,10 @@ namespace TraineeTracker.Services.Email {
         /// <remarks>
         /// Code Ownership: Simon Hinterreiter (hintsimo)
         /// </remarks>
-        public async Task<NotificationSettingDto> GetNotificationSetting(string userId) {
+        public async Task<EmailNotificationSettingDto> GetNotificationSetting(string userId) {
             var setting = await _databaseEmailNotificationSettingRepository.GetByUserIdAsync(userId);
 
-            return new NotificationSettingDto {
+            return new EmailNotificationSettingDto {
                 ReceiveSkippedNotifications = setting.ReceiveSkippedNotifications,
                 ReceiveOpenNotifications = setting.ReceiveOpenNotifications,
                 ReceiveStartedNotifications = setting.ReceiveStartedNotifications,
@@ -262,7 +262,8 @@ namespace TraineeTracker.Services.Email {
                 await _emailSender.SendEmailAsync(trainee.Email!, subject, messageHtml);
             }
         }
-
+        
+        // ------------------------------------------------------
         /// <summary>
         /// Sends email notifications to mentors, admins, and the trainee when feedback for a lesson is changed or deleted.
         /// The email includes a summary of the updated feedback or a deletion notice. 
@@ -279,7 +280,6 @@ namespace TraineeTracker.Services.Email {
         /// <remarks>
         /// Code Ownership: Simon Hinterreiter (hintsimo)
         /// </remarks>
-        // ------------------------------------------------------
         public async Task NotifyAboutFeedbackChangeAsync(Feedback feedback, ApplicationUser trueAuthor, bool deleted = false) {
 
             // +++++++++++++++
