@@ -149,6 +149,11 @@
                             {
                                 <form asp-action="CloseUser" asp-route-userId="@user.Id" method="post"
                                     onsubmit="return confirm('Are you sure you want to close @user.UserName? Processing Pauses, Teachingplans and Statistics will be lost. Feedbacks written by this user will remain preserved.');">
+                                    <input type="hidden" name="filterRole" value="@Model.FilterRole" />
+                                    <input type="hidden" name="filterStatus" value="@Model.FilterStatus" />
+                                    <input type="hidden" name="sortBy" value="@Model.SortBy" />
+                                    <input type="hidden" name="page" value="@Model.Users.PageNumber" />
+
                                     <button type="submit" class="sopro-btn sopro-btn-prim sopro-button-content">Close
                                         User</button>
                                 </form>

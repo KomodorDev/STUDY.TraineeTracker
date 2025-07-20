@@ -62,12 +62,19 @@ namespace TraineeTracker.Controllers {
 
         // ------------------------------------------------------
         [HttpPost("CloseUser")]
-        public async Task<IActionResult> CloseUserAsync(string userId) {
+        public async Task<IActionResult> CloseUserAsync(string userId,
+            int page = 1,
+            string? filterRole = "all",
+            string? filterStatus = "open",
+            string? sortBy = "role_asc") {
+
             var result = await _adminService.CloseUserAsync(userId);
             if (!result.Succeeded) {
                 return Error();
             }
-            return RedirectToAction("ShowAdminDashboardView");
+
+            var viewModel = await _adminService.BuildAdminDashboardViewModelAsync(page, filterRole, filterStatus, sortBy);
+            return View("AdminDashboard", viewModel);
         }
 
         // ------------------------------------------------------
