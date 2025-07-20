@@ -128,20 +128,33 @@
                             {
                                 <form asp-action="MarkAsRead" method="post">
                                     <input type="hidden" name="feedbackId" value="@feedback.FeedbackId" />
+
+                                    <!-- Hidden inputs -->
                                     <input type="hidden" name="filter" value="@Model.ActiveFilter" />
+                                    <input type="hidden" name="page" value="@Model.Feedbacks.PageNumber" />
                                     <input type="hidden" name="sortBy" value="@Model.SortBy" />
-                                    <input type="hidden" name="page" value="1" />
+                                    <input type="hidden" name="selectedTraineeId" value="@Model.SelectedTraineeId" />
+                                    <input type="hidden" name="selectedLessonId" value="@Model.SelectedLessonId" />
+                                    <input type="hidden" name="selectedTeachingPlanId" value="@Model.SelectedTeachingPlanId" />
                                     <button class="sopro-button-content mark-read-btn" type="submit">Mark as read</button>
+
                                 </form>
                             }
                             else
                             {
                                 <form asp-action="MarkAsUnread" method="post">
                                     <input type="hidden" name="feedbackId" value="@feedback.FeedbackId" />
+                                    
+                                    <!-- Hidden inputs -->
                                     <input type="hidden" name="filter" value="@Model.ActiveFilter" />
+                                    <input type="hidden" name="page" value="@Model.Feedbacks.PageNumber" />
                                     <input type="hidden" name="sortBy" value="@Model.SortBy" />
-                                    <input type="hidden" name="page" value="1" />
-                                    <button class="sopro-button-content mark-unread-btn" type="submit">Mark as unread</button>
+                                    <input type="hidden" name="selectedTraineeId" value="@Model.SelectedTraineeId" />
+                                    <input type="hidden" name="selectedLessonId" value="@Model.SelectedLessonId" />
+                                    <input type="hidden" name="selectedTeachingPlanId" value="@Model.SelectedTeachingPlanId" />
+                                    <button class="sopro-button-content mark-unread-btn" 
+                                    
+                                    type="submit">Mark as unread</button>
                                 </form>
                             }
                         </td>
