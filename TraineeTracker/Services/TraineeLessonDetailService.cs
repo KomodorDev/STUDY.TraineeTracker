@@ -22,13 +22,36 @@ using TraineeTracker.Data;
 namespace TraineeTracker.Services {
     public class TraineeLessonDetailService {
 
+        /// <summary>
+        /// Repository for managing Lessons.
+        /// </summary>
         private ILessonRepository _databaseLessonRepository;
+
+        /// <summary>
+        /// Repository for managing trainee lessons, including retrieval and updates.
+        /// </summary>
         private ITraineeLessonRepository _databaseTraineeLessonRepository;
+
+        /// <summary>
+        /// Repository for managing log entries related to trainee lesson state changes.
+        /// </summary>
         private ITraineeLessonLogEntryRepository _databaseTraineeLessonLogEntryRepository;
+
+        /// <summary>
+        /// Repository for handling feedback related to lessons.
+        /// </summary>
         private IFeedbackRepository _databaseFeedbackrepository;
-        // the following are not included in the viewmodel, because i dont't think we need them there?
+
+
+        /// <summary>
+        /// Repository for managing application users, e.g. retrieval based on ClaimsPrincipal
+        /// </summary>
         private IApplicationUserRepository _databaseApplicationUserRepository;
 
+        /// <summary>
+        /// Factory for creating scoped service providers, useful for background operations or resolving scoped services manually.
+        /// Here used for not blocking the thread when sending state or feedback change emails.
+        /// </summary>
         private readonly IServiceScopeFactory _scopeFactory;
 
         /// <summary>
@@ -36,6 +59,19 @@ namespace TraineeTracker.Services {
         /// </summary>
         private FeedbackService _feedbackService;
 
+        // ------------------------------------------------------
+        /// <summary>
+        /// Initializes a new instance of the <see cref="TraineeLessonDetailService"/> class.
+        /// </summary>
+        /// <param name="databaseLessonRepository">Service used to send emails.</param>
+        /// <param name="databaseTraineeLessonRepository">Repository to access application user data.</param>
+        /// <param name="databaseTraineeLessonLogEntryRepository"></param>
+        /// <param name="databaseFeedbackRepository"></param>
+        /// <param name="databaseApplicationUserRepository"></param>
+        /// <param name="scopeFactory"></param>
+        /// <remarks>
+        /// Code Ownership: Alexander Schlemmer (schleale)
+        /// </remarks>
         public TraineeLessonDetailService(ILessonRepository databaseLessonRepository,
                                             ITraineeLessonRepository databaseTraineeLessonRepository,
                                             ITraineeLessonLogEntryRepository databaseTraineeLessonLogEntryRepository,
@@ -52,6 +88,20 @@ namespace TraineeTracker.Services {
             _feedbackService = feedbackService;
         }
 
+        // --------------------------------------------------
+        /// <summary>
+        /// Checks whether the given user has access to open the modal of a trainee's lesson.
+        /// Grants access, if the trainee themselves or any Mentor or Admin tries to accesss.
+        /// </summary>
+        /// <param name="user">The current authenticated user.</param>
+        /// <param name="traineeLessonId">The ID of the trainee lesson to check access for.</param>
+        /// <returns>A task representing the asynchronous operation.</returns>
+        /// <exception cref="UserNotFoundException">Thrown if the user was not found.</exception>
+        /// <exception cref="TraineeLessonNotFoundException">Thrown if the trainee lesson does not exist.</exception>
+        /// <exception cref="UnauthorizedAccessException">Thrown if access is denied.</exception>
+        /// <remarks>
+        /// Code Ownership: Alexander Schlemmer (schleale)
+        /// </remarks>
         private async Task CheckHasAccess(ClaimsPrincipal user, int traineeLessonId) {
             if (user == null)
                 throw new UserNotFoundException();
@@ -70,6 +120,18 @@ namespace TraineeTracker.Services {
                 throw new UnauthorizedAccessException("You can only access your own TraineeLessons.");
         }
 
+        // --------------------------------------------------
+        /// <summary>
+        /// Builds a detailed view model for a trainee lesson, including lesson info, log entries, feedback, and allowed state transitions.
+        /// </summary>
+        /// <param name="traineeLessonId">The ID of the trainee lesson to build the view model for.</param>
+        /// <param name="user">The user trying to build the view model.</param>
+        /// <returns>A <see cref="TraineeLessonDetailViewModel"/> representing detailed info about the trainee lesson.</returns>
+        /// <exception cref="TraineeLessonNotFoundException">Thrown if the requested trainee lesson could not be found.</exception>
+        /// <exception cref="LessonNotFoundException">Thrown if the trainee lesson has an invalid corresponding lesson.</exception>
+        /// <remarks>
+        /// Code Ownership: Alexander Schlemmer (schleale), tiny edit by Simon Hinterreiter (hintsimo)
+        /// </remarks>
         public async Task<TraineeLessonDetailViewModel> BuildTraineeLessonDetailViewModel(int traineeLessonId, ClaimsPrincipal user) {
             await CheckHasAccess(user, traineeLessonId);
 
@@ -114,6 +176,20 @@ namespace TraineeTracker.Services {
             };
         }
 
+        // --------------------------------------------------
+        /// <summary>
+        /// Changes the state of a trainee lesson, if the user is allowed to do so.
+        /// Validates the requested state change, updates dates accordingly, logs the change, and sends notification emails asynchronously.
+        /// </summary>
+        /// <param name="traineeLessonUpdate">Data transfer object (DTO) containing the necessary information for changing the state of a trainee lesson.</param>
+        /// <param name="user">The user trying to change the state.</param>
+        /// <returns>A task representing the asynchronous save operation.</returns>
+        /// <exception cref="TraineeLessonNotFoundException">Thrown when the specified trainee lesson was not found.</exception>
+        /// <exception cref="ArgumentException">Thrown when rejection reason is missing for transitioning to Rejected state.</exception>
+        /// <exception cref="Exception">Thrown when the target state is invalid.</exception>
+        /// <remarks>
+        /// Code Ownership: Alexander Schlemmer (schleale)
+        /// </remarks>
         public async Task SaveTraineeLessonStateChange(TraineeLessonDto traineeLessonUpdate, ClaimsPrincipal user, Feedback? feedback = null) {
             await CheckHasAccess(user, traineeLessonUpdate.TraineeLessonId);
 
@@ -128,7 +204,7 @@ namespace TraineeTracker.Services {
             // checks for missing rejection reason
             if (targetState == TraineeLessonState.Rejected && String.IsNullOrWhiteSpace(traineeLessonUpdate.RejectionReason))
                 throw new ArgumentException("Rejection reason must be provided for transitioning to rejected.", nameof(traineeLessonUpdate));
-                
+
             // transitions, if allowed
             TraineeLessonStateFactory factory = new();
             oldTraineeLesson.State = factory.Create(oldTraineeLesson.State).TransitionTo(targetState, user);
@@ -165,11 +241,26 @@ namespace TraineeTracker.Services {
 
                 await emailService.NotifyAboutStateChangeAsync(oldTraineeLesson, oldState, targetState, feedback);
             });
-            
+
             // creates log
             await LogStatusChange(oldTraineeLesson, oldState, targetState, user);
         }
 
+        // --------------------------------------------------
+        /// <summary>
+        /// Logs the status change of a trainee lesson.
+        /// </summary>
+        /// <param name="traineeLesson">The trainee lesson that changed state.</param>
+        /// <param name="oldState">The old state before the change.</param>
+        /// <param name="newState">The new state after the change.</param>
+        /// <param name="user">The user who made the change.</param>
+        /// <returns>A task representing the asynchronous logging operation.</returns>
+        /// <exception cref="TraineeLessonNotFoundException">Thrown if the given trainee lesson could not be found.</exception>
+        /// <exception cref="LessonNotFoundException">Thrown if the corresponding lesson could not be found.</exception>
+        /// <exeption cref="UserNotFoundException">Thrown if the given user could not be found.</exception>
+        /// <remarks>
+        /// Code Ownership: Alexander Schlemmer (schleale)
+        /// </remarks>
         private async Task LogStatusChange(TraineeLesson traineeLesson, TraineeLessonState oldState, TraineeLessonState newState, ClaimsPrincipal user) {
             if (traineeLesson == null)
                 throw new TraineeLessonNotFoundException();
@@ -180,22 +271,38 @@ namespace TraineeTracker.Services {
                 new TraineeLessonLogEntry {
                     TraineeLessonId = traineeLesson.TraineeLessonId,
                     LessonName = lesson.Title,
-                    UserId = user.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? throw new Exception("ClaimTypes.NameIdentifier of user not found."),
-                    UserName = user.FindFirst(ClaimTypes.Name)?.Value ?? throw new Exception("ClaimTypes.Name of user not found"),
+                    UserId = user.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? throw new UserNotFoundException("ClaimTypes.NameIdentifier of user not found."),
+                    UserName = user.FindFirst(ClaimTypes.Name)?.Value ?? throw new UserNotFoundException("ClaimTypes.Name of user not found"),
                     OldState = oldState.ToString(),
                     NewState = newState.ToString(),
                     Timestamp = DateTime.UtcNow
                 });
         }
 
+        // --------------------------------------------------
+        /// <summary>
+        /// Updates feedback for a trainee lesson and sends an email about the change,
+        /// otherwise calls <see cref="SaveTraineeLessonStateChange"/> and saves the feedback if it is newly created.
+        /// This method checks if the user has access to the trainee lesson before proceeding.
+        /// </summary>
+        /// <param name="feedbackDto">The feedback data transfer object containing feedback details.</param>
+        /// <param name="user">The current user making the request, used for authorization.</param>
+        /// <exception cref="ArgumentNullException">Thrown if required fields in <paramref name="feedbackDto"/> are null when creating new feedback.</exception>
+        /// <exception cref="TraineeLessonNotFoundException">Thrown if the referenced trainee lesson does not exist.</exception>
+        /// <exception cref="UserNotFoundException">Thrown if the trainee could not be found, or user claims are missing required data.</exception>
+        /// <exception cref="LessonNotFoundException">Thrown if the lesson related to the trainee lesson does not exist.</exception>
+        /// <exception cref="UnauthorizedAccessException">Thrown if the trainee lesson state is not accepted when creating new feedback.</exception>
+        /// <remarks>
+        /// Code Ownership: Alexander Schlemmer (schleale)
+        /// </remarks>
         public async Task SaveFeedback(FeedbackDto feedbackDto, ClaimsPrincipal user) {
-            await CheckHasAccess(user, feedbackDto.TraineeLessonId);    // it is basically a state change, hence checking this beforehand
-            
+            // it is basically a state change, hence checking this beforehand
+            await CheckHasAccess(user, feedbackDto.TraineeLessonId); 
+
             if (feedbackDto == null)
                 throw new Exception("FeedbackDto is null");
 
             var correspondingTraineeLesson = await _databaseTraineeLessonRepository.GetTraineeLessonByIdWithLessonAsync(feedbackDto.TraineeLessonId) ?? throw new TraineeLessonNotFoundException(feedbackDto.TraineeLessonId);
-            var oldState = correspondingTraineeLesson.State;
             var traineeId = correspondingTraineeLesson.TraineeId;
             var trainee = await _databaseApplicationUserRepository.FindByIdAsync(traineeId) ?? throw new UserNotFoundException();
             var existingFeedback = await _databaseFeedbackrepository.GetFeedbackOfTraineeLessonWithLessonAndAuthorAndReadByUsersAsync(correspondingTraineeLesson);
@@ -230,8 +337,6 @@ namespace TraineeTracker.Services {
                 if (correspondingTraineeLesson.State != TraineeLessonState.Accepted)
                     throw new UnauthorizedAccessException("You can write a feedback once your TraineeLesson has been accepted.");
 
-                var authorId = user.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? throw new Exception("ClaimTypes.NameIdentifier of user not found.");
-
                 var feedback = new Feedback {
                     Difficulty = feedbackDto.Difficulty,
                     PreviousKnowledge = feedbackDto.PreviousKnowledge,
@@ -257,6 +362,18 @@ namespace TraineeTracker.Services {
             }
         }
 
+        // --------------------------------------------------
+        /// <summary>
+        /// Deletes a feedback entry identified by <paramref name="feedbackId"/>.
+        /// Only users who are in the "Mentor" or "Admin" role are authorized to delete feedback.
+        /// </summary>
+        /// <param name="user">The current user attempting the deletion, used for authorization checks.</param>
+        /// <param name="feedbackId">The ID of the feedback to delete.</param>
+        /// <exception cref="UnauthorizedAccessException">Thrown if the user has the "Trainee" role, which is not permitted to delete feedback.</exception>
+        /// <exception cref="FeedbackNotFoundException">Thrown if no feedback with the specified ID exists.</exception>
+        /// <remarks>
+        /// Code Ownership: Alexander Schlemmer (schleale)
+        /// </remarks>
         public async Task DeleteFeedback(ClaimsPrincipal user, int feedbackId) {
             if (user.IsInRole("Trainee"))
                 throw new UnauthorizedAccessException("Trainees cannot delete feedbacks.");
@@ -268,13 +385,15 @@ namespace TraineeTracker.Services {
 
             await _databaseFeedbackrepository.DeleteAsync(feedbackId);
 
+            var emailUser = await _databaseApplicationUserRepository.GetUserAsync(user) ?? throw new UserNotFoundException();
+
             // sends email (different thread)
             _ = Task.Run(async () => {
                 using var scope = _scopeFactory.CreateScope();
                 var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
                 var emailService = scope.ServiceProvider.GetRequiredService<EmailNotificationService>();
 
-                await emailService.NotifyAboutFeedbackChangeAsync(deletedFeedback, await _databaseApplicationUserRepository.GetUserAsync(user) ?? throw new UserNotFoundException(), true);
+                await emailService.NotifyAboutFeedbackChangeAsync(deletedFeedback, emailUser, true);
             });
         }
     }
