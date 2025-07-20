@@ -62,10 +62,11 @@ namespace TraineeTracker.E2ETests {
             // Assert - Test 1
             Assert.Equal(!initialState, newCheckbox.Selected);
         }
-
+        // ------------------------------------------------------
         public void Dispose() {
             _driver.Quit();
             _driver.Dispose();
         }
+        // ------------------------------------------------------
     }
 }
