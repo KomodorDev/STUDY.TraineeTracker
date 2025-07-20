@@ -124,7 +124,11 @@ app.UseRequestLocalization(localizationOptions.Value);
 // Ensure DB is there:
 using (var scope = app.Services.CreateScope()) {
     var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-    db.Database.Migrate();
+    var database = db.Database;
+
+    if (database.IsRelational()) {
+        database.Migrate();
+    }
 }
 
 // ---------------------------------------------
