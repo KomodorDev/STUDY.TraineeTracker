@@ -10,23 +10,12 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser> {
 
     public DbSet<TraineeLessonLogEntry> TraineeLessonLogEntries { get; set; }
 
-    public DbSet<TraineeLesson> TraineeLessons {
-        get; set;
-    }
+    public DbSet<TraineeLesson> TraineeLessons { get; set; }
 
-    public DbSet<TraineeStatisticsSnapshot> TraineeStatisticsSnapshots {
-        get; set;
-    }
-
-    public DbSet<Feedback> Feedbacks {
-        get; set;
-    }
-    public DbSet<Lesson> Lessons {
-        get; set;
-    }
-    public DbSet<TeachingPlan> TeachingPlans {
-        get; set;
-    }
+    public DbSet<TraineeStatisticsSnapshot> TraineeStatisticsSnapshots { get; set; }
+    public DbSet<Feedback> Feedbacks { get; set; }
+    public DbSet<Lesson> Lessons { get; set; }
+    public DbSet<TeachingPlan> TeachingPlans { get; set; }
     public DbSet<EmailNotificationSetting> EmailNotificationSettings { get; set; }
 
     public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
@@ -44,6 +33,12 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser> {
             .IsUnique();
 
         // +++++++++++++++
+        // TeachingPlan name is unique
+        modelBuilder.Entity<TeachingPlan>()
+            .HasIndex(tp => tp.Name)
+            .IsUnique();
+
+        // +++++++++++++++
         // ApplicationUser and Feedback
         modelBuilder.Entity<Feedback>()
             .HasMany(f => f.ReadByUsers)
@@ -52,7 +47,6 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser> {
                 "FeedbackRead",
                 j => j.HasOne<ApplicationUser>().WithMany().HasForeignKey("ReaderId"),
                 j => j.HasOne<Feedback>().WithMany().HasForeignKey("FeedbackId"));
-
 
         modelBuilder.Entity<Feedback>()
             .HasOne(f => f.Author)
