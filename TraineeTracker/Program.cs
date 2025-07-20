@@ -104,8 +104,7 @@ var defaultCulture = new CultureInfo("en-US");
 CultureInfo.DefaultThreadCurrentCulture = defaultCulture;
 CultureInfo.DefaultThreadCurrentUICulture = defaultCulture;
 
-builder.Services.Configure<RequestLocalizationOptions>(options =>
-{
+builder.Services.Configure<RequestLocalizationOptions>(options => {
     options.DefaultRequestCulture = new RequestCulture(defaultCulture);
     options.SupportedCultures = new[] { defaultCulture };
     options.SupportedUICultures = new[] { defaultCulture };
@@ -145,7 +144,8 @@ using (var scope = app.Services.CreateScope()) {
     await testDataSeeder.SeedUsersAsync();
     await testDataSeeder.SeedProcessingPausesAsync();
     await testDataSeeder.SeedFeedbackAsync();
-    await testDataSeeder.SeedTraineeStatisticsSnapshotAsync();
+    /*     await testDataSeeder.SeedTraineeStatisticsSnapshotAsync(); */
+    await testDataSeeder.SeedProgressForStefanAndUrsulaAsync();
 }
 
 // ---------------------------------------------
@@ -161,8 +161,7 @@ if (app.Environment.IsDevelopment()) {
 app.UseHttpsRedirection();
 
 // set dashboard as standard page <do not use yet>
-app.MapGet("/", context =>
-{
+app.MapGet("/", context => {
     context.Response.Redirect("/Dashboard");
     return Task.CompletedTask;
 });
