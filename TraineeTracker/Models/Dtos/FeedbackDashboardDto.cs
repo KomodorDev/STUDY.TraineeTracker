@@ -1,4 +1,5 @@
 using System;
+using TraineeTracker.Models.Domain;
 
 namespace TraineeTracker.Models.Dtos {
     public class FeedbackDashboardDto {
@@ -14,9 +15,9 @@ namespace TraineeTracker.Models.Dtos {
 
         public string? Comment { get; set; }
 
-        public int? Difficulty { get; set; }
+        public LessonDifficulty Difficulty { get; set; }
 
-        public string? PreviousKnowledge { get; set; }
+        public PreviousKnowledgeLevel PreviousKnowledge { get; set; }
 
         public float? HoursOfEffort { get; set; }
     }

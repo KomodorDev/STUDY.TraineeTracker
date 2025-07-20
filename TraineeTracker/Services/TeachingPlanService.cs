@@ -32,7 +32,10 @@ namespace TraineeTracker.Services {
 
         // ---------------------------------------------------
         public async Task<ImportDashboardViewModel> BuildImportDashboardViewModelAsync() {
+            // a) Get all Teachingplans
             var allPlans = await _databaseTeachingPlanRepository.GetAllTeachingPlansWithLessonsAndTraineesAsync();
+
+            // b) Build Import Dashboard with all Teachingplans
             return new ImportDashboardViewModel {
                 ExistingTeachingPlans = allPlans.Select(tp => new ExistingTeachingPlanViewModel {
                     TeachingPlanId = tp.TeachingPlanId,
@@ -43,17 +46,132 @@ namespace TraineeTracker.Services {
                 }).ToList()
             };
         }
+        // ---------------------------------------------------
+        // ---------------------------------------------------
+        // ---------------------------------------------------
+        // ---------------------------------------------------
+        // ---------------------------------------------------
+        // ---------------------------------------------------
+        // ---------------------------------------------------
+        public async Task<string> SaveTempJsonFileAsync(IFormFile file) {
+            var fileName = $"{Guid.NewGuid()}.json";
+            var fullPath = Path.Combine(Path.GetTempPath(), fileName);
+
+            await using var stream = new FileStream(fullPath, FileMode.Create);
+            await file.CopyToAsync(stream);
+
+            return fileName;
+        }
 
         // ---------------------------------------------------
+        public async Task<TeachingPlanImportPreviewViewModel> BuildImportPreviewViewModelAsync(TeachingPlanDto teachingPlanDto) {
+
+            // +++++++++++++++
+            // a. Modal was just opened:
+            if (teachingPlanDto.NewPlanFile is null) {
+
+                var plan = await _databaseTeachingPlanRepository
+                    .GetTeachingPlanByIdAsync(teachingPlanDto.ExistingTeachingPlanId!.Value);
+
+                return new TeachingPlanImportPreviewViewModel {
+                    TeachingPlanId = plan!.TeachingPlanId,
+                    TeachingPlanName = plan.Name
+                };
+            }
+
+            // +++++++++++++++
+            // b. Modal already open and NewPlanFile was uploaded:
+
+            // Save the file temporarily and give the dto the TempFileName
+            var tempFileName = await SaveTempJsonFileAsync(teachingPlanDto.NewPlanFile);
+            teachingPlanDto.TempFileName = tempFileName;
+
+            // 1) Load imported Dtos and validate
+            var json = await ReadJsonAsync(teachingPlanDto.NewPlanFile);
+            var importedDtos = DeserializeLessonDtos(json);
+            ValidateLessonDtos(importedDtos);
+
+            // 2) Get existing teachingPlan
+            int teachingPlanId = teachingPlanDto.ExistingTeachingPlanId!.Value;
+            var existingPlan = await _databaseTeachingPlanRepository
+                .GetTeachingPlanByIdWithLessonsAndTraineesAsync(teachingPlanId);
+
+            // 3) Get existing Lessons:
+            var existingLessons = existingPlan!.Lessons.ToList();
+            var existingLessonsByMakandraId = existingLessons.ToDictionary(l => l.MakandraId);
+
+            // Prepare lists for ViewModel:
+            var newActive = new List<LessonDto>();
+            var newInactive = new List<LessonDto>();
+            var existingReactivated = new List<LessonDto>();
+            var existingDeactivated = new List<LessonDto>();
+
+            // 4) Loop through imported lessons:
+            foreach (var dto in importedDtos) {
+
+                // Check if that MakandraId already exists in existingLessons of that teachingPlan:
+                var exists = existingLessonsByMakandraId.TryGetValue(dto.Id, out var existingLesson);
+
+                // Lesson is new:
+                if (!exists) {
+                    if (dto.Deprecated)
+                        // 2. new but Inative:
+                        newInactive.Add(dto);
+                    else
+                        // 1. New and Active:
+                        newActive.Add(dto);
+                }
+                // Lesson already exists:
+                else if (!dto.Deprecated && existingLesson!.IsInactive) {
+                    // existing and reactivated:
+                    existingReactivated.Add(MapLessonToLessonDto(existingLesson));
+                }
+            }
+
+            // 5) Determine deactivated Lessons:
+            var importedMakandraIds = importedDtos.Select(dto => dto.Id).ToHashSet();
+            foreach (var lesson in existingLessons) {
+                if (!importedMakandraIds.Contains(lesson.MakandraId)) {
+
+                    // 4. existing and deactivated:
+                    existingDeactivated.Add(MapLessonToLessonDto(lesson));
+                }
+            }
+
+            // 6) Fill ViewModel
+            var vm = new TeachingPlanImportPreviewViewModel {
+                TeachingPlanId = teachingPlanId,
+                TeachingPlanName = existingPlan.Name,
+                TempFileName = teachingPlanDto.TempFileName,
+                NewActiveLessons = newActive,
+                NewInactiveLessons = newInactive,
+                ExistingReactivatedLessons = existingReactivated,
+                ExistingDeactivatedLessons = existingDeactivated
+            };
+
+            return vm;
+        }
+
+        // ---------------------------------------------------
+        // ---------------------------------------------------
+        // ---------------------------------------------------
+        // ---------------------------------------------------
+        // ---------------------------------------------------
+        // ---------------------------------------------------
+        // ---------------------------------------------------
+        // ---------------------------------------------------
+        // ---------------------------------------------------
         public async Task ImportNewTeachingPlan(TeachingPlanDto dto) {
-            ValidateFile(dto.NewPlanFile);
+            // a) Validate Dto attributes
+            ValidateFile(dto.NewPlanFile!);
             ValidateName(dto.NewPlanName!);
 
-            var json = await ReadJsonAsync(dto.NewPlanFile);
+            // b) Get jsonstring out of file, deserialize json string and validate lessonDto
+            var json = await ReadJsonAsync(dto.NewPlanFile!);
             var lessonDtos = DeserializeLessonDtos(json);
             ValidateLessonDtos(lessonDtos);
 
-            // Create TeachingPlan:
+            // c) Create TeachingPlan:
             var teachingPlan = new TeachingPlan {
                 Name = dto.NewPlanName!,
                 LastUpdated = DateTime.UtcNow,
@@ -61,7 +179,7 @@ namespace TraineeTracker.Services {
 
             await _databaseTeachingPlanRepository.CreateAsync(teachingPlan);
 
-            // Create Lessons for TeachingPlan:
+            // d) Create Lessons for TeachingPlan:
             var lessons = CreateLessons(lessonDtos, teachingPlan.TeachingPlanId);
             foreach (var lesson in lessons) {
                 await _databaseLessonRepository.CreateAsync(lesson);
@@ -77,8 +195,16 @@ namespace TraineeTracker.Services {
             int existingTeachingPlanId = teachingPlanDto.ExistingTeachingPlanId ?? throw new Exception("ExistingTeachingPlanId missing!");
 
             // +++++++++++++++
-            // 1) Datei einlesen, DTOs validieren
-            var json = await ReadJsonAsync(teachingPlanDto.NewPlanFile);
+            // 1) Get File from temp Location:
+            if (string.IsNullOrWhiteSpace(teachingPlanDto.TempFileName))
+                throw new InvalidOperationException("Temp file name is missing for import.");
+
+            var fullPath = Path.Combine(Path.GetTempPath(), teachingPlanDto.TempFileName);
+            var json = await File.ReadAllTextAsync(fullPath);
+
+            if (File.Exists(fullPath))
+                File.Delete(fullPath);
+
             var lessonDtos = DeserializeLessonDtos(json);
             ValidateLessonDtos(lessonDtos);
 
@@ -100,9 +226,9 @@ namespace TraineeTracker.Services {
             int sortingIndex = 0;
 
             // +++++++++++++++
-            // 3) DTOs upserten und zusätzlich:
-            //    - Deprecated = true → nur Open-TraineeLessons sollen gelöscht werden ("removed")
-            //    - ganz neue Lessons → in teachingPlan einfügen und als "added" markieren
+            // 3) Upsert DTOs and in addition:
+            //    - Deprecated = true → only Open-TraineeLessons should be deleted ("removed")
+            //    - totally new Lessons → insert into teachingPlan and mark as "added"
             foreach (var lessonDto in lessonDtos) {
                 // Find Lesson by lessonDto.MakandraId in existingLessons (MakandraId is at least unique within TeachingPlan)
                 var lesson = existingLessons.FirstOrDefault(l => l.MakandraId == lessonDto.Id);
@@ -118,7 +244,7 @@ namespace TraineeTracker.Services {
                     /*  
                                         // Add Lesson to teachingPlan:
                                         existingTeachingPlan.Lessons.Add(newLesson);
-                      */
+                    */
                     // Append addedLessons
                     addedLessons.Add(newLesson);
 
@@ -180,10 +306,10 @@ namespace TraineeTracker.Services {
             }
 
             // +++++++++++++++
-            // 5) Für jeden zugewiesenen Trainee:
-            //    - Open-TraineeLessons der lessonsMarkedAsInactive löschen und sammeln
-            //    - für addedLessons neue TraineeLesson anlegen und sammeln
-            //    - NotifyAboutImportChangeAsync aufrufen
+            // 5) For every added Trainee:
+            //    - Delete Open-TraineeLessons of lessonsMarkedAsInactive and gather
+            //    - for addedLessons create new TraineeLesson and gather
+            //    - call NotifyAboutImportChangeAsync
             foreach (var trainee in existingTeachingPlan.Trainees) {
 
                 // +++++++++++++++
@@ -192,7 +318,7 @@ namespace TraineeTracker.Services {
                     .GetAllTraineeLessonsOfTraineeWithLessonAsync(trainee.Id)).ToList();
 
                 // +++++++++++++++
-                // a) Entfernen
+                // a) Remove
                 var removedTraineeLessons = new List<TraineeLesson>();
                 foreach (var lesson in lessonsMarkedAsInactive) {
 
@@ -213,9 +339,9 @@ namespace TraineeTracker.Services {
                 }
 
                 // +++++++++++++++
-                // b) Hinzufügen
+                // b) Add
                 var addedTraineeLessons = new List<TraineeLesson>();
-                foreach (var lesson in addedLessons) {
+                foreach (var lesson in addedLessons.Where(l => !l.IsInactive)) {
                     var tl = new TraineeLesson {
                         TraineeId = trainee.Id,
                         Trainee = trainee,
@@ -227,7 +353,7 @@ namespace TraineeTracker.Services {
                 }
 
                 // +++++++++++++++
-                // Debug-Ausgabe
+                // Debug-Output
                 Console.WriteLine($"[Import] Trainee {trainee.UserName} – Removed Lessons:");
                 foreach (var tl in removedTraineeLessons) {
                     Console.WriteLine($"  - {tl.Lesson.Title} (ID: {tl.Lesson.LessonId})");
@@ -239,8 +365,8 @@ namespace TraineeTracker.Services {
                 }
 
                 // +++++++++++++++
-                // c) Benachrichtigung
-                _emailNotificationService
+                // c) Notifications
+                _ = _emailNotificationService
                     .NotifyAboutImportChangeAsync(trainee, removedTraineeLessons, addedTraineeLessons);
             }
         }
@@ -248,10 +374,14 @@ namespace TraineeTracker.Services {
         // ---------------------------------------------------
         public async Task DeleteTeachingPlan(int existingTeachingPlanId) {
 
+            // a) Debug-Output
             Console.WriteLine($"ID used for delete: {existingTeachingPlanId}");
+
+            // b) Get teachingplan with requested ID
             var plan = await _databaseTeachingPlanRepository.GetTeachingPlanByIdWithLessonsAndTraineesAsync(existingTeachingPlanId)
                        ?? throw new InvalidOperationException("TeachingPlan not found.");
 
+            // c) Check if Trainees are assigned to teachingplan and if not delete 
             if (plan.Trainees != null && plan.Trainees.Any())
                 throw new InvalidOperationException("This TeachingPlan is still in use.");
 
@@ -266,13 +396,16 @@ namespace TraineeTracker.Services {
 
         // ---------------------------------------------------
         public async Task AssignTeachingPlanToTraineeAsync(ApplicationUser trainee, int teachingPlanId) {
+            // a) Get teachingplan with requested ID
             var plan = await _databaseTeachingPlanRepository.GetTeachingPlanByIdWithLessonsAndTraineesAsync(teachingPlanId)
-                       ?? throw new InvalidOperationException("TeachingPlan nicht gefunden.");
+                       ?? throw new InvalidOperationException("TeachingPlan not found.");
 
+            // b) Set teachingplan of trainee to teachingplan which is requested
             trainee.TeachingPlanId = teachingPlanId;
             trainee.TeachingPlan = plan;
             await CreateTraineeLessonsAsync(trainee, plan.Lessons);
 
+            // c) Add trainee to teachingplan
             plan.Trainees.Add(trainee);
             await _databaseApplicationUserRepository.UpdateAsync(trainee);
             await _databaseTeachingPlanRepository.UpdateAsync(plan);
@@ -303,37 +436,43 @@ namespace TraineeTracker.Services {
 
         // ---------------------------------------------------
         private void ValidateFile(IFormFile file) {
+            // Validate File
             if (file == null || file.Length == 0)
-                throw new ArgumentException("Die Datei ist leer!");
+                throw new ArgumentException("The file is empty!");
         }
 
         // ---------------------------------------------------
         private void ValidateName(string name) {
+            // Validate Name
             if (string.IsNullOrWhiteSpace(name))
-                throw new ArgumentException("Ungültiger Name!");
+                throw new ArgumentException("Invalid name!");
         }
 
         // ---------------------------------------------------
         private async Task<string> ReadJsonAsync(IFormFile file) {
+            // Read Json which is used for Import and Update
             using var reader = new StreamReader(file.OpenReadStream());
             return await reader.ReadToEndAsync();
         }
 
         // ---------------------------------------------------
         private List<LessonDto> DeserializeLessonDtos(string json) {
+            // Use json string from ReadJson to convert to deserialized object
             return JsonConvert.DeserializeObject<List<LessonDto>>(json)
                 ?? throw new Exception("LessonDtos could not be deserialized.");
         }
 
         // ---------------------------------------------------
         private void ValidateLessonDtos(List<LessonDto> dtos) {
+            // Validate Dtos
             if (dtos == null || !dtos.Any())
-                throw new InvalidOperationException("Keine gültigen Lektionen im JSON gefunden!");
+                throw new InvalidOperationException("No valid lessons found in JSON!");
         }
 
         // ---------------------------------------------------
         private List<Lesson> CreateLessons(IEnumerable<LessonDto> dtos, int teachingPlanId) {
 
+            // Map dto Lessons to "real" Lessons
             int sortingIndex = 1;
             return dtos.Select(dto => new Lesson {
                 MakandraId = dto.Id,
@@ -347,7 +486,20 @@ namespace TraineeTracker.Services {
         }
 
         // ---------------------------------------------------
+        public LessonDto MapLessonToLessonDto(Lesson lesson) {
+            return new LessonDto {
+                Id = lesson.MakandraId,
+                Title = lesson.Title,
+                Url = lesson.LinkUrl,
+                Estimate = lesson.EstimatedEffort,
+                Deprecated = lesson.IsInactive
+            };
+        }
+
+        // ---------------------------------------------------
         private void UpdateLesson(LessonDto dto, Lesson lesson, int sortingIndex) {
+
+            // Update Lesson object with lesson Dto
             lesson.Title = dto.Title;
             lesson.LinkUrl = dto.Url;
             lesson.EstimatedEffort = dto.Estimate ?? 0;
@@ -357,6 +509,8 @@ namespace TraineeTracker.Services {
 
         // ---------------------------------------------------
         private Lesson CreateLesson(LessonDto dto, int teachingPlanId, int sortingIndex) {
+
+            // Create Lesson object with lesson Dto
             return new Lesson {
                 MakandraId = dto.Id,
                 Title = dto.Title,
@@ -369,18 +523,9 @@ namespace TraineeTracker.Services {
         }
 
         // ---------------------------------------------------
-        private async Task DeleteOpenTraineeLessonsAsync(int lessonId) {
-            var traineeLessons = await _databaseTraineeLessonRepository
-                .GetAllTraineeLessonsOfLessonWithLessonAsync(lessonId);
-
-            foreach (var tl in traineeLessons.Where(t => t.State == TraineeLessonState.Open)) {
-                await _databaseTraineeLessonRepository.DeleteAsync(tl.TraineeLessonId);
-            }
-        }
-
-
-        // ---------------------------------------------------
         private async Task CreateTraineeLessonsAsync(ApplicationUser trainee, IEnumerable<Lesson> lessons) {
+
+            // Create Lessons which are inactive
             foreach (var lesson in lessons.Where(l => !l.IsInactive)) {
                 var tl = new TraineeLesson {
                     TraineeId = trainee.Id,

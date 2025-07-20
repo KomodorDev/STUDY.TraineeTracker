@@ -61,7 +61,7 @@
             <div class="sopro-inner-card flex">
                 @{
                     var stats = Model.TraineeStatisticsSnapshot;
-                    var progressBarProgress = 100* stats?.LessonDaysCompleted / (stats?.LessonDaysOpen + stats?.LessonDaysCompleted);
+                    var progressBarProgress = (100* stats?.LessonDaysCompleted / (stats?.LessonDaysOpen + stats?.LessonDaysCompleted)) ?? 0;
                 }
                 <p>Snapshot Taken At: @(stats?.SnapshotDateTime.ToString("dd. MMMM yyyy HH:mm:ss") ?? "No Time") </p>
                 <p>
@@ -77,10 +77,10 @@
                     Progress Speed: @(((stats?.Speed ?? 0) * 100).ToString("0.00")) %
                 </p>
                 <div class="w-100">
-                    <p>Total Progress:</p>
+                    <p>Total Lessons Completed: @progressBarProgress.ToString("F2") %</p>
                     <div style="width: 100%; height: 30px; border: 2px solid #626262; border-radius: 11px; overflow: hidden; background-color: #f2f2f2;">
                         <div class="progress-bar bg-danger" role="progressbar" 
-                            style="width: @(progressBarProgress)%; height: 100%;
+                            style="width: @(progressBarProgress.ToString(System.Globalization.CultureInfo.InvariantCulture))%; height: 100%;
                                 background-image: linear-gradient(to right, #ff0844, #ffb199);" 
                             aria-valuenow="@progressBarProgress" aria-valuemin="0" aria-valuemax="100">
                         </div>
@@ -178,7 +178,7 @@
                     <th>Name</th>
                     <th>URL</th>
                     <th>Est.</th>
-                    <th>Status</th>
+                    <th>State</th>
                 </tr>
             </thead>
             <tbody class="sopro-inner-card flex">
@@ -190,10 +190,10 @@
                         <td>@traineeLesson.Lesson.EstimatedEffort days</td>
                         <td>
                             @{
-                                var status = traineeLesson.State.ToString();
-                                var color = status.ToLower();
+                                var state = traineeLesson.State.ToString();
+                                var color = state.ToLower();
                             }
-                            <span class="sopro-tag @color">@status</span>
+                            <span class="sopro-tag @color">@state</span>
                         </td>
                     </tr>
                 }
