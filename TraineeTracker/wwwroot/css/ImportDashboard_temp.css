@@ -192,3 +192,16 @@ h3 {
 
   overflow: hidden;
 }
+
+.teachingplan-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 1rem;
+}
+
+.teachingplan-table th,
+.teachingplan-table td {
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid #dee2e6;
+  text-align: left;
+}
