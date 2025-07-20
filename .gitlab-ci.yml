@@ -1,0 +1,118 @@
+stages:
+  - build
+  - unit-tests
+  - e2e-tests
+  - deploy
+  - portainer
+
+
+# ---------------------------------------------
+# Build Stage
+build:
+  stage: build
+  image: mcr.microsoft.com/dotnet/sdk:8.0   # Empfohlenes offizielles .NET 8 Image
+  tags:
+    - sopro
+  script:
+    - cd TraineeTracker         # Gehe in dein Hauptprojekt
+    - dotnet build              # Baue das Projekt
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "main"'
+    - if: '$CI_COMMIT_BRANCH == "dev"'
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+    - if: '$CI_COMMIT_BRANCH =~ /^[a-zA-Z]+_[0-9][0-9]$/'
+
+
+# ---------------------------------------------
+# Unit Test Stage:
+unit-tests:
+  stage: unit-tests
+  image: mcr.microsoft.com/dotnet/sdk:8.0   # Empfohlenes offizielles .NET 8 Image
+  tags:
+    - sopro
+  script:
+    - cd TraineeTracker.UnitTests
+    - dotnet test
+  needs:
+    - build
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "main"'
+    - if: '$CI_COMMIT_BRANCH == "dev"'
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+    - if: '$CI_COMMIT_BRANCH =~ /^[a-zA-Z]+_[0-9][0-9]$/'
+
+# ---------------------------------------------
+# E2E Test Stage:
+e2e-tests:
+  stage: e2e-tests
+  image: mcr.microsoft.com/dotnet/sdk:8.0   # Empfohlenes offizielles .NET 8 Image
+  tags:
+    - sopro
+  script:
+    # Starte das Hauptprojekt als Server im Hintergrund
+    - cd TraineeTracker
+    - dotnet run --environment Development &
+    - sleep 5  # Gib dem Server Zeit, um zu starten
+
+    # Chrome installieren (Selenium braucht echten Browser!)
+    - apt update -q -y
+    - apt --yes install libnss3 xvfb libx11-6 libgconf-2-4 unzip gnupg
+    - wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
+    - apt install ./google-chrome-stable_current_amd64.deb -y
+
+    # Wechsel ins E2E-Testprojekt
+    - cd ../TraineeTracker.E2ETests
+
+    # E2E-Tests ausführen
+    - dotnet test
+  needs:
+    - build
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "main"'
+    - if: '$CI_COMMIT_BRANCH == "dev"'
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+    - if: '$CI_COMMIT_BRANCH =~ /^[a-zA-Z]+_[0-9][0-9]$/'
+
+# ---------------------------------------------
+# Deploy:
+deploy:
+  stage: deploy
+  image:
+    name: gcr.io/kaniko-project/executor:debug
+    entrypoint: [""]
+  tags:
+    - sopro
+  variables:
+    KANIKO_ARGS: "--single-snapshot"
+    KANIKO_BUILD_CONTEXT: $CI_PROJECT_DIR/TraineeTracker
+    IMAGE_TAG_NAME: kaniko-docker
+  script:
+    - export IMAGE_TAG=${CI_REGISTRY_IMAGE}/traineetracker:${IMAGE_TAG_NAME}
+    - echo $IMAGE_TAG
+    - mkdir -p /kaniko/.docker
+    - echo "{\"auths\":{\"$CI_REGISTRY\":{\"auth\":\"$(echo -n ${CI_REGISTRY_USER}:${CI_REGISTRY_PASSWORD} | base64 | tr -d '\n')\"}}}" > /kaniko/.docker/config.json
+    - DOCKERFILE_PATH=${DOCKERFILE_PATH:-"$KANIKO_BUILD_CONTEXT/Dockerfile"}
+    - /kaniko/executor --context $KANIKO_BUILD_CONTEXT --dockerfile $DOCKERFILE_PATH --destination $IMAGE_TAG $KANIKO_ARGS
+  needs:
+    - unit-tests
+    - e2e-tests
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "main"'
+    
+# ---------------------------------------------
+# Portainer:
+portainer:
+  stage: portainer
+  image: curlimages/curl:latest
+  variables:
+    CONTAINER_WEB_HOOK: https://portainer.isse.de/api/webhooks/b3d798f1-7808-4c40-8937-608eb2fc6ad9
+  tags:
+    - sopro
+  script:
+    - sleep 10    # Warte, bis das Dockerimage vollständig erstellt ist
+    - curl -X POST $CONTAINER_WEB_HOOK # Wir sagen Portainer: Hier ist ein neues Image. Update mal
+  needs:
+    - deploy
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "main"'
+# ---------------------------------------------

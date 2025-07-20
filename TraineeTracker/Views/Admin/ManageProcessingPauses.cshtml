@@ -1,0 +1,50 @@
+@model TraineeTracker.Models.Domain.ApplicationUser
+
+@{
+    ViewData["Title"] = $"Processing Pauses of {Model.UserName}";
+}
+
+<thead>
+    <link rel="stylesheet" href="~/css/AdminDashboard_temp.css">
+</thead>
+
+<div class="sopro-grid-management">
+    <div class="sopro-card">
+        <div class="header thiccboi">
+            <div class="smash">@ViewData["Title"]</div>
+            <a class="sopro-btn sopro-btn-prim sopro-button-header" asp-action="ShowCreateProcessingPauseView"
+                asp-route-traineeId="@Model.Id">Add Processing Pause</a>
+        </div>
+    </div>
+    <div class="sopro-card scroll">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Start</th>
+                    <th>End</th>
+                    <th></th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var pause in Model.ProcessingPauses)
+                {
+                    <tr>
+                        <td>@pause.StartDate</td>
+                        <td>@pause.EndDate</td>
+                        <td><a class="sopro-btn sopro-btn-sec sopro-button-content" asp-action="ShowEditProcessingPauseView"
+                                asp-route-processingPauseId="@pause.ProcessingPauseId"
+                                asp-route-processingPauseId="@pause.ProcessingPauseId">Edit</a></td>
+                        <td>
+                            <form asp-action="DeleteProcessingPause" asp-route-processingPauseId="@pause.ProcessingPauseId"
+                                method="post"
+                                onsubmit="return confirm('Are you sure you want to delete this Processing Pause?');">
+                                <button type="submit" class="sopro-btn sopro-btn-prim sopro-button-content">Delete</button>
+                            </form>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

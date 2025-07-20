@@ -1,0 +1,139 @@
+/* by schleale & hintsimo */
+
+.sopro-grid-lessons {
+  display: grid;
+  grid-template-columns: 25% 1fr;
+  grid-template-rows: 1fr;
+
+  padding: 3.516rem;    /* "75" px */    
+  column-gap: 2.344rem; /* "50" px */
+
+  height: calc(100vh - 3.516rem);   /* 100% of viewport height - navbar height */
+  width: 100vw;
+
+  max-width: calc(1920px - 3.516rem - 3.516rem);
+  margin: 0 auto;
+}
+
+.sopro-grid-lessons-left {
+    display: grid;
+    grid-template-columns: 1fr;
+    grid-template-rows: 7.031rem 1fr;   /* "150" px, fill remainder */
+
+    height: 100%;
+
+    row-gap: 1.172rem;    /* "25" px */
+
+    background-color: transparent;
+}
+
+.sopro-grid-lessons-right {
+    display: grid;
+    grid-template-columns: 1fr;
+    grid-template-rows: 3.516rem 1fr;   /* "75" px, fr */
+    
+    height: 100%;
+    min-height: 0;  /* apparently min height auto (the default) prevents scaling down / enabling scrolling for some fucking reason, only took an hour to find out */
+
+    row-gap: 1.172rem;    /* "25" px */
+
+    background-color: transparent;
+}
+
+.sopro-table-format {
+    width: 100%;
+    height: 3rem;   /* lesson height in table */
+
+    display: grid;
+    grid-template-columns: 0.5fr 0.167fr 0.167fr 0.167fr;
+    gap: 0;
+
+    align-items: center;
+    flex-shrink: 0;
+
+    padding-left: 1.172rem; /* "25" px */
+    padding-right: 1.172rem; /* "25" px */
+}
+.sopro-table-format > * {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.sopro-card.sopro-table-format:hover {
+    /*box-shadow: inset 3px 3px 7px 0 rgba(0, 0, 0, 0.07);*/
+    filter: brightness(0.97);
+    transform: translateX(-5px);
+}
+
+/* Filters (hintsimo, revised by schleale) */
+.filter-bar {
+    display: flex;
+    align-items: center;
+    height: auto;  
+    justify-content: center;
+    border: 1px solid black;
+    border-radius: 11px;
+    overflow: hidden;
+    width: 100%;
+}
+
+.filter-tab {
+    display: flex;
+    align-items: center;
+    padding: 0.6rem 1.2rem;
+
+    border-right: 1px solid black;
+    background: white;
+
+    color: black;
+    font-weight: 900;
+    text-decoration: none;
+    text-align: center;
+    white-space: nowrap;
+
+    width: 100%;
+}
+.filter-tab:last-child {
+    border-right: none;
+}
+.filter-tab:hover {
+    background: #f8f9fa;
+    color: black;
+    text-decoration: underline;
+}
+.filter-tab.active {
+    background: #ffe3e3;
+    color: #e61d47;
+}
+.filter-tab.active:hover {
+    background: #ffe3e3;
+}
+
+.sopro-card-filter {
+    display: flex;
+    align-items: center;      /* vertikale Zentrierung */
+    justify-content: center;  /* horizontale Zentrierung */
+    height: 60px;             /* feste Höhe statt min-height */
+    padding: 0 1rem;
+    box-shadow: 3px 3px 11px 0 rgba(0, 0, 0, 0.2);
+    border-radius: 11px;
+    background-color: white;
+    min-height: 0;  /* to allow scrollbars */
+    height: 100%;
+  
+    /* hide scrollbar overflow */
+    overflow: hidden;
+}
+
+.select-wide {
+    background-color: white;
+    color: #e61d47;
+    font-weight: 900;
+    
+    border: none;
+    width: 100%;
+}
+.filter-selects {
+    width: 100%;
+}

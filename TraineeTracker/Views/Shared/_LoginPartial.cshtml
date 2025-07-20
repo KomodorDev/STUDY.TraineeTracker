@@ -1,0 +1,31 @@
+﻿@using Microsoft.AspNetCore.Identity
+@using TraineeTracker.Models.Domain;
+@inject SignInManager<ApplicationUser> SignInManager
+@inject UserManager<ApplicationUser> UserManager
+
+<div class="navbar-nav" style="align-items: center;">
+@if (SignInManager.IsSignedIn(User))
+{
+    <!-- Manage settings -->
+    <form asp-area="Identity" asp-page="/Account/Manage/Index" style="align-content: center;">
+        <button type="submit" class="btn btn-outline-dark">@User.Identity?.Name</button>
+    </form>
+    
+    <!-- Logout button -->
+    <form class="form-inline" asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })" style="align-content: center;">
+        <button type="submit" class="btn btn-outline-dark">Logout</button>
+    </form>
+}
+else
+{
+    <!-- Register button 
+    <form asp-area="Identity" asp-page="/Account/Register" title="Manage">
+        <button type="submit" class="btn btn-outline-dark">Register</button>
+    </form>-->
+    
+    <!-- Login button -->
+    <form class="form-inline" asp-area="Identity" asp-page="/Account/Login" asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })" style="align-content: center;">
+        <button type="submit" class="btn btn-outline-dark">Login</button>
+    </form>
+}
+</div>
