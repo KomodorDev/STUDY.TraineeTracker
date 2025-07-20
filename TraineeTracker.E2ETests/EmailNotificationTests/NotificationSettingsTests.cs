@@ -1,5 +1,5 @@
 using OpenQA.Selenium;
-using OpenQA.Selenium.Chrome;
+using Tutorial_project.E2ETests;
 
 namespace TraineeTracker.E2ETests {
 
@@ -11,10 +11,9 @@ namespace TraineeTracker.E2ETests {
 
         private readonly IWebDriver _driver;
 
-        public NotificationSettingsTests() {
-            var options = new ChromeOptions();
-            options.AddArgument("--headless"); // Optional: ohne GUI
-            _driver = new ChromeDriver(options);
+        public NotificationSettingsTests(BrowserFixture fixture)
+        {
+            _driver = fixture.Driver;
         }
 
         // ------------------------------------------------------
