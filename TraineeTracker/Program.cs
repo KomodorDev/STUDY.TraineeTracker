@@ -115,7 +115,6 @@ builder.Services.Configure<RequestLocalizationOptions>(options =>
 // Build
 var app = builder.Build();
 
-<<<<<<< TraineeTracker/Program.cs
 // ----------------------------------------
 // Apply culture settings
 var localizationOptions = app.Services.GetRequiredService<IOptions<RequestLocalizationOptions>>();
