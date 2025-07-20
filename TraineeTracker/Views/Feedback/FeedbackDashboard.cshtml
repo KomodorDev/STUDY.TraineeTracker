@@ -6,8 +6,8 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 @section Styles {
-<link rel="stylesheet" href="~/css/FeedbackDashboard_temp.css?v=@DateTime.Now.Ticks" />
-@* <link rel="stylesheet" href="~/css/FeedbackDashboard_temp.css" /> *@
+    <link rel="stylesheet" href="~/css/FeedbackDashboard_temp.css?v=@DateTime.Now.Ticks" />
+    @* <link rel="stylesheet" href="~/css/FeedbackDashboard_temp.css" /> *@
 }
 
 <div class="sopro-grid-management" style="height: 100%">
@@ -15,33 +15,24 @@
     <!-- Header Split: Filter links / Dropdowns rechts -->
     <div class="sopro-card flex-card">
         <div class="filter-bar-feedback">
-            <a class="filter-tab-feedback @(Model.ActiveFilter == "all" ? "active" : "")"
-            asp-action="Dashboard"
-            asp-route-filter="all"
-            asp-route-selectedTraineeId="@Model.SelectedTraineeId"
-            asp-route-selectedLessonId="@Model.SelectedLessonId"
-            asp-route-sortBy="@Model.SortBy"
-            asp-route-page="1">
+            <a class="filter-tab-feedback @(Model.ActiveFilter == "all" ? "active" : "")" asp-action="Dashboard"
+                asp-route-filter="all" asp-route-selectedTraineeId="@Model.SelectedTraineeId"
+                asp-route-selectedLessonId="@Model.SelectedLessonId" asp-route-sortBy="@Model.SortBy"
+                asp-route-page="1">
                 All (@Model.TotalFeedbackCount)
             </a>
 
-            <a class="filter-tab-feedback @(Model.ActiveFilter == "unread" ? "active" : "")"
-            asp-action="Dashboard"
-            asp-route-filter="unread"
-            asp-route-selectedTraineeId="@Model.SelectedTraineeId"
-            asp-route-selectedLessonId="@Model.SelectedLessonId"
-            asp-route-sortBy="@Model.SortBy"
-            asp-route-page="1">
+            <a class="filter-tab-feedback @(Model.ActiveFilter == "unread" ? "active" : "")" asp-action="Dashboard"
+                asp-route-filter="unread" asp-route-selectedTraineeId="@Model.SelectedTraineeId"
+                asp-route-selectedLessonId="@Model.SelectedLessonId" asp-route-sortBy="@Model.SortBy"
+                asp-route-page="1">
                 Unread (@Model.UnreadFeedbackCount)
             </a>
 
-            <a class="filter-tab-feedback @(Model.ActiveFilter == "read" ? "active" : "")"
-            asp-action="Dashboard"
-            asp-route-filter="read"
-            asp-route-selectedTraineeId="@Model.SelectedTraineeId"
-            asp-route-selectedLessonId="@Model.SelectedLessonId"
-            asp-route-sortBy="@Model.SortBy"
-            asp-route-page="1">
+            <a class="filter-tab-feedback @(Model.ActiveFilter == "read" ? "active" : "")" asp-action="Dashboard"
+                asp-route-filter="read" asp-route-selectedTraineeId="@Model.SelectedTraineeId"
+                asp-route-selectedLessonId="@Model.SelectedLessonId" asp-route-sortBy="@Model.SortBy"
+                asp-route-page="1">
                 Read (@Model.ReadFeedbackCount)
             </a>
         </div>
@@ -53,8 +44,7 @@
                 <option value="">All active Trainees</option>
                 @foreach (var trainee in Model.ActiveTrainees)
                 {
-                    <option value="@trainee.Id"
-                            selected="@(trainee.Id == Model.SelectedTraineeId ? "selected" : null)">
+                    <option value="@trainee.Id" selected="@(trainee.Id == Model.SelectedTraineeId ? "selected" : null)">
                         @trainee.UserName
                     </option>
                 }
@@ -62,15 +52,14 @@
 
             <!-- TeachingPlan Dropdown -->
             <select name="selectedTeachingPlanId" class="feedback-select-wide" onchange="this.form.submit()">
-                <option value=""
-                        disabled="@(Model.SelectedTraineeId != null ? "disabled" : null)"
-                        selected="@(string.IsNullOrEmpty(Model.SelectedTeachingPlanId?.ToString()) ? "selected" : null)">
+                <option value="" disabled="@(Model.SelectedTraineeId != null ? "disabled" : null)"
+                    selected="@(string.IsNullOrEmpty(Model.SelectedTeachingPlanId?.ToString()) ? "selected" : null)">
                     All Teaching Plans
                 </option>
                 @foreach (var plan in Model.TeachingPlans)
                 {
                     <option value="@plan.TeachingPlanId"
-                            selected="@(Model.SelectedTeachingPlanId == plan.TeachingPlanId ? "selected" : null)">
+                        selected="@(Model.SelectedTeachingPlanId == plan.TeachingPlanId ? "selected" : null)">
                         @plan.Name
                     </option>
                 }
@@ -82,7 +71,7 @@
                 @foreach (var lesson in Model.Lessons)
                 {
                     <option value="@lesson.LessonId"
-                            selected="@(Model.SelectedLessonId == lesson.LessonId ? "selected" : null)">
+                        selected="@(Model.SelectedLessonId == lesson.LessonId ? "selected" : null)">
                         @lesson.Title
                     </option>
                 }
@@ -92,10 +81,14 @@
             <select name="SortBy" class="feedback-select-small" onchange="this.form.submit()">
                 <option value="date_desc" selected="@(Model.SortBy == "date_desc" ? "selected" : null)">Date ↓</option>
                 <option value="date_asc" selected="@(Model.SortBy == "date_asc" ? "selected" : null)">Date ↑</option>
-                <option value="author_desc" selected="@(Model.SortBy == "author_desc" ? "selected" : null)">Author ↓</option>
-                <option value="author_asc" selected="@(Model.SortBy == "author_asc" ? "selected" : null)">Author ↑</option>
-                <option value="lesson_desc" selected="@(Model.SortBy == "lesson_desc" ? "selected" : null)">Lesson ↓</option>
-                <option value="lesson_asc" selected="@(Model.SortBy == "lesson_asc" ? "selected" : null)">Lesson ↑</option>
+                <option value="author_desc" selected="@(Model.SortBy == "author_desc" ? "selected" : null)">Author ↓
+                </option>
+                <option value="author_asc" selected="@(Model.SortBy == "author_asc" ? "selected" : null)">Author ↑
+                </option>
+                <option value="lesson_desc" selected="@(Model.SortBy == "lesson_desc" ? "selected" : null)">Lesson ↓
+                </option>
+                <option value="lesson_asc" selected="@(Model.SortBy == "lesson_asc" ? "selected" : null)">Lesson ↑
+                </option>
             </select>
 
 
@@ -135,16 +128,33 @@
                             {
                                 <form asp-action="MarkAsRead" method="post">
                                     <input type="hidden" name="feedbackId" value="@feedback.FeedbackId" />
-                                    <!-- Hidden inputs wie gehabt -->
+
+                                    <!-- Hidden inputs -->
+                                    <input type="hidden" name="filter" value="@Model.ActiveFilter" />
+                                    <input type="hidden" name="page" value="@Model.Feedbacks.PageNumber" />
+                                    <input type="hidden" name="sortBy" value="@Model.SortBy" />
+                                    <input type="hidden" name="selectedTraineeId" value="@Model.SelectedTraineeId" />
+                                    <input type="hidden" name="selectedLessonId" value="@Model.SelectedLessonId" />
+                                    <input type="hidden" name="selectedTeachingPlanId" value="@Model.SelectedTeachingPlanId" />
                                     <button class="sopro-button-content mark-read-btn" type="submit">Mark as read</button>
+
                                 </form>
                             }
                             else
                             {
                                 <form asp-action="MarkAsUnread" method="post">
                                     <input type="hidden" name="feedbackId" value="@feedback.FeedbackId" />
-                                    <!-- Hidden inputs wie gehabt -->
-                                    <button class="sopro-button-content mark-unread-btn" type="submit">Mark as unread</button>
+                                    
+                                    <!-- Hidden inputs -->
+                                    <input type="hidden" name="filter" value="@Model.ActiveFilter" />
+                                    <input type="hidden" name="page" value="@Model.Feedbacks.PageNumber" />
+                                    <input type="hidden" name="sortBy" value="@Model.SortBy" />
+                                    <input type="hidden" name="selectedTraineeId" value="@Model.SelectedTraineeId" />
+                                    <input type="hidden" name="selectedLessonId" value="@Model.SelectedLessonId" />
+                                    <input type="hidden" name="selectedTeachingPlanId" value="@Model.SelectedTeachingPlanId" />
+                                    <button class="sopro-button-content mark-unread-btn" 
+                                    
+                                    type="submit">Mark as unread</button>
                                 </form>
                             }
                         </td>
@@ -273,15 +283,11 @@
         @if (Model.Feedbacks.HasPrevious)
         {
             <li class="page-item">
-                <a class="page-link"
-                   asp-controller="Feedback"
-                   asp-action="Dashboard"
-                   asp-route-filter="@Model.ActiveFilter"
-                   asp-route-selectedTraineeId="@Model.SelectedTraineeId"
-                   asp-route-selectedLessonId="@Model.SelectedLessonId"
-                   asp-route-sortBy="@Model.SortBy"
-                   asp-route-page="@(Model.Feedbacks.PageNumber - 1)">
-                   Previous
+                <a class="page-link" asp-controller="Feedback" asp-action="Dashboard" asp-route-filter="@Model.ActiveFilter"
+                    asp-route-selectedTraineeId="@Model.SelectedTraineeId"
+                    asp-route-selectedLessonId="@Model.SelectedLessonId" asp-route-sortBy="@Model.SortBy"
+                    asp-route-page="@(Model.Feedbacks.PageNumber - 1)">
+                    Previous
                 </a>
             </li>
         }
@@ -289,15 +295,11 @@
         @for (int i = 1; i <= Model.Feedbacks.TotalPages; i++)
         {
             <li class="page-item @(i == Model.Feedbacks.PageNumber ? "active" : "")">
-                <a class="page-link"
-                   asp-controller="Feedback"
-                   asp-action="Dashboard"
-                   asp-route-filter="@Model.ActiveFilter"
-                   asp-route-selectedTraineeId="@Model.SelectedTraineeId"
-                   asp-route-selectedLessonId="@Model.SelectedLessonId"
-                   asp-route-sortBy="@Model.SortBy"
-                   asp-route-page="@i">
-                   @i
+                <a class="page-link" asp-controller="Feedback" asp-action="Dashboard" asp-route-filter="@Model.ActiveFilter"
+                    asp-route-selectedTraineeId="@Model.SelectedTraineeId"
+                    asp-route-selectedLessonId="@Model.SelectedLessonId" asp-route-sortBy="@Model.SortBy"
+                    asp-route-page="@i">
+                    @i
                 </a>
             </li>
         }
@@ -305,15 +307,11 @@
         @if (Model.Feedbacks.HasNext)
         {
             <li class="page-item">
-                <a class="page-link"
-                   asp-controller="Feedback"
-                   asp-action="Dashboard"
-                   asp-route-filter="@Model.ActiveFilter"
-                   asp-route-selectedTraineeId="@Model.SelectedTraineeId"
-                   asp-route-selectedLessonId="@Model.SelectedLessonId"
-                   asp-route-sortBy="@Model.SortBy"
-                   asp-route-page="@(Model.Feedbacks.PageNumber + 1)">
-                   Next
+                <a class="page-link" asp-controller="Feedback" asp-action="Dashboard" asp-route-filter="@Model.ActiveFilter"
+                    asp-route-selectedTraineeId="@Model.SelectedTraineeId"
+                    asp-route-selectedLessonId="@Model.SelectedLessonId" asp-route-sortBy="@Model.SortBy"
+                    asp-route-page="@(Model.Feedbacks.PageNumber + 1)">
+                    Next
                 </a>
             </li>
         }
