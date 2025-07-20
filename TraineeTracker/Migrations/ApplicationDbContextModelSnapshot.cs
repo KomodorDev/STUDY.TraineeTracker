@@ -136,12 +136,7 @@ namespace TraineeTracker.Migrations
                     b.Property<string>("RoleId")
                         .HasColumnType("TEXT");
 
-                    b.Property<string>("ApplicationUserId")
-                        .HasColumnType("TEXT");
-
                     b.HasKey("UserId", "RoleId");
-
-                    b.HasIndex("ApplicationUserId");
 
                     b.HasIndex("RoleId");
 
@@ -261,6 +256,9 @@ namespace TraineeTracker.Migrations
                     b.Property<bool>("ReceiveAcceptedNotifications")
                         .HasColumnType("INTEGER");
 
+                    b.Property<bool>("ReceiveFeedbackChangeNotifications")
+                        .HasColumnType("INTEGER");
+
                     b.Property<bool>("ReceiveFinishedNotifications")
                         .HasColumnType("INTEGER");
 
@@ -318,9 +316,8 @@ namespace TraineeTracker.Migrations
                     b.Property<int>("LessonId")
                         .HasColumnType("INTEGER");
 
-                    b.Property<string>("PreviousKnowledge")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
+                    b.Property<int>("PreviousKnowledge")
+                        .HasColumnType("INTEGER");
 
                     b.HasKey("FeedbackId");
 
@@ -576,10 +573,6 @@ namespace TraineeTracker.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<string>", b =>
                 {
-                    b.HasOne("TraineeTracker.Models.Domain.ApplicationUser", null)
-                        .WithMany("UserRoles")
-                        .HasForeignKey("ApplicationUserId");
-
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
                         .WithMany()
                         .HasForeignKey("RoleId")
@@ -707,8 +700,6 @@ namespace TraineeTracker.Migrations
                     b.Navigation("TraineeLessons");
 
                     b.Navigation("TraineeStatisticsSnapshot");
-
-                    b.Navigation("UserRoles");
 
                     b.Navigation("WrittenFeedbacks");
                 });
