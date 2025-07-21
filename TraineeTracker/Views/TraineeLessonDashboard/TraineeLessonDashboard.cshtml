@@ -28,7 +28,13 @@
                     style="display: flex; align-items: center;">
 
                     <!-- Nur Trainee Dropdown -->
-                    <select name="traineeId" class="select-wide" onchange="this.form.submit()" style="text-overflow: ellipsis;">
+                    @{
+                        var isSingleTrainee = Model.Trainees?.Count() == 1;
+                        var isDisabledStyle = isSingleTrainee ? "pointer-events: none; opacity: 1;" : "";
+                    }
+
+                    <select name="traineeId" class="select-wide" onchange="this.form.submit()" 
+                            style="text-overflow: ellipsis; @isDisabledStyle">
                         @foreach (var trainee in Model.Trainees ?? new List<ApplicationUser>())
                         {
                             <option value="@trainee.Id"
