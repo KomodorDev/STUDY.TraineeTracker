@@ -1083,7 +1083,7 @@ namespace TraineeTracker.Services.Seeders {
 
                 // Endabnahme - 05
                 new ApplicationUserDto {
-                    Email = "manfred.mentaln@makandra.de",
+                    Email = "manfred.mental@makandra.de",
                     Role = "Mentor",
                     Password = "Pssssst1!"
                 },
