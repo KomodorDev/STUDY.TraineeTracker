@@ -42,6 +42,9 @@ namespace TraineeTracker.Controllers {
 
             // 1. No submission yet:
             if (!viewModel.ConfirmSubmission || !ModelState.IsValid) {
+                if (!viewModel.ConfirmSubmission) {
+                    ModelState.Clear();
+                }
                 viewModel = await _adminService.FillCreateUserDropdownsAsync(viewModel);
                 return View("CreateUser", viewModel);
             }
