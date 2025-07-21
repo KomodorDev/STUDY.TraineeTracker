@@ -30,13 +30,17 @@
 
     <div class="sopro-card scroll">
         <form asp-action="CreateUser" method="post">
+
+            @* Hidden confirmSubmission field *@
+            <input type="hidden" id="confirmSubmission" name="ConfirmSubmission" value="false" />
+
             <!-- Role selection (always visible) -->
             <div class="sopro-card small-header form">
                 <div class="form-header">
                     <label asp-for="User.Role"></label>
                 </div>
                 <select asp-for="User.Role" class="sopro-inner-card form" aria-required="true" asp-items="Model.Roles"
-                    onchange="this.form.submit()">
+                    onchange="submitRoleChange(this.form)">
                     <option value="">Select role...</option>
                 </select>
                 <span asp-validation-for="User.Role" class="text-danger"></span>
@@ -90,8 +94,6 @@
                 <div class="sopro-card form-buttons">
 
                     @* ConfirmSubmission: set to true ONLY when Create button is clicked *@
-                    <input type="hidden" id="confirmSubmission" name="ConfirmSubmission" value="false" />
-
                     <button type="submit" class="sopro-btn sopro-btn-prim sopro-button-content"
                         onclick="document.getElementById('confirmSubmission').value = 'true'">
                         Create
@@ -105,3 +107,13 @@
         </form>
     </div>
 </div>
+
+@section Scripts {
+    <script>
+        function submitRoleChange(form) {
+            document.getElementById('confirmSubmission').value = 'false';
+            @*     form.noValidate = true; *@
+                form.submit();
+        }
+    </script>
+}
