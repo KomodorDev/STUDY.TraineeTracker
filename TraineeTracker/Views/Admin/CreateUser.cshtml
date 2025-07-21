@@ -29,24 +29,7 @@
     </div>
 
     <div class="sopro-card scroll">
-
-        @if (!ViewData.ModelState.IsValid)
-        {
-            <div class="debug-errors">
-                <ul>
-                    @foreach (var entry in ViewData.ModelState)
-                    {
-                        foreach (var error in entry.Value.Errors)
-                        {
-                            <li><strong>@entry.Key:</strong> @error.ErrorMessage</li>
-                        }
-                    }
-                </ul>
-            </div>
-        }
         <form asp-action="CreateUser" method="post">
-            <div asp-validation-summary="ModelOnly"></div>
-
             <!-- Role selection (always visible) -->
             <div class="sopro-card small-header form">
                 <div class="form-header">
