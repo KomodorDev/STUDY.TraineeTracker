@@ -10,7 +10,6 @@ namespace TraineeTracker.Models.ViewModels {
         public string ActiveFilter { get; set; } = "all";
         public string SortBy { get; set; } = "date_asc";
 
-
         // Dropdown data
         public IEnumerable<ApplicationUser> ActiveTrainees { get; set; } = [];
         public IEnumerable<Lesson> Lessons { get; set; } = [];

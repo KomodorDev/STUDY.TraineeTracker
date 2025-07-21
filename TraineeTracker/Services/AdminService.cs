@@ -10,6 +10,8 @@ using TraineeTracker.Data.Feedbacks;
 using TraineeTracker.Data.TeachingPlans;
 using TraineeTracker.Data.TraineeStatistics;
 using TraineeTracker.Data.UnitOfWork;
+
+using TraineeTracker.Models;
 using TraineeTracker.Models.Domain;
 using TraineeTracker.Models.Dtos;
 using TraineeTracker.Models.ViewModels.Admin;
@@ -17,6 +19,8 @@ using TraineeTracker.Services.Email;
 
 namespace TraineeTracker.Services.Admin {
     public class AdminService {
+
+        private const int _pageSize = 20;
         private readonly IUnitOfWork _unitOfWork;
 
         private readonly IApplicationUserRepository _applicationUserRepository;
@@ -50,51 +54,134 @@ namespace TraineeTracker.Services.Admin {
             _traineeStatisticsRepository = traineeStatisticsRepository;
         }
 
-        // ------------------------------------------------------------------------------------------------------------
-        public async Task<AdminDashboardViewModel> BuildAdminDashboardViewModelAsync(string? selectedRole = null,
-                                                                                     string? selectedStatus = null,
-                                                                                     string? sortBy = null) {
-            IEnumerable<ApplicationUser> users = (selectedRole, selectedStatus) switch {
-                (null or "", null or "") => await _applicationUserRepository.GetAllAsync(),
-                (null or "", "Open") => await _applicationUserRepository.GetAllAsync(false),
-                (null or "", _) => await _applicationUserRepository.GetAllAsync(true),
-                (_, null or "") => await _applicationUserRepository.GetUsersInRoleAsync(selectedRole),
-                (_, "Open") => await _applicationUserRepository.GetOpenUsersInRoleAsync(selectedRole),
-                (_, _) => await _applicationUserRepository.GetClosedUsersInRoleAsync(selectedRole)
+        // ------------------------------------------------------
+        public async Task<AdminDashboardViewModel> BuildAdminDashboardViewModelAsync(
+                int page = 1,
+                string? filterRole = "all",
+                string? filterStatus = "open",
+                string? sortBy = "role_asc") {
+
+            // +++++++++++++++
+            // 1. Load all users once
+            var allUsers = await _applicationUserRepository.GetAllAsync();
+
+            // +++++++++++++++
+            // Initialize Counts
+            int totalUserCount = 0;
+            int openUserCount = 0;
+            int closedUserCount = 0;
+
+            int roleUserCount = 0;
+            int adminCount = 0;
+            int mentorCount = 0;
+            int traineeCount = 0;
+
+            // Dict userRoles
+            var userRoles = new Dictionary<string, string>();
+
+            var filteredUsers = new List<ApplicationUser>();
+
+            // +++++++++++++++
+            // Iterate through each user in allUsers:
+            foreach (var user in allUsers) {
+                var highestRole = await GetHighestRoleAsync(user);
+                userRoles[user.Id] = highestRole;
+
+                // Count for role-tabs (Admin/Mentor/Trainee) - depending on Status
+                if (filterStatus == "all"
+                    || (filterStatus == "open" && !user.IsClosed)
+                    || (filterStatus == "closed" && user.IsClosed)) {
+                    switch (highestRole) {
+                        case "Admin":
+                            adminCount++;
+                            break;
+                        case "Mentor":
+                            mentorCount++;
+                            break;
+                        case "Trainee":
+                            traineeCount++;
+                            break;
+                    }
+                }
+
+                // Count for status-tabs (Total/Open/Closed) - depending on Role
+                if (filterRole == "all" || highestRole == filterRole) {
+                    totalUserCount++;
+                    if (!user.IsClosed)
+                        openUserCount++;
+                }
+
+                // Users for the current dashboard view
+                if (
+                    (filterRole == "all" || highestRole == filterRole) &&
+                    (filterStatus == "all" ||
+                     (filterStatus == "open" && !user.IsClosed) ||
+                     (filterStatus == "closed" && user.IsClosed))
+                ) {
+                    filteredUsers.Add(user);
+                }
+            }
+            roleUserCount = adminCount + mentorCount + traineeCount;
+            closedUserCount = totalUserCount - openUserCount;
+
+            // +++++++++++++++
+            // Sort the users by sortBy
+            var sortedAndFilteredUsers = sortBy!.ToLower() switch {
+                "role_asc" => filteredUsers.OrderBy(u => userRoles[u.Id]),
+                "role_desc" => filteredUsers.OrderByDescending(u => userRoles[u.Id]),
+
+                "username_asc" => filteredUsers.OrderBy(u => u.UserName),
+                "username_desc" => filteredUsers.OrderByDescending(u => u.UserName),
+
+                "startdate_asc" => filteredUsers.OrderBy(u => u.TraineeStartDate),
+                "startdate_desc" => filteredUsers.OrderByDescending(u => u.TraineeStartDate),
+
+                "enddate_asc" => filteredUsers.OrderBy(u => u.TraineeEndDate),
+                "enddate_desc" => filteredUsers.OrderByDescending(u => u.TraineeEndDate),
+
+                _ => filteredUsers.OrderBy(u => userRoles[u.Id]) // fallback
             };
 
-            var userRoles = new Dictionary<string, string>();
-            foreach (var user in users) {
-                var rolesOfUser = await _applicationUserRepository.GetRolesAsync(user);
-                userRoles[user.Id] = rolesOfUser.First();
-            }
+            // +++++++++++++++
+            // Pagination
+            int totalUsers = sortedAndFilteredUsers.Count();
 
-            var roles = await _roleManager.Roles.ToListAsync();
+            var pagedUsers = sortedAndFilteredUsers
+                .Skip((page - 1) * _pageSize)
+                .Take(_pageSize)
+                .ToList();
 
-            users = sortBy switch {
-                "UserName" => users.OrderBy(u => u.UserName),
-                "TraineeStartDate" => users.OrderBy(u => u.TraineeStartDate),
-                "TraineeEndDate" => users.OrderBy(u => u.TraineeEndDate),
-                _ => users.OrderBy(u => userRoles[u.Id])
+            var pagedResult = new Page<ApplicationUser> {
+                Items = pagedUsers,
+                PageNumber = page,
+                PageSize = _pageSize,
+                TotalItems = totalUsers
             };
 
             return new AdminDashboardViewModel {
-                Users = users,
+                Users = pagedResult,
                 UserRoles = userRoles,
-                Roles = roles,
-                SelectedRole = selectedRole,
-                SelectedStatus = selectedStatus,
-                SortBy = sortBy
+                FilterRole = filterRole!,
+                FilterStatus = filterStatus!,
+                SortBy = sortBy,
+
+                TotalUserCount = totalUserCount,
+                RoleUserCount = roleUserCount,
+                OpenUserCount = openUserCount,
+                ClosedUserCount = closedUserCount,
+                AdminCount = adminCount,
+                MentorCount = mentorCount,
+                TraineeCount = traineeCount
             };
         }
 
-        // ------------------------------------------------------------------------------------------------------------
+        // ------------------------------------------------------
         public async Task<CreateUserViewModel> BuildCreateUserViewModelAsync() {
             var viewModel = new CreateUserViewModel();
             return await FillCreateUserDropdownsAsync(viewModel);
         }
 
-        // ------------------------------------------------------------------------------------------------------------
+        // ------------------------------------------------------
         public async Task<CreateUserViewModel> FillCreateUserDropdownsAsync(CreateUserViewModel viewModel) {
             ArgumentNullException.ThrowIfNull(viewModel);
             var rolesTask = _roleManager.Roles.ToListAsync();
@@ -112,7 +199,7 @@ namespace TraineeTracker.Services.Admin {
             return viewModel;
         }
 
-        // ------------------------------------------------------------------------------------------------------------
+        // ------------------------------------------------------
         public async Task<ServiceResult> CreateUserAsync(ApplicationUserDto dto, bool isSeeder, IUrlHelper? urlHelper = null) {
             ArgumentNullException.ThrowIfNull(dto);
             if (!isSeeder && urlHelper == null) {
@@ -198,7 +285,7 @@ namespace TraineeTracker.Services.Admin {
             return ServiceResult.Success();
         }
 
-        // ------------------------------------------------------------------------------------------------------------
+        // ------------------------------------------------------
         public async Task<ServiceResult> CloseUserAsync(string userId) {
             await _unitOfWork.BeginTransactionAsync();
 
@@ -256,24 +343,23 @@ namespace TraineeTracker.Services.Admin {
             return ServiceResult.Success();
         }
 
-        // ------------------------------------------------------------------------------------------------------------
-        public async Task<CreateProcessingPauseViewModel> BuildCreateProcessingPauseViewModelAsync(string traineeId) {
-            var trainee = await _applicationUserRepository.FindByIdAsync(traineeId);
-            if (trainee == null) {
-                throw new InvalidOperationException($"{nameof(trainee)} not found.");
-            }
-            if (trainee.UserName == null) {
-                throw new NullReferenceException(nameof(trainee.UserName));
-            }
-            return new CreateProcessingPauseViewModel {
-                ProcessingPause = new ProcessingPauseDto {
-                    TraineeId = traineeId
-                },
-                UserName = trainee.UserName
+        // ------------------------------------------------------
+        public async Task<ManageProcessingPausesViewModel?> BuildManageProcessingPausesViewModelAsync(string traineeId) {
+            var trainee = await FindByIdWithProcessingPausesAsync(traineeId);
+            if (trainee == null)
+                return null;
+
+            return new ManageProcessingPausesViewModel {
+                UserName = trainee.UserName!,
+                TraineeId = trainee.Id,
+                ProcessingPauses = trainee.ProcessingPauses.ToList(),
+                NewProcessingPause = new ProcessingPauseDto {
+                    TraineeId = trainee.Id
+                }
             };
         }
 
-        // ------------------------------------------------------------------------------------------------------------
+        // ------------------------------------------------------
         public async Task<ServiceResult> CreateProcessingPauseAsync(ProcessingPauseDto dto) {
             var user = await _applicationUserRepository.FindByIdAsync(dto.TraineeId);
             if (user == null) {
@@ -294,7 +380,7 @@ namespace TraineeTracker.Services.Admin {
             return ServiceResult.Success();
         }
 
-        // ------------------------------------------------------------------------------------------------------------
+        // ------------------------------------------------------
         public async Task<ServiceResult> UpdateProcessingPauseAsync(ProcessingPauseDto dto) {
             ArgumentNullException.ThrowIfNull(dto.ProcessingPauseId);
             var pause = await _processingPauseRepository.FindByIdAsync(dto.ProcessingPauseId.Value);
@@ -317,7 +403,7 @@ namespace TraineeTracker.Services.Admin {
             return ServiceResult.Success();
         }
 
-        // ------------------------------------------------------------------------------------------------------------
+        // ------------------------------------------------------
         private async Task<ServiceResult> ValidateProcessingPause(ProcessingPause processingPause, bool newProcessingPause) {
             if (processingPause.StartDate > processingPause.EndDate) {
                 return ServiceResult.Failed("Startdate after Enddate");
@@ -328,7 +414,7 @@ namespace TraineeTracker.Services.Admin {
             return ServiceResult.Success();
         }
 
-        // ------------------------------------------------------------------------------------------------------------
+        // ------------------------------------------------------
         public async Task<ServiceResult<ProcessingPause>> DeleteProcessingPauseAsync(int processingPauseId) {
             var pause = await _processingPauseRepository.FindByIdAsync(processingPauseId);
             if (pause == null) {
@@ -338,24 +424,25 @@ namespace TraineeTracker.Services.Admin {
             return ServiceResult<ProcessingPause>.Success(pause);
         }
 
-        // ------------------------------------------------------------------------------------------------------------
+        // ------------------------------------------------------
         public async Task<ApplicationUser?> FindByIdWithProcessingPausesAsync(string userId) {
             return await _applicationUserRepository.FindByIdWithProcessingPausesAsync(userId);
         }
 
-        // ------------------------------------------------------------------------------------------------------------
-        public async Task<ServiceResult<ProcessingPauseDto>> GetProcessingPauseDtoAsync(int processingPauseId) {
-            var pause = await _processingPauseRepository.FindByIdAsync(processingPauseId);
-            if (pause == null) {
-                return ServiceResult<ProcessingPauseDto>.Failed($"{nameof(pause)} not found.");
-            }
-            var dto = new ProcessingPauseDto {
-                ProcessingPauseId = pause.ProcessingPauseId,
-                TraineeId = pause.TraineeId,
-                StartDate = pause.StartDate,
-                EndDate = pause.EndDate
-            };
-            return ServiceResult<ProcessingPauseDto>.Success(dto);
+        // ------------------------------------------------------
+        public async Task<string> GetHighestRoleAsync(ApplicationUser user) {
+            var roles = await _applicationUserRepository.GetRolesAsync(user);
+
+            if (roles.Contains("Admin"))
+                return "Admin";
+            if (roles.Contains("Mentor"))
+                return "Mentor";
+            if (roles.Contains("Trainee"))
+                return "Trainee";
+
+            return roles.FirstOrDefault() ?? "Unknown";
         }
+
+        // ------------------------------------------------------
     }
 }
