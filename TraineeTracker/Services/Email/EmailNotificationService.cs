@@ -471,7 +471,7 @@ namespace TraineeTracker.Services.Email {
                     setting.ReceiveAcceptedNotifications = false;
                     setting.ReceiveRatedNotifications = true;
                     setting.ReceiveImportChangeNotifications = true;
-                    setting.ReceiveFeedbackChangeNotifications = true;
+                    setting.ReceiveFeedbackChangeNotifications = false;
                     break;
                 case "Trainee":
                     setting.ReceiveSkippedNotifications = true;
