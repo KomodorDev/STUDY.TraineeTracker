@@ -2,6 +2,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace TraineeTracker.Models.Dtos {
     public class ApplicationUserDto {
+
         [Required]
         [EmailAddress]
         public string Email { get; set; } = "";
@@ -16,7 +17,7 @@ namespace TraineeTracker.Models.Dtos {
         public int? TeachingPlanId { get; set; }
 
         // Only for Trainees
-        public DateOnly? TraineeStartDate { get; set; }
-        public DateOnly? TraineeEndDate { get; set; }
+        public DateOnly? TraineeStartDate { get; set; } = DateOnly.FromDateTime(DateTime.Today);
+        public DateOnly? TraineeEndDate { get; set; } = DateOnly.FromDateTime(DateTime.Today);
     }
 }
