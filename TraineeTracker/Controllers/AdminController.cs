@@ -41,7 +41,7 @@ namespace TraineeTracker.Controllers {
         public async Task<IActionResult> CreateUserAsync(CreateUserViewModel viewModel) {
 
             // 1. No submission yet:
-            if (!viewModel.ConfirmSubmission) {
+            if (!viewModel.ConfirmSubmission || !ModelState.IsValid) {
                 viewModel = await _adminService.FillCreateUserDropdownsAsync(viewModel);
                 return View("CreateUser", viewModel);
             }
