@@ -105,7 +105,7 @@ namespace TraineeTracker.Services {
             ClaimsPrincipal user,
             string? traineeId,
             string filter = "all",
-            string sortBy = "SortingIndex_asc") {
+            string sortBy = "state_custom") {
 
             var userId = user.FindFirst(ClaimTypes.NameIdentifier)?.Value
                 ?? throw new UserNotFoundException("User ID not found");
@@ -204,7 +204,8 @@ namespace TraineeTracker.Services {
                 CountRated = traineeLessons.Count(l => l.State == TraineeLessonState.Rated),
                 CountSkipped = traineeLessons.Count(l => l.State == TraineeLessonState.Skipped),
 
-                ActiveFilter = filter
+                ActiveFilter = filter,
+                SortBy = sortBy
             };
         }
 
@@ -245,7 +246,23 @@ namespace TraineeTracker.Services {
             };
 
             // Apply Sorting:
+            int GetCustomStateOrder(TraineeLessonState state) {
+                return state switch {
+                    TraineeLessonState.Rejected => 0,
+                    TraineeLessonState.Finished => 1,
+                    TraineeLessonState.Started => 2,
+                    TraineeLessonState.Open => 3,
+                    TraineeLessonState.Accepted => 4,
+                    TraineeLessonState.Rated => 5,
+                    _ => 6
+                };
+            }
             return sortBy.ToLower() switch {
+
+                "state_custom" => filtered
+                    .OrderBy(l => GetCustomStateOrder(l.State))
+                    .ThenBy(l => l.Lesson?.SortingIndex),
+
                 "title_asc" => filtered.OrderBy(l => l.Lesson?.Title),
                 "title_desc" => filtered.OrderByDescending(l => l.Lesson?.Title),
 
@@ -314,5 +331,7 @@ namespace TraineeTracker.Services {
             }
             return mentor.LastSelectedTrainees.LastOrDefault();
         }
+
+        // ------------------------------------------------------
     }
 }
