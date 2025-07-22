@@ -28,7 +28,13 @@
                     style="display: flex; align-items: center;">
 
                     <!-- Nur Trainee Dropdown -->
-                    <select name="traineeId" class="select-wide" onchange="this.form.submit()" style="text-overflow: ellipsis;">
+                    @{
+                        var isSingleTrainee = Model.Trainees?.Count() == 1;
+                        var isDisabledStyle = isSingleTrainee ? "pointer-events: none; opacity: 1;" : "";
+                    }
+
+                    <select name="traineeId" class="select-wide" onchange="this.form.submit()" 
+                            style="text-overflow: ellipsis; @isDisabledStyle">
                         @foreach (var trainee in Model.Trainees ?? new List<ApplicationUser>())
                         {
                             <option value="@trainee.Id"
@@ -136,20 +142,20 @@
                     Finished (@Model.CountFinished)
                 </a>
 
-                <a class="filter-tab @(Model.ActiveFilter == "accepted" ? "active" : "")"
-                asp-action="ShowTraineeLessonDashboardView"
-                asp-route-traineeId="@Model.SelectedTrainee?.Id"
-                asp-route-filter="accepted"
-                asp-route-sortBy="@Model.SortBy">
-                    Accepted (@Model.CountAccepted)
-                </a>
-
                 <a class="filter-tab @(Model.ActiveFilter == "rejected" ? "active" : "")"
                 asp-action="ShowTraineeLessonDashboardView"
                 asp-route-traineeId="@Model.SelectedTrainee?.Id"
                 asp-route-filter="rejected"
                 asp-route-sortBy="@Model.SortBy">
                     Rejected (@Model.CountRejected)
+                </a>
+
+                <a class="filter-tab @(Model.ActiveFilter == "accepted" ? "active" : "")"
+                asp-action="ShowTraineeLessonDashboardView"
+                asp-route-traineeId="@Model.SelectedTrainee?.Id"
+                asp-route-filter="accepted"
+                asp-route-sortBy="@Model.SortBy">
+                    Accepted (@Model.CountAccepted)
                 </a>
 
                 <a class="filter-tab @(Model.ActiveFilter == "rated" ? "active" : "")"
