@@ -71,3 +71,162 @@ sopro-card.form {
     font-size: 1.172rem; /* "25" px */
     overflow: hidden;
 }
+
+.flex-card {
+    display: flex;
+    flex-direction: row;
+    gap: 1rem;
+    flex-wrap: wrap;
+    align-content: center;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: auto;        /* passt sich automatisch dem Inhalt an */
+    min-height: 0;       /* kein Mindestmaß erzwingen */
+    overflow: visible;   /* falls Inhalte nach außen ragen könnten */
+  }
+
+
+.admin-select-wide {
+    width: 250px;
+}
+
+.admin-select-medium {
+    width: 180px;
+}
+
+.admin-select-small {
+    width: 120px;
+}
+
+
+
+/* Filters (hintsimo, revised by schleale) */
+.filter-bar-admin {
+    display: flex;
+    align-items: center;
+    height: auto;  
+    justify-content: center;
+    border: 1px solid black;
+    border-radius: 11px;
+    overflow: hidden;
+    width: auto;
+}
+
+.filter-tab-admin {
+    display: flex;
+    align-items: center;
+    padding: 0.6rem 1.2rem;
+
+    border-right: 1px solid black;
+    background: white;
+
+    color: black;
+    font-weight: 900;
+    text-decoration: none;
+    text-align: center;
+    white-space: nowrap;
+
+    min-width: 120px;
+    width: auto;
+}
+.filter-tab-admin:last-child {
+    border-right: none;
+}
+.filter-tab-admin:hover {
+    background: #f8f9fa;
+    color: black;
+    text-decoration: underline;
+}
+.filter-tab-admin.active {
+    background: #ffe3e3;
+    color: #e61d47;
+}
+.filter-tab-admin.active:hover {
+    background: #ffe3e3;
+}
+
+.filter-selects select {
+    padding: 0.4rem;
+    font-size: 0.95rem;
+    border-radius: 11px;
+    border: 1px solid #ccc;
+}
+
+.sopro-card-filter {
+    display: flex;
+    align-items: center;      /* vertikale Zentrierung */
+    justify-content: center;  /* horizontale Zentrierung */
+    height: 60px;             /* feste Höhe statt min-height */
+    padding: 0 1rem;
+    box-shadow: 3px 3px 11px 0 rgba(0, 0, 0, 0.2);
+    border-radius: 11px;
+    background-color: white;
+    min-height: 0;  /* to allow scrollbars */
+    height: 100%;
+  
+    /* hide scrollbar overflow */
+    overflow: hidden;
+}
+
+.admin-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 1rem;
+}
+
+.admin-table th,
+.admin-table td {
+    padding: 0.75rem 1rem;
+    border-bottom: 1px solid #dee2e6;
+    text-align: left;
+}
+
+/* ---------------------------- */
+/* Pagination */
+.pagination {
+    display: flex;
+    list-style: none;
+    padding-left: 0;
+    margin-top: 2rem;
+    gap: 0.25rem;
+    justify-content: center;
+}
+
+.page-item .page-link {
+    display: block;
+    padding: 0.5rem 0.8rem;
+    border: 1px solid #dee2e6;
+    border-radius: 11px;
+    text-decoration: none;
+    color: #e61d47;
+    transition: background-color 0.2s;
+}
+
+.page-item.active .page-link,
+.page-link:hover {
+    background-color: #e61d47;
+    color: white;
+}
+
+/* ---------------------------- */
+/* Inline Editing Style for ManageProcessingPauses */
+
+.inline-edit-form {
+    margin: 0;
+    padding: 0;
+  }
+  
+  .inline-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr auto auto;
+    align-items: center;
+    gap: 1rem;
+    width: 100%;
+  }
+  
+  .inline-input {
+    width: 100%;
+    padding: 0.4rem;
+    box-sizing: border-box;
+  }

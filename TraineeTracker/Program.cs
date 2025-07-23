@@ -1,6 +1,11 @@
 using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity.UI.Services;
+using Microsoft.AspNetCore.Localization;
+
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
+
+using System.Globalization;
 
 using TraineeTracker.Models.Domain;
 
@@ -21,9 +26,10 @@ using TraineeTracker.Data.TraineeLessons;
 using TraineeTracker.Data.TraineeStatistics;
 using TraineeTracker.Data.UnitOfWork;
 
-
+// -----------------------------------------
 var builder = WebApplication.CreateBuilder(args);
 
+// -----------------------------------------
 // Add services to the container.
 var environment = builder.Environment;  // NEU: Environment auslesen
 Console.WriteLine($"🌍 Environment: {environment.EnvironmentName}");
@@ -41,6 +47,7 @@ if (environment.IsDevelopment()) {
 
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
+// -----------------------------------------
 // Identity konfigurieren
 builder.Services.AddDefaultIdentity<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = true)
     .AddRoles<IdentityRole>()
@@ -92,14 +99,35 @@ builder.Services.AddScoped<RolesSeeder>();
 builder.Services.AddScoped<TestDataSeeder>();
 
 // ----------------------------------------
+// Set culture settings
+var defaultCulture = new CultureInfo("en-US");
+CultureInfo.DefaultThreadCurrentCulture = defaultCulture;
+CultureInfo.DefaultThreadCurrentUICulture = defaultCulture;
 
+builder.Services.Configure<RequestLocalizationOptions>(options => {
+    options.DefaultRequestCulture = new RequestCulture(defaultCulture);
+    options.SupportedCultures = new[] { defaultCulture };
+    options.SupportedUICultures = new[] { defaultCulture };
+});
 
+// ----------------------------------------
+// Build
 var app = builder.Build();
 
+// ----------------------------------------
+// Apply culture settings
+var localizationOptions = app.Services.GetRequiredService<IOptions<RequestLocalizationOptions>>();
+app.UseRequestLocalization(localizationOptions.Value);
+
+// ----------------------------------------
 // Ensure DB is there:
 using (var scope = app.Services.CreateScope()) {
     var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-    db.Database.Migrate();
+    var database = db.Database;
+
+    if (database.IsRelational()) {
+        database.Migrate();
+    }
 }
 
 // ---------------------------------------------
@@ -116,7 +144,8 @@ using (var scope = app.Services.CreateScope()) {
     await testDataSeeder.SeedUsersAsync();
     await testDataSeeder.SeedProcessingPausesAsync();
     await testDataSeeder.SeedFeedbackAsync();
-    await testDataSeeder.SeedTraineeStatisticsSnapshotAsync();
+    /*     await testDataSeeder.SeedTraineeStatisticsSnapshotAsync(); */
+    await testDataSeeder.SeedProgressForStefanAndUrsulaAsync();
 }
 
 // ---------------------------------------------
@@ -132,8 +161,7 @@ if (app.Environment.IsDevelopment()) {
 app.UseHttpsRedirection();
 
 // set dashboard as standard page <do not use yet>
-app.MapGet("/", context =>
-{
+app.MapGet("/", context => {
     context.Response.Redirect("/Dashboard");
     return Task.CompletedTask;
 });
