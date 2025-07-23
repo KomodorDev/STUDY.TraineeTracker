@@ -185,6 +185,7 @@ namespace TraineeTracker.E2ETests.TraineeLessonDetailTests {
         // ------------------------------------------------------
         private bool CheckIfIsCurrentState(string state) {
             // Locate the button by XPath using text match (whitespace ignored)
+            Thread.Sleep(500);
             IWebElement openStateButton = _driver.FindElement(By.XPath($"//button[normalize-space(text())='{state}']"));
 
             // Get the class attribute value
