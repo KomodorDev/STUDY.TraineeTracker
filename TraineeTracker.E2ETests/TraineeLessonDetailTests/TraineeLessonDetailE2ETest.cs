@@ -13,7 +13,6 @@ namespace TraineeTracker.E2ETests.TraineeLessonDetailTests {
     public class TraineeLessonDetailE2ETest : IClassFixture<BrowserFixture> {
 
         private readonly IWebDriver _driver;
-        private readonly int _stateChangeCooldown = 300;
 
         // ------------------------------------------------------
         public TraineeLessonDetailE2ETest(BrowserFixture fixture) {
@@ -158,7 +157,7 @@ namespace TraineeTracker.E2ETests.TraineeLessonDetailTests {
 
                 traineeSelect.SelectByText("alexandros.blaskTEST");
 
-                Thread.Sleep(_stateChangeCooldown);
+                Thread.Sleep(500);
             }
 
             // 5. Find the first trainee lesson row with state
@@ -247,8 +246,22 @@ namespace TraineeTracker.E2ETests.TraineeLessonDetailTests {
                 submitButton.Click();
             }
 
-            // TODO: Replace this with a variable waiting thing if anyone still has motivation
-            Thread.Sleep(_stateChangeCooldown);
+            // Wait until the modal refreshes, i.e. the targetStatus button has the class "current"
+            var wait2 = new WebDriverWait(_driver, TimeSpan.FromSeconds(10));
+            wait2.Until(driver =>
+            {
+                try
+                {
+                    var currentButton = driver.FindElements(By.CssSelector("button.sopro-status-button"))
+                        .FirstOrDefault(b => b.GetAttribute("class")?.Contains("current") == true);
+
+                    return currentButton != null && currentButton.Text.Trim() == targetState;
+                }
+                catch (StaleElementReferenceException)
+                {
+                    return false;
+                }
+            });
         }
     }
 }
