@@ -67,6 +67,8 @@ namespace TraineeTracker.Services {
                 Speed = snapshot.Speed,
                 PredictedMissingEstimatedEffortAtEnd = snapshot.PredictedMissingEstimatedEffortAtEnd,
                 PredictedMissingActualDays = snapshot.PredictedMissingActualDays,
+                PresentDaysInFuture = snapshot.PresentDaysInFuture,
+                TotalEstimatedEffort = snapshot.TotalEstimatedEffort,
                 IsUpToDate = snapshot.IsUpToDate,
 
                 // ++++++++++++++++
@@ -205,6 +207,8 @@ namespace TraineeTracker.Services {
                         Speed = null,
                         PredictedMissingEstimatedEffortAtEnd = null,
                         PredictedMissingActualDays = null,
+                        PresentDaysInFuture = null,
+                        TotalEstimatedEffort = null,
                         IsUpToDate = false
                     };
 
@@ -218,6 +222,8 @@ namespace TraineeTracker.Services {
             double speed = CalculateSpeed(daysPresentTillToday, lessonDaysCompleted);
             double? predictedMissingEstimatedEffortAtEnd = CalculatePredictedMissingEstimatedEffortAtEnd(daysPresentTillToday, daysPresentTotal, lessonDaysOpen, speed);
             double? predictedMissingActualDays = CalculatePredictedMissingActualDaysAtEnd(daysPresentTillToday, daysPresentTotal, lessonDaysOpen, speed);
+            double? presentDaysInFuture = daysPresentTotal - daysPresentTillToday;
+            double totalEstimatedEffort = await CalculateTotalEffort(traineeId);
 
             TraineeStatisticsSnapshot snapshot;
 
@@ -237,6 +243,8 @@ namespace TraineeTracker.Services {
                 snapshot.Speed = speed;
                 snapshot.PredictedMissingEstimatedEffortAtEnd = predictedMissingEstimatedEffortAtEnd;
                 snapshot.PredictedMissingActualDays = predictedMissingActualDays;
+                snapshot.PresentDaysInFuture = presentDaysInFuture;
+                snapshot.TotalEstimatedEffort = totalEstimatedEffort;
                 snapshot.IsUpToDate = true;
 
                 await _traineeStatisticsRepository.UpdateAsync(snapshot);
@@ -256,6 +264,8 @@ namespace TraineeTracker.Services {
                     Speed = speed,
                     PredictedMissingEstimatedEffortAtEnd = predictedMissingEstimatedEffortAtEnd,
                     PredictedMissingActualDays = predictedMissingActualDays,
+                    PresentDaysInFuture = presentDaysInFuture,
+                    TotalEstimatedEffort = totalEstimatedEffort,
                     IsUpToDate = true
                 };
 
