@@ -236,8 +236,8 @@ namespace TraineeTracker.Services.Email {
                 var messageHtml = $@"
                     <p>Hello {person.UserName},</p>
                     <p>The lesson <strong>“{lessonTitle}”</strong> of trainee <strong>{traineeName}</strong> has changed.</p>
-                    <p><strong>Previous:</strong> {oldState}<br/>
-                    <strong>New:</strong> {newState}</p>
+                    <p><strong>Previous State:</strong> {oldState}<br/>
+                    <strong>New State:</strong> {newState}</p>
                     {rejectionNote}
                     {feedbackNote}
                     <p>Best regards,<br/>Your TraineeTracker Team</p>";
@@ -253,8 +253,8 @@ namespace TraineeTracker.Services.Email {
                 var messageHtml = $@"
                     <p>Hello {trainee.UserName},</p>
                     <p>The state of your lesson <strong>“{lessonTitle}”</strong> has changed.</p>
-                    <p><strong>Previous:</strong> {oldState}<br/>
-                    <strong>New:</strong> {newState}</p>
+                    <p><strong>Previous State:</strong> {oldState}<br/>
+                    <strong>New State:</strong> {newState}</p>
                     {rejectionNote}
                     {feedbackNote}
                     <p>Best regards,<br/>Your TraineeTracker Team</p>";
@@ -471,7 +471,7 @@ namespace TraineeTracker.Services.Email {
                     setting.ReceiveAcceptedNotifications = false;
                     setting.ReceiveRatedNotifications = true;
                     setting.ReceiveImportChangeNotifications = true;
-                    setting.ReceiveFeedbackChangeNotifications = true;
+                    setting.ReceiveFeedbackChangeNotifications = false;
                     break;
                 case "Trainee":
                     setting.ReceiveSkippedNotifications = true;
