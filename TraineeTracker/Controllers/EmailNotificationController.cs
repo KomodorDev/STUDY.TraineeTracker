@@ -31,7 +31,7 @@ public class EmailNotificationController : Controller {
 
     // ------------------------------------------------------
     [HttpPost]
-    public async Task<IActionResult> SaveEmailNotificationSettingChange(NotificationSettingDto update) {
+    public async Task<IActionResult> SaveEmailNotificationSettingChange(EmailNotificationSettingDto update) {
         var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
         if (userId == null)
             return Unauthorized();
