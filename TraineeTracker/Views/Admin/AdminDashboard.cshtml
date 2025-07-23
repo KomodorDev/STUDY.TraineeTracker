@@ -1,45 +1,87 @@
-@model TraineeTracker.Models.ViewModels.Admin.AdminDashboardViewModel;
+@model TraineeTracker.Models.ViewModels.Admin.AdminDashboardViewModel
 
 @{
     ViewData["Title"] = "Manage Users";
 }
 
-<thead>
-    <link rel="stylesheet" href="~/css/AdminDashboard_temp.css">
-</thead>
+@section Styles {
+    <link rel="stylesheet" href="~/css/AdminDashboard_temp.css" asp-append-version="true" />
+}
 
-<div class="sopro-grid-management">
+<div class="sopro-grid-management" style="height: 100%">
+
     <div class="split-header flex">
-        <div class="sopro-card-filter">
-            <form asp-action="Dashboard" method="get" class="filter-bar">
-                <div class="filter-tab filter-tab-select ">
-                    <select name="selectedRole" class="select-wide-filter" onchange="this.form.submit()">
-                        <option value="">Role: All</option>
-                        @foreach (var role in Model.Roles)
-                        {
-                            <option value="@role.Name" selected="@(role.Name == Model.SelectedRole ? "selected" : null)">
-                                Role: @role.Name</option>
-                        }
-                    </select>
-                </div>
-                <div class="filter-tab filter-tab-select ">
-                    <select name="selectedStatus" class="select-wide-filter" onchange="this.form.submit()">
-                        <option value="">Status: All</option>
-                        <option value="Open" selected="@(Model.SelectedStatus == "Open" ? "selected" : null)">Status: Open</option>
-                        <option value="Closed" selected="@(Model.SelectedStatus == "Closed" ? "selected" : null)">Status: Closed
-                        </option>
-                    </select>
-                </div>
-                <div class="filter-tab filter-tab-select ">
-                    <select name="sortBy" class="select-wide-filter" onchange="this.form.submit()">
-                        <option value="Role" selected="@(Model.SortBy == "Role" ? "selected" : null)">Sort by Role</option>
-                        <option value="UserName" selected="@(Model.SortBy == "UserName" ? "selected" : null)">Sort by Name</option>
-                        <option value="TraineeStartDate" selected="@(Model.SortBy == "TraineeStartDate" ? "selected" : null)">Sort by Startdate</option>
-                        <option value="TraineeEndDate" selected="@(Model.SortBy == "TraineeEndDate" ? "selected" : null)">Sort by Enddate</option>
-                    </select>
-                </div>
+
+        <div class="sopro-card flex-card">
+
+            <!-- LEFT: Role Filter Tabs -->
+            <div class="filter-bar-admin">
+                <a class="filter-tab-admin @(Model.FilterRole == "all" ? "active" : "")" asp-action="Dashboard"
+                    asp-route-filterRole="all" asp-route-filterStatus="@Model.FilterStatus"
+                    asp-route-sortBy="@Model.SortBy" asp-route-page="1">
+                    All (@Model.RoleUserCount)
+                </a>
+                <a class="filter-tab-admin @(Model.FilterRole == "Admin" ? "active" : "")" asp-action="Dashboard"
+                    asp-route-filterRole="Admin" asp-route-filterStatus="@Model.FilterStatus"
+                    asp-route-sortBy="@Model.SortBy" asp-route-page="1">
+                    Admin (@Model.AdminCount)
+                </a>
+                <a class="filter-tab-admin @(Model.FilterRole == "Mentor" ? "active" : "")" asp-action="Dashboard"
+                    asp-route-filterRole="Mentor" asp-route-filterStatus="@Model.FilterStatus"
+                    asp-route-sortBy="@Model.SortBy" asp-route-page="1">
+                    Mentor (@Model.MentorCount)
+                </a>
+                <a class="filter-tab-admin @(Model.FilterRole == "Trainee" ? "active" : "")" asp-action="Dashboard"
+                    asp-route-filterRole="Trainee" asp-route-filterStatus="@Model.FilterStatus"
+                    asp-route-sortBy="@Model.SortBy" asp-route-page="1">
+                    Trainee (@Model.TraineeCount)
+                </a>
+            </div>
+
+            <!-- MIDDLE: Status Tabs -->
+            <div class="filter-bar-admin" style="margin-left: 2rem;">
+                <a class="filter-tab-admin @(Model.FilterStatus == "all" ? "active" : "")" asp-action="Dashboard"
+                    asp-route-filterRole="@Model.FilterRole" asp-route-filterStatus="all"
+                    asp-route-sortBy="@Model.SortBy" asp-route-page="1">
+                    All (@Model.TotalUserCount)
+                </a>
+                <a class="filter-tab-admin @(Model.FilterStatus == "open" ? "active" : "")" asp-action="Dashboard"
+                    asp-route-filterRole="@Model.FilterRole" asp-route-filterStatus="open"
+                    asp-route-sortBy="@Model.SortBy" asp-route-page="1">
+                    Open (@Model.OpenUserCount)
+                </a>
+                <a class="filter-tab-admin @(Model.FilterStatus == "closed" ? "active" : "")" asp-action="Dashboard"
+                    asp-route-filterRole="@Model.FilterRole" asp-route-filterStatus="closed"
+                    asp-route-sortBy="@Model.SortBy" asp-route-page="1">
+                    Closed (@Model.ClosedUserCount)
+                </a>
+            </div>
+
+            <!-- RIGHT: Sort Dropdown -->
+            <form method="get" asp-controller="Admin" asp-action="Dashboard" class="filter-selects">
+
+                <input type="hidden" name="filterRole" value="@Model.FilterRole" />
+                <input type="hidden" name="filterStatus" value="@Model.FilterStatus" />
+                <input type="hidden" name="page" value="1" />
+
+                <select name="sortBy" class="admin-select-small" onchange="this.form.submit()">
+                    <option value="role_asc" selected="@(Model.SortBy == "role_asc" ? "selected" : null)">Role ↑
+                    </option>
+                    <option value="role_desc" selected="@(Model.SortBy == "role_desc" ? "selected" : null)">Role
+                        ↓</option>
+                    <option value="username_asc" selected="@(Model.SortBy == "username_asc" ? "selected" : null)">Name ↑</option>
+                    <option value="username_desc" selected="@(Model.SortBy == "username_desc" ? "selected" : null)">Name ↓</option>
+                    <option value="startdate_asc" selected="@(Model.SortBy == "startdate_asc" ? "selected" : null)">Start Date ↑</option>
+                    <option value="startdate_desc" selected="@(Model.SortBy == "startdate_desc" ? "selected" : null)">
+                        Start Date ↓</option>
+                    <option value="enddate_asc" selected="@(Model.SortBy == "enddate_asc" ? "selected" : null)">End Date ↑</option>
+                    <option value="enddate_desc" selected="@(Model.SortBy == "enddate_desc" ? "selected" : null)">End Date ↓</option>
+                </select>
             </form>
+
         </div>
+
+        <!-- Create User -->
         <div class="sopro-card flex">
             <div class="header">
                 <a class="sopro-btn sopro-btn-prim sopro-button-header" asp-controller="Admin"
@@ -47,58 +89,120 @@
             </div>
         </div>
     </div>
-    <div class="sopro-card scroll">
-        <table class="table">
+
+    <!-- User-Box -->
+    <div class="sopro-card">
+        <table class="admin-table">
             <thead>
                 <tr>
                     <th>Role</th>
-                    <th>Name</th>
-                    <th>Startdate - Enddate</th>
-                    <th></th>
-                    <th></th>
+                    <th>Email</th>
+                    <th>Start Date</th>
+                    <th>End Date</th>
+                    <th>Pauses</th>
+                    <th>Status</th>
                 </tr>
             </thead>
+
             <tbody>
-                @foreach (var user in Model.Users)
+                @foreach (var user in Model.Users.Items)
                 {
+                    var role = Model.UserRoles[user.Id];
                     <tr>
-                        <td>@Model.UserRoles[user.Id]</td>
+                        <td>@role</td>
                         <td>@user.Email</td>
-                        @if (Model.UserRoles[user.Id] == "Trainee")
-                        {
-                            <td>@user.TraineeStartDate - @user.TraineeEndDate</td>
-                            <td><a class="sopro-btn sopro-btn-sec sopro-button-content"
-                                    asp-action="ShowManageProcessingPausesView" asp-route-traineeId="@user.Id">Manage
-                                    Processing
-                                    Pauses</a></td>
-                        }
-                        else
-                        {
-                            <td></td>
-                            <td></td>
-                        }
-                        @if (!user.IsClosed)
-                        {
-                            <td>
+
+                        <td>
+                            @if (role == "Trainee")
+                            {
+                                @user.TraineeStartDate?.ToString("dd. MMMM yyyy")
+                            }
+                        </td>
+                        <td>
+                            @if (role == "Trainee")
+                            {
+                                @user.TraineeEndDate?.ToString("dd. MMMM yyyy")
+                            }
+                        </td>
+
+                        <td>
+                            @if (role == "Trainee" && !user.IsClosed)
+                            {
+                                <a class="sopro-btn sopro-btn-sec sopro-button-content"
+                                    asp-action="ShowManageProcessingPausesView" asp-route-traineeId="@user.Id">
+                                    Manage Pauses
+                                </a>
+                            }
+                            else if (role == "Trainee")
+                            {
+                                <button class="sopro-btn sopro-btn-dis sopro-button-content" disabled>Manage Pauses</button>
+                            }
+                        </td>
+
+                        <td>
+                            @if (!user.IsClosed)
+                            {
                                 <form asp-action="CloseUser" asp-route-userId="@user.Id" method="post"
                                     onsubmit="return confirm('Are you sure you want to close @user.UserName? Processing Pauses, Teachingplans and Statistics will be lost. Feedbacks written by this user will remain preserved.');">
+                                    <input type="hidden" name="filterRole" value="@Model.FilterRole" />
+                                    <input type="hidden" name="filterStatus" value="@Model.FilterStatus" />
+                                    <input type="hidden" name="sortBy" value="@Model.SortBy" />
+                                    <input type="hidden" name="page" value="@Model.Users.PageNumber" />
+
                                     <button type="submit" class="sopro-btn sopro-btn-prim sopro-button-content">Close
                                         User</button>
                                 </form>
-                            </td>
-                        }
-                        else
-                        {
-                            <td>
-                                <form asp-action="CloseUser" asp-route-userId="@user.Id" method="post">
-                                    <button type="submit" class="sopro-btn sopro-btn-dis sopro-button-content"
-                                        disabled>Closed</button>
-                                </form>
-                            </td>
-                        }
+                            }
+                            else
+                            {
+                                <button class="sopro-btn sopro-btn-dis sopro-button-content" disabled>Closed</button>
+                            }
+                        </td>
                     </tr>
                 }
             </tbody>
+
         </table>
     </div>
+
 </div>
+
+
+<!-- Pagination -->
+<nav aria-label="Page navigation">
+    <ul class="pagination">
+
+        @if (Model.Users.HasPrevious)
+        {
+            <li class="page-item">
+                <a class="page-link" asp-controller="Admin" asp-action="Dashboard" asp-route-filterRole="@Model.FilterRole"
+                    asp-route-filterStatus="@Model.FilterStatus" asp-route-sortBy="@Model.SortBy"
+                    asp-route-page="@(Model.Users.PageNumber - 1)">
+                    Previous
+                </a>
+            </li>
+        }
+
+        @for (int i = 1; i <= Model.Users.TotalPages; i++)
+        {
+            <li class="page-item @(i == Model.Users.PageNumber ? "active" : "")">
+                <a class="page-link" asp-controller="Admin" asp-action="Dashboard" asp-route-filterRole="@Model.FilterRole"
+                    asp-route-filterStatus="@Model.FilterStatus" asp-route-sortBy="@Model.SortBy" asp-route-page="@i">
+                    @i
+                </a>
+            </li>
+        }
+
+        @if (Model.Users.HasNext)
+        {
+            <li class="page-item">
+                <a class="page-link" asp-controller="Admin" asp-action="Dashboard" asp-route-filterRole="@Model.FilterRole"
+                    asp-route-filterStatus="@Model.FilterStatus" asp-route-sortBy="@Model.SortBy"
+                    asp-route-page="@(Model.Users.PageNumber + 1)">
+                    Next
+                </a>
+            </li>
+        }
+
+    </ul>
+</nav>

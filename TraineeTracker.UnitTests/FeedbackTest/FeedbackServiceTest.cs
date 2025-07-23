@@ -17,7 +17,7 @@ namespace TraineeTracker.UnitTests.FeedbackTest
 {
     public class FeedbackServiceTests 
     {
-        // Fake Feedback Repository (wie bisher)
+        // Fake Feedback Repository
         private class FakeFeedbackRepository : IFeedbackRepository {
             public Feedback? StoredFeedback;
             public bool UpdateCalled = false;
@@ -30,7 +30,7 @@ namespace TraineeTracker.UnitTests.FeedbackTest
                 return Task.CompletedTask;
             }
 
-            // Alle übrigen Methoden stubben:
+            // Stubb all other Methods:
             public Task<bool> ExistsAsync(int id) => throw new NotImplementedException();
             public Task<bool> ExistsAsync(Feedback feedback) => throw new NotImplementedException();
             public Task CreateAsync(Feedback feedback) => throw new NotImplementedException();
@@ -59,7 +59,7 @@ namespace TraineeTracker.UnitTests.FeedbackTest
                 => throw new NotImplementedException();
         }
 
-        // Fake User Repository mit allen Methoden stubbed
+        // Fake User Repository with all Methods stubbed
         private class FakeUserRepository : IApplicationUserRepository {
             private readonly ApplicationUser _user;
             public FakeUserRepository(ApplicationUser user) { _user = user; }
