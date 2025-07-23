@@ -1,5 +1,11 @@
 namespace TraineeTracker.Exceptions
 {
+    /// <summary>
+    /// A custom exception class, that should be used when a feedback was not found.
+    /// </summary>
+    /// <remarks>
+    /// Code Ownership: Alexander Schlemmer (schleale)
+    /// </remarks>
     public class FeedbackNotFoundException : Exception {
         // : base() passes parameters upward to Exception class
         public FeedbackNotFoundException()
