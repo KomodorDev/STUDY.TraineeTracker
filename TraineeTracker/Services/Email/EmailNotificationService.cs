@@ -339,7 +339,7 @@ namespace TraineeTracker.Services.Email {
 
                 var messageHtml = $@"
                     <p>Hello {person.UserName},</p>
-                    <p>The feedback for lesson <strong>“{lessonTitle}”</strong> from trainee <strong>{traineeName}</strong> was changed by <strong>“{trueAuthor.UserName}”</strong>.</p>
+                    <p>The feedback for lesson <strong>“{lessonTitle}”</strong> from trainee <strong>{traineeName}</strong> was changed by <strong>{trueAuthor.UserName}</strong>.</p>
                     {feedbackNote}
                     <p>Best regards,<br/>Your TraineeTracker Team</p>";
 
