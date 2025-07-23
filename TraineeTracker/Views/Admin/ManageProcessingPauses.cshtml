@@ -4,9 +4,9 @@
     ViewData["Title"] = $"Processing Pauses of {Model.UserName}";
 }
 
-<thead>
-    <link rel="stylesheet" href="~/css/AdminDashboard_temp.css">
-</thead>
+@section Styles {
+    <link rel="stylesheet" href="~/css/AdminDashboard_temp.css" asp-append-version="true" />
+}
 
 <div class="sopro-grid-management" style="height: 100%">
 
