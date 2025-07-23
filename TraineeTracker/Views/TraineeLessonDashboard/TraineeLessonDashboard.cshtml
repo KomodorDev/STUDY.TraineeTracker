@@ -86,7 +86,7 @@
                 </p>
                 <p>
                     Progress Speed:
-                    @(stats?.Speed.HasValue == true ? (stats.Speed.Value * 100).ToString("0") + " %" : "N/A")
+                    @(stats?.Speed.HasValue == true ? (stats.Speed.Value * 100).ToString("0.0") + " %" : "N/A")
                 </p>
                 <div class="w-100">
                     <p>Estimated Effort Completed: @progressBarProgress.ToString("0.0") %</p>
