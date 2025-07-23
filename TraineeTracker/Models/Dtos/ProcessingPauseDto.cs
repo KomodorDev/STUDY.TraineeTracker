@@ -1,5 +1,4 @@
 using System.ComponentModel.DataAnnotations;
-using TraineeTracker.Models.Domain;
 
 namespace TraineeTracker.Models.Dtos {
     public class ProcessingPauseDto {
@@ -9,9 +8,9 @@ namespace TraineeTracker.Models.Dtos {
         public string TraineeId { get; set; } = "";
 
         [Required]
-        public DateOnly StartDate { get; set; }
+        public DateOnly StartDate { get; set; } = DateOnly.FromDateTime(DateTime.Today);
 
         [Required]
-        public DateOnly EndDate { get; set; }
+        public DateOnly EndDate { get; set; } = DateOnly.FromDateTime(DateTime.Today);
     }
 }

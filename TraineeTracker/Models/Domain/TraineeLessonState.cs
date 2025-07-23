@@ -1,6 +1,11 @@
 namespace TraineeTracker.Models.Domain {
-    
-    // Enum for TraineeLessonStates to be used in TraineeLessonDetail Lane
+
+    /// <summary>
+    /// Represents the possible processing states of a trainee's lesson within the Trainee Tracker system.
+    /// </summary>
+    /// <remarks>
+    /// Code Ownership: Simon Hinterreiter (hintsimo)
+    /// </remarks>
     public enum TraineeLessonState {
         Open,
         Started,
