@@ -2,6 +2,14 @@ using System.Security.Claims;
 using TraineeTracker.Models.Domain;
 
 namespace TraineeTracker.Services.TraineeLessonStates {
+
+    /// <summary>
+    /// Defines the contract for lesson state behavior, including allowed transitions
+    /// and enforcement of valid state changes based on user roles.
+    /// </summary>
+    /// <remarks>
+    /// Code Ownership: Simon Hinterreiter (hintsimo)
+    /// </remarks>
     public interface ITraineeLessonState {
         /// <summary>
         /// Returns a list of allowed target states based on the current user.
