@@ -133,6 +133,8 @@ namespace TraineeTracker.Data.ApplicationUsers {
                 .ToListAsync();
         }
 
+        //
+        // KATASTROPHe
         public async Task<IEnumerable<string>> GetRolesAsync(ApplicationUser user) {
             var roles = await _userManager.GetRolesAsync(user);
             if (roles.Contains("Admin")) {
@@ -145,6 +147,9 @@ namespace TraineeTracker.Data.ApplicationUsers {
             return await _userManager.GetUserAsync(principal);
         }
 
+
+        //
+        // KATASTROPHE
         public async Task<IEnumerable<ApplicationUser>> GetUsersInRoleAsync(string roleName) {
             var usersInRole = await _userManager.GetUsersInRoleAsync(roleName);
             if (roleName != "Mentor") {

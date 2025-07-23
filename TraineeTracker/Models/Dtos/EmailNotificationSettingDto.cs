@@ -1,8 +1,7 @@
 namespace TraineeTracker.Models.Dtos {
 
     /// <summary>
-    /// Data transfer object (DTO) representing a user's email notification preferences
-    /// for various lesson and system events within the Trainee Tracker.
+    /// Data Transfer Object (DTO) that represents a user's individual notification preferences.
     /// </summary>
     /// <remarks>
     /// Code Ownership: Simon Hinterreiter (hintsimo)
@@ -10,48 +9,47 @@ namespace TraineeTracker.Models.Dtos {
     public class EmailNotificationSettingDto {
 
         /// <summary>
-        /// Gets or sets whether the user wants to receive notifications for skipped lessons.
+        /// Indicates whether the user wants to be notified when a lesson is skipped.
         /// </summary>
         public bool ReceiveSkippedNotifications { get; set; }
 
         /// <summary>
-        /// Gets or sets whether the user wants to receive notifications for newly opened lessons.
+        /// Indicates whether the user wants to be notified when a lesson is marked as open.
         /// </summary>
         public bool ReceiveOpenNotifications { get; set; }
 
         /// <summary>
-        /// Gets or sets whether the user wants to receive notifications when a lesson is started.
+        /// Indicates whether the user wants to be notified when a lesson is started.
         /// </summary>
         public bool ReceiveStartedNotifications { get; set; }
 
         /// <summary>
-        /// Gets or sets whether the user wants to receive notifications when a lesson is marked as finished.
+        /// Indicates whether the user wants to be notified when a lesson is finished.
         /// </summary>
-
         public bool ReceiveFinishedNotifications { get; set; }
 
         /// <summary>
-        /// Gets or sets whether the user wants to receive notifications when a lesson is rejected.
+        /// Indicates whether the user wants to be notified when a lesson is rejected by the mentor.
         /// </summary>
         public bool ReceiveRejectedNotifications { get; set; }
 
         /// <summary>
-        /// Gets or sets whether the user wants to receive notifications when a lesson is accepted.
+        /// Indicates whether the user wants to be notified when a lesson is accepted by the mentor.
         /// </summary>
         public bool ReceiveAcceptedNotifications { get; set; }
 
         /// <summary>
-        /// Gets or sets whether the user wants to receive notifications when a lesson is rated.
+        /// Indicates whether the user wants to be notified when a lesson has received a rating/feedback.
         /// </summary>
         public bool ReceiveRatedNotifications { get; set; }
 
         /// <summary>
-        /// Gets or sets whether the user wants to receive notifications when lessons are changed via import.
+        /// Indicates whether the user wants to be notified about teaching plan import changes (e.g. lessons added or removed).
         /// </summary>
         public bool ReceiveImportChangeNotifications { get; set; }
 
         /// <summary>
-        /// Gets or sets whether the user wants to receive notifications when feedback entries change.
+        /// Indicates whether the user wants to be notified about feedback changes (e.g. a feedback was
         /// </summary>
         public bool ReceiveFeedbackChangeNotifications { get; set; }
     }

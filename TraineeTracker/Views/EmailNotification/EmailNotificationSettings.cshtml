@@ -2,6 +2,12 @@
 
 @{
     ViewData["Title"] = "Notification Settings";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/EmailNotificationSettings_temp.css" asp-append-version="true" />
+    
 }
 
 @{
@@ -11,17 +17,15 @@
     : "Notify me when any lesson is marked as ";
 
     var notifyPlanText = isTrainee
-    ? "Notify me when my teaching plan is updated (including a list of added and removed lessons)"
-    : "Notify me when the teaching plan of a trainee is updated (including a list of added and removed lessons)";
+    ? "Notify me when my teaching plan is updated (includes a list of added and removed lessons)"
+    : "Notify me when a trainee's teaching plan is updated (includes a list of added and removed lessons specific to that trainee)";
+
+
 
     var notifyFeedbackText = isTrainee
     ? "Notify me when my feedback is edited by a mentor or admin"
-    : "Notify me when a trainee's feedback is edited";
+    : "Notify me when a trainee's feedback is edited (not recommended, since the feedback will reappear as unread anyway)";
 
-}
-
-@section Styles {
-    <link rel="stylesheet" href="~/css/EmailNotificationSettings_temp.css" asp-append-version="true" />
 }
 
 <div class="sopro-grid-settings">
@@ -81,7 +85,6 @@
         </form>
     </div>
 </div>
-
 
 <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 

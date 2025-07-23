@@ -4,6 +4,7 @@ using TraineeTracker.Models.Dtos;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using TraineeTracker.Data.EmailNotificationSettings;
 using TraineeTracker.Data.Lessons;
+using TraineeTracker.Extensions;
 
 namespace TraineeTracker.Services.Email {
 
@@ -201,8 +202,8 @@ namespace TraineeTracker.Services.Email {
                     <hr/>
                     <p><strong>Feedback submitted by {traineeName}:</strong></p>
                     <ul>
-                        <li><strong>Difficulty:</strong> {feedback.Difficulty}</li>
-                        <li><strong>Previous Knowledge:</strong> {feedback.PreviousKnowledge}</li>
+                        <li><strong>Difficulty:</strong> {feedback.Difficulty.GetDisplayName()}</li>
+                        <li><strong>Previous Knowledge:</strong> {feedback.PreviousKnowledge.GetDisplayName()}</li>
                         <li><strong>Hours of Effort:</strong> {feedback.HoursOfEffort} h</li>
                     </ul>";
 
@@ -236,8 +237,8 @@ namespace TraineeTracker.Services.Email {
                 var messageHtml = $@"
                     <p>Hello {person.UserName},</p>
                     <p>The lesson <strong>“{lessonTitle}”</strong> of trainee <strong>{traineeName}</strong> has changed.</p>
-                    <p><strong>Previous:</strong> {oldState}<br/>
-                    <strong>New:</strong> {newState}</p>
+                    <p><strong>Previous State:</strong> {oldState}<br/>
+                    <strong>New State:</strong> {newState}</p>
                     {rejectionNote}
                     {feedbackNote}
                     <p>Best regards,<br/>Your TraineeTracker Team</p>";
@@ -253,8 +254,8 @@ namespace TraineeTracker.Services.Email {
                 var messageHtml = $@"
                     <p>Hello {trainee.UserName},</p>
                     <p>The state of your lesson <strong>“{lessonTitle}”</strong> has changed.</p>
-                    <p><strong>Previous:</strong> {oldState}<br/>
-                    <strong>New:</strong> {newState}</p>
+                    <p><strong>Previous State:</strong> {oldState}<br/>
+                    <strong>New State:</strong> {newState}</p>
                     {rejectionNote}
                     {feedbackNote}
                     <p>Best regards,<br/>Your TraineeTracker Team</p>";
@@ -308,8 +309,8 @@ namespace TraineeTracker.Services.Email {
                     <hr/>
                     <p><strong>Updated Feedback:</strong></p>
                     <ul>
-                        <li><strong>Difficulty:</strong> {feedback.Difficulty}</li>
-                        <li><strong>Previous Knowledge:</strong> {feedback.PreviousKnowledge}</li>
+                        <li><strong>Difficulty:</strong> {feedback.Difficulty.GetDisplayName()}</li>
+                        <li><strong>Previous Knowledge:</strong> {feedback.PreviousKnowledge.GetDisplayName()}</li>
                         <li><strong>Hours of Effort:</strong> {feedback.HoursOfEffort} h</li>
                     </ul>";
 
@@ -338,7 +339,7 @@ namespace TraineeTracker.Services.Email {
 
                 var messageHtml = $@"
                     <p>Hello {person.UserName},</p>
-                    <p>The feedback for lesson <strong>“{lessonTitle}”</strong> from trainee <strong>{traineeName}</strong> was changed by <strong>“{trueAuthor.UserName}”</strong>.</p>
+                    <p>The feedback for lesson <strong>“{lessonTitle}”</strong> from trainee <strong>{traineeName}</strong> was changed by <strong>{trueAuthor.UserName}</strong>.</p>
                     {feedbackNote}
                     <p>Best regards,<br/>Your TraineeTracker Team</p>";
 
@@ -471,7 +472,7 @@ namespace TraineeTracker.Services.Email {
                     setting.ReceiveAcceptedNotifications = false;
                     setting.ReceiveRatedNotifications = true;
                     setting.ReceiveImportChangeNotifications = true;
-                    setting.ReceiveFeedbackChangeNotifications = true;
+                    setting.ReceiveFeedbackChangeNotifications = false;
                     break;
                 case "Trainee":
                     setting.ReceiveSkippedNotifications = true;
