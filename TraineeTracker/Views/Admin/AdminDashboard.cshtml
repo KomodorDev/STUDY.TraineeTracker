@@ -24,17 +24,17 @@
                 <a class="filter-tab-admin @(Model.FilterRole == "Admin" ? "active" : "")" asp-action="Dashboard"
                     asp-route-filterRole="Admin" asp-route-filterStatus="@Model.FilterStatus"
                     asp-route-sortBy="@Model.SortBy" asp-route-page="1">
-                    Admins (@Model.AdminCount)
+                    Admin (@Model.AdminCount)
                 </a>
                 <a class="filter-tab-admin @(Model.FilterRole == "Mentor" ? "active" : "")" asp-action="Dashboard"
                     asp-route-filterRole="Mentor" asp-route-filterStatus="@Model.FilterStatus"
                     asp-route-sortBy="@Model.SortBy" asp-route-page="1">
-                    Mentors (@Model.MentorCount)
+                    Mentor (@Model.MentorCount)
                 </a>
                 <a class="filter-tab-admin @(Model.FilterRole == "Trainee" ? "active" : "")" asp-action="Dashboard"
                     asp-route-filterRole="Trainee" asp-route-filterStatus="@Model.FilterStatus"
                     asp-route-sortBy="@Model.SortBy" asp-route-page="1">
-                    Trainees (@Model.TraineeCount)
+                    Trainee (@Model.TraineeCount)
                 </a>
             </div>
 
@@ -64,7 +64,7 @@
                 <input type="hidden" name="filterStatus" value="@Model.FilterStatus" />
                 <input type="hidden" name="page" value="1" />
 
-                <select name="sortBy" class="admin-select-medium" onchange="this.form.submit()">
+                <select name="sortBy" class="admin-select-small" onchange="this.form.submit()">
                     <option value="role_asc" selected="@(Model.SortBy == "role_asc" ? "selected" : null)">Sort by Role ↑
                     </option>
                     <option value="role_desc" selected="@(Model.SortBy == "role_desc" ? "selected" : null)">Sort by Role
