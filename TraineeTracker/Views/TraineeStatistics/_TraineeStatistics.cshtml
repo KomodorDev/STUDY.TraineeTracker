@@ -119,6 +119,46 @@
                         </div>
                     </div>
 
+                    <!-- Days Present in Future -->
+                    <div class="metric-tile-new sopro-card">
+                        <div class="tile-header">
+                            <strong>Days Present in Future:</strong>
+                        </div>
+                        <div class="tile-value-with-icon">
+                            <span class="tile-value">
+                                @(Model.PresentDaysInFuture.HasValue ? Model.PresentDaysInFuture.Value.ToString("0.0") + " days" : "N/A")
+                            </span>
+                            <span class="info-icon-wrapper">
+                                <span class="info-icon">?</span>
+                                <div class="tooltip-box">
+                                    Predicted number of real present days remaining until the end of the training period.
+                                    <br /><br />
+                                    This forecast is based on historical presence data from the API.
+                                </div>
+                            </span>
+                        </div>
+                    </div>
+
+                    <!-- Total Estimated Effort -->
+                    <div class="metric-tile-new sopro-card">
+                        <div class="tile-header">
+                            <strong>Total Estimated Effort:</strong>
+                        </div>
+                        <div class="tile-value-with-icon">
+                            <span class="tile-value">
+                                @(Model.TotalEstimatedEffort.HasValue ? Model.TotalEstimatedEffort.Value.ToString("0.0") + " days" : "N/A")
+                            </span>
+                            <span class="info-icon-wrapper">
+                                <span class="info-icon">?</span>
+                                <div class="tooltip-box">
+                                    Sum of all estimated lesson efforts assigned to the trainee.
+                                    <br /><br />
+                                    Includes completed and remaining lessons.
+                                </div>
+                            </span>
+                        </div>
+                    </div>
+
                     <!-- Estimated Effort Completed -->
                     <div class="metric-tile-new sopro-card">
                         <div class="tile-header">
