@@ -4,6 +4,7 @@ using TraineeTracker.Models.Dtos;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using TraineeTracker.Data.EmailNotificationSettings;
 using TraineeTracker.Data.Lessons;
+using TraineeTracker.Extensions;
 
 namespace TraineeTracker.Services.Email {
 
@@ -201,8 +202,8 @@ namespace TraineeTracker.Services.Email {
                     <hr/>
                     <p><strong>Feedback submitted by {traineeName}:</strong></p>
                     <ul>
-                        <li><strong>Difficulty:</strong> {feedback.Difficulty}</li>
-                        <li><strong>Previous Knowledge:</strong> {feedback.PreviousKnowledge}</li>
+                        <li><strong>Difficulty:</strong> {feedback.Difficulty.GetDisplayName()}</li>
+                        <li><strong>Previous Knowledge:</strong> {feedback.PreviousKnowledge.GetDisplayName()}</li>
                         <li><strong>Hours of Effort:</strong> {feedback.HoursOfEffort} h</li>
                     </ul>";
 
@@ -308,8 +309,8 @@ namespace TraineeTracker.Services.Email {
                     <hr/>
                     <p><strong>Updated Feedback:</strong></p>
                     <ul>
-                        <li><strong>Difficulty:</strong> {feedback.Difficulty}</li>
-                        <li><strong>Previous Knowledge:</strong> {feedback.PreviousKnowledge}</li>
+                        <li><strong>Difficulty:</strong> {feedback.Difficulty.GetDisplayName()}</li>
+                        <li><strong>Previous Knowledge:</strong> {feedback.PreviousKnowledge.GetDisplayName()}</li>
                         <li><strong>Hours of Effort:</strong> {feedback.HoursOfEffort} h</li>
                     </ul>";
 
