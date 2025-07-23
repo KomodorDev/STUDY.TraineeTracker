@@ -4,7 +4,7 @@
 @model TraineeTracker.Models.ViewModels.TraineeStatisticsViewModel
 
 @section Styles {
-    <link rel="stylesheet" href="~/css/TraineeStatistics_temp.css?v=@DateTime.Now.Ticks" />
+    <link rel="stylesheet" href="~/css/TraineeStatistics_temp.css" asp-append-version="true" />
 }
 
 <div id="traineeStatisticsModal" class="modal fade" tabindex="-1" role="dialog">
@@ -47,7 +47,7 @@
                         </div>
                         <div class="tile-value-with-icon">
                             <span class="tile-value">
-                                @(Model.SnapshotDateTime.ToString("dd. MMMM yyyy HH:mm"))
+                                @(Model.SnapshotDateTime.ToString("dd. MMMM yyyy HH:mm:ss"))
                             </span>
                             <span class="info-icon-wrapper">
                                 <span class="info-icon">?</span>
@@ -149,7 +149,9 @@
                             <span class="info-icon-wrapper">
                                 <span class="info-icon">?</span>
                                 <div class="tooltip-box">
-                                    Estimated effort still required to complete all lessons. (Estimated Effort Remaining = Total Effort - Estimated Effort Completed)
+                                    Estimated effort still required to complete all lessons.
+                                    <br /><br />
+                                    (Estimated Effort Remaining = Total Effort - Estimated Effort Completed)
                                 </div>
                             </span>
                         </div>
@@ -167,7 +169,13 @@
                             <span class="info-icon-wrapper">
                                 <span class="info-icon">?</span>
                                 <div class="tooltip-box">
-                                    Shows how far ahead or behind the trainee is based on expected lesson progress. Positive = ahead, negative = behind. (Effort Buffer = Estimated Effort Completed - Days Present Until Today)
+                                    Shows how far ahead or behind the trainee is based on expected lesson progress.
+                                    <br /><br />
+                                    Positive = Ahead
+                                    <br />
+                                    Negative = Behind
+                                    <br /><br />
+                                    (Effort Buffer = Estimated Effort Completed - Days Present Until Today)
                                 </div>
                             </span>
                         </div>
@@ -180,12 +188,20 @@
                         </div>
                         <div class="tile-value-with-icon">
                             <span class="tile-value">
-                                @(Model.Speed.HasValue ? (Model.Speed.Value * 100).ToString("0") + "%" : "N/A")
+                                @(Model.Speed.HasValue ? (Model.Speed.Value * 100).ToString("0.0") + "%" : "N/A")
                             </span>
                             <span class="info-icon-wrapper">
                                 <span class="info-icon">?</span>
                                 <div class="tooltip-box">
-                                    Indicates how efficiently the trainee has used their time. 100% = on pace, below 100% = behind, above 100% = ahead. (Progress Speed = Estimated Effort Completed / Days Present Until Today)
+                                    Indicates how efficiently the trainee has used their time.
+                                    <br /><br />
+                                    100% = On Pace
+                                    <br />
+                                    Below 100% = Behind
+                                    <br />
+                                    Above 100% = Ahead
+                                    <br /><br />
+                                    (Progress Speed = Estimated Effort Completed / Days Present Until Today)
                                 </div>
                             </span>
                         </div>
@@ -203,7 +219,13 @@
                             <span class="info-icon-wrapper">
                                 <span class="info-icon">?</span>
                                 <div class="tooltip-box">
-                                    Forecast of the difference between estimated remaining effort and expected progress until the end. Positive = extra capacity, negative = shortfall. (Predicted Effort Buffer = (Days Present In Future * Progress Speed) - Estimated Effort Remaining)
+                                    Forecast of the difference between estimated remaining effort and expected progress until the end.
+                                    <br /><br />
+                                    Positive = Extra Capacity
+                                    <br />
+                                    Negative = Shortfall
+                                    <br /><br />
+                                    (Predicted Effort Buffer = (Days Present In Future * Progress Speed) - Estimated Effort Remaining)
                                 </div>
                             </span>
                         </div>
@@ -221,7 +243,13 @@
                             <span class="info-icon-wrapper">
                                 <span class="info-icon">?</span>
                                 <div class="tooltip-box">
-                                    Forecast of how many real days will remain or be missing at the end, based on current speed. Positive = buffer, negative = delay. (Predicted Actual Buffer = Predicted Effort Buffer / Progress Speed)
+                                    Forecast of how many real days will remain or be missing at the end, based on current speed.
+                                    <br /><br />
+                                    Positive = Extra Capacity
+                                    <br />
+                                    Negative = Shortfall
+                                    <br /><br />
+                                    (Predicted Actual Buffer = Predicted Effort Buffer / Progress Speed)
                                 </div>
                             </span>
                         </div>
@@ -240,9 +268,9 @@
                                 @foreach (var pause in Model.ProcessingPauses)
                                 {
                                     <li>
-                                        @pause.StartDate.ToString("dd.MM.yyyy")
+                                        @pause.StartDate.ToString("dd. MMMM yyyy")
                                         –
-                                        @pause.EndDate.ToString("dd.MM.yyyy")
+                                        @pause.EndDate.ToString("dd. MMMM yyyy")
                                     </li>
                                 }
                             </ul>
