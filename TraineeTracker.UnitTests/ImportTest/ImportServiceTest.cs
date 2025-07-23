@@ -12,18 +12,14 @@ using TraineeTracker.Models.Dtos;
 using TraineeTracker.Services;
 using Xunit;
 
-namespace TraineeTracker.UnitTests.TeachingPlanTest
-{
-    public class TeachingPlanServiceTests
-    {
+namespace TraineeTracker.UnitTests.TeachingPlanTest{
+    public class TeachingPlanServiceTests{
         // Fake Repository for TeachingPlan
-        private class FakeTeachingPlanRepository : ITeachingPlanRepository
-        {
+        private class FakeTeachingPlanRepository : ITeachingPlanRepository{
             public TeachingPlan? CreatedTeachingPlan;
             public bool CreateCalled = false;
 
-            public Task CreateAsync(TeachingPlan teachingPlan)
-            {
+            public Task CreateAsync(TeachingPlan teachingPlan){
                 CreatedTeachingPlan = teachingPlan;
                 CreateCalled = true;
                 return Task.CompletedTask;
@@ -45,8 +41,7 @@ namespace TraineeTracker.UnitTests.TeachingPlanTest
         {
             public List<Lesson> CreatedLessons { get; } = new List<Lesson>();
 
-            public Task CreateAsync(Lesson lesson)
-            {
+            public Task CreateAsync(Lesson lesson){
                 CreatedLessons.Add(lesson);
                 return Task.CompletedTask;
             }
@@ -67,10 +62,8 @@ namespace TraineeTracker.UnitTests.TeachingPlanTest
             // --- Arrange ---
 
             // 1) Create a single LessonDto and seriaize it
-            var lessonDtos = new List<LessonDto>
-            {
-                new LessonDto
-                {
+            var lessonDtos = new List<LessonDto>{
+                new LessonDto{
                     Id = "L1",
                     Title = "Test Lesson",
                     Url = "http://example.com",
@@ -86,8 +79,7 @@ namespace TraineeTracker.UnitTests.TeachingPlanTest
             var formFile = new FormFile(stream, 0, bytes.Length, "file", "lessons.json");
 
             // 3) Create the DTO for the Import
-            var dto = new TeachingPlanDto
-            {
+            var dto = new TeachingPlanDto{
                 NewPlanFile = formFile,
                 NewPlanName = "Mein neuer Plan"
             };
