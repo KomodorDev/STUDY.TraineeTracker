@@ -11,29 +11,31 @@ using TraineeTracker.Services;
 
 namespace TraineeTracker.UnitTests.TraineeLessonTests
 {
+    /// <summary>
+    /// Fake trainee lesson repository for unit tests
+    /// </summary>
+    /// <remarks>
+    /// Code Ownership: Alexander Schlemmer (schleale)
+    /// </remarks>
     public class FakeTraineeLessonRepository : ITraineeLessonRepository {
         private readonly Dictionary<int, TraineeLesson> _lessons = new();
 
-        public FakeTraineeLessonRepository(params TraineeLesson[] lessons)
-        {
+        public FakeTraineeLessonRepository(params TraineeLesson[] lessons) {
             foreach (var l in lessons)
                 _lessons[l.TraineeLessonId] = l;
         }
 
-        public Task<TraineeLesson?> GetTraineeLessonByIdWithLessonAsync(int id)
-        {
+        public Task<TraineeLesson?> GetTraineeLessonByIdWithLessonAsync(int id) {
             _lessons.TryGetValue(id, out var result);
             return Task.FromResult(result);
         }
 
-        public Task<IEnumerable<TraineeLesson>> GetAllTraineeLessonsOfTraineeWithLessonAsync(string traineeId)
-        {
+        public Task<IEnumerable<TraineeLesson>> GetAllTraineeLessonsOfTraineeWithLessonAsync(string traineeId) {
             var result = _lessons.Values.Where(l => l.TraineeId == traineeId);
             return Task.FromResult(result);
         }
 
-        public Task<IEnumerable<TraineeLesson>> GetAllTraineeLessonsOfLessonWithLessonAsync(int lessonId)
-        {
+        public Task<IEnumerable<TraineeLesson>> GetAllTraineeLessonsOfLessonWithLessonAsync(int lessonId) {
             var result = _lessons.Values.Where(l => l.LessonId == lessonId);
             return Task.FromResult(result);
         }
@@ -45,37 +47,38 @@ namespace TraineeTracker.UnitTests.TraineeLessonTests
             existing == lesson
         );
 
-        public Task CreateAsync(TraineeLesson lesson)
-        {
+        public Task CreateAsync(TraineeLesson lesson) {
             _lessons[lesson.TraineeLessonId] = lesson;
             return Task.CompletedTask;
         }
 
-        public Task CreateRangeAsync(IEnumerable<TraineeLesson> lessons)
-        {
+        public Task CreateRangeAsync(IEnumerable<TraineeLesson> lessons) {
             foreach (var lesson in lessons)
                 _lessons[lesson.TraineeLessonId] = lesson;
             return Task.CompletedTask;
         }
 
-        public Task UpdateAsync(TraineeLesson lesson)
-        {
+        public Task UpdateAsync(TraineeLesson lesson) {
             _lessons[lesson.TraineeLessonId] = lesson;
             return Task.CompletedTask;
         }
 
-        public Task DeleteAsync(int id)
-        {
+        public Task DeleteAsync(int id) {
             _lessons.Remove(id);
             return Task.CompletedTask;
         }
     }
 
+    /// <summary>
+    /// Fake lesson repository for unit tests, only needed methods are implemented.
+    /// </summary>
+    /// <remarks>
+    /// Code Ownership: Alexander Schlemmer (schleale)
+    /// </remarks>
     public class FakeLessonRepository : ILessonRepository {
         private Lesson _lessonInRepo;
 
-        public FakeLessonRepository(Lesson lesson)
-        {
+        public FakeLessonRepository(Lesson lesson) {
             _lessonInRepo = lesson;
         }
 
@@ -115,6 +118,12 @@ namespace TraineeTracker.UnitTests.TraineeLessonTests
         }
     }
 
+    /// <summary>
+    /// Fake trainee lesson log repository for unit tests, only needed methods are implemented.
+    /// </summary>
+    /// <remarks>
+    /// Code Ownership: Alexander Schlemmer (schleale)
+    /// </remarks>
     public class FakeTraineeLessonLogEntryRepository : ITraineeLessonLogEntryRepository {
         public void Create(TraineeLessonLogEntry log) {
             throw new NotImplementedException();
@@ -129,6 +138,12 @@ namespace TraineeTracker.UnitTests.TraineeLessonTests
         }
     }
 
+    /// <summary>
+    /// Fake feedback repository for unit tests, only needed methods are implemented.
+    /// </summary>
+    /// <remarks>
+    /// Code Ownership: Alexander Schlemmer (schleale)
+    /// </remarks>
     public class FakeFeedbackRepository : IFeedbackRepository {
         public Feedback? CreatedFeedback { get; private set; }
 
@@ -207,6 +222,12 @@ namespace TraineeTracker.UnitTests.TraineeLessonTests
         }
     }
 
+    /// <summary>
+    /// Fake application user repository for unit tests, only needed methods are implemented.
+    /// </summary>
+    /// <remarks>
+    /// Code Ownership: Alexander Schlemmer (schleale)
+    /// </remarks>
     public class FakeApplicationUserRepository : IApplicationUserRepository {
         private ApplicationUser _trainee;
 
@@ -321,6 +342,12 @@ namespace TraineeTracker.UnitTests.TraineeLessonTests
         }
     }
 
+    /// <summary>
+    /// Fake feedback service for unit tests, only needed methods are implemented.
+    /// </summary>
+    /// <remarks>
+    /// Code Ownership: Alexander Schlemmer (schleale)
+    /// </remarks>
     public class FakeFeedbackService : FeedbackService {
         public FakeFeedbackService(IFeedbackRepository feedbackRepo, IApplicationUserRepository userRepo, ILessonRepository lessonRepo, ITeachingPlanRepository teachingPlanRepo) : base(feedbackRepo, userRepo, lessonRepo, teachingPlanRepo) {
         }
