@@ -4,9 +4,9 @@
     ViewData["Title"] = "Manage Users";
 }
 
-<thead>
-    <link rel="stylesheet" href="~/css/AdminDashboard_temp.css">
-</thead>
+@section Styles {
+    <link rel="stylesheet" href="~/css/AdminDashboard_temp.css" asp-append-version="true" />
+}
 
 <div class="sopro-grid-management" style="height: 100%">
 
@@ -24,17 +24,17 @@
                 <a class="filter-tab-admin @(Model.FilterRole == "Admin" ? "active" : "")" asp-action="Dashboard"
                     asp-route-filterRole="Admin" asp-route-filterStatus="@Model.FilterStatus"
                     asp-route-sortBy="@Model.SortBy" asp-route-page="1">
-                    Admins (@Model.AdminCount)
+                    Admin (@Model.AdminCount)
                 </a>
                 <a class="filter-tab-admin @(Model.FilterRole == "Mentor" ? "active" : "")" asp-action="Dashboard"
                     asp-route-filterRole="Mentor" asp-route-filterStatus="@Model.FilterStatus"
                     asp-route-sortBy="@Model.SortBy" asp-route-page="1">
-                    Mentors (@Model.MentorCount)
+                    Mentor (@Model.MentorCount)
                 </a>
                 <a class="filter-tab-admin @(Model.FilterRole == "Trainee" ? "active" : "")" asp-action="Dashboard"
                     asp-route-filterRole="Trainee" asp-route-filterStatus="@Model.FilterStatus"
                     asp-route-sortBy="@Model.SortBy" asp-route-page="1">
-                    Trainees (@Model.TraineeCount)
+                    Trainee (@Model.TraineeCount)
                 </a>
             </div>
 
@@ -64,23 +64,18 @@
                 <input type="hidden" name="filterStatus" value="@Model.FilterStatus" />
                 <input type="hidden" name="page" value="1" />
 
-                <select name="sortBy" class="admin-select-medium" onchange="this.form.submit()">
-                    <option value="role_asc" selected="@(Model.SortBy == "role_asc" ? "selected" : null)">Sort by Role ↑
+                <select name="sortBy" class="admin-select-small" onchange="this.form.submit()">
+                    <option value="role_asc" selected="@(Model.SortBy == "role_asc" ? "selected" : null)">Role ↑
                     </option>
-                    <option value="role_desc" selected="@(Model.SortBy == "role_desc" ? "selected" : null)">Sort by Role
+                    <option value="role_desc" selected="@(Model.SortBy == "role_desc" ? "selected" : null)">Role
                         ↓</option>
-                    <option value="username_asc" selected="@(Model.SortBy == "username_asc" ? "selected" : null)">Sort
-                        by Name ↑</option>
-                    <option value="username_desc" selected="@(Model.SortBy == "username_desc" ? "selected" : null)">Sort
-                        by Name ↓</option>
-                    <option value="startdate_asc" selected="@(Model.SortBy == "startdate_asc" ? "selected" : null)">Sort
-                        by Start Date ↑</option>
+                    <option value="username_asc" selected="@(Model.SortBy == "username_asc" ? "selected" : null)">Name ↑</option>
+                    <option value="username_desc" selected="@(Model.SortBy == "username_desc" ? "selected" : null)">Name ↓</option>
+                    <option value="startdate_asc" selected="@(Model.SortBy == "startdate_asc" ? "selected" : null)">Start Date ↑</option>
                     <option value="startdate_desc" selected="@(Model.SortBy == "startdate_desc" ? "selected" : null)">
-                        Sort by Start Date ↓</option>
-                    <option value="enddate_asc" selected="@(Model.SortBy == "enddate_asc" ? "selected" : null)">Sort by
-                        End Date ↑</option>
-                    <option value="enddate_desc" selected="@(Model.SortBy == "enddate_desc" ? "selected" : null)">Sort
-                        by End Date ↓</option>
+                        Start Date ↓</option>
+                    <option value="enddate_asc" selected="@(Model.SortBy == "enddate_asc" ? "selected" : null)">End Date ↑</option>
+                    <option value="enddate_desc" selected="@(Model.SortBy == "enddate_desc" ? "selected" : null)">End Date ↓</option>
                 </select>
             </form>
 
