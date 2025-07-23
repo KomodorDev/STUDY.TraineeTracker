@@ -4,6 +4,7 @@ using TraineeTracker.Models.Dtos;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using TraineeTracker.Data.EmailNotificationSettings;
 using TraineeTracker.Data.Lessons;
+using TraineeTracker.Extensions;
 
 namespace TraineeTracker.Services.Email {
 
@@ -63,7 +64,7 @@ namespace TraineeTracker.Services.Email {
         /// <remarks>
         /// Code Ownership: Simon Hinterreiter (hintsimo)
         /// </remarks>
-        public async Task SaveNotificationSettingChange(string userId, NotificationSettingDto update) {
+        public async Task SaveNotificationSettingChange(string userId, EmailNotificationSettingDto update) {
 
             // 1. Load setting
             var setting = await _databaseEmailNotificationSettingRepository.GetByUserIdAsync(userId);
@@ -96,10 +97,10 @@ namespace TraineeTracker.Services.Email {
         /// <remarks>
         /// Code Ownership: Simon Hinterreiter (hintsimo)
         /// </remarks>
-        public async Task<NotificationSettingDto> GetNotificationSetting(string userId) {
+        public async Task<EmailNotificationSettingDto> GetNotificationSetting(string userId) {
             var setting = await _databaseEmailNotificationSettingRepository.GetByUserIdAsync(userId);
 
-            return new NotificationSettingDto {
+            return new EmailNotificationSettingDto {
                 ReceiveSkippedNotifications = setting.ReceiveSkippedNotifications,
                 ReceiveOpenNotifications = setting.ReceiveOpenNotifications,
                 ReceiveStartedNotifications = setting.ReceiveStartedNotifications,
@@ -201,8 +202,8 @@ namespace TraineeTracker.Services.Email {
                     <hr/>
                     <p><strong>Feedback submitted by {traineeName}:</strong></p>
                     <ul>
-                        <li><strong>Difficulty:</strong> {feedback.Difficulty}</li>
-                        <li><strong>Previous Knowledge:</strong> {feedback.PreviousKnowledge}</li>
+                        <li><strong>Difficulty:</strong> {feedback.Difficulty.GetDisplayName()}</li>
+                        <li><strong>Previous Knowledge:</strong> {feedback.PreviousKnowledge.GetDisplayName()}</li>
                         <li><strong>Hours of Effort:</strong> {feedback.HoursOfEffort} h</li>
                     </ul>";
 
@@ -308,8 +309,8 @@ namespace TraineeTracker.Services.Email {
                     <hr/>
                     <p><strong>Updated Feedback:</strong></p>
                     <ul>
-                        <li><strong>Difficulty:</strong> {feedback.Difficulty}</li>
-                        <li><strong>Previous Knowledge:</strong> {feedback.PreviousKnowledge}</li>
+                        <li><strong>Difficulty:</strong> {feedback.Difficulty.GetDisplayName()}</li>
+                        <li><strong>Previous Knowledge:</strong> {feedback.PreviousKnowledge.GetDisplayName()}</li>
                         <li><strong>Hours of Effort:</strong> {feedback.HoursOfEffort} h</li>
                     </ul>";
 
@@ -338,7 +339,7 @@ namespace TraineeTracker.Services.Email {
 
                 var messageHtml = $@"
                     <p>Hello {person.UserName},</p>
-                    <p>The feedback for lesson <strong>“{lessonTitle}”</strong> from trainee <strong>{traineeName}</strong> was changed by <strong>“{trueAuthor.UserName}”</strong>.</p>
+                    <p>The feedback for lesson <strong>“{lessonTitle}”</strong> from trainee <strong>{traineeName}</strong> was changed by <strong>{trueAuthor.UserName}</strong>.</p>
                     {feedbackNote}
                     <p>Best regards,<br/>Your TraineeTracker Team</p>";
 
