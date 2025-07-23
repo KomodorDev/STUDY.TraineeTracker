@@ -293,6 +293,8 @@ namespace TraineeTracker.Migrations
                     Speed = table.Column<double>(type: "REAL", nullable: true),
                     PredictedMissingEstimatedEffortAtEnd = table.Column<double>(type: "REAL", nullable: true),
                     PredictedMissingActualDays = table.Column<double>(type: "REAL", nullable: true),
+                    PresentDaysInFuture = table.Column<double>(type: "REAL", nullable: true),
+                    TotalEstimatedEffort = table.Column<double>(type: "REAL", nullable: true),
                     IsUpToDate = table.Column<bool>(type: "INTEGER", nullable: false)
                 },
                 constraints: table =>
@@ -474,6 +476,12 @@ namespace TraineeTracker.Migrations
                 name: "IX_ProcessingPauses_TraineeId",
                 table: "ProcessingPauses",
                 column: "TraineeId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_TeachingPlans_Name",
+                table: "TeachingPlans",
+                column: "Name",
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_TraineeLessons_LessonId",
