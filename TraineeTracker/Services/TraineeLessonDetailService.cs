@@ -102,7 +102,7 @@ namespace TraineeTracker.Services {
         /// <remarks>
         /// Code Ownership: Alexander Schlemmer (schleale)
         /// </remarks>
-        private async Task CheckHasAccess(ClaimsPrincipal user, int traineeLessonId) {
+        protected virtual async Task CheckHasAccess(ClaimsPrincipal user, int traineeLessonId) {
             if (user == null)
                 throw new UserNotFoundException();
 
@@ -190,7 +190,7 @@ namespace TraineeTracker.Services {
         /// <remarks>
         /// Code Ownership: Alexander Schlemmer (schleale)
         /// </remarks>
-        public async Task SaveTraineeLessonStateChange(TraineeLessonDto traineeLessonUpdate, ClaimsPrincipal user, Feedback? feedback = null) {
+        public virtual async Task SaveTraineeLessonStateChange(TraineeLessonDto traineeLessonUpdate, ClaimsPrincipal user, Feedback? feedback = null) {
             await CheckHasAccess(user, traineeLessonUpdate.TraineeLessonId);
 
             var oldTraineeLesson = await _databaseTraineeLessonRepository.GetTraineeLessonByIdWithLessonAsync(traineeLessonUpdate.TraineeLessonId) ?? throw new TraineeLessonNotFoundException(traineeLessonUpdate.TraineeLessonId);
@@ -233,6 +233,25 @@ namespace TraineeTracker.Services {
             await _databaseTraineeLessonRepository.UpdateAsync(oldTraineeLesson);
 
             // sends email (different thread)
+            NotifyStateChange(oldTraineeLesson, oldState, targetState, feedback);            
+
+            // creates log
+            await LogStatusChange(oldTraineeLesson, oldState, targetState, user);
+        }
+
+        // --------------------------------------------------
+        /// <summary>
+        /// Sends emails about state changes, in a different thread.
+        /// </summary>
+        /// <param name="oldTraineeLesson">The trainee lesson that changed state.</param>
+        /// <param name="oldState">The old state before the change.</param>
+        /// <param name="targetState">The new state after the change.</param>
+        /// <param name="feedback">The optional feedback, if the target State is Rated</param>
+        /// <returns>A task representing the asynchronous logging operation.</returns>
+        /// <remarks>
+        /// Code Ownership: Alexander Schlemmer (schleale)
+        /// </remarks>
+        protected virtual void NotifyStateChange(TraineeLesson oldTraineeLesson, TraineeLessonState oldState, TraineeLessonState targetState, Feedback? feedback) {
             _ = Task.Run(async () => {
                 using var scope = _scopeFactory.CreateScope();
                 var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
@@ -241,9 +260,6 @@ namespace TraineeTracker.Services {
 
                 await emailService.NotifyAboutStateChangeAsync(oldTraineeLesson, oldState, targetState, feedback);
             });
-
-            // creates log
-            await LogStatusChange(oldTraineeLesson, oldState, targetState, user);
         }
 
         // --------------------------------------------------
@@ -261,7 +277,7 @@ namespace TraineeTracker.Services {
         /// <remarks>
         /// Code Ownership: Alexander Schlemmer (schleale)
         /// </remarks>
-        private async Task LogStatusChange(TraineeLesson traineeLesson, TraineeLessonState oldState, TraineeLessonState newState, ClaimsPrincipal user) {
+        protected virtual async Task LogStatusChange(TraineeLesson traineeLesson, TraineeLessonState oldState, TraineeLessonState newState, ClaimsPrincipal user) {
             if (traineeLesson == null)
                 throw new TraineeLessonNotFoundException();
 
