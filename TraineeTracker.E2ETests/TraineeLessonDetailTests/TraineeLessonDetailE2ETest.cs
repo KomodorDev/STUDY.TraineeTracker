@@ -13,7 +13,7 @@ namespace TraineeTracker.E2ETests.TraineeLessonDetailTests {
     public class TraineeLessonDetailE2ETest : IClassFixture<BrowserFixture> {
 
         private readonly IWebDriver _driver;
-        private readonly int _sleepTime = 400;
+        private readonly int _stateChangeCooldown = 300;
 
         // ------------------------------------------------------
         public TraineeLessonDetailE2ETest(BrowserFixture fixture) {
@@ -29,63 +29,49 @@ namespace TraineeTracker.E2ETests.TraineeLessonDetailTests {
 
             // Open -> Skipped
             ClickOnState("Skipped");
-            Thread.Sleep(_sleepTime);
             Assert.True(CheckIfIsCurrentState("Skipped"));
 
             // Open <- Skipped
             ClickOnState("Open");
-            Thread.Sleep(_sleepTime);
             Assert.True(CheckIfIsCurrentState("Open"));
 
             // Open -> Started
             ClickOnState("Started");
-            Thread.Sleep(_sleepTime);
             Assert.True(CheckIfIsCurrentState("Started"));
 
             // Open <- Started
             ClickOnState("Open");
-            Thread.Sleep(_sleepTime);
             Assert.True(CheckIfIsCurrentState("Open"));
 
             // (Open ->) Started -> Finished
             ClickOnState("Started");
-            Thread.Sleep(_sleepTime);
             ClickOnState("Finished");
-            Thread.Sleep(_sleepTime);
             Assert.True(CheckIfIsCurrentState("Finished"));
 
             // Started <- Finished
             ClickOnState("Started");
-            Thread.Sleep(_sleepTime);
             Assert.True(CheckIfIsCurrentState("Started"));
 
             // (Started ->) Finished -> Rejected
             ClickOnState("Finished");
-            Thread.Sleep(_sleepTime);
             ClickOnState("Rejected");
-            Thread.Sleep(_sleepTime);
             Assert.True(CheckIfIsCurrentState("Rejected"));
 
             // Finished <- Rejected
             ClickOnState("Finished");
-            Thread.Sleep(_sleepTime);
             Assert.True(CheckIfIsCurrentState("Finished"));
 
             // Finished -> Accepted
             ClickOnState("Accepted");
-            Thread.Sleep(_sleepTime);
             Assert.True(CheckIfIsCurrentState("Accepted"));
 
             // Finished <- Accepted
             ClickOnState("Finished");
-            Thread.Sleep(_sleepTime);
             Assert.True(CheckIfIsCurrentState("Finished"));
 
             // (Finished ->) Accepted -> Rated
             ClickOnState("Accepted");
-            Thread.Sleep(_sleepTime);
             ClickOnState("Rated");
-            Thread.Sleep(_sleepTime);
             Assert.True(CheckIfIsCurrentState("Rated"));
         }
 
@@ -98,21 +84,16 @@ namespace TraineeTracker.E2ETests.TraineeLessonDetailTests {
         
             // Test Open <-> Started <-> Finished
             ClickOnState("Started");
-            Thread.Sleep(_sleepTime);
             Assert.True(CheckIfIsCurrentState("Started"));
 
             ClickOnState("Open");
-            Thread.Sleep(_sleepTime);
             Assert.True(CheckIfIsCurrentState("Open"));
 
             ClickOnState("Started");
-            Thread.Sleep(_sleepTime);
             ClickOnState("Finished");
-            Thread.Sleep(_sleepTime);
             Assert.True(CheckIfIsCurrentState("Finished"));
 
             ClickOnState("Started");
-            Thread.Sleep(_sleepTime);
             Assert.True(CheckIfIsCurrentState("Started"));
 
             ClickOnState("Finished");
@@ -130,7 +111,6 @@ namespace TraineeTracker.E2ETests.TraineeLessonDetailTests {
                 throw new Exception();
 
             ClickOnState("Rated");
-            Thread.Sleep(_sleepTime);
             Assert.True(CheckIfIsCurrentState("Rated"));
         }
 
@@ -178,7 +158,7 @@ namespace TraineeTracker.E2ETests.TraineeLessonDetailTests {
 
                 traineeSelect.SelectByText("alexandros.blaskTEST");
 
-                Thread.Sleep(_sleepTime);
+                Thread.Sleep(_stateChangeCooldown);
             }
 
             // 5. Find the first trainee lesson row with state
@@ -266,6 +246,9 @@ namespace TraineeTracker.E2ETests.TraineeLessonDetailTests {
                 var submitButton = _driver.FindElement(By.CssSelector("#feedbackForm button[type='submit']"));
                 submitButton.Click();
             }
+
+            // TODO: Replace this with a variable waiting thing if anyone still has motivation
+            Thread.Sleep(_stateChangeCooldown);
         }
     }
 }
