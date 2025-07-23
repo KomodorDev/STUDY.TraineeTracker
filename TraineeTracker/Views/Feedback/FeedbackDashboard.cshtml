@@ -40,7 +40,7 @@
         <form method="get" asp-controller="Feedback" asp-action="Dashboard" class="filter-selects">
 
             <!-- Trainee Dropdown -->
-            <select name="selectedTraineeId" class="feedback-select-wide" onchange="this.form.submit()">
+            <select name="selectedTraineeId" class="feedback-select-medium" onchange="this.form.submit()">
                 <option value="">All active Trainees</option>
                 @foreach (var trainee in Model.ActiveTrainees)
                 {
@@ -51,7 +51,7 @@
             </select>
 
             <!-- TeachingPlan Dropdown -->
-            <select name="selectedTeachingPlanId" class="feedback-select-wide" onchange="this.form.submit()">
+            <select name="selectedTeachingPlanId" class="feedback-select-medium" onchange="this.form.submit()">
                 <option value="" disabled="@(Model.SelectedTraineeId != null ? "disabled" : null)"
                     selected="@(string.IsNullOrEmpty(Model.SelectedTeachingPlanId?.ToString()) ? "selected" : null)">
                     All Teaching Plans
@@ -66,7 +66,7 @@
             </select>
 
             <!-- Lesson Dropdown -->
-            <select name="selectedLessonId" class="feedback-select-wide" onchange="this.form.submit()">
+            <select name="selectedLessonId" class="feedback-select-medium" onchange="this.form.submit()">
                 <option value="">All rated Lessons</option>
                 @foreach (var lesson in Model.Lessons)
                 {
