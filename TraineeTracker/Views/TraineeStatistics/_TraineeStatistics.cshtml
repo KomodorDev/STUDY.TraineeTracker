@@ -47,7 +47,7 @@
                         </div>
                         <div class="tile-value-with-icon">
                             <span class="tile-value">
-                                @(Model.SnapshotDateTime.ToString("dd. MMMM yyyy HH:mm"))
+                                @(Model.SnapshotDateTime.ToString("dd. MMMM yyyy HH:mm:ss"))
                             </span>
                             <span class="info-icon-wrapper">
                                 <span class="info-icon">?</span>
@@ -240,9 +240,9 @@
                                 @foreach (var pause in Model.ProcessingPauses)
                                 {
                                     <li>
-                                        @pause.StartDate.ToString("dd.MM.yyyy")
+                                        @pause.StartDate.ToString("dd. MMMM yyyy")
                                         –
-                                        @pause.EndDate.ToString("dd.MM.yyyy")
+                                        @pause.EndDate.ToString("dd. MMMM yyyy")
                                     </li>
                                 }
                             </ul>
