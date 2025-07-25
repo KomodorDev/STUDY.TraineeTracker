@@ -282,16 +282,16 @@
             fetch(`/TraineeStatistics/${traineeId}`)
             .then(response => response.text())
             .then(html => {
-                // Ganze Modalstruktur direkt in den Platzhalter schreiben
+                // Write the entire modal structure directly into the placeholder
                 document.getElementById("modalPlaceholder").innerHTML = html;
 
 
-                // Modal aus dem neu geladenen HTML holen und anzeigen
+                // Fetch the modal from the newly loaded HTML and display it
                 const modalEl = document.getElementById("traineeStatisticsModal");
                 const modal = new bootstrap.Modal(modalEl);
                 modal.show();
 
-                // 🔍 Chart-Konfig lesen
+                // read chart-config
                 const configEl = document.getElementById("lessonChartConfigData");
                 if (configEl) {
                     try {
