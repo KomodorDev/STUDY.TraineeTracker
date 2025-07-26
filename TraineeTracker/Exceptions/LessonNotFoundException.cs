@@ -1,6 +1,11 @@
-// class by schleale
-
 namespace TraineeTracker.Exceptions {
+
+    /// <summary>
+    /// A custom exception class, that should be used when a lesson was not found.
+    /// </summary>
+    /// <remarks>
+    /// Code Ownership: Alexander Schlemmer (schleale)
+    /// </remarks>
     public class LessonNotFoundException : Exception {
 
         // : base() passes parameters upward to Exception class

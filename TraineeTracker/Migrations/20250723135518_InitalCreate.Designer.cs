@@ -11,7 +11,7 @@ using TraineeTracker.Data;
 namespace TraineeTracker.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250720122817_InitalCreate")]
+    [Migration("20250723135518_InitalCreate")]
     partial class InitalCreate
     {
         /// <inheritdoc />
@@ -409,6 +409,9 @@ namespace TraineeTracker.Migrations
 
                     b.HasKey("TeachingPlanId");
 
+                    b.HasIndex("Name")
+                        .IsUnique();
+
                     b.ToTable("TeachingPlans");
                 });
 
@@ -514,10 +517,16 @@ namespace TraineeTracker.Migrations
                     b.Property<double?>("PredictedMissingEstimatedEffortAtEnd")
                         .HasColumnType("REAL");
 
+                    b.Property<double?>("PresentDaysInFuture")
+                        .HasColumnType("REAL");
+
                     b.Property<DateTime>("SnapshotDateTime")
                         .HasColumnType("TEXT");
 
                     b.Property<double?>("Speed")
+                        .HasColumnType("REAL");
+
+                    b.Property<double?>("TotalEstimatedEffort")
                         .HasColumnType("REAL");
 
                     b.Property<string>("TraineeId")
