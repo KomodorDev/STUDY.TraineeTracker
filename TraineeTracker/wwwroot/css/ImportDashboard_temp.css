@@ -205,3 +205,69 @@ h3 {
   border-bottom: 1px solid #dee2e6;
   text-align: left;
 }
+
+
+
+/* Modal +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ */
+.sopro-lesson-modal-size {
+  width: 56rem;
+  max-width: 80vw;
+
+  height: 34.61rem;
+
+  overflow: hidden;
+}
+
+.sopro-lesson-modal-size .modal-content {
+  height: 100%;
+  max-height: 80vh;
+  width: 100%;
+
+  border: none;
+
+  display: flex;
+  flex-direction: column;
+}
+
+.sopro-lesson-modal-size .modal-title {
+  /* long title styling */
+  text-wrap: nowrap;
+  max-width: 90%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.sopro-lesson-modal-size .modal-header {
+  padding: 0;  /* overwrite bootstrap */
+  padding-left: 1.172rem; /* "25" px */
+  padding-right: 1.172rem; /* "25" px */
+
+  border-bottom: none;
+  
+  height: 4.688rem;   /* "100" px height */
+
+  color: #e61d47;
+  font-weight: 900;  /* oh boi he thicc */
+  font-size: 1.406rem;  /* "30" px */
+}
+
+.sopro-lesson-modal-size .modal-body {
+  overflow-y: auto; /* Scroll if content is too tall */
+  flex-grow: 1; /* Take remaining space */
+
+  padding: 1.172rem; /* "25" px */
+
+  /* scrollbar styling */
+  scrollbar-width: auto;
+  scrollbar-color: #626262 transparent;
+}
+.modal-body::-webkit-scrollbar {
+width: 20px;
+}
+.modal-body::-webkit-scrollbar-thumb {
+background-color: #626262;
+border-radius: 11px;
+}
+.modal-body::-webkit-scrollbar-track {
+background-color: transparent;
+}

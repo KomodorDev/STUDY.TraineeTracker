@@ -313,10 +313,13 @@ namespace TraineeTracker.Services {
         /// <remarks>Code Ownership: Nikita Stefan (stefanni)</remarks>
         public async Task<double> GetPresentDaysAsync(DateOnly startDate, DateOnly endDate, string email) {
 
-            double totalDays = endDate.DayNumber - startDate.DayNumber;
-            Console.WriteLine("TotalDays:" + totalDays + " for " + email);
-            return totalDays * 0.7;
-
+            if (!email.EndsWith("@makandra.de", StringComparison.OrdinalIgnoreCase))
+            {
+                double totalDays = endDate.DayNumber - startDate.DayNumber;
+                Console.WriteLine("TotalDays: " + totalDays + " for " + email);
+                return totalDays * 0.7;
+            }
+            
             // ++++++++++++++++
             // Build Request
             var baseUrl = "https://api.sopro.makandra.de/api/v1/present_days";
