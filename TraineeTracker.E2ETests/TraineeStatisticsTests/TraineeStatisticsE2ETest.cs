@@ -1,19 +1,39 @@
 using OpenQA.Selenium;
-using OpenQA.Selenium.Support.UI;
 using Tutorial_project.E2ETests;
-using System.Threading;
 
 namespace TraineeTracker.E2ETests
 {
-    public class StatisticsSnapshotFallbackTests : IClassFixture<BrowserFixture>
+    /// <summary>
+    /// Contains end-to-end tests verifying the behavior of UI tooltips within the trainee statistics modal.
+    /// </summary>
+    /// <remarks>
+    /// Code Ownership: Nikita Stefan (stefanni)
+    /// </remarks>
+    public class StatisticsSnapshotTests : IClassFixture<BrowserFixture>
     {
+        /// <summary>
+        /// Selenium WebDriver instance used for interacting with the browser during tests.
+        /// </summary>
         private readonly IWebDriver _driver;
 
-        public StatisticsSnapshotFallbackTests(BrowserFixture fixture)
+        /// <summary>
+        /// Initializes a new instance of the <see cref="StatisticsSnapshotTests"/> class using the provided <see cref="BrowserFixture"/>.
+        /// </summary>
+        /// <param name="fixture">Shared browser fixture used across tests.</param>
+        public StatisticsSnapshotTests(BrowserFixture fixture)
         {
             _driver = fixture.Driver;
         }
 
+        // ------------------------------------------------------
+
+        /// <summary>
+        /// Verifies that a tooltip is correctly displayed when hovering over the info icon in the trainee statistics modal.
+        /// </summary>
+        /// <remarks>
+        /// This test performs a full login, opens the statistics modal, simulates a mouse hover over the info icon,
+        /// and asserts that a tooltip becomes visible containing a relevant explanation (e.g., with the word "snapshot").
+        /// </remarks>
         [Fact]
         public void Tooltip_ShouldAppear_WhenHoveringOverInfoIcon()
         {
@@ -25,12 +45,10 @@ namespace TraineeTracker.E2ETests
             _driver.FindElement(By.Id("Input_Email")).SendKeys("vanessa.vital@makandra.de");
             _driver.FindElement(By.Id("Input_Password")).SendKeys("VVital13!");
             _driver.FindElement(By.Id("login-submit")).Click();
-
             Thread.Sleep(2000);
 
             // 3. Click the statistics button to open the modal
             _driver.FindElement(By.Id("openStatisticsModalBtn")).Click();
-
             Thread.Sleep(2000);
 
             // 4. Locate the modal and the info icon (which contains the tooltip)
@@ -44,12 +62,13 @@ namespace TraineeTracker.E2ETests
             // 6. Simulate a mouse hover over the info icon
             var actions = new OpenQA.Selenium.Interactions.Actions(_driver);
             actions.MoveToElement(infoWrapper).Perform();
-
             Thread.Sleep(1000);
 
             // 7. Assert that the tooltip is now visible and contains the expected text
             Assert.True(tooltipBox.Displayed, "Tooltip should be visible.");
             Assert.Contains("snapshot", tooltipBox.Text.ToLower());
         }
+
+        // ------------------------------------------------------
     }
 }
