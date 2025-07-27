@@ -1,24 +1,25 @@
-
 using System.Net;
-using System.Net.Http;
 using System.Text;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
-using System.Collections.Generic;
-using System;
-using Xunit;
 using TraineeTracker.Services;
 using TraineeTracker.Models.Domain;
 using TraineeTracker.Data.TraineeStatistics;
 using TraineeTracker.Data.TraineeLessons;
 using TraineeTracker.Data.ProcessingPauses;
-using System.Threading;
-using System.Net.Http.Headers;
 
+/// <summary>
+/// Contains unit tests for <see cref="TraineeStatisticsService"/>, verifying correctness of calculated statistics.
+/// </summary>
+/// <remarks>
+/// Code Ownership: Nikita Stefan (stefanni)
+/// </remarks>
 public class TraineeStatisticsServiceTests {
 
     /*
     // --------------------------------------------------
+    /// <summary>
+    /// Verifies correct number of present days returned by <see cref="TraineeStatisticsService.GetPresentDaysAsync"/>.
+    /// </summary>
     [Fact]
     public async Task GetPresentDaysAsyncTest() {
         var httpClient = new HttpClient();
@@ -45,6 +46,10 @@ public class TraineeStatisticsServiceTests {
     }
 
     // --------------------------------------------------
+    /// <summary>
+    /// Ensures <see cref="TraineeStatisticsService.BuildLatestTraineeStatisticsSnapshotAsync"/> calculates present days correctly,
+    /// factoring in processing pauses.
+    /// </summary>
     [Fact]
     public async Task BuildLatestTraineeStatisticsSnapshotAsync_ShouldCalculateCorrectPresentDays() {
         var traineeId = "ursula-1";
@@ -104,13 +109,13 @@ public class TraineeStatisticsServiceTests {
         // Test 2
         Assert.Equal(10, snapshot.DaysPresentTotal); // 20 total - 5 - 5 pause = 10
     }
-    */
 
     // --------------------------------------------------
-    /*
+    /// <summary>
+    /// Verifies correct calculation of completed lesson days based on weighted effort and states.
+    /// </summary>
     [Fact]
-    public async Task CalculateLessonDaysCompletedAsyncTest()
-    {
+    public async Task CalculateLessonDaysCompletedAsyncTest() {
         var trainee = TestDataFactory.CreateTestTrainee();
         var lessons = TestDataFactory.CreateTestTraineeLessons(trainee);
         var lessonRepo = new FakeTraineeLessonRepository(lessons);
@@ -129,9 +134,11 @@ public class TraineeStatisticsServiceTests {
     }
 
     // --------------------------------------------------
+    /// <summary>
+    /// Ensures correct calculation of open lesson days by subtracting completed from total effort.
+    /// </summary>
     [Fact]
-    public async Task CalculateLessonDaysOpenAsyncTest()
-    {
+    public async Task CalculateLessonDaysOpenAsyncTest() {
         var trainee = TestDataFactory.CreateTestTrainee();
         var lessons = TestDataFactory.CreateTestTraineeLessons(trainee);
 
@@ -151,9 +158,11 @@ public class TraineeStatisticsServiceTests {
     }
 
     // --------------------------------------------------
+    /// <summary>
+    /// Verifies that the buffer is calculated as the difference between completed lesson days and present days.
+    /// </summary>
     [Fact]
-    public void CalculateLessonDaysBufferTest()
-    {
+    public void CalculateLessonDaysBufferTest() {
         var service = new TraineeStatisticsService(
             traineeStatisticsRepository: null!,
             traineeLessonRepository: null!,
@@ -172,6 +181,9 @@ public class TraineeStatisticsServiceTests {
     }
 
     // --------------------------------------------------
+    /// <summary>
+    /// Tests the logic for speed calculation (effort per present day).
+    /// </summary>
     [Fact]
     public void CalculateSpeedTest() {
         var service = new TraineeStatisticsService(
@@ -190,9 +202,11 @@ public class TraineeStatisticsServiceTests {
     }
 
     // --------------------------------------------------
+    /// <summary>
+    /// Verifies prediction of remaining effort buffer at end of training, based on current speed.
+    /// </summary>
     [Fact]
-    public void CalculatePredictedMissingEstimatedEffortAtEndTest()
-    {
+    public void CalculatePredictedMissingEstimatedEffortAtEndTest() {
         var service = new TraineeStatisticsService(
             traineeStatisticsRepository: null!,
             traineeLessonRepository: null!,
@@ -240,9 +254,11 @@ public class TraineeStatisticsServiceTests {
     }
 
     // --------------------------------------------------
+    /// <summary>
+    /// Ensures accurate conversion of estimated effort buffer into actual days (based on speed).
+    /// </summary>
     [Fact]
-    public void CalculatePredictedMissingActualDaysAtEndTest()
-    {
+    public void CalculatePredictedMissingActualDaysAtEndTest() {
         var service = new TraineeStatisticsService(
             traineeStatisticsRepository: null!,
             traineeLessonRepository: null!,
@@ -290,6 +306,9 @@ public class TraineeStatisticsServiceTests {
     }
 
     // --------------------------------------------------
+    /// <summary>
+    /// Fake message handler used to simulate HTTP responses from external services.
+    /// </summary>
     private class FakeHttpMessageHandler : HttpMessageHandler {
         private readonly Func<HttpRequestMessage, HttpResponseMessage> _responder;
 
@@ -302,6 +321,9 @@ public class TraineeStatisticsServiceTests {
     }
 
     // --------------------------------------------------
+    /// <summary>
+    /// Fake user manager that returns a predefined <see cref="ApplicationUser"/>.
+    /// </summary>
     private class FakeUserManager : UserManager<ApplicationUser> {
         private readonly ApplicationUser _user;
 
@@ -315,6 +337,9 @@ public class TraineeStatisticsServiceTests {
     }
 
     // --------------------------------------------------
+    /// <summary>
+    /// Dummy implementation of user store for <see cref="FakeUserManager"/>.
+    /// </summary>
     private class FakeUserStore : IUserStore<ApplicationUser> {
         public Task<IdentityResult> CreateAsync(ApplicationUser user, CancellationToken cancellationToken) => Task.FromResult(IdentityResult.Success);
         public Task<IdentityResult> DeleteAsync(ApplicationUser user, CancellationToken cancellationToken) => Task.FromResult(IdentityResult.Success);
@@ -330,6 +355,9 @@ public class TraineeStatisticsServiceTests {
     }
 
     // --------------------------------------------------
+    /// <summary>
+    /// Fake repository that returns a fixed snapshot for a given trainee.
+    /// </summary>
     private class FakeTraineeStatisticsRepository : ITraineeStatisticsRepository {
         private readonly ApplicationUser _user;
 
@@ -354,11 +382,10 @@ public class TraineeStatisticsServiceTests {
         }
 
         Task ITraineeStatisticsRepository.CreateAsync(TraineeStatisticsSnapshot snapshot) {
-            return Task.FromResult(snapshot); 
+            return Task.FromResult(snapshot);
         }
 
-        public Task UpdateAsync(TraineeStatisticsSnapshot snapshot)
-        {
+        public Task UpdateAsync(TraineeStatisticsSnapshot snapshot) {
             return Task.CompletedTask;
         }
 
@@ -366,10 +393,8 @@ public class TraineeStatisticsServiceTests {
             throw new NotImplementedException();
         }
 
-        public Task<TraineeStatisticsSnapshot> GetTraineeStatisticsSnapshotAsync(string traineeId)
-        {
-            var snapshot = new TraineeStatisticsSnapshot
-            {
+        public Task<TraineeStatisticsSnapshot> GetTraineeStatisticsSnapshotAsync(string traineeId) {
+            var snapshot = new TraineeStatisticsSnapshot {
                 TraineeId = traineeId,
                 Trainee = _user,
                 SnapshotDateTime = DateTime.Now,
@@ -389,11 +414,13 @@ public class TraineeStatisticsServiceTests {
     }
 
     // --------------------------------------------------
+    /// <summary>
+    /// Fake lesson repository that returns a preconfigured set of lessons for a trainee.
+    /// </summary>
     private class FakeTraineeLessonRepository : ITraineeLessonRepository {
-         private readonly IEnumerable<TraineeLesson> _lessons;
+        private readonly IEnumerable<TraineeLesson> _lessons;
 
-        public FakeTraineeLessonRepository(IEnumerable<TraineeLesson>? lessons = null)
-        {
+        public FakeTraineeLessonRepository(IEnumerable<TraineeLesson>? lessons = null) {
             _lessons = lessons ?? new List<TraineeLesson>();
         }
         public Task<IEnumerable<TraineeLesson>> GetAllTraineeLessonsOfTraineeWithLessonAsync(string traineeId)
@@ -419,6 +446,9 @@ public class TraineeStatisticsServiceTests {
     }
 
     // --------------------------------------------------
+    /// <summary>
+    /// In-memory repository to simulate pause records for testing pause-related statistics.
+    /// </summary>
     private class FakeProcessingPauseRepository : IProcessingPauseRepository {
         private readonly List<ProcessingPause> _pauses = new();
 
@@ -455,4 +485,5 @@ public class TraineeStatisticsServiceTests {
         }
     }
     */
+    // --------------------------------------------------
 }
