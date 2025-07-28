@@ -154,5 +154,47 @@ namespace TraineeTracker.UnitTests.AdminTest {
             Assert.False(result.Succeeded);
             Assert.Contains("EmailDispatchFailed", result.ErrorMessages.FirstOrDefault() ?? "");
         }
+
+        [Fact]
+        public async void CloseUserAsync_UserGetsClosed_IsClosedIsTrue() {
+            // Arrange
+            var userId = "test-id";
+            var user = new ApplicationUser { Id = userId, IsClosed = false, EmailNotificationSetting = Mock.Of<EmailNotificationSetting>() };
+
+            var userRepoMock = new Mock<IApplicationUserRepository>();
+            userRepoMock.Setup(r => r.FindByIdAsync(userId)).ReturnsAsync(user);
+            userRepoMock.Setup(r => r.UpdateAsync(user)).ReturnsAsync(IdentityResult.Success);
+
+            var roleManagerMock = new RoleManager<IdentityRole>(Mock.Of<IRoleStore<IdentityRole>>(),
+                                                            new List<IRoleValidator<IdentityRole>>(),
+                                                            Mock.Of<ILookupNormalizer>(),
+                                                            Mock.Of<IdentityErrorDescriber>(),
+                                                            Mock.Of<ILogger<RoleManager<IdentityRole>>>());
+
+            var emailServiceMock = new EmailNotificationService(Mock.Of<IEmailSender>(),
+                                                                Mock.Of<IApplicationUserRepository>(),
+                                                                Mock.Of<IEmailNotificationSettingRepository>(),
+                                                                Mock.Of<ILessonRepository>());
+
+            var teachingPlanServiceMock = new TeachingPlanService(Mock.Of<ITeachingPlanRepository>(),
+                                                                  Mock.Of<ILessonRepository>(),
+                                                                  Mock.Of<ITraineeLessonRepository>(),
+                                                                  Mock.Of<IApplicationUserRepository>(),
+                                                                  emailServiceMock);
+
+            var service = new AdminService(Mock.Of<IUnitOfWork>(),
+                                           userRepoMock.Object,
+                                           Mock.Of<IProcessingPauseRepository>(),
+                                           roleManagerMock,
+                                           emailServiceMock,
+                                           teachingPlanServiceMock,
+                                           Mock.Of<IFeedbackRepository>(),
+                                           Mock.Of<ITeachingPlanRepository>(),
+                                           Mock.Of<ITraineeStatisticsRepository>());
+            // Act
+            await service.CloseUserAsync(userId);
+            // Assert
+            Assert.True(user.IsClosed);
+        }
     }
 }
