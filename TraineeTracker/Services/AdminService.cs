@@ -261,6 +261,9 @@ namespace TraineeTracker.Services.Admin {
                 if (dto.TraineeStartDate == null || dto.TraineeEndDate == null) {
                     return ServiceResult.Failed("Trainee requires start- and end-date.");
                 }
+                if (dto.TraineeEndDate < dto.TraineeStartDate) {
+                    return ServiceResult.Failed("Startdate after Enddate");
+                }
                 if (dto.TeachingPlanId == null) {
                     return ServiceResult.Failed("Trainee requires Teachingplan.");
                 }
