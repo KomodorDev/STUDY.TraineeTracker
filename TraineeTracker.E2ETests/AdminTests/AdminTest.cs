@@ -15,36 +15,35 @@ namespace TraineeTracker.E2ETests.AdminTests {
             var wait = new WebDriverWait(_driver, TimeSpan.FromSeconds(10));
 
             _driver.Navigate().GoToUrl("http://localhost:5079/Identity/Account/Login");
-            _driver.FindElement(By.Id("Input_Email")).SendKeys("simon.hinterreiter@uni-a.de");
-            _driver.FindElement(By.Id("Input_Password")).SendKeys("Sopro.2025");
-            _driver.FindElement(By.Id("login-submit")).Click();
+            wait.Until(d => d.FindElement(By.Id("Input_Email"))).SendKeys("simon.hinterreiter@uni-a.de");
+            wait.Until(d => d.FindElement(By.Id("Input_Password"))).SendKeys("Sopro.2025");
+            wait.Until(d => d.FindElement(By.Id("login-submit"))).Click();
 
             wait.Until(d => d.FindElement(By.Id("Nav_Admin")));
             _driver.Navigate().GoToUrl("http://localhost:5079/Admin/CreateUser");
-            wait.Until(d => d.FindElement(By.Id("User_Role")));
-            var roleSelect = new SelectElement(_driver.FindElement(By.Id("User_Role")));
+            var roleSelect = new SelectElement(wait.Until(d => d.FindElement(By.Id("User_Role"))));
             roleSelect.SelectByValue("Trainee");
 
-            _driver.FindElement(By.Id("User_Email")).SendKeys("test.user@makandra.de");
-            _driver.FindElement(By.Id("User_TraineeStartDate")).SendKeys("01-08-2025");
-            _driver.FindElement(By.Id("User_TraineeEndDate")).SendKeys("31-12-2025");
-            var teachingPlanSelect = new SelectElement(_driver.FindElement(By.Id("User_TeachingPlanId")));
+            wait.Until(d => d.FindElement(By.Id("User_Email"))).SendKeys("test.user@makandra.de");
+            wait.Until(d => d.FindElement(By.Id("User_TraineeStartDate"))).SendKeys("01-08-2025");
+            wait.Until(d => d.FindElement(By.Id("User_TraineeEndDate"))).SendKeys("31-12-2025");
+            var teachingPlanSelect = new SelectElement(wait.Until(d => d.FindElement(By.Id("User_TeachingPlanId"))));
             teachingPlanSelect.SelectByValue("1");
 
-            _driver.FindElement(By.Id("Create_User")).Click();
+            wait.Until(d => d.FindElement(By.Id("Create_User"))).Click();
 
             _driver.Navigate().GoToUrl("http://localhost:5079/Admin/Dashboard");
             int page = 1;
             bool found = false;
             while (!found) {
                 try {
-                    _driver.FindElement(By.XPath("//td[text()='test.user@makandra.de']"));
+                    wait.Until(d => d.FindElement(By.XPath("//td[text()='test.user@makandra.de']")));
                     found = true;
                     break;
                 }
                 catch (NoSuchElementException) {
                     try {
-                        _driver.FindElement(By.Id("Next_Page"));
+                        wait.Until(d => d.FindElement(By.Id("Next_Page")));
                         _driver.Navigate().GoToUrl($"http://localhost:5079/Admin/Dashboard?page={++page}");
                     }
                     catch (NoSuchElementException) {
