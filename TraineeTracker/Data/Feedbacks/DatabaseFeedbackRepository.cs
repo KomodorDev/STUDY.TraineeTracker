@@ -8,7 +8,7 @@ namespace TraineeTracker.Data.Feedbacks {
     /// Implements the <see cref="IFeedbackRepository"/> interface.
     /// </summary>
     /// <remarks>
-    /// Code Ownership: [Dein Name hier]
+    /// Code Ownership: Alexandros Blask
     /// </remarks>
     public class DatabaseFeedbackRepository : IFeedbackRepository {
 
