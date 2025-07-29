@@ -19,6 +19,7 @@ namespace TraineeTracker.E2ETests.AdminTests {
             _driver.FindElement(By.Id("Input_Password")).SendKeys("Sopro.2025");
             _driver.FindElement(By.Id("login-submit")).Click();
 
+            wait.Until(d => d.FindElement(By.Id("Nav_Admin")));
             _driver.Navigate().GoToUrl("http://localhost:5079/Admin/CreateUser");
             wait.Until(d => d.FindElement(By.Id("User_Role")));
             var roleSelect = new SelectElement(_driver.FindElement(By.Id("User_Role")));

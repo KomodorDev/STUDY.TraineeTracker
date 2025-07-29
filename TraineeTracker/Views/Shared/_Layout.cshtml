@@ -52,7 +52,7 @@
                             }
                             @if (User.IsInRole("Admin")) {
                                 <li class="nav-item">
-                                    <a class="nav-link @(currentController == "Admin" ? "active" : "text-dark")" asp-area="" asp-controller="Admin" asp-action="ShowAdminDashboardView">Admin</a>
+                                    <a id="Nav_Admin" class="nav-link @(currentController == "Admin" ? "active" : "text-dark")" asp-area="" asp-controller="Admin" asp-action="ShowAdminDashboardView">Admin</a>
                                 </li>
                             }
                         </ul>
