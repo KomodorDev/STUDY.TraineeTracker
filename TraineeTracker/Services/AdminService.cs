@@ -252,6 +252,11 @@ namespace TraineeTracker.Services.Admin {
             if (!isSeeder && urlHelper == null) {
                 throw new ArgumentNullException(nameof(urlHelper), "urlHelper must be provided if isSeeder is false");
             }
+
+            if (await _applicationUserRepository.ExistsByEmailAsync(dto.Email)) {
+                return ServiceResult.Failed("User with this Email already exists.");
+            }
+
             var user = new ApplicationUser {
                 UserName = dto.Email,
                 Email = dto.Email,
