@@ -110,6 +110,15 @@ namespace TraineeTracker.Areas.Identity.Pages.Account {
             ReturnUrl = returnUrl;
         }
 
+        /// <summary>
+        /// Handles POST requests for the login page.
+        /// Validates user credentials, checks for closed accounts, and manages login state.
+        /// Redirects to appropriate pages for two-factor authentication, lockout, or successful login.
+        /// </summary>
+        /// <param name="returnUrl">The URL to redirect to after successful login.</param>
+        /// <returns>
+        /// An <see cref="IActionResult"/> that redirects to the appropriate page or redisplays the login form on failure.
+        /// </returns>
         public async Task<IActionResult> OnPostAsync(string returnUrl = null) {
             returnUrl ??= Url.Content("~/");
 

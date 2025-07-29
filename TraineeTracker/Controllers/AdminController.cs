@@ -5,19 +5,39 @@ using TraineeTracker.Models.ViewModels.Admin;
 using TraineeTracker.Services.Admin;
 
 namespace TraineeTracker.Controllers {
+    /// <summary>
+    /// Controller for administrative actions in the TraineeTracker application.
+    /// Handles user management, dashboard display, and processing pause operations.
+    /// Only accessible to users with the "Admin" role.
+    /// </summary>
+    /// <remarks>Code Ownership: Paul Schweizer (schwepau)</remarks>
     [Authorize(Roles = "Admin")]
     [Route("Admin")]
     public class AdminController : Controller {
+        /// <summary>
+        /// Service for admin-related operations.
+        /// </summary>
         private readonly AdminService _adminService;
-        private readonly ILogger<AdminController> _logger;
 
         // ------------------------------------------------------
-        public AdminController(AdminService adminService, ILogger<AdminController> logger) {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="AdminController"/> class.
+        /// </summary>
+        /// <param name="adminService">The admin service to use for operations.</param>
+        public AdminController(AdminService adminService) {
             _adminService = adminService;
-            _logger = logger;
         }
 
         // ------------------------------------------------------
+        /// <summary>
+        /// Displays the admin dashboard view with optional filtering, sorting, and paging.
+        /// </summary>
+        /// <param name="page">The page number to display.</param>
+        /// <param name="filterRole">Role filter for users.</param>
+        /// <param name="filterStatus">Status filter for users.</param>
+        /// <param name="sortBy">Sorting option.</param>
+        /// <returns>The dashboard view.</returns>
+        /// <remarks>Code Ownership: Paul Schweizer (schwepau)</remarks>
         [HttpGet("Dashboard")]
         public async Task<IActionResult> ShowAdminDashboardView(
             int page = 1,
@@ -30,6 +50,11 @@ namespace TraineeTracker.Controllers {
         }
 
         // ------------------------------------------------------
+        /// <summary>
+        /// Displays the view for creating a new user.
+        /// </summary>
+        /// <returns>The create user view.</returns>
+        /// <remarks>Code Ownership: Paul Schweizer (schwepau)</remarks>
         [HttpGet("CreateUser")]
         public async Task<IActionResult> ShowCreateUserView() {
             var viewModel = await _adminService.BuildCreateUserViewModelAsync();
@@ -37,6 +62,13 @@ namespace TraineeTracker.Controllers {
         }
 
         // ------------------------------------------------------
+        /// <summary>
+        /// Handles the creation of a new user.
+        /// Validates the input and displays errors if necessary.
+        /// </summary>
+        /// <param name="viewModel">The view model containing user data.</param>
+        /// <returns>Redirects to dashboard on success, otherwise returns the create user view with errors.</returns>
+        /// <remarks>Code Ownership: Paul Schweizer (schwepau)</remarks>
         [HttpPost("CreateUser")]
         public async Task<IActionResult> CreateUserAsync(CreateUserViewModel viewModel) {
 
@@ -64,6 +96,16 @@ namespace TraineeTracker.Controllers {
         }
 
         // ------------------------------------------------------
+        /// <summary>
+        /// Closes a user account.
+        /// </summary>
+        /// <param name="userId">The ID of the user to close.</param>
+        /// <param name="page">The page number to display.</param>
+        /// <param name="filterRole">Role filter for users.</param>
+        /// <param name="filterStatus">Status filter for users.</param>
+        /// <param name="sortBy">Sorting option.</param>
+        /// <returns>The dashboard view or error view if closing fails.</returns>
+        /// <remarks>Code Ownership: Paul Schweizer (schwepau)</remarks>
         [HttpPost("CloseUser")]
         public async Task<IActionResult> CloseUserAsync(string userId,
             int page = 1,
@@ -81,6 +123,12 @@ namespace TraineeTracker.Controllers {
         }
 
         // ------------------------------------------------------
+        /// <summary>
+        /// Displays the view for managing processing pauses for a trainee.
+        /// </summary>
+        /// <param name="traineeId">The ID of the trainee.</param>
+        /// <returns>The manage processing pauses view.</returns>
+        /// <remarks>Code Ownership: Paul Schweizer (schwepau)</remarks>
         [HttpGet("ProcessingPauses")]
         public async Task<IActionResult> ShowManageProcessingPausesView(string traineeId) {
             var viewModel = await _adminService.BuildManageProcessingPausesViewModelAsync(traineeId);
@@ -89,6 +137,13 @@ namespace TraineeTracker.Controllers {
         }
 
         // ------------------------------------------------------
+        /// <summary>
+        /// Handles the creation of a processing pause for a trainee.
+        /// Validates the input and displays errors if necessary.
+        /// </summary>
+        /// <param name="dto">The processing pause data transfer object.</param>
+        /// <returns>Redirects to manage processing pauses view on success, otherwise returns the view with errors.</returns>
+        /// <remarks>Code Ownership: Paul Schweizer (schwepau)</remarks>
         [HttpPost("CreateProcessingPause")]
         public async Task<IActionResult> CreateProcessingPauseAsync(ProcessingPauseDto dto) {
 
@@ -124,6 +179,13 @@ namespace TraineeTracker.Controllers {
         }
 
         // ------------------------------------------------------
+        /// <summary>
+        /// Handles the editing of a processing pause for a trainee.
+        /// Validates the input and displays errors if necessary.
+        /// </summary>
+        /// <param name="dto">The processing pause data transfer object.</param>
+        /// <returns>Redirects to manage processing pauses view on success, otherwise returns the view with errors.</returns>
+        /// <remarks>Code Ownership: Paul Schweizer (schwepau)</remarks>
         [HttpPost("EditProcessingPause")]
         public async Task<IActionResult> EditProcessingPauseAsync(ProcessingPauseDto dto) {
             if (!ModelState.IsValid) {
@@ -145,6 +207,12 @@ namespace TraineeTracker.Controllers {
         }
 
         // ------------------------------------------------------
+        /// <summary>
+        /// Handles the deletion of a processing pause.
+        /// </summary>
+        /// <param name="processingPauseId">The ID of the processing pause to delete.</param>
+        /// <returns>Redirects to manage processing pauses view on success, otherwise returns NotFound.</returns>
+        /// <remarks>Code Ownership: Paul Schweizer (schwepau)</remarks>
         [HttpPost("DeleteProcessingPause")]
         public async Task<IActionResult> DeleteProcessingPauseAsync(int processingPauseId) {
             var result = await _adminService.DeleteProcessingPauseAsync(processingPauseId);
@@ -156,6 +224,10 @@ namespace TraineeTracker.Controllers {
         }
 
         // ------------------------------------------------------
+        /// <summary>
+        /// Displays the error view.
+        /// </summary>
+        /// <returns>The error view.</returns>
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error() {
             return View("Error!");
