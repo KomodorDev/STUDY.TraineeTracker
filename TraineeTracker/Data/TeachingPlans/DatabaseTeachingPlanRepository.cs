@@ -6,6 +6,7 @@ namespace TraineeTracker.Data.TeachingPlans {
     /// <summary>
     /// Provides CRUD operations for <see cref="TeachingPlan"/> entities using Entity Framework Core.
     /// Implements the <see cref="ITeachingPlanRepository"/> interface.
+    /// Code Ownership: Alexandros Blask
     /// </summary>
     public class DatabaseTeachingPlanRepository : ITeachingPlanRepository {
 

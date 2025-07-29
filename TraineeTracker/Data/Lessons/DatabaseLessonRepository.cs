@@ -6,6 +6,7 @@ namespace TraineeTracker.Data.Lessons {
     /// <summary>
     /// Provides CRUD operations for <see cref="Lesson"/> entities using Entity Framework Core.
     /// Implements the <see cref="ILessonRepository"/> interface.
+    /// Code Ownership: Alexandros Blask
     /// </summary>
     public class DatabaseLessonRepository : ILessonRepository {
         
