@@ -276,19 +276,18 @@ namespace TraineeTracker.Services.Admin {
                 }
             }
 
+            await _unitOfWork.BeginTransactionAsync();
+
             var result = await _applicationUserRepository.CreateAsync(user, dto.Password);
             if (!result.Succeeded) {
+                await _unitOfWork.RollbackAsync();
                 return ServiceResult.Failed(result.Errors.Select(e => e.Description).ToArray());
             }
 
             result = await _applicationUserRepository.AddToRoleAsync(user, dto.Role);
             if (!result.Succeeded) {
-                var deleteTask = _applicationUserRepository.DeleteAsync(user);
+                await _unitOfWork.RollbackAsync();
                 var errors = result.Errors;
-                var deleteResult = await deleteTask;
-                if (!deleteResult.Succeeded) {
-                    errors = result.Errors.Concat(deleteResult.Errors);
-                }
                 return ServiceResult.Failed(errors.Select(e => e.Description).ToArray());
             }
 
@@ -303,12 +302,8 @@ namespace TraineeTracker.Services.Admin {
 
                 result = await _applicationUserRepository.UpdateAsync(user);
                 if (!result.Succeeded) {
-                    var deleteTask = _applicationUserRepository.DeleteAsync(user);
+                    await _unitOfWork.RollbackAsync();
                     var errors = result.Errors;
-                    var deleteResult = await deleteTask;
-                    if (!deleteResult.Succeeded) {
-                        errors = result.Errors.Concat(deleteResult.Errors);
-                    }
                     return ServiceResult.Failed(errors.Select(e => e.Description).ToArray());
                 }
             }
@@ -333,10 +328,12 @@ namespace TraineeTracker.Services.Admin {
                         $"Please confirm your account by <a href='{confirmationLink}'>clicking here</a>.\nYou will be redirected to set your password after.");
                 }
                 catch (Exception ex) {
+                    await _unitOfWork.RollbackAsync();
                     return ServiceResult.Failed(ex.Message);
                 }
             }
 
+            await _unitOfWork.CommitAsync();
             return ServiceResult.Success();
         }
 
