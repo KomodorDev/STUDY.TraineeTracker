@@ -26,25 +26,16 @@ namespace TraineeTracker.Data.ApplicationUsers {
         }
 
         /// <summary>
-        /// Adds the specified user to a role. If the role is "Admin", also adds the user to the "Mentor" role.
+        /// Asynchronously adds the specified <see cref="ApplicationUser"/> to the given role.
         /// </summary>
         /// <param name="user">The user to add to the role.</param>
-        /// <param name="role">The role name.</param>
-        /// <returns>The result of the operation.</returns>
-        /// <remarks>Code Ownership: Paul Schweizer (schwepau)</remarks>
+        /// <param name="role">The name of the role to add the user to.</param>
+        /// <returns>
+        /// A task that represents the asynchronous operation. The task result contains an <see cref="IdentityResult"/>
+        /// indicating whether the operation succeeded or failed.
+        /// </returns>
         public async Task<IdentityResult> AddToRoleAsync(ApplicationUser user, string role) {
-            var result = await _userManager.AddToRoleAsync(user, role);
-            if (!result.Succeeded) {
-                return result;
-            }
-            if (role == "Admin") {
-                var mentorResult = await _userManager.AddToRoleAsync(user, "Mentor");
-                if (!mentorResult.Succeeded) {
-                    var errors = result.Errors.Concat(mentorResult.Errors);
-                    return IdentityResult.Failed(errors.ToArray());
-                }
-            }
-            return result;
+            return await _userManager.AddToRoleAsync(user, role);
         }
 
         /// <summary>
@@ -255,17 +246,16 @@ namespace TraineeTracker.Data.ApplicationUsers {
         }
 
         /// <summary>
-        /// Gets the roles assigned to the specified user. If the user is an Admin, removes the Mentor role from the result.
+        /// Asynchronously retrieves the roles assigned to the specified <see cref="ApplicationUser"/>.
         /// </summary>
-        /// <param name="user">The user.</param>
-        /// <returns>A collection of role names.</returns>
+        /// <param name="user">The application user whose roles are to be retrieved.</param>
+        /// <returns>
+        /// A task that represents the asynchronous operation. The task result contains an <see cref="IEnumerable{string}"/>
+        /// of role names assigned to the user.
+        /// </returns>
         /// <remarks>Code Ownership: Paul Schweizer (schwepau)</remarks>
         public async Task<IEnumerable<string>> GetRolesAsync(ApplicationUser user) {
-            var roles = await _userManager.GetRolesAsync(user);
-            if (roles.Contains("Admin")) {
-                roles.Remove("Mentor");
-            }
-            return roles;
+            return await _userManager.GetRolesAsync(user);
         }
 
         /// <summary>
@@ -279,23 +269,15 @@ namespace TraineeTracker.Data.ApplicationUsers {
         }
 
         /// <summary>
-        /// Gets all users in the specified role. If the role is "Mentor", excludes users who are also in the "Admin" role.
+        /// Asynchronously retrieves a collection of <see cref="ApplicationUser"/> objects that are assigned to the specified role.
         /// </summary>
-        /// <param name="roleName">The role name.</param>
-        /// <returns>A collection of users in the role.</returns>
-        /// <remarks>Code Ownership: Paul Schweizer (schwepau)</remarks>
+        /// <param name="roleName">The name of the role to search for users in.</param>
+        /// <returns>
+        /// A task that represents the asynchronous operation. The task result contains an <see cref="IEnumerable{ApplicationUser}"/>
+        /// of users who are members of the specified role.
+        /// </returns>
         public async Task<IEnumerable<ApplicationUser>> GetUsersInRoleAsync(string roleName) {
-            var usersInRole = await _userManager.GetUsersInRoleAsync(roleName);
-            if (roleName != "Mentor") {
-                return usersInRole;
-            }
-            var filtered = new List<ApplicationUser>();
-            foreach (var user in usersInRole) {
-                if (!await IsInRoleAsync(user, "Admin")) {
-                    filtered.Add(user);
-                }
-            }
-            return filtered;
+            return await _userManager.GetUsersInRoleAsync(roleName);
         }
 
         /// <summary>

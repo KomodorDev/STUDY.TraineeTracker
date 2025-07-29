@@ -110,14 +110,14 @@ namespace TraineeTracker.Services.Admin {
             // +++++++++++++++
             // Iterate through each user in allUsers:
             foreach (var user in allUsers) {
-                var highestRole = await GetHighestRoleAsync(user);
-                userRoles[user.Id] = highestRole;
+                var roles = await _applicationUserRepository.GetRolesAsync(user);
+                userRoles[user.Id] = roles.First();
 
                 // Count for role-tabs (Admin/Mentor/Trainee) - depending on Status
                 if (filterStatus == "all"
                     || (filterStatus == "open" && !user.IsClosed)
                     || (filterStatus == "closed" && user.IsClosed)) {
-                    switch (highestRole) {
+                    switch (userRoles[user.Id]) {
                         case "Admin":
                             adminCount++;
                             break;
@@ -131,7 +131,7 @@ namespace TraineeTracker.Services.Admin {
                 }
 
                 // Count for status-tabs (Total/Open/Closed) - depending on Role
-                if (filterRole == "all" || highestRole == filterRole) {
+                if (filterRole == "all" || userRoles[user.Id] == filterRole) {
                     totalUserCount++;
                     if (!user.IsClosed)
                         openUserCount++;
@@ -139,7 +139,7 @@ namespace TraineeTracker.Services.Admin {
 
                 // Users for the current dashboard view
                 if (
-                    (filterRole == "all" || highestRole == filterRole) &&
+                    (filterRole == "all" || userRoles[user.Id] == filterRole) &&
                     (filterStatus == "all" ||
                      (filterStatus == "open" && !user.IsClosed) ||
                      (filterStatus == "closed" && user.IsClosed))
@@ -515,26 +515,6 @@ namespace TraineeTracker.Services.Admin {
         /// <remarks>Code Ownership: Paul Schweizer (schwepau)</remarks>
         public async Task<ApplicationUser?> FindByIdWithProcessingPausesAsync(string userId) {
             return await _applicationUserRepository.FindByIdWithProcessingPausesAsync(userId);
-        }
-
-        // ------------------------------------------------------
-        /// <summary>
-        /// Gets the highest role assigned to a user, prioritizing Admin, Mentor, then Trainee.
-        /// </summary>
-        /// <param name="user">The user to check.</param>
-        /// <returns>The highest role as a string.</returns>
-        /// <remarks>Code Ownership: Paul Schweizer (schwepau)</remarks>
-        public async Task<string> GetHighestRoleAsync(ApplicationUser user) {
-            var roles = await _applicationUserRepository.GetRolesAsync(user);
-
-            if (roles.Contains("Admin"))
-                return "Admin";
-            if (roles.Contains("Mentor"))
-                return "Mentor";
-            if (roles.Contains("Trainee"))
-                return "Trainee";
-
-            return roles.FirstOrDefault() ?? "Unknown";
         }
 
         // ------------------------------------------------------
