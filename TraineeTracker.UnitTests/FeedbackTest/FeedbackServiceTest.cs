@@ -70,6 +70,7 @@ namespace TraineeTracker.UnitTests.FeedbackTest
             public Task<IdentityResult> AddToRoleAsync(ApplicationUser user, string role) => throw new NotImplementedException();
             public Task<IdentityResult> CreateAsync(ApplicationUser user, string password) => throw new NotImplementedException();
             public Task<IdentityResult> DeleteAsync(ApplicationUser user) => throw new NotImplementedException();
+            public Task<bool> ExistsByEmailAsync(string email) => throw new NotImplementedException();
             public Task<bool> ExistsByIdAsync(string id) => throw new NotImplementedException();
             public Task<bool> ExistsAsync(ApplicationUser user) => throw new NotImplementedException();
             public Task<ApplicationUser?> FindByEmailAsync(string email) => throw new NotImplementedException();
