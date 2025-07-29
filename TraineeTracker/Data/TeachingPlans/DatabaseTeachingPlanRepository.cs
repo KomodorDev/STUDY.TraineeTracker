@@ -12,11 +12,13 @@ namespace TraineeTracker.Data.TeachingPlans {
 
         /// <summary>
         /// The Entity Framework Core database context used for accessing and modifying teaching plans.
+        /// Code Ownership: Alexandros Blask
         /// </summary>
         private readonly ApplicationDbContext _context;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DatabaseTeachingPlanRepository"/> class.
+        /// Code Ownership: Alexandros Blask
         /// </summary>
         /// <param name="context">The database context used for accessing the TeachingPlans table.</param>
         public DatabaseTeachingPlanRepository(ApplicationDbContext context) {
@@ -25,6 +27,7 @@ namespace TraineeTracker.Data.TeachingPlans {
 
         /// <summary>
         /// Checks whether a <see cref="TeachingPlan"/> with the specified ID exists.
+        /// Code Ownership: Alexandros Blask
         /// </summary>
         /// <param name="id">The ID of the teaching plan to check.</param>
         /// <returns>True if the teaching plan exists; otherwise, false.</returns>
@@ -34,6 +37,7 @@ namespace TraineeTracker.Data.TeachingPlans {
 
         /// <summary>
         /// Checks whether a given <see cref="TeachingPlan"/> entity already exists based on name and last updated date.
+        /// Code Ownership: Alexandros Blask
         /// </summary>
         /// <param name="teachingPlan">The teaching plan to check.</param>
         /// <returns>True if a matching teaching plan exists; otherwise, false.</returns>
@@ -45,6 +49,7 @@ namespace TraineeTracker.Data.TeachingPlans {
 
         /// <summary>
         /// Adds a new <see cref="TeachingPlan"/> to the database.
+        /// Code Ownership: Alexandros Blask
         /// </summary>
         /// <param name="teachingPlan">The teaching plan to create.</param>
         /// <returns>A Task representing the asynchronous operation.</returns>
@@ -55,6 +60,7 @@ namespace TraineeTracker.Data.TeachingPlans {
 
         /// <summary>
         /// Updates an existing <see cref="TeachingPlan"/> in the database.
+        /// Code Ownership: Alexandros Blask
         /// </summary>
         /// <param name="teachingPlan">The updated teaching plan entity.</param>
         /// <returns>A Task representing the asynchronous update operation.</returns>
@@ -65,6 +71,7 @@ namespace TraineeTracker.Data.TeachingPlans {
 
         /// <summary>
         /// Deletes a specified <see cref="TeachingPlan"/> from the database.
+        /// Code Ownership: Alexandros Blask
         /// </summary>
         /// <param name="teachingPlan">The teaching plan to delete.</param>
         /// <returns>A Task representing the asynchronous delete operation.</returns>
@@ -75,6 +82,7 @@ namespace TraineeTracker.Data.TeachingPlans {
 
         /// <summary>
         /// Retrieves a <see cref="TeachingPlan"/> by its ID.
+        /// Code Ownership: Alexandros Blask
         /// </summary>
         /// <param name="id">The ID of the teaching plan.</param>
         /// <returns>The matching teaching plan or null if not found.</returns>
@@ -86,6 +94,7 @@ namespace TraineeTracker.Data.TeachingPlans {
 
         /// <summary>
         /// Retrieves a <see cref="TeachingPlan"/> by ID, including its associated lessons and trainees.
+        /// Code Ownership: Alexandros Blask
         /// </summary>
         /// <param name="id">The ID of the teaching plan.</param>
         /// <returns>The teaching plan with related entities or null if not found.</returns>
@@ -100,6 +109,7 @@ namespace TraineeTracker.Data.TeachingPlans {
 
         /// <summary>
         /// Retrieves all <see cref="TeachingPlan"/> entities from the database.
+        /// Code Ownership: Alexandros Blask
         /// </summary>
         /// <returns>A list of all teaching plans.</returns>
         public async Task<IEnumerable<TeachingPlan>> GetAllTeachingPlansAsync() {
@@ -108,6 +118,7 @@ namespace TraineeTracker.Data.TeachingPlans {
 
         /// <summary>
         /// Retrieves all <see cref="TeachingPlan"/> entities including their lessons and trainees.
+        /// Code Ownership: Alexandros Blask
         /// </summary>
         /// <returns>A list of teaching plans with related entities.</returns>
         public async Task<IEnumerable<TeachingPlan>> GetAllTeachingPlansWithLessonsAndTraineesAsync() {
