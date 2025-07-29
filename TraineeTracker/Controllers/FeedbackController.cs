@@ -22,6 +22,7 @@ namespace TraineeTracker.Controllers {
        
         /// <summary>
         /// Initializes a new instance of the <see cref="FeedbackController"/> class.
+        /// Code Ownership: Alexandros Blask, Simon Hinterreiter
         /// </summary>
         /// <param name="feedbackService">Service for managing feedback dashboard and read/unread actions.</param>
         public FeedbackController(FeedbackService feedbackService) {
@@ -30,6 +31,7 @@ namespace TraineeTracker.Controllers {
 
         /// <summary>
         /// Displays the feedback dashboard with optional filter, pagination, and sorting.
+        /// Code Ownership: Alexandros Blask, Simon Hinterreiter
         /// </summary>
         /// <param name="filter">Filter type ("all", "read", or "unread").</param>
         /// <param name="page">Page number for pagination.</param>
@@ -62,6 +64,7 @@ namespace TraineeTracker.Controllers {
 
         /// <summary>
         /// Marks a specific feedback entry as read for the current user and redirects back to the dashboard.
+        /// Code Ownership: Alexandros Blask, Simon Hinterreiter
         /// </summary>
         /// <param name="feedbackId">The ID of the feedback to mark as read.</param>
         /// <param name="filter">Current filter setting to preserve state.</param>
@@ -105,6 +108,7 @@ namespace TraineeTracker.Controllers {
 
         /// <summary>
         /// Marks a specific feedback entry as unread for the current user and redirects back to the dashboard.
+        /// Code Ownership: Alexandros Blask, Simon Hinterreiter
         /// </summary>
         /// <param name="feedbackId">The ID of the feedback to mark as unread.</param>
         /// <param name="filter">Current filter setting to preserve state.</param>

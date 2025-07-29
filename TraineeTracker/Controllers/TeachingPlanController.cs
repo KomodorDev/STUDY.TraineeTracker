@@ -23,6 +23,7 @@ namespace TraineeTracker.Controllers {
 
         /// <summary>
         /// Initializes a new instance of the <see cref="TeachingPlanController"/> class.
+        /// Code Ownership: Alexandros Blask, Simon Hinterreiter
         /// </summary>
         /// <param name="teachingPlanService">Service for managing teaching plan import, update, preview, and deletion.</param>
         public TeachingPlanController(TeachingPlanService teachingPlanService) {
@@ -31,6 +32,7 @@ namespace TraineeTracker.Controllers {
 
         /// <summary>
         /// Displays the import dashboard containing existing teaching plans.
+        /// Code Ownership: Alexandros Blask, Simon Hinterreiter
         /// </summary>
         /// <returns>
         /// A task that returns the "ImportDashboard" view populated with existing teaching plans.
@@ -45,6 +47,7 @@ namespace TraineeTracker.Controllers {
 
         /// <summary>
         /// Imports a new teaching plan based on the provided DTO and redirects back to the dashboard.
+        /// Code Ownership: Alexandros Blask, Simon Hinterreiter
         /// </summary>
         /// <param name="dto">The DTO containing the new teaching plan data and file.</param>
         /// <returns>
@@ -76,6 +79,7 @@ namespace TraineeTracker.Controllers {
 
         /// <summary>
         /// Updates an existing teaching plan based on the provided DTO and redirects back to the dashboard.
+        /// Code Ownership: Alexandros Blask, Simon Hinterreiter
         /// </summary>
         /// <param name="dto">The DTO containing updated teaching plan data and temp file name.</param>
         /// <returns>A task that redirects to the import dashboard.</returns>
@@ -94,6 +98,7 @@ namespace TraineeTracker.Controllers {
 
         /// <summary>
         /// Loads the import preview modal for an existing teaching plan.
+        /// Code Ownership: Alexandros Blask, Simon Hinterreiter
         /// </summary>
         /// <param name="planId">The ID of the teaching plan to preview.</param>
         /// <returns>
@@ -114,6 +119,7 @@ namespace TraineeTracker.Controllers {
 
         /// <summary>
         /// Updates the import preview modal based on the provided DTO.
+        /// Code Ownership: Alexandros Blask, Simon Hinterreiter
         /// </summary>
         /// <param name="dto">The DTO containing existing teaching plan ID and temp file name.</param>
         /// <returns>
@@ -138,6 +144,7 @@ namespace TraineeTracker.Controllers {
 
         /// <summary>
         /// Deletes a teaching plan by its ID and redirects back to the dashboard.
+        /// Code Ownership: Alexandros Blask, Simon Hinterreiter
         /// </summary>
         /// <param name="existingTeachingPlanId">The ID of the teaching plan to delete.</param>
         /// <returns>
