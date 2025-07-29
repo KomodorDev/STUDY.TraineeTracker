@@ -23,7 +23,7 @@ using TraineeTracker.Data.TraineeLessons;
 namespace TraineeTracker.UnitTests.AdminTest {
     public class AdminServiceTest {
         [Fact]
-        public async void CreateUserAsync_WithValidData_ReturnsSuccess() {
+        public async Task CreateUserAsync_WithValidData_ReturnsSuccess() {
             // Arrange
             var dto = new ApplicationUserDto { Email = "test@example.com", Password = "Test123!", Role = "Admin" };
 
@@ -65,7 +65,7 @@ namespace TraineeTracker.UnitTests.AdminTest {
         }
 
         [Fact]
-        public async void CreateUserAsync_AddToRoleFails_ReturnsFailed() {
+        public async Task CreateUserAsync_AddToRoleFails_ReturnsFailed() {
             // Arrange
             var dto = new ApplicationUserDto { Email = "test@example.com", Password = "Test123!", Role = "Admin" };
 
@@ -108,7 +108,7 @@ namespace TraineeTracker.UnitTests.AdminTest {
         }
 
         [Fact]
-        public async void CreateUserAsync_NotifyUserFails_ReturnsFailed() {
+        public async Task CreateUserAsync_NotifyUserFails_ReturnsFailed() {
             // Arrange
             var dto = new ApplicationUserDto { Email = "test@example.com", Password = "Test123!", Role = "Admin" };
 
@@ -156,7 +156,7 @@ namespace TraineeTracker.UnitTests.AdminTest {
         }
 
         [Fact]
-        public async void CloseUserAsync_UserGetsClosed_IsClosedIsTrue() {
+        public async Task CloseUserAsync_UserGetsClosed_IsClosedIsTrue() {
             // Arrange
             var userId = "test-id";
             var user = new ApplicationUser { Id = userId, IsClosed = false, EmailNotificationSetting = Mock.Of<EmailNotificationSetting>() };
