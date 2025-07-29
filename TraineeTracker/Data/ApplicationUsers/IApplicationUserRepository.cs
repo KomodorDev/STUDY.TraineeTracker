@@ -39,14 +39,6 @@ namespace TraineeTracker.Data.ApplicationUsers {
 
         // ------------------------------------------------------
         /// <summary>
-        /// Checks if a user with the specified ID exists asynchronously.
-        /// </summary>
-        /// <param name="userId">The ID of the user.</param>
-        /// <returns><c>true</c> if the user exists; otherwise, <c>false</c>.</returns>
-        Task<bool> ExistsAsync(string userId);
-
-        // ------------------------------------------------------
-        /// <summary>
         /// Checks if the specified user exists asynchronously.
         /// </summary>
         /// <param name="user">The user to check.</param>
@@ -55,10 +47,32 @@ namespace TraineeTracker.Data.ApplicationUsers {
 
         // ------------------------------------------------------
         /// <summary>
-        /// Finds a user by their email address asynchronously.
+        /// Asynchronously checks if an application user exists with the specified email address.
         /// </summary>
-        /// <param name="email">The email address of the user.</param>
-        /// <returns>The user if found; otherwise, <c>null</c>.</returns>
+        /// <param name="email">The email address to check for existence.</param>
+        /// <returns>
+        /// A task that represents the asynchronous operation. The task result contains <c>true</c> if a user with the specified email exists; otherwise, <c>false</c>.
+        /// </returns>
+        Task<bool> ExistsByEmailAsync(string email);
+
+        // ------------------------------------------------------
+        /// <summary>
+        /// Asynchronously checks whether a user with the specified ID exists in the repository.
+        /// </summary>
+        /// <param name="userId">The unique identifier of the user to check for existence.</param>
+        /// <returns>
+        /// A task that represents the asynchronous operation. The task result contains <c>true</c> if the user exists; otherwise, <c>false</c>.
+        /// </returns>
+        Task<bool> ExistsByIdAsync(string userId);
+
+        // ------------------------------------------------------
+        /// <summary>
+        /// Asynchronously finds an <see cref="ApplicationUser"/> by their email address.
+        /// </summary>
+        /// <param name="email">The email address of the user to find.</param>
+        /// <returns>
+        /// A task that represents the asynchronous operation. The task result contains the <see cref="ApplicationUser"/> if found; otherwise, <c>null</c>.
+        /// </returns>
         Task<ApplicationUser?> FindByEmailAsync(string email);
 
         // ------------------------------------------------------
@@ -222,5 +236,5 @@ namespace TraineeTracker.Data.ApplicationUsers {
         Task<IdentityResult> UpdateAsync(ApplicationUser user);
     }
 
-        // ------------------------------------------------------
+    // ------------------------------------------------------
 }
