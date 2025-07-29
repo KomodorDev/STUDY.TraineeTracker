@@ -28,6 +28,7 @@ namespace TraineeTracker.Services {
 
         /// <summary>
         /// Initializes a new instance of the <see cref="FeedbackService"/> class.
+        /// Code Ownership: Alexandros Blask, Simon Hinterreiter
         /// </summary>
         /// <param name="feedbackRepo">Repository for feedback persistence operations.</param>
         /// <param name="userRepo">Repository for application user data access.</param>
@@ -42,6 +43,7 @@ namespace TraineeTracker.Services {
 
         /// <summary>
         /// Builds a <see cref="FeedbackDashboardViewModel"/> based on the current user and filter criteria.
+        /// Code Ownership: Alexandros Blask, Simon Hinterreiter
         /// </summary>
         /// <param name="user">The claims principal representing the current user.</param>
         /// <param name="filter">Filter type: "all", "read", or "unread".</param>
@@ -181,6 +183,7 @@ namespace TraineeTracker.Services {
 
         /// <summary>
         /// Applies filtering and sorting to an <see cref="IQueryable{Feedback}"/> sequence.
+        /// Code Ownership: Alexandros Blask, Simon Hinterreiter
         /// </summary>
         /// <param name="query">The base feedback query.</param>
         /// <param name="sortBy">Sort criteria string.</param>
@@ -224,6 +227,7 @@ namespace TraineeTracker.Services {
 
         /// <summary>
         /// Retrieves a paged list of all feedback entries for display.
+        /// Code Ownership: Alexandros Blask, Simon Hinterreiter
         /// </summary>
         /// <param name="currentUser">The current user performing the query.</param>
         /// <param name="page">Page number for pagination.</param>
@@ -297,6 +301,7 @@ namespace TraineeTracker.Services {
 
         /// <summary>
         /// Retrieves a paged list of feedback entries already read by the current user.
+        /// Code Ownership: Alexandros Blask, Simon Hinterreiter
         /// </summary>
         /// <param name="currentUser">The current user performing the query.</param>
         /// <param name="page">Page number for pagination.</param>
@@ -358,6 +363,7 @@ namespace TraineeTracker.Services {
 
         /// <summary>
         /// Retrieves a paged list of feedback entries not yet read by the current user.
+        /// Code Ownership: Alexandros Blask, Simon Hinterreiter
         /// </summary>
         /// <param name="currentUser">The current user performing the query.</param>
         /// <param name="page">Page number for pagination.</param>
@@ -425,6 +431,7 @@ namespace TraineeTracker.Services {
         
         /// <summary>
         /// Marks a specific feedback entry as read for the given user.
+        /// Code Ownership: Alexandros Blask, Simon Hinterreiter
         /// </summary>
         /// <param name="userPrincipal">The claims principal of the user marking the feedback as read.</param>
         /// <param name="feedbackId">The ID of the feedback to mark as read.</param>
@@ -452,6 +459,7 @@ namespace TraineeTracker.Services {
 
         /// <summary>
         /// Marks a specific feedback entry as unread for the given user.
+        /// Code Ownership: Alexandros Blask, Simon Hinterreiter
         /// </summary>
         /// <param name="userPrincipal">The claims principal of the user marking the feedback as unread.</param>
         /// <param name="feedbackId">The ID of the feedback to mark as unread.</param>
@@ -480,6 +488,7 @@ namespace TraineeTracker.Services {
 
         /// <summary>
         /// Clears the "read" status for all users on a specific feedback entry.
+        /// Code Ownership: Alexandros Blask, Simon Hinterreiter
         /// </summary>
         /// <param name="feedbackId">The ID of the feedback to reset.</param>
         /// <returns>A task representing the asynchronous operation.</returns>
