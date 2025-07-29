@@ -97,6 +97,7 @@ namespace TraineeTracker.Data.Feedbacks {
         
         /// <summary>
         /// Retrieves a <see cref="Feedback"/> by its ID, including related Lesson, Author, and ReadByUsers.
+        /// Code Ownership: Alexandros Blask
         /// </summary>
         /// <param name="feedbackId">The ID of the feedback to retrieve.</param>
         /// <returns>The matching Feedback, or null if not found.</returns>
@@ -110,6 +111,7 @@ namespace TraineeTracker.Data.Feedbacks {
 
         /// <summary>
         /// Retrieves all <see cref="Feedback"/> entries for a given Lesson, including related entities.
+        /// Code Ownership: Alexandros Blask
         /// </summary>
         /// <param name="lesson">The Lesson to filter feedback by.</param>
         /// <returns>An enumerable of matching Feedback entities.</returns>
@@ -124,6 +126,7 @@ namespace TraineeTracker.Data.Feedbacks {
 
         /// <summary>
         /// Retrieves all <see cref="Feedback"/> entries, including related entities.
+        /// Code Ownership: Alexandros Blask
         /// </summary>
         /// <returns>A list of all Feedback entries.</returns>
         public async Task<List<Feedback>> GetAllFeedbacksWithLessonAndAuthorAndReadByUsersAsync() {
@@ -136,6 +139,7 @@ namespace TraineeTracker.Data.Feedbacks {
 
         /// <summary>
         /// Retrieves all Feedback written by a specific user, including related entities.
+        /// Code Ownership: Alexandros Blask
         /// </summary>
         /// <param name="user">The authoring user.</param>
         /// <returns>An enumerable of Feedback authored by the user.</returns>
@@ -150,6 +154,7 @@ namespace TraineeTracker.Data.Feedbacks {
 
         /// <summary>
         /// Retrieves all Feedback read by a specific user, including related entities.
+        /// Code Ownership: Alexandros Blask
         /// </summary>
         /// <param name="user">The user who read the feedback.</param>
         /// <returns>A list of Feedback read by the user.</returns>
@@ -165,6 +170,7 @@ namespace TraineeTracker.Data.Feedbacks {
 
         /// <summary>
         /// Retrieves all Feedback unread by a specific user, including related entities.
+        /// Code Ownership: Alexandros Blask
         /// </summary>
         /// <param name="user">The user to filter unread feedback by.</param>
         /// <returns>A list of unread Feedback for the user.</returns>
@@ -179,6 +185,7 @@ namespace TraineeTracker.Data.Feedbacks {
         
         /// <summary>
         /// Retrieves an <see cref="IQueryable{Feedback}"/> of unread Feedback for a specific user, including related entities.
+        /// Code Ownership: Alexandros Blask
         /// </summary>
         /// <param name="user">The user to filter unread feedback by.</param>
         /// <returns>An IQueryable of unread Feedback for the user.</returns>
@@ -192,6 +199,7 @@ namespace TraineeTracker.Data.Feedbacks {
         
         /// <summary>
         /// Retrieves the feedback associated with a specific TraineeLesson, including related entities.
+        /// Code Ownership: Alexandros Blask
         /// </summary>
         /// <param name="traineeLesson">The TraineeLesson linking trainee and lesson.</param>
         /// <returns>The matching Feedback, or null if not found.</returns>
@@ -205,6 +213,7 @@ namespace TraineeTracker.Data.Feedbacks {
 
         /// <summary>
         /// Retrieves an <see cref="IQueryable{Feedback}"/> of all Feedback including Lesson and Author.
+        /// Code Ownership: Alexandros Blask
         /// </summary>
         /// <returns>An IQueryable of all Feedback entities with related Lesson and Author.</returns>
         public IQueryable<Feedback> GetAllFeedbacksWithLessonAndAuthor() {
@@ -216,6 +225,7 @@ namespace TraineeTracker.Data.Feedbacks {
 
         /// <summary>
         /// Retrieves an <see cref="IQueryable{Feedback}"/> of Feedback read by a specific user, including Lesson and Author.
+        /// Code Ownership: Alexandros Blask
         /// </summary>
         /// <param name="user">The user who read the feedback.</param>
         /// <returns>An IQueryable of read Feedback for the user.</returns>
@@ -228,6 +238,7 @@ namespace TraineeTracker.Data.Feedbacks {
 
         /// <summary>
         /// Retrieves an <see cref="IQueryable{Feedback}"/> of Feedback unread by a specific user, including Lesson and Author.
+        /// Code Ownership: Alexandros Blask
         /// </summary>
         /// <param name="user">The user to filter unread feedback by.</param>
         /// <returns>An IQueryable of unread Feedback for the user.</returns>
@@ -241,6 +252,7 @@ namespace TraineeTracker.Data.Feedbacks {
         
         /// <summary>
         /// Retrieves an <see cref="IQueryable{Feedback}"/> of all Feedback including Lesson, Author, and ReadByUsers.
+        /// Code Ownership: Alexandros Blask
         /// </summary>
         /// <returns>An IQueryable of all Feedback entities with related Lesson, Author, and ReadByUsers.</returns>
         public IQueryable<Feedback> GetAllFeedbacksWithLessonAndAuthorAndReadByUsers() {
