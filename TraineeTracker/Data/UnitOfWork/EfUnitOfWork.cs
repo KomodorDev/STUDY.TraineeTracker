@@ -65,5 +65,7 @@ namespace TraineeTracker.Data.UnitOfWork {
                 _transaction = null;
             }
         }
+
+        // ------------------------------------------------------
     }
 }

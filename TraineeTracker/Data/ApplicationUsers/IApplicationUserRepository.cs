@@ -221,4 +221,6 @@ namespace TraineeTracker.Data.ApplicationUsers {
         /// <returns>The result of the update operation.</returns>
         Task<IdentityResult> UpdateAsync(ApplicationUser user);
     }
+
+        // ------------------------------------------------------
 }

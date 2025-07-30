@@ -72,5 +72,7 @@ namespace TraineeTracker.Data.ProcessingPauses {
         /// A task that returns an enumerable collection of <see cref="ProcessingPause"/> objects.
         /// </returns>
         Task<IEnumerable<ProcessingPause>> GetAllPausesAsync(string traineeId);
+
+        // ------------------------------------------------------
     }
 }
