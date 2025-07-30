@@ -32,6 +32,10 @@ namespace TraineeTracker.E2ETests.AdminTests {
 
             wait.Until(d => d.FindElement(By.Id("Create_User"))).Click();
 
+            Thread.Sleep(10000);
+
+            Assert.NotEqual("http://localhost:5079/Admin?message=Create-Button%20clicked", _driver.Url);
+
             wait.Until(d => d.FindElement(By.Id("Admin_Table")));
             _driver.Navigate().GoToUrl("http://localhost:5079/Admin/Dashboard");
             int page = 1;
