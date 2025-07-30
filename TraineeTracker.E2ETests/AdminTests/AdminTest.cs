@@ -41,12 +41,12 @@ namespace TraineeTracker.E2ETests.AdminTests {
                     found = true;
                     break;
                 }
-                catch (NoSuchElementException) {
+                catch (WebDriverTimeoutException) {
                     try {
                         wait.Until(d => d.FindElement(By.Id("Next_Page")));
                         _driver.Navigate().GoToUrl($"http://localhost:5079/Admin/Dashboard?page={++page}");
                     }
-                    catch (NoSuchElementException) {
+                    catch (WebDriverTimeoutException) {
                         break;
                     }
                 }
