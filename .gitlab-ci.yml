@@ -63,12 +63,6 @@ e2e-tests:
     # Wechsel ins E2E-Testprojekt
     - cd ../TraineeTracker.E2ETests
 
-    - mkdir TestResults
-    - cd TestResults
-    - touch TestDatei.txt
-    - cd ..
-    - ls
-
     # E2E-Tests ausführen
     - dotnet test
   needs:
