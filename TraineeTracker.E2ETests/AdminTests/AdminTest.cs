@@ -28,19 +28,8 @@ namespace TraineeTracker.E2ETests.AdminTests {
             var teachingPlanSelect = new SelectElement(wait.Until(d => d.FindElement(By.Id("User_TeachingPlanId"))));
             teachingPlanSelect.SelectByValue("1");
 
-            var resultsDir = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, "..", "..", "..", "TestResults"));
-
-            if (!Directory.Exists(resultsDir))
-                Directory.CreateDirectory(resultsDir);
-            var screenshot = ((ITakesScreenshot)_driver).GetScreenshot();
-            screenshot.SaveAsFile(Path.Combine(resultsDir, $"Screenshot_AdminTest_{DateTime.Now:ddMMyyyy_HHmmss}.png"));
-
             wait.Until(d => d.FindElement(By.Id("Create_User"))).Click();
 
-            screenshot = ((ITakesScreenshot)_driver).GetScreenshot();
-            screenshot.SaveAsFile(Path.Combine(resultsDir, $"Screenshot_AdminTest_{DateTime.Now:ddMMyyyy_HHmmss}.png"));
-
-            wait.Until(d => d.FindElement(By.Id("Admin_Table")));
             _driver.Navigate().GoToUrl("http://localhost:5079/Admin/Dashboard");
             int page = 1;
             bool found = false;
