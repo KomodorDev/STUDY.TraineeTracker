@@ -93,6 +93,7 @@ namespace TraineeTracker.Controllers {
                 viewModel = await modelTask;
                 return View("CreateUser", viewModel);
             }
+            throw new Exception("Redirecting to Admin Dashboard");
             return RedirectToAction("ShowAdminDashboardView");
         }
 
