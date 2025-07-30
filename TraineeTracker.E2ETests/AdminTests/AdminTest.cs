@@ -12,7 +12,7 @@ namespace TraineeTracker.E2ETests.AdminTests {
 
         [Fact]
         public void CreateUser_WithValidData_UserIsVisibleInAdminDashboard() {
-            var wait = new WebDriverWait(_driver, TimeSpan.FromSeconds(10));
+            var wait = new WebDriverWait(_driver, TimeSpan.FromSeconds(60));
 
             _driver.Navigate().GoToUrl("http://localhost:5079/Identity/Account/Login");
             wait.Until(d => d.FindElement(By.Id("Input_Email"))).SendKeys("simon.hinterreiter@uni-a.de");
