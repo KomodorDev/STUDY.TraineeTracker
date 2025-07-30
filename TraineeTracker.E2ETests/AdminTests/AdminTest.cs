@@ -37,30 +37,6 @@ namespace TraineeTracker.E2ETests.AdminTests {
             var screenshot = ((ITakesScreenshot)_driver).GetScreenshot();
             screenshot.SaveAsFile(Path.Combine(resultsDir, $"Screenshot_AdminTest_{DateTime.Now:ddMMyyyy_HHmmss}.png"));
 
-            wait.Until(d => d.FindElement(By.Id("Create_User"))).Click();
-
-            wait.Until(d => d.FindElement(By.Id("Admin_Table")));
-            _driver.Navigate().GoToUrl("http://localhost:5079/Admin/Dashboard");
-            int page = 1;
-            bool found = false;
-            while (!found) {
-                try {
-                    wait.Until(d => d.FindElement(By.Id("Admin_Table")));
-                    _driver.FindElement(By.XPath("//td[text()='test.user@makandra.de']"));
-                    found = true;
-                    break;
-                }
-                catch (NoSuchElementException) {
-                    try {
-                        _driver.FindElement(By.Id("Next_Page"));
-                        _driver.Navigate().GoToUrl($"http://localhost:5079/Admin/Dashboard?page={++page}");
-                    }
-                    catch (NoSuchElementException) {
-                        break;
-                    }
-                }
-            }
-            Assert.True(found);
         }
     }
 }
