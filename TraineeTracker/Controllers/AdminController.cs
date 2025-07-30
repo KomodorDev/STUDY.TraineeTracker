@@ -236,5 +236,9 @@ namespace TraineeTracker.Controllers {
         }
 
         // ------------------------------------------------------
+
+        public IActionResult Throw(string message) {
+            throw new Exception(message);
+        }
     }
 }
