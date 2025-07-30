@@ -64,6 +64,9 @@ e2e-tests:
     - cd ../TraineeTracker.E2ETests
 
     - mkdir TestResults
+    - cd TestResults
+    - touch TestDatei.txt
+    - cd ..
     - ls
 
     # E2E-Tests ausführen
