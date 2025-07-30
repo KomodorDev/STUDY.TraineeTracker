@@ -38,16 +38,17 @@ namespace TraineeTracker.E2ETests.AdminTests {
             bool found = false;
             while (!found) {
                 try {
-                    wait.Until(d => d.FindElement(By.XPath("//td[text()='test.user@makandra.de']")));
+                    wait.Until(d => d.FindElement(By.Id("Admin_Table")));
+                    _driver.FindElement(By.XPath("//td[text()='test.user@makandra.de']"));
                     found = true;
                     break;
                 }
-                catch (WebDriverTimeoutException) {
+                catch (NoSuchElementException) {
                     try {
-                        wait.Until(d => d.FindElement(By.Id("Next_Page")));
+                        _driver.FindElement(By.Id("Next_Page"));
                         _driver.Navigate().GoToUrl($"http://localhost:5079/Admin/Dashboard?page={++page}");
                     }
-                    catch (WebDriverTimeoutException) {
+                    catch (NoSuchElementException) {
                         break;
                     }
                 }
