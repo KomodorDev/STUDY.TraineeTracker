@@ -31,7 +31,7 @@ namespace TraineeTracker.E2ETests.AdminTests {
             teachingPlanSelect.SelectByValue("1");
 
             var screenshot = ((ITakesScreenshot)_driver).GetScreenshot();
-            screenshot.SaveAsFile($"Screenshot_AdminTest_{DateTime.Now}.png");
+            screenshot.SaveAsFile($"Screenshot_AdminTest_{DateTime.Now:ddMMyyyy_HHmmss}.png");
             wait.Until(d => d.FindElement(By.Id("Create_User"))).Click();
 
             wait.Until(d => d.FindElement(By.Id("Admin_Table")));
