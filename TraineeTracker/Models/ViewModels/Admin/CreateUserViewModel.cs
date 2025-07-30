@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using TraineeTracker.Models.Dtos;
 
 namespace TraineeTracker.Models.ViewModels.Admin {
+    
     /// <summary>
     /// ViewModel for creating a new user in the admin interface.
     /// Contains user details, selectable roles, teaching plans, and a confirmation flag.

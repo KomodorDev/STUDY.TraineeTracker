@@ -1,6 +1,7 @@
 using TraineeTracker.Models.Domain;
 
 namespace TraineeTracker.Models.ViewModels.Admin {
+    
     /// <summary>
     /// ViewModel for the Admin Dashboard, providing user data, filtering, sorting, and user role statistics.
     /// </summary>

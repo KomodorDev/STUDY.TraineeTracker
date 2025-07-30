@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Identity;
 
 namespace TraineeTracker.Services.Seeders {
+
     /// <summary>
     /// Provides functionality to seed predefined roles into the application's identity system.
     /// </summary>
@@ -17,6 +18,7 @@ namespace TraineeTracker.Services.Seeders {
             _roleManager = roleManager;
         }
 
+        // ------------------------------------------------------
         /// <summary>
         /// Seeds the predefined roles ("Admin", "Mentor", "Trainee") into the identity system if they do not already exist.
         /// </summary>

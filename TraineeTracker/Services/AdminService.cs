@@ -18,6 +18,7 @@ using TraineeTracker.Models.ViewModels.Admin;
 using TraineeTracker.Services.Email;
 
 namespace TraineeTracker.Services.Admin {
+
     /// <summary>
     /// Provides administrative services for managing users, roles, processing pauses, teaching plans, feedbacks, and trainee statistics.
     /// </summary>
@@ -38,6 +39,7 @@ namespace TraineeTracker.Services.Admin {
         private readonly ITeachingPlanRepository _teachingPlanRepository;
         private readonly ITraineeStatisticsRepository _traineeStatisticsRepository;
 
+        // ------------------------------------------------------
         /// <summary>
         /// Initializes a new instance of the <see cref="AdminService"/> class with required dependencies.
         /// </summary>

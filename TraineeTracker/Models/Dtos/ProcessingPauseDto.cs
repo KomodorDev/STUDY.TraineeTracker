@@ -1,11 +1,13 @@
 using System.ComponentModel.DataAnnotations;
 
 namespace TraineeTracker.Models.Dtos {
+
     /// <summary>
     /// Data Transfer Object representing a processing pause for a trainee.
     /// </summary>
     /// <remarks>Code Ownership: Paul Schweizer (schwepau)</remarks>
     public class ProcessingPauseDto {
+        
         /// <summary>
         /// Gets or sets the unique identifier for the processing pause.
         /// </summary>
