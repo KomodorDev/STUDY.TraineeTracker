@@ -54,5 +54,7 @@ namespace TraineeTracker.Models.Domain {
         public override int GetHashCode() {
             return HashCode.Combine(TraineeId, StartDate, EndDate);
         }
+
+        // ------------------------------------------------------
     }
 }

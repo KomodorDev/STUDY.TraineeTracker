@@ -37,6 +37,7 @@ namespace TraineeTracker.Data.ApplicationUsers {
         /// A task that represents the asynchronous operation. The task result contains an <see cref="IdentityResult"/>
         /// indicating whether the operation succeeded or failed.
         /// </returns>
+        /// <remarks>Code Ownership: Paul Schweizer (schwepau)</remarks>
         public async Task<IdentityResult> AddToRoleAsync(ApplicationUser user, string role) {
             return await _userManager.AddToRoleAsync(user, role);
         }
@@ -299,6 +300,7 @@ namespace TraineeTracker.Data.ApplicationUsers {
         /// A task that represents the asynchronous operation. The task result contains an <see cref="IEnumerable{ApplicationUser}"/>
         /// of users who are members of the specified role.
         /// </returns>
+        /// <remarks>Code Ownership: Paul Schweizer (schwepau)</remarks>
         public async Task<IEnumerable<ApplicationUser>> GetUsersInRoleAsync(string roleName) {
             return await _userManager.GetUsersInRoleAsync(roleName);
         }
@@ -364,5 +366,7 @@ namespace TraineeTracker.Data.ApplicationUsers {
         public async Task<IdentityResult> UpdateAsync(ApplicationUser user) {
             return await _userManager.UpdateAsync(user);
         }
+
+        // ------------------------------------------------------
     }
 }

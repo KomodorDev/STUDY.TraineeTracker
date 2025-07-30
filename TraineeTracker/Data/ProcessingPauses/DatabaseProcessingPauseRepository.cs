@@ -109,5 +109,7 @@ namespace TraineeTracker.Data.ProcessingPauses {
         public async Task<IEnumerable<ProcessingPause>> GetAllPausesAsync(string traineeId) {
             return await _context.ProcessingPauses.Where(p => p.TraineeId == traineeId).ToListAsync();
         }
+
+        // ------------------------------------------------------
     }
 }

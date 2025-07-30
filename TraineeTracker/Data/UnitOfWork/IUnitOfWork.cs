@@ -23,5 +23,7 @@ namespace TraineeTracker.Data.UnitOfWork {
         /// Rolls back the current transaction asynchronously.
         /// </summary>
         Task RollbackAsync();
+
+        // ------------------------------------------------------
     }
 }
