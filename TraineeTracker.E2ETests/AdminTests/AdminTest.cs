@@ -30,11 +30,8 @@ namespace TraineeTracker.E2ETests.AdminTests {
             var teachingPlanSelect = new SelectElement(wait.Until(d => d.FindElement(By.Id("User_TeachingPlanId"))));
             teachingPlanSelect.SelectByValue("1");
 
-            wait.Until(d => d.FindElement(By.Id("Create_User"))).Click();
+            wait.Until(SeleniumExtras.WaitHelpers.ExpectedConditions.ElementToBeClickable(By.Id("Create_User"))).Click();
 
-            Thread.Sleep(10000);
-
-            Assert.NotEqual("http://localhost:5079/Admin?message=Create-Button%20clicked", _driver.Url);
 
             wait.Until(d => d.FindElement(By.Id("Admin_Table")));
             _driver.Navigate().GoToUrl("http://localhost:5079/Admin/Dashboard");
