@@ -26,73 +26,68 @@ namespace TraineeTracker.Areas.Identity.Pages.Account {
             _logger = logger;
         }
 
+        // ------------------------------------------------------
         /// <summary>
         ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
         ///     directly from your code. This API may change or be removed in future releases.
         /// </summary>
         [BindProperty]
-        public InputModel Input {
-            get; set;
-        }
+        public InputModel Input { get; set; }
 
+        // ------------------------------------------------------
         /// <summary>
         ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
         ///     directly from your code. This API may change or be removed in future releases.
         /// </summary>
-        public IList<AuthenticationScheme> ExternalLogins {
-            get; set;
-        }
+        public IList<AuthenticationScheme> ExternalLogins { get; set; }
 
+        // ------------------------------------------------------
         /// <summary>
         ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
         ///     directly from your code. This API may change or be removed in future releases.
         /// </summary>
-        public string ReturnUrl {
-            get; set;
-        }
+        public string ReturnUrl { get; set; }
 
+        // ------------------------------------------------------
         /// <summary>
         ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
         ///     directly from your code. This API may change or be removed in future releases.
         /// </summary>
         [TempData]
-        public string ErrorMessage {
-            get; set;
-        }
+        public string ErrorMessage { get; set; }
 
+        // ------------------------------------------------------
         /// <summary>
         ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
         ///     directly from your code. This API may change or be removed in future releases.
         /// </summary>
         public class InputModel {
+
+            // ------------------------------------------------------
             /// <summary>
             ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
             ///     directly from your code. This API may change or be removed in future releases.
             /// </summary>
             [Required]
             [EmailAddress]
-            public string Email {
-                get; set;
-            }
+            public string Email { get; set; }
 
+            // ------------------------------------------------------
             /// <summary>
             ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
             ///     directly from your code. This API may change or be removed in future releases.
             /// </summary>
             [Required]
             [DataType(DataType.Password)]
-            public string Password {
-                get; set;
-            }
+            public string Password { get; set; }
 
+            // ------------------------------------------------------
             /// <summary>
             ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
             ///     directly from your code. This API may change or be removed in future releases.
             /// </summary>
             [Display(Name = "Remember me?")]
-            public bool RememberMe {
-                get; set;
-            }
+            public bool RememberMe { get; set; }
         }
 
         public async Task OnGetAsync(string returnUrl = null) {
@@ -110,6 +105,16 @@ namespace TraineeTracker.Areas.Identity.Pages.Account {
             ReturnUrl = returnUrl;
         }
 
+        // ------------------------------------------------------
+        /// <summary>
+        /// Handles POST requests for the login page.
+        /// Validates user credentials, checks for closed accounts, and manages login state.
+        /// Redirects to appropriate pages for two-factor authentication, lockout, or successful login.
+        /// </summary>
+        /// <param name="returnUrl">The URL to redirect to after successful login.</param>
+        /// <returns>
+        /// An <see cref="IActionResult"/> that redirects to the appropriate page or redisplays the login form on failure.
+        /// </returns>
         public async Task<IActionResult> OnPostAsync(string returnUrl = null) {
             returnUrl ??= Url.Content("~/");
 
