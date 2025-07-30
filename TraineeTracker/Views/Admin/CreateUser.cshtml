@@ -95,10 +95,10 @@
                 <div class="sopro-card form-buttons">
 
                     @* ConfirmSubmission: set to true ONLY when Create button is clicked *@
-                    <a asp-action="Throw" asp-route-message="Create-Button clicked" id="Create_User" class="sopro-btn sopro-btn-prim sopro-button-content"
+                    <button id="Create_User" type="submit" class="sopro-btn sopro-btn-prim sopro-button-content"
                         onclick="document.getElementById('confirmSubmission').value = 'true'">
                         Create
-                    </a>
+                    </button>
 
                     <a asp-action="ShowAdminDashboardView" class="sopro-btn sopro-btn-sec sopro-button-content">
                         Cancel
