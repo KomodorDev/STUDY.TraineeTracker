@@ -240,12 +240,21 @@ namespace TraineeTracker.Services.Admin {
 
         // ------------------------------------------------------
         /// <summary>
-        /// Creates a new user with the specified data, assigns roles, and sends confirmation email if required.
+        /// Creates a new user asynchronously based on the provided <see cref="ApplicationUserDto"/>.
+        /// Validates input, assigns roles, handles trainee-specific properties, and sends email confirmation if required.
+        /// Uses a transaction to ensure atomicity of user creation and related operations.
         /// </summary>
-        /// <param name="dto">User data transfer object.</param>
-        /// <param name="isSeeder">Indicates if the user is created by a seeder (no email confirmation).</param>
-        /// <param name="urlHelper">URL helper for generating confirmation links.</param>
-        /// <returns>A <see cref="ServiceResult"/> indicating success or failure.</returns>
+        /// <param name="dto">The data transfer object containing user information.</param>
+        /// <param name="isSeeder">Indicates whether the user is being created by a seeder (bypasses email confirmation).</param>
+        /// <param name="urlHelper">
+        /// The URL helper used to generate the email confirmation link. Must be provided if <paramref name="isSeeder"/> is <c>false</c>.
+        /// </param>
+        /// <returns>
+        /// A <see cref="ServiceResult"/> indicating success or failure, with error messages if applicable.
+        /// </returns>
+        /// <exception cref="ArgumentNullException">
+        /// Thrown if <paramref name="dto"/> is <c>null</c>, or if <paramref name="urlHelper"/> is <c>null</c> when <paramref name="isSeeder"/> is <c>false</c>.
+        /// </exception>
         /// <remarks>Code Ownership: Paul Schweizer (schwepau)</remarks>
         public async Task<ServiceResult> CreateUserAsync(ApplicationUserDto dto, bool isSeeder, IUrlHelper? urlHelper = null) {
             ArgumentNullException.ThrowIfNull(dto);
