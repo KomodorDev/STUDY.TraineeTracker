@@ -24,8 +24,10 @@ namespace TraineeTracker.Services {
         private readonly IApplicationUserRepository _databaseApplicationUserRepository;
         private readonly EmailNotificationService _emailNotificationService;
 
+        // ---------------------------------------------------
         /// <summary>
         /// Initializes a new instance of the <see cref="TeachingPlanService"/> class.
+        /// Code Ownership: Alexandros Blask
         /// </summary>
         /// <param name="teachingPlanRepo">Repository for teaching plan data access.</param>
         /// <param name="databaseLessonRepository">Repository for lesson data access.</param>
@@ -45,8 +47,10 @@ namespace TraineeTracker.Services {
             _emailNotificationService = emailNotificationService;
         }
 
+        // ---------------------------------------------------
         /// <summary>
         /// Builds the import dashboard view model containing all existing teaching plans.
+        /// Code Ownership: Alexandros Blask
         /// </summary>
         /// <returns>
         /// A task that returns an <see cref="ImportDashboardViewModel"/> with existing teaching plans.
@@ -66,15 +70,11 @@ namespace TraineeTracker.Services {
                 }).ToList()
             };
         }
-        // ---------------------------------------------------
-        // ---------------------------------------------------
-        // ---------------------------------------------------
-        // ---------------------------------------------------
-        // ---------------------------------------------------
-        // ---------------------------------------------------
 
+        // ---------------------------------------------------
         /// <summary>
         /// Saves an uploaded JSON file temporarily and returns the generated file name.
+        /// Code Ownership: Alexandros Blask
         /// </summary>
         /// <param name="file">The IFormFile representing the uploaded JSON.</param>
         /// <returns>
@@ -90,9 +90,11 @@ namespace TraineeTracker.Services {
             return fileName;
         }
 
+        // ---------------------------------------------------
         /// <summary>
         /// Builds the import preview view model for a given teaching plan DTO,
         /// showing lists of new, reactivated, and deactivated lessons.
+        /// Code Ownership: Simon Hinterreiter
         /// </summary>
         /// <param name="teachingPlanDto">The DTO containing import parameters and file.</param>
         /// <returns>
@@ -187,16 +189,9 @@ namespace TraineeTracker.Services {
         }
 
         // ---------------------------------------------------
-        // ---------------------------------------------------
-        // ---------------------------------------------------
-        // ---------------------------------------------------
-        // ---------------------------------------------------
-        // ---------------------------------------------------
-        // ---------------------------------------------------
-        // ---------------------------------------------------
-        
         /// <summary>
         /// Imports a new teaching plan and its lessons from the provided DTO.
+        /// Code Ownership: Alexandros Blask
         /// </summary>
         /// <param name="dto">The DTO containing new teaching plan data and file.</param>
         /// <returns>A task representing the asynchronous import operation.</returns>
@@ -225,8 +220,10 @@ namespace TraineeTracker.Services {
             }
         }
 
+        // ---------------------------------------------------
         /// <summary>
         /// Updates an existing teaching plan and synchronizes lessons based on the provided DTO.
+        /// Code Ownership: Alexandros Blask, Simon Hinterreiter
         /// </summary>
         /// <param name="teachingPlanDto">The DTO containing update information and temp file.</param>
         /// <returns>A task representing the asynchronous update operation.</returns>
@@ -414,8 +411,10 @@ namespace TraineeTracker.Services {
             }
         }
 
+        // ---------------------------------------------------
         /// <summary>
         /// Deletes a teaching plan and its associated lessons if no trainees are assigned.
+        /// Code Ownership: Alexandros Blask
         /// </summary>
         /// <param name="existingTeachingPlanId">The ID of the teaching plan to delete.</param>
         /// <returns>A task representing the asynchronous delete operation.</returns>
@@ -441,6 +440,7 @@ namespace TraineeTracker.Services {
             await _databaseTeachingPlanRepository.DeleteAsync(plan);
         }
 
+        // ---------------------------------------------------
         /// <summary>
         /// Assigns a teaching plan to a trainee, creating corresponding trainee lessons and sending notifications.
         /// </summary>
@@ -463,8 +463,10 @@ namespace TraineeTracker.Services {
             await _databaseTeachingPlanRepository.UpdateAsync(plan);
         }
 
+        // ---------------------------------------------------
         /// <summary>
         /// Unassigns a teaching plan from a trainee, removing related trainee lessons.
+        /// Code Ownership: Alexandros Blask
         /// </summary>
         public async Task UnassignTeachingPlanFromTraineeAsync(ApplicationUser trainee) {
             // Trainee - Get all TraineeLessons
