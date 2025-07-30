@@ -82,7 +82,7 @@ namespace TraineeTracker.Services.Admin {
         /// <param name="filterStatus">Status filter ("all", "open", "closed").</param>
         /// <param name="sortBy">Sort order ("role_asc", "username_asc", etc.).</param>
         /// <returns>The populated <see cref="AdminDashboardViewModel"/>.</returns>
-        /// <remarks>Code Ownership: Paul Schweizer (schwepau)</remarks>
+        /// <remarks>Code Ownership: Paul Schweizer (schwepau), Simon Hinterreiter (hintsimo)</remarks>
         public async Task<AdminDashboardViewModel> BuildAdminDashboardViewModelAsync(
                 int page = 1,
                 string? filterRole = "all",
