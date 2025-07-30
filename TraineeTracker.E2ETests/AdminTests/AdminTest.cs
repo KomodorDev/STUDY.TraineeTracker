@@ -25,8 +25,6 @@ namespace TraineeTracker.E2ETests.AdminTests {
             roleSelect.SelectByValue("Trainee");
 
             wait.Until(d => d.FindElement(By.Id("User_Email"))).SendKeys("test.user@makandra.de");
-            wait.Until(d => d.FindElement(By.Id("User_TraineeStartDate"))).SendKeys("01-08-2025");
-            wait.Until(d => d.FindElement(By.Id("User_TraineeEndDate"))).SendKeys("31-12-2025");
             var teachingPlanSelect = new SelectElement(wait.Until(d => d.FindElement(By.Id("User_TeachingPlanId"))));
             teachingPlanSelect.SelectByValue("1");
 
@@ -41,8 +39,6 @@ namespace TraineeTracker.E2ETests.AdminTests {
 
             screenshot = ((ITakesScreenshot)_driver).GetScreenshot();
             screenshot.SaveAsFile(Path.Combine(resultsDir, $"Screenshot_AdminTest_{DateTime.Now:ddMMyyyy_HHmmss}.png"));
-
-            return;
 
             wait.Until(d => d.FindElement(By.Id("Admin_Table")));
             _driver.Navigate().GoToUrl("http://localhost:5079/Admin/Dashboard");
