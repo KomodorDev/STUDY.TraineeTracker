@@ -85,6 +85,7 @@ namespace TraineeTracker.Controllers {
             var result = await _adminService.CreateUserAsync(viewModel.User, false, Url);
 
             if (!result.Succeeded) {
+                throw new Exception(result.ErrorMessages.First());
                 var modelTask = _adminService.FillCreateUserDropdownsAsync(viewModel);
                 foreach (var message in result.ErrorMessages) {
                     ModelState.AddModelError("", message);
