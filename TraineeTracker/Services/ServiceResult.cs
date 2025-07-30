@@ -1,9 +1,11 @@
 namespace TraineeTracker.Models.Dtos {
+
     /// <summary>
     /// Represents the result of a service operation, indicating success or failure and containing error messages if any.
     /// </summary>
     /// <remarks>Code Ownership: Paul Schweizer (schwepau)</remarks>
     public class ServiceResult {
+
         /// <summary>
         /// Gets a value indicating whether the operation succeeded.
         /// </summary>
@@ -14,6 +16,7 @@ namespace TraineeTracker.Models.Dtos {
         /// </summary>
         public IEnumerable<string> ErrorMessages { get; private set; } = new List<string>();
 
+        // ------------------------------------------------------
         /// <summary>
         /// Creates a successful <see cref="ServiceResult"/>.
         /// </summary>
@@ -21,6 +24,7 @@ namespace TraineeTracker.Models.Dtos {
         /// <remarks>Code Ownership: Paul Schweizer (schwepau)</remarks>
         public static ServiceResult Success() => new ServiceResult { Succeeded = true };
 
+        // ------------------------------------------------------
         /// <summary>
         /// Creates a failed <see cref="ServiceResult"/> with the specified error messages.
         /// </summary>
@@ -39,6 +43,7 @@ namespace TraineeTracker.Models.Dtos {
     /// <typeparam name="T">The type of the value returned by the operation.</typeparam>
     /// <remarks>Code Ownership: Paul Schweizer (schwepau)</remarks>
     public class ServiceResult<T> {
+
         /// <summary>
         /// Gets a value indicating whether the operation succeeded.
         /// </summary>
@@ -54,6 +59,7 @@ namespace TraineeTracker.Models.Dtos {
         /// </summary>
         public T? Value { get; set; }
 
+        // ------------------------------------------------------
         /// <summary>
         /// Creates a successful <see cref="ServiceResult{T}"/> without a value.
         /// </summary>
@@ -61,6 +67,7 @@ namespace TraineeTracker.Models.Dtos {
         /// <remarks>Code Ownership: Paul Schweizer (schwepau)</remarks>
         public static ServiceResult<T> Success() => new ServiceResult<T> { Succeeded = true };
 
+        // ------------------------------------------------------
         /// <summary>
         /// Creates a successful <see cref="ServiceResult{T}"/> with the specified value.
         /// </summary>
@@ -69,6 +76,7 @@ namespace TraineeTracker.Models.Dtos {
         /// <remarks>Code Ownership: Paul Schweizer (schwepau)</remarks>
         public static ServiceResult<T> Success(T value) => new ServiceResult<T> { Succeeded = true, Value = value };
 
+        // ------------------------------------------------------
         /// <summary>
         /// Creates a failed <see cref="ServiceResult{T}"/> with the specified error messages.
         /// </summary>

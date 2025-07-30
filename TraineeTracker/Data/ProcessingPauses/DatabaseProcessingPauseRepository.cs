@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using TraineeTracker.Models.Domain;
 
 namespace TraineeTracker.Data.ProcessingPauses {
+
     /// <summary>
     /// Repository implementation for managing <see cref="ProcessingPause"/> entities in the database.
     /// </summary>
@@ -9,6 +10,7 @@ namespace TraineeTracker.Data.ProcessingPauses {
     public class DatabaseProcessingPauseRepository : IProcessingPauseRepository {
         private readonly ApplicationDbContext _context;
 
+        // ------------------------------------------------------
         /// <summary>
         /// Initializes a new instance of the <see cref="DatabaseProcessingPauseRepository"/> class.
         /// </summary>
@@ -18,6 +20,7 @@ namespace TraineeTracker.Data.ProcessingPauses {
             _context = context;
         }
 
+        // ------------------------------------------------------
         /// <summary>
         /// Adds a new <see cref="ProcessingPause"/> to the database asynchronously.
         /// </summary>
@@ -28,6 +31,7 @@ namespace TraineeTracker.Data.ProcessingPauses {
             await _context.SaveChangesAsync();
         }
 
+        // ------------------------------------------------------
         /// <summary>
         /// Checks asynchronously if a specific <see cref="ProcessingPause"/> already exists in the database.
         /// </summary>
@@ -42,6 +46,7 @@ namespace TraineeTracker.Data.ProcessingPauses {
             );
         }
 
+        // ------------------------------------------------------
         /// <summary>
         /// Determines asynchronously if the given <see cref="ProcessingPause"/> overlaps with any existing pauses for the same trainee.
         /// </summary>
@@ -51,7 +56,7 @@ namespace TraineeTracker.Data.ProcessingPauses {
         /// <remarks>Code Ownership: Paul Schweizer (schwepau)</remarks>
         public async Task<bool> OverlapsAsync(ProcessingPause processingPause, bool newProcessingPause) {
             return await _context.ProcessingPauses.AnyAsync(p =>
-                (newProcessingPause || p.ProcessingPauseId != processingPause.ProcessingPauseId) &&    // if in database (Id != 1): don't compare with same instance of processingPause
+                (newProcessingPause || p.ProcessingPauseId != processingPause.ProcessingPauseId) &&                         // if in database (Id != 1): don't compare with same instance of processingPause
                 p.TraineeId == processingPause.TraineeId &&
                 ((p.StartDate == processingPause.StartDate && p.EndDate == processingPause.EndDate) ||                      // Same
                 (processingPause.StartDate < p.StartDate && p.StartDate < processingPause.EndDate) ||                       // StartDate strictly inside new pause
@@ -61,6 +66,7 @@ namespace TraineeTracker.Data.ProcessingPauses {
             );
         }
 
+        // ------------------------------------------------------
         /// <summary>
         /// Finds a <see cref="ProcessingPause"/> by its unique identifier asynchronously.
         /// </summary>
@@ -71,6 +77,7 @@ namespace TraineeTracker.Data.ProcessingPauses {
             return await _context.ProcessingPauses.FirstOrDefaultAsync(p => p.ProcessingPauseId == processingPauseId);
         }
 
+        // ------------------------------------------------------
         /// <summary>
         /// Updates an existing <see cref="ProcessingPause"/> in the database asynchronously.
         /// </summary>
@@ -81,6 +88,7 @@ namespace TraineeTracker.Data.ProcessingPauses {
             await _context.SaveChangesAsync();
         }
 
+        // ------------------------------------------------------
         /// <summary>
         /// Deletes a <see cref="ProcessingPause"/> from the database asynchronously.
         /// </summary>
@@ -91,6 +99,7 @@ namespace TraineeTracker.Data.ProcessingPauses {
             await _context.SaveChangesAsync();
         }
 
+        // ------------------------------------------------------
         /// <summary>
         /// Retrieves all <see cref="ProcessingPause"/> entries for a specific trainee asynchronously.
         /// </summary>

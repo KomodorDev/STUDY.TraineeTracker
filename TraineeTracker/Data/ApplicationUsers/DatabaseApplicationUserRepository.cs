@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using TraineeTracker.Models.Domain;
 
 namespace TraineeTracker.Data.ApplicationUsers {
+
     /// <summary>
     /// Repository implementation for managing <see cref="ApplicationUser"/> entities using Entity Framework and ASP.NET Identity.
     /// Provides methods for user creation, deletion, role management, and retrieval with related entities.
@@ -14,6 +15,7 @@ namespace TraineeTracker.Data.ApplicationUsers {
 
         private readonly UserManager<ApplicationUser> _userManager;
 
+        // ------------------------------------------------------
         /// <summary>
         /// Initializes a new instance of the <see cref="DatabaseApplicationUserRepository"/> class.
         /// </summary>
@@ -25,6 +27,7 @@ namespace TraineeTracker.Data.ApplicationUsers {
             _userManager = userManager;
         }
 
+        // ------------------------------------------------------
         /// <summary>
         /// Asynchronously adds the specified <see cref="ApplicationUser"/> to the given role.
         /// </summary>
@@ -38,6 +41,7 @@ namespace TraineeTracker.Data.ApplicationUsers {
             return await _userManager.AddToRoleAsync(user, role);
         }
 
+        // ------------------------------------------------------
         /// <summary>
         /// Creates a new user with the specified password.
         /// </summary>
@@ -49,6 +53,7 @@ namespace TraineeTracker.Data.ApplicationUsers {
             return await _userManager.CreateAsync(user, password);
         }
 
+        // ------------------------------------------------------
         /// <summary>
         /// Deletes the specified user.
         /// </summary>
@@ -59,6 +64,7 @@ namespace TraineeTracker.Data.ApplicationUsers {
             return await _userManager.DeleteAsync(user);
         }
 
+        // ------------------------------------------------------
         /// <summary>
         /// Checks if a user with the specified ID exists.
         /// </summary>
@@ -70,6 +76,7 @@ namespace TraineeTracker.Data.ApplicationUsers {
             return user != null;
         }
 
+        // ------------------------------------------------------
         /// <summary>
         /// Checks if the specified user exists.
         /// </summary>
@@ -81,6 +88,7 @@ namespace TraineeTracker.Data.ApplicationUsers {
             return tmp != null;
         }
 
+        // ------------------------------------------------------
         /// <summary>
         /// Finds a user by email.
         /// </summary>
@@ -91,6 +99,7 @@ namespace TraineeTracker.Data.ApplicationUsers {
             return await _userManager.FindByEmailAsync(email);
         }
 
+        // ------------------------------------------------------
         /// <summary>
         /// Finds a user by email and includes related ProcessingPauses and TraineeLessons.
         /// </summary>
@@ -104,6 +113,7 @@ namespace TraineeTracker.Data.ApplicationUsers {
             .FirstOrDefaultAsync(u => u.Email == email);
         }
 
+        // ------------------------------------------------------
         /// <summary>
         /// Finds a user by ID.
         /// </summary>
@@ -114,6 +124,7 @@ namespace TraineeTracker.Data.ApplicationUsers {
             return await _userManager.FindByIdAsync(userId);
         }
 
+        // ------------------------------------------------------
         /// <summary>
         /// Finds a user by ID and includes related LastSelectedTrainees.
         /// </summary>
@@ -126,6 +137,7 @@ namespace TraineeTracker.Data.ApplicationUsers {
             .FirstOrDefaultAsync(u => u.Id == userId);
         }
 
+        // ------------------------------------------------------
         /// <summary>
         /// Finds a user by ID and includes related EmailNotificationSetting.
         /// </summary>
@@ -138,6 +150,7 @@ namespace TraineeTracker.Data.ApplicationUsers {
                 .FirstOrDefaultAsync(u => u.Id == userId);
         }
 
+        // ------------------------------------------------------
         /// <summary>
         /// Finds a user by ID and includes related TeachingPlan and TraineeLessons with Lessons.
         /// </summary>
@@ -152,6 +165,7 @@ namespace TraineeTracker.Data.ApplicationUsers {
                 .FirstOrDefaultAsync(u => u.Id == userId);
         }
 
+        // ------------------------------------------------------
         /// <summary>
         /// Finds a user by ID and includes related TraineeLessons and ProcessingPauses.
         /// </summary>
@@ -165,6 +179,7 @@ namespace TraineeTracker.Data.ApplicationUsers {
             .FirstOrDefaultAsync(u => u.Id == userId);
         }
 
+        // ------------------------------------------------------
         /// <summary>
         /// Finds a user by ID and includes related ProcessingPauses.
         /// </summary>
@@ -177,6 +192,7 @@ namespace TraineeTracker.Data.ApplicationUsers {
             .FirstOrDefaultAsync(u => u.Id == userId);
         }
 
+        // ------------------------------------------------------
         /// <summary>
         /// Finds a user by ID and includes related WrittenFeedbacks with Lessons.
         /// </summary>
@@ -190,6 +206,7 @@ namespace TraineeTracker.Data.ApplicationUsers {
                 .FirstOrDefaultAsync(u => u.Id == userId);
         }
 
+        // ------------------------------------------------------
         /// <summary>
         /// Generates an email confirmation token for the specified user.
         /// </summary>
@@ -200,6 +217,7 @@ namespace TraineeTracker.Data.ApplicationUsers {
             return await _userManager.GenerateEmailConfirmationTokenAsync(user);
         }
 
+        // ------------------------------------------------------
         /// <summary>
         /// Gets all open users in the specified role.
         /// </summary>
@@ -215,6 +233,7 @@ namespace TraineeTracker.Data.ApplicationUsers {
             .ToListAsync();
         }
 
+        // ------------------------------------------------------
         /// <summary>
         /// Gets all closed users in the specified role.
         /// </summary>
@@ -230,6 +249,7 @@ namespace TraineeTracker.Data.ApplicationUsers {
             .ToListAsync();
         }
 
+        // ------------------------------------------------------
         /// <summary>
         /// Gets all open users in the specified role including their EmailNotificationSetting.
         /// </summary>
@@ -245,6 +265,7 @@ namespace TraineeTracker.Data.ApplicationUsers {
                 .ToListAsync();
         }
 
+        // ------------------------------------------------------
         /// <summary>
         /// Asynchronously retrieves the roles assigned to the specified <see cref="ApplicationUser"/>.
         /// </summary>
@@ -258,6 +279,7 @@ namespace TraineeTracker.Data.ApplicationUsers {
             return await _userManager.GetRolesAsync(user);
         }
 
+        // ------------------------------------------------------
         /// <summary>
         /// Gets the user associated with the specified claims principal.
         /// </summary>
@@ -268,6 +290,7 @@ namespace TraineeTracker.Data.ApplicationUsers {
             return await _userManager.GetUserAsync(principal);
         }
 
+        // ------------------------------------------------------
         /// <summary>
         /// Asynchronously retrieves a collection of <see cref="ApplicationUser"/> objects that are assigned to the specified role.
         /// </summary>
@@ -280,6 +303,7 @@ namespace TraineeTracker.Data.ApplicationUsers {
             return await _userManager.GetUsersInRoleAsync(roleName);
         }
 
+        // ------------------------------------------------------
         /// <summary>
         /// Gets all users in the specified role including their ProcessingPauses and TraineeLessons.
         /// </summary>
@@ -296,6 +320,7 @@ namespace TraineeTracker.Data.ApplicationUsers {
             .ToListAsync();
         }
 
+        // ------------------------------------------------------
         /// <summary>
         /// Gets all users.
         /// </summary>
@@ -305,6 +330,7 @@ namespace TraineeTracker.Data.ApplicationUsers {
             return await _context.Users.ToListAsync();
         }
 
+        // ------------------------------------------------------
         /// <summary>
         /// Gets all users filtered by their closed status.
         /// </summary>
@@ -315,6 +341,7 @@ namespace TraineeTracker.Data.ApplicationUsers {
             return await _context.Users.Where(u => u.IsClosed == isClosed).ToListAsync();
         }
 
+        // ------------------------------------------------------
         /// <summary>
         /// Determines whether the specified user is in the given role.
         /// </summary>
@@ -327,6 +354,7 @@ namespace TraineeTracker.Data.ApplicationUsers {
             return roles.Contains(role);
         }
 
+        // ------------------------------------------------------
         /// <summary>
         /// Updates the specified user.
         /// </summary>

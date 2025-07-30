@@ -1,9 +1,11 @@
 namespace TraineeTracker.Models.Domain {
+
     /// <summary>
     /// Represents a pause in processing for a trainee, defined by a start and end date.
     /// </summary>
     /// <remarks>Code Ownership: Paul Schweizer (schwepau)</remarks>
     public class ProcessingPause {
+
         /// <summary>
         /// Gets the unique identifier for the processing pause.
         /// </summary>
@@ -29,6 +31,7 @@ namespace TraineeTracker.Models.Domain {
         /// </summary>
         public required DateOnly EndDate { get; set; }
 
+        // ------------------------------------------------------
         /// <summary>
         /// Determines whether the specified object is equal to the current <see cref="ProcessingPause"/>.
         /// </summary>
@@ -42,6 +45,7 @@ namespace TraineeTracker.Models.Domain {
             return TraineeId == other.TraineeId && StartDate == other.StartDate && EndDate == other.EndDate;
         }
 
+        // ------------------------------------------------------
         /// <summary>
         /// Serves as the default hash function.
         /// </summary>

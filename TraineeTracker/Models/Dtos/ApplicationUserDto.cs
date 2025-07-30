@@ -1,12 +1,14 @@
 using System.ComponentModel.DataAnnotations;
 
 namespace TraineeTracker.Models.Dtos {
+    
     /// <summary>
     /// Data Transfer Object (DTO) representing an application user.
     /// Used for transferring user data between layers of the application.
     /// </summary>
     /// <remarks>Code Ownership: Paul Schweizer (schwepau)</remarks>
     public class ApplicationUserDto {
+        
         /// <summary>
         /// Gets or sets the email address of the user.
         /// Must be a valid email format and is required.

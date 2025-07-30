@@ -1,10 +1,13 @@
 using TraineeTracker.Models.Domain;
 
 namespace TraineeTracker.Data.ProcessingPauses {
+
     /// <summary>
     /// Defines methods for managing <see cref="ProcessingPause"/> entities in the data store.
     /// </summary>
     public interface IProcessingPauseRepository {
+
+        // ------------------------------------------------------
         /// <summary>
         /// Asynchronously creates a new <see cref="ProcessingPause"/> entry.
         /// </summary>
@@ -13,6 +16,7 @@ namespace TraineeTracker.Data.ProcessingPauses {
         /// <remarks>Code Ownership: Paul Schweizer (schwepau)</remarks>
         Task CreateAsync(ProcessingPause processingPause);
 
+        // ------------------------------------------------------
         /// <summary>
         /// Asynchronously checks if a specified <see cref="ProcessingPause"/> exists.
         /// </summary>
@@ -22,6 +26,7 @@ namespace TraineeTracker.Data.ProcessingPauses {
         /// </returns>
         Task<bool> ExistsAsync(ProcessingPause processingPause);
 
+        // ------------------------------------------------------
         /// <summary>
         /// Asynchronously checks if a specified <see cref="ProcessingPause"/> overlaps with existing pauses.
         /// </summary>
@@ -32,6 +37,7 @@ namespace TraineeTracker.Data.ProcessingPauses {
         /// </returns>
         Task<bool> OverlapsAsync(ProcessingPause processingPause, bool newProcessingPause);
 
+        // ------------------------------------------------------
         /// <summary>
         /// Asynchronously finds a <see cref="ProcessingPause"/> by its unique identifier.
         /// </summary>
@@ -41,6 +47,7 @@ namespace TraineeTracker.Data.ProcessingPauses {
         /// </returns>
         Task<ProcessingPause?> FindByIdAsync(int processingPauseId);
 
+        // ------------------------------------------------------
         /// <summary>
         /// Asynchronously updates an existing <see cref="ProcessingPause"/>.
         /// </summary>
@@ -48,6 +55,7 @@ namespace TraineeTracker.Data.ProcessingPauses {
         /// <returns>A task representing the asynchronous operation.</returns>
         Task UpdateAsync(ProcessingPause processingPause);
 
+        // ------------------------------------------------------
         /// <summary>
         /// Asynchronously deletes a specified <see cref="ProcessingPause"/>.
         /// </summary>
@@ -55,6 +63,7 @@ namespace TraineeTracker.Data.ProcessingPauses {
         /// <returns>A task representing the asynchronous operation.</returns>
         Task DeleteAsync(ProcessingPause processingPause);
 
+        // ------------------------------------------------------
         /// <summary>
         /// Asynchronously retrieves all <see cref="ProcessingPause"/> entries for a given trainee.
         /// </summary>

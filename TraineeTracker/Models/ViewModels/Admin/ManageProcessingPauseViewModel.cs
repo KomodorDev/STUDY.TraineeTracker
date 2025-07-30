@@ -2,11 +2,13 @@ using TraineeTracker.Models.Dtos;
 using TraineeTracker.Models.Domain;
 
 namespace TraineeTracker.Models.ViewModels.Admin {
+
     /// <summary>
     /// ViewModel for managing processing pauses for a trainee in the admin area.
     /// </summary>
     /// <remarks>Code Ownership: Paul Schweizer (schwepau)</remarks>
     public class ManageProcessingPausesViewModel {
+        
         /// <summary>
         /// Gets or sets the username of the trainee.
         /// </summary>

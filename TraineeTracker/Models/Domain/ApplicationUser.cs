@@ -1,12 +1,14 @@
 using Microsoft.AspNetCore.Identity;
 
 namespace TraineeTracker.Models.Domain {
+
     /// <summary>
     /// Represents an application user in the TraineeTracker system, extending the ASP.NET IdentityUser.
     /// Contains properties for trainee and mentor roles, notification settings, and related domain entities.
     /// </summary>
     /// <remarks>Code Ownership: Paul Schweizer (schwepau)</remarks>
     public class ApplicationUser : IdentityUser {
+        
         /// <summary>
         /// Indicates whether the user account is closed.
         /// </summary>
