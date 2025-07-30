@@ -32,6 +32,7 @@ namespace TraineeTracker.E2ETests.AdminTests {
 
             wait.Until(d => d.FindElement(By.Id("Create_User"))).Click();
 
+            wait.Until(d => d.FindElement(By.Id("Admin_Table")));
             _driver.Navigate().GoToUrl("http://localhost:5079/Admin/Dashboard");
             int page = 1;
             bool found = false;
