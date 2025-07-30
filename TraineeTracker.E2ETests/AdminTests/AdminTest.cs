@@ -30,8 +30,11 @@ namespace TraineeTracker.E2ETests.AdminTests {
             var teachingPlanSelect = new SelectElement(wait.Until(d => d.FindElement(By.Id("User_TeachingPlanId"))));
             teachingPlanSelect.SelectByValue("1");
 
+            if (!Directory.Exists("TestResults"))
+                Directory.CreateDirectory("TestResults");
             var screenshot = ((ITakesScreenshot)_driver).GetScreenshot();
-            screenshot.SaveAsFile($"Screenshot_AdminTest_{DateTime.Now:ddMMyyyy_HHmmss}.png");
+            screenshot.SaveAsFile($"TestResults/Screenshot_AdminTest_{DateTime.Now:ddMMyyyy_HHmmss}.png");
+
             wait.Until(d => d.FindElement(By.Id("Create_User"))).Click();
 
             wait.Until(d => d.FindElement(By.Id("Admin_Table")));
