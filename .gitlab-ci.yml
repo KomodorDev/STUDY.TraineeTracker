@@ -65,6 +65,8 @@ e2e-tests:
 
     # E2E-Tests ausführen
     - dotnet test
+
+    - ls -l TraineeTracker.E2ETests/TestResults/
   needs:
     - build
   rules:
