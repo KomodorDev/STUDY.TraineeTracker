@@ -6,6 +6,8 @@ using TraineeTracker.Models.Domain;
 using TraineeTracker.Data.TraineeStatistics;
 using TraineeTracker.Data.TraineeLessons;
 using TraineeTracker.Data.ProcessingPauses;
+using TraineeTracker.UnitTests.TraineeStatistics.TestDataFactory;
+
 
 /// <summary>
 /// Contains unit tests for <see cref="TraineeStatisticsService"/>, verifying correctness of calculated statistics.
@@ -15,7 +17,6 @@ using TraineeTracker.Data.ProcessingPauses;
 /// </remarks>
 public class TraineeStatisticsServiceTests {
 
-    /*
     // --------------------------------------------------
     /// <summary>
     /// Verifies correct number of present days returned by <see cref="TraineeStatisticsService.GetPresentDaysAsync"/>.
@@ -484,6 +485,6 @@ public class TraineeStatisticsServiceTests {
             return Task.FromResult(false);
         }
     }
-    */
+
     // --------------------------------------------------
 }
