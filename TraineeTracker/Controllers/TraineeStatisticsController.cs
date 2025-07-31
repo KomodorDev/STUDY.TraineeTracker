@@ -54,16 +54,13 @@ namespace TraineeTracker.Controllers {
                 return Unauthorized();
             }
 
-            var isAdmin = User.IsInRole("Admin");
-            var isMentor = User.IsInRole("Mentor");
-            var isTraineeSelf = currentUserId == traineeId;
-
-            if (!(isAdmin || isMentor || isTraineeSelf)) {
+            try {
+                var model = await _service.BuildTraineeStatisticsViewModel(traineeId, User);
+                return PartialView("_TraineeStatistics", model);
+            }
+            catch (UnauthorizedAccessException) {
                 return Forbid();
             }
-
-            var model = await _service.BuildTraineeStatisticsViewModel(traineeId, User);
-            return PartialView("_TraineeStatistics", model);
         }
 
         // ------------------------------------------------------
