@@ -1,6 +1,6 @@
 using TraineeTracker.Models.Domain;
 
-namespace TraineeTracker.Tests.TestData {
+namespace TraineeTracker.UnitTests.TraineeStatistics.TestDataFactory {
 
     /// <summary>
     /// Provides reusable test data for unit tests involving trainees and their lessons.
