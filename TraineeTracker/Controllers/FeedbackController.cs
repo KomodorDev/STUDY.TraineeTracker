@@ -4,6 +4,7 @@ using TraineeTracker.Services;
 
 namespace TraineeTracker.Controllers {
 
+    // ------------------------------------------------------
     /// <summary>
     /// Controller responsible for displaying the feedback dashboard
     /// and handling actions to mark feedback as read or unread.
@@ -14,12 +15,13 @@ namespace TraineeTracker.Controllers {
     [Route("Feedback")]
     public class FeedbackController : Controller {
 
-         /// <summary>
+        // ------------------------------------------------------
+        /// <summary>
         /// Service encapsulating business logic for feedback operations.
         /// </summary>
         private readonly FeedbackService _feedbackService;
 
-       
+        // ------------------------------------------------------
         /// <summary>
         /// Initializes a new instance of the <see cref="FeedbackController"/> class.
         /// Code Ownership: Alexandros Blask, Simon Hinterreiter
@@ -29,6 +31,7 @@ namespace TraineeTracker.Controllers {
             _feedbackService = feedbackService;
         }
 
+        // ------------------------------------------------------
         /// <summary>
         /// Displays the feedback dashboard with optional filter, pagination, and sorting.
         /// Code Ownership: Alexandros Blask, Simon Hinterreiter
@@ -62,6 +65,7 @@ namespace TraineeTracker.Controllers {
             return View("FeedbackDashboard", viewModel);
         }
 
+        // ------------------------------------------------------
         /// <summary>
         /// Marks a specific feedback entry as read for the current user and redirects back to the dashboard.
         /// Code Ownership: Alexandros Blask, Simon Hinterreiter
@@ -106,6 +110,7 @@ namespace TraineeTracker.Controllers {
                 });
         }
 
+        // ------------------------------------------------------
         /// <summary>
         /// Marks a specific feedback entry as unread for the current user and redirects back to the dashboard.
         /// Code Ownership: Alexandros Blask, Simon Hinterreiter

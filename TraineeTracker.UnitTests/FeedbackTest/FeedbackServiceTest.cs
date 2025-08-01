@@ -17,19 +17,25 @@ namespace TraineeTracker.UnitTests.FeedbackTest
 {
     public class FeedbackServiceTests 
     {
+        // ------------------------------------------------------
         // Fake Feedback Repository
         private class FakeFeedbackRepository : IFeedbackRepository {
+
             public Feedback? StoredFeedback;
             public bool UpdateCalled = false;
 
+            // ------------------------------------------------------
             public Task<Feedback?> GetFeedbackByIDWithLessonAndAuthorAndReadByUsersAsync(int feedbackId)
                 => Task.FromResult(StoredFeedback);
+
+            // ------------------------------------------------------
             public Task UpdateAsync(Feedback feedback) {
                 StoredFeedback = feedback;
                 UpdateCalled = true;
                 return Task.CompletedTask;
             }
 
+            // ------------------------------------------------------
             // Stubb all other Methods:
             public Task<bool> ExistsAsync(int id) => throw new NotImplementedException();
             public Task<bool> ExistsAsync(Feedback feedback) => throw new NotImplementedException();
@@ -59,14 +65,18 @@ namespace TraineeTracker.UnitTests.FeedbackTest
                 => throw new NotImplementedException();
         }
 
+        // ------------------------------------------------------
         // Fake User Repository with all Methods stubbed
         private class FakeUserRepository : IApplicationUserRepository {
+
             private readonly ApplicationUser _user;
             public FakeUserRepository(ApplicationUser user) { _user = user; }
 
+            // ------------------------------------------------------
             public Task<ApplicationUser?> GetUserAsync(ClaimsPrincipal user) => Task.FromResult(_user);
 
-            // Alle anderen Methoden:
+            // ------------------------------------------------------
+            // All other Methods:
             public Task<IdentityResult> AddToRoleAsync(ApplicationUser user, string role) => throw new NotImplementedException();
             public Task<IdentityResult> CreateAsync(ApplicationUser user, string password) => throw new NotImplementedException();
             public Task<IdentityResult> DeleteAsync(ApplicationUser user) => throw new NotImplementedException();
@@ -103,11 +113,13 @@ namespace TraineeTracker.UnitTests.FeedbackTest
 
         }
 
+        // ------------------------------------------------------
         [Fact]
         public async Task MarkFeedbackAsReadAsync_ShouldAddUser_WhenNotAlreadyRead() {
+
             var user = new ApplicationUser {
                 Id = "test-user",
-                EmailNotificationSetting = new EmailNotificationSetting() // oder ein valides Dummy-Objekt
+                EmailNotificationSetting = new EmailNotificationSetting()
             };
 
             var lesson = new Lesson {
@@ -131,9 +143,11 @@ namespace TraineeTracker.UnitTests.FeedbackTest
                 PreviousKnowledge = PreviousKnowledgeLevel.Basic, // Beispielwert
                 HoursOfEffort = 3.5f // Beispielwert
             };
+            
             var claimsPrincipal = new ClaimsPrincipal(new ClaimsIdentity(new[] {
                 new Claim(ClaimTypes.NameIdentifier, user.Id)
             }));
+
             var feedbackRepo = new FakeFeedbackRepository { StoredFeedback = feedback };
             var userRepo = new FakeUserRepository(user);
             var service = new FeedbackService(feedbackRepo, userRepo, null!, null!);

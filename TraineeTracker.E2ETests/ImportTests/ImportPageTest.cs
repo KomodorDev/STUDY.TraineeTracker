@@ -2,20 +2,26 @@ using OpenQA.Selenium;
 using Tutorial_project.E2ETests;
 
 namespace TraineeTracker.E2ETests.ImportTests {
+
+    // ------------------------------------------------------
     /// <summary>
     /// End-to-end test for the Import Dashboard page.
     /// Verifies that the import form components are present and functional.
     /// </summary>
     public class ImportPageTests : IClassFixture<BrowserFixture> {
+
         private readonly IWebDriver _driver;
         private const string BaseUrl = "http://localhost:5079";
 
+        // ------------------------------------------------------
         public ImportPageTests(BrowserFixture fixture) {
             _driver = fixture.Driver;
         }
 
+        // ------------------------------------------------------
         [Fact]
         public void ImportDashboard_ShouldDisplayImportForm() {
+            
             // 1. Navigate to login page
             _driver.Navigate().GoToUrl(BaseUrl + "/Identity/Account/Login?ReturnUrl=%2FTeachingPlan%2FDashboard");
             Thread.Sleep(1000);
@@ -34,7 +40,7 @@ namespace TraineeTracker.E2ETests.ImportTests {
             var importForm = _driver.FindElement(By.CssSelector("form[action='/TeachingPlan/ImportNewTeachingPlan']"));
             Assert.NotNull(importForm);
 
-            // 5. Verify form elements are present
+            // 5. Verify if form elements are present
             var nameInput = importForm.FindElement(By.Name("NewPlanName"));
             Assert.True(nameInput.Displayed, "Name input should be visible");
 

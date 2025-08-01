@@ -13,18 +13,25 @@ using TraineeTracker.Services;
 using Xunit;
 
 namespace TraineeTracker.UnitTests.TeachingPlanTest{
+
+    // ------------------------------------------------------
     public class TeachingPlanServiceTests{
+
+        // ------------------------------------------------------
         // Fake Repository for TeachingPlan
         private class FakeTeachingPlanRepository : ITeachingPlanRepository{
+
             public TeachingPlan? CreatedTeachingPlan;
             public bool CreateCalled = false;
 
+            // ------------------------------------------------------
             public Task CreateAsync(TeachingPlan teachingPlan){
                 CreatedTeachingPlan = teachingPlan;
                 CreateCalled = true;
                 return Task.CompletedTask;
             }
 
+            // ------------------------------------------------------
             // Stubb all other Methods
             public Task<bool> ExistsAsync(int id) => throw new NotImplementedException();
             public Task<bool> ExistsAsync(TeachingPlan teachingPlan) => throw new NotImplementedException();
@@ -36,16 +43,19 @@ namespace TraineeTracker.UnitTests.TeachingPlanTest{
             public Task<IEnumerable<TeachingPlan>> GetAllTeachingPlansWithLessonsAndTraineesAsync() => throw new NotImplementedException();
         }
 
+        // ------------------------------------------------------
         // Fake Repository for Lesson
-        private class FakeLessonRepository : ILessonRepository
-        {
+        private class FakeLessonRepository : ILessonRepository{
+            
             public List<Lesson> CreatedLessons { get; } = new List<Lesson>();
 
+            // ------------------------------------------------------
             public Task CreateAsync(Lesson lesson){
                 CreatedLessons.Add(lesson);
                 return Task.CompletedTask;
             }
 
+            // ------------------------------------------------------
             // Stubb all other Methods
             public Task<bool> ExistsAsync(int id) => throw new NotImplementedException();
             public Task<bool> ExistsAsync(string makandraId, int teachingPlanId) => throw new NotImplementedException();
@@ -56,6 +66,7 @@ namespace TraineeTracker.UnitTests.TeachingPlanTest{
             public Task<IEnumerable<Lesson>> GetAllLessonsWithFeedbacksAsync() => throw new NotImplementedException();
         }
 
+        // ------------------------------------------------------
         [Fact]
         public async Task ImportNewTeachingPlan_ShouldCreateTeachingPlanAndLessons()
         {
