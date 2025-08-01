@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace TraineeTracker.Data.Lessons {
 
+    // ------------------------------------------------------
     /// <summary>
     /// Provides CRUD operations for <see cref="Lesson"/> entities using Entity Framework Core.
     /// Implements the <see cref="ILessonRepository"/> interface.
@@ -10,12 +11,14 @@ namespace TraineeTracker.Data.Lessons {
     /// </summary>
     public class DatabaseLessonRepository : ILessonRepository {
         
+        // ------------------------------------------------------
         /// <summary>
         /// The Entity Framework Core database context used for accessing and modifying lesson entities.
         /// Code Ownership: Alexandros Blask
         /// </summary>
         private readonly ApplicationDbContext _context;
 
+        // ------------------------------------------------------
         /// <summary>
         /// Initializes a new instance of the <see cref="DatabaseLessonRepository"/> class.
         /// Code Ownership: Alexandros Blask
@@ -25,6 +28,7 @@ namespace TraineeTracker.Data.Lessons {
             _context = context;
         }
 
+        // ------------------------------------------------------
         /// <summary>
         /// Checks whether a <see cref="Lesson"/> entry with the given ID exists in the database.
         /// Code Ownership: Alexandros Blask
@@ -35,6 +39,7 @@ namespace TraineeTracker.Data.Lessons {
             return await _context.Lessons.AnyAsync(l => l.LessonId == id);
         }
 
+        // ------------------------------------------------------
         /// <summary>
         /// Checks whether a <see cref="Lesson"/> with the specified Makandra ID and TeachingPlan ID exists.
         /// Code Ownership: Alexandros Blask
@@ -47,6 +52,7 @@ namespace TraineeTracker.Data.Lessons {
                 .AnyAsync(l => l.MakandraId == makandraId && l.TeachingPlanId == teachingPlanId);
         }
 
+        // ------------------------------------------------------
         /// <summary>
         /// Adds a new <see cref="Lesson"/> entry to the database.
         /// Code Ownership: Alexandros Blask
@@ -58,6 +64,7 @@ namespace TraineeTracker.Data.Lessons {
             await _context.SaveChangesAsync();
         }
 
+        // ------------------------------------------------------
         /// <summary>
         /// Updates an existing <see cref="Lesson"/> in the database.
         /// Code Ownership: Alexandros Blask
@@ -69,6 +76,7 @@ namespace TraineeTracker.Data.Lessons {
             await _context.SaveChangesAsync();
         }
 
+        // ------------------------------------------------------
         /// <summary>
         /// Deletes a specific <see cref="Lesson"/> entity from the database.
         /// Code Ownership: Alexandros Blask
@@ -80,6 +88,7 @@ namespace TraineeTracker.Data.Lessons {
             await _context.SaveChangesAsync();
         }
 
+        // ------------------------------------------------------
         /// <summary>
         /// Retrieves a <see cref="Lesson"/> by its ID, including related feedbacks.
         /// Code Ownership: Alexandros Blask
@@ -92,6 +101,7 @@ namespace TraineeTracker.Data.Lessons {
             .FirstOrDefaultAsync(l => l.LessonId == id);
         }
 
+        // ------------------------------------------------------
         /// <summary>
         /// Retrieves all <see cref="Lesson"/> entities from the database, including their feedbacks.
         /// Code Ownership: Alexandros Blask
@@ -103,6 +113,7 @@ namespace TraineeTracker.Data.Lessons {
             .ToListAsync();
         }
         
+        // ------------------------------------------------------
         /// <summary>
         /// Retrieves all <see cref="Lesson"/> entities along with their feedbacks.
         /// Code Ownership: Alexandros Blask
