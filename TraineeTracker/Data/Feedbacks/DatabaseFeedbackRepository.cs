@@ -3,6 +3,7 @@ using TraineeTracker.Models.Domain;
 
 namespace TraineeTracker.Data.Feedbacks {
 
+    // ------------------------------------------------------
     /// <summary>
     /// Provides CRUD operations for <see cref="Feedback"/> entities using Entity Framework Core.
     /// Implements the <see cref="IFeedbackRepository"/> interface.
@@ -12,11 +13,13 @@ namespace TraineeTracker.Data.Feedbacks {
     /// </remarks>
     public class DatabaseFeedbackRepository : IFeedbackRepository {
 
+        // ------------------------------------------------------
         /// <summary>
         /// The Entity Framework Core database context used for accessing and modifying feedback entities.
         /// </summary>
         private readonly ApplicationDbContext _context;
 
+        // ------------------------------------------------------
         /// <summary>
         /// Initializes a new instance of the <see cref="DatabaseFeedbackRepository"/> class
         /// with a provided <see cref="ApplicationDbContext"/>.
@@ -27,7 +30,7 @@ namespace TraineeTracker.Data.Feedbacks {
             _context = context;
         }
 
-        
+        // ------------------------------------------------------
         /// <summary>
         /// Checks whether a <see cref="Feedback"/> entry with the given ID exists in the database.
         /// Code Ownership: Alexandros Blask
@@ -38,6 +41,7 @@ namespace TraineeTracker.Data.Feedbacks {
             return await _context.Feedbacks.AnyAsync(f => f.FeedbackId == feedbackId);
         }
 
+        // ------------------------------------------------------
         /// <summary>
         /// Checks whether a <see cref="Feedback"/> entity already exists in the database.
         /// Code Ownership: Alexandros Blask
@@ -48,6 +52,7 @@ namespace TraineeTracker.Data.Feedbacks {
             return await _context.Feedbacks.AnyAsync(f => f.FeedbackId == feedback.FeedbackId);
         }
 
+        // ------------------------------------------------------
         /// <summary>
         /// Adds a new <see cref="Feedback"/> entry to the database.
         /// Code Ownership: Alexandros Blask
@@ -58,6 +63,7 @@ namespace TraineeTracker.Data.Feedbacks {
             await _context.SaveChangesAsync();
         }
 
+        // ------------------------------------------------------
         /// <summary>
         /// Updates an existing <see cref="Feedback"/> entry in the database.
         /// Code Ownership: Alexandros Blask
@@ -69,6 +75,7 @@ namespace TraineeTracker.Data.Feedbacks {
             await _context.SaveChangesAsync();
         }
 
+        // ------------------------------------------------------
         /// <summary>
         /// Deletes a specific <see cref="Feedback"/> entity from the database.
         /// Code Ownership: Alexandros Blask
@@ -80,6 +87,7 @@ namespace TraineeTracker.Data.Feedbacks {
             await _context.SaveChangesAsync();
         }
 
+        // ------------------------------------------------------
         /// <summary>
         /// Deletes a <see cref="Feedback"/> entry from the database by its ID.
         /// Code Ownership: Alexandros Blask
@@ -94,7 +102,7 @@ namespace TraineeTracker.Data.Feedbacks {
             }
         }
 
-        
+        // ------------------------------------------------------
         /// <summary>
         /// Retrieves a <see cref="Feedback"/> by its ID, including related Lesson, Author, and ReadByUsers.
         /// Code Ownership: Alexandros Blask
@@ -109,6 +117,7 @@ namespace TraineeTracker.Data.Feedbacks {
                 .FirstOrDefaultAsync(f => f.FeedbackId == feedbackId);
         }
 
+        // ------------------------------------------------------
         /// <summary>
         /// Retrieves all <see cref="Feedback"/> entries for a given Lesson, including related entities.
         /// Code Ownership: Alexandros Blask
@@ -124,6 +133,7 @@ namespace TraineeTracker.Data.Feedbacks {
                 .ToListAsync();
         }
 
+        // ------------------------------------------------------
         /// <summary>
         /// Retrieves all <see cref="Feedback"/> entries, including related entities.
         /// Code Ownership: Alexandros Blask
@@ -137,6 +147,7 @@ namespace TraineeTracker.Data.Feedbacks {
                 .ToListAsync();
         }
 
+        // ------------------------------------------------------
         /// <summary>
         /// Retrieves all Feedback written by a specific user, including related entities.
         /// Code Ownership: Alexandros Blask
@@ -152,6 +163,7 @@ namespace TraineeTracker.Data.Feedbacks {
                 .ToListAsync();
         }
 
+        // ------------------------------------------------------
         /// <summary>
         /// Retrieves all Feedback read by a specific user, including related entities.
         /// Code Ownership: Alexandros Blask
@@ -167,7 +179,7 @@ namespace TraineeTracker.Data.Feedbacks {
                 .ToListAsync();
         }
 
-
+        // ------------------------------------------------------
         /// <summary>
         /// Retrieves all Feedback unread by a specific user, including related entities.
         /// Code Ownership: Alexandros Blask
@@ -183,6 +195,7 @@ namespace TraineeTracker.Data.Feedbacks {
                 .ToListAsync();
         }
         
+        // ------------------------------------------------------
         /// <summary>
         /// Retrieves an <see cref="IQueryable{Feedback}"/> of unread Feedback for a specific user, including related entities.
         /// Code Ownership: Alexandros Blask
@@ -197,6 +210,7 @@ namespace TraineeTracker.Data.Feedbacks {
                 .Where(f => !f.ReadByUsers.Any(u => u.Id == user.Id));
         }
         
+        // ------------------------------------------------------
         /// <summary>
         /// Retrieves the feedback associated with a specific TraineeLesson, including related entities.
         /// Code Ownership: Alexandros Blask
@@ -211,6 +225,7 @@ namespace TraineeTracker.Data.Feedbacks {
                 .FirstOrDefaultAsync(f => f.AuthorId == traineeLesson.TraineeId && f.LessonId == traineeLesson.LessonId);
         }
 
+        // ------------------------------------------------------
         /// <summary>
         /// Retrieves an <see cref="IQueryable{Feedback}"/> of all Feedback including Lesson and Author.
         /// Code Ownership: Alexandros Blask
@@ -223,6 +238,7 @@ namespace TraineeTracker.Data.Feedbacks {
 
         }
 
+        // ------------------------------------------------------
         /// <summary>
         /// Retrieves an <see cref="IQueryable{Feedback}"/> of Feedback read by a specific user, including Lesson and Author.
         /// Code Ownership: Alexandros Blask
@@ -236,6 +252,7 @@ namespace TraineeTracker.Data.Feedbacks {
                 .Where(f => f.ReadByUsers.Any(u => u.Id == user.Id));
         }
 
+        // ------------------------------------------------------
         /// <summary>
         /// Retrieves an <see cref="IQueryable{Feedback}"/> of Feedback unread by a specific user, including Lesson and Author.
         /// Code Ownership: Alexandros Blask
@@ -249,7 +266,7 @@ namespace TraineeTracker.Data.Feedbacks {
                 .Where(f => f.ReadByUsers.All(u => u.Id != user.Id));
         }
         
-        
+        // ------------------------------------------------------
         /// <summary>
         /// Retrieves an <see cref="IQueryable{Feedback}"/> of all Feedback including Lesson, Author, and ReadByUsers.
         /// Code Ownership: Alexandros Blask
