@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace TraineeTracker.Data.TeachingPlans {
 
+    // ------------------------------------------------------
     /// <summary>
     /// Provides CRUD operations for <see cref="TeachingPlan"/> entities using Entity Framework Core.
     /// Implements the <see cref="ITeachingPlanRepository"/> interface.
@@ -10,12 +11,14 @@ namespace TraineeTracker.Data.TeachingPlans {
     /// </summary>
     public class DatabaseTeachingPlanRepository : ITeachingPlanRepository {
 
+        // ------------------------------------------------------
         /// <summary>
         /// The Entity Framework Core database context used for accessing and modifying teaching plans.
         /// Code Ownership: Alexandros Blask
         /// </summary>
         private readonly ApplicationDbContext _context;
 
+        // ------------------------------------------------------
         /// <summary>
         /// Initializes a new instance of the <see cref="DatabaseTeachingPlanRepository"/> class.
         /// Code Ownership: Alexandros Blask
@@ -25,6 +28,7 @@ namespace TraineeTracker.Data.TeachingPlans {
             _context = context;
         }
 
+        // ------------------------------------------------------
         /// <summary>
         /// Checks whether a <see cref="TeachingPlan"/> with the specified ID exists.
         /// Code Ownership: Alexandros Blask
@@ -35,6 +39,7 @@ namespace TraineeTracker.Data.TeachingPlans {
             return await _context.TeachingPlans.AnyAsync(tp => tp.TeachingPlanId == id);
         }
 
+        // ------------------------------------------------------
         /// <summary>
         /// Checks whether a given <see cref="TeachingPlan"/> entity already exists based on name and last updated date.
         /// Code Ownership: Alexandros Blask
@@ -47,6 +52,7 @@ namespace TraineeTracker.Data.TeachingPlans {
             tp.LastUpdated == teachingPlan.LastUpdated);
         }
 
+        // ------------------------------------------------------
         /// <summary>
         /// Adds a new <see cref="TeachingPlan"/> to the database.
         /// Code Ownership: Alexandros Blask
@@ -58,6 +64,7 @@ namespace TraineeTracker.Data.TeachingPlans {
             await _context.SaveChangesAsync();
         }
 
+        // ------------------------------------------------------
         /// <summary>
         /// Updates an existing <see cref="TeachingPlan"/> in the database.
         /// Code Ownership: Alexandros Blask
@@ -69,6 +76,7 @@ namespace TraineeTracker.Data.TeachingPlans {
             await _context.SaveChangesAsync();
         }
 
+        // ------------------------------------------------------
         /// <summary>
         /// Deletes a specified <see cref="TeachingPlan"/> from the database.
         /// Code Ownership: Alexandros Blask
@@ -80,6 +88,7 @@ namespace TraineeTracker.Data.TeachingPlans {
             await _context.SaveChangesAsync();
         }
 
+        // ------------------------------------------------------
         /// <summary>
         /// Retrieves a <see cref="TeachingPlan"/> by its ID.
         /// Code Ownership: Alexandros Blask
@@ -92,6 +101,7 @@ namespace TraineeTracker.Data.TeachingPlans {
 
         }
 
+        // ------------------------------------------------------
         /// <summary>
         /// Retrieves a <see cref="TeachingPlan"/> by ID, including its associated lessons and trainees.
         /// Code Ownership: Alexandros Blask
@@ -106,7 +116,7 @@ namespace TraineeTracker.Data.TeachingPlans {
 
         }
 
-
+        // ------------------------------------------------------
         /// <summary>
         /// Retrieves all <see cref="TeachingPlan"/> entities from the database.
         /// Code Ownership: Alexandros Blask
@@ -116,6 +126,7 @@ namespace TraineeTracker.Data.TeachingPlans {
             return await _context.TeachingPlans.ToListAsync();
         }
 
+        // ------------------------------------------------------
         /// <summary>
         /// Retrieves all <see cref="TeachingPlan"/> entities including their lessons and trainees.
         /// Code Ownership: Alexandros Blask
