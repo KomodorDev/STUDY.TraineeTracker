@@ -7,6 +7,7 @@ using TraineeTracker.Models.Domain;
 
 namespace TraineeTracker.Controllers {
 
+    // ------------------------------------------------------
     /// <summary>
     /// Controller responsible for managing the import, update, preview, and deletion of teaching plans.
     /// </summary>
@@ -16,11 +17,13 @@ namespace TraineeTracker.Controllers {
     [Route("TeachingPlan")]
     public class TeachingPlanController : Controller {
         
+        // ------------------------------------------------------
         /// <summary>
         /// Service encapsulating business logic for teaching plan operations.
         /// </summary>
         private readonly TeachingPlanService _teachingPlanService;
 
+        // ------------------------------------------------------
         /// <summary>
         /// Initializes a new instance of the <see cref="TeachingPlanController"/> class.
         /// Code Ownership: Alexandros Blask, Simon Hinterreiter
@@ -30,6 +33,7 @@ namespace TraineeTracker.Controllers {
             _teachingPlanService = teachingPlanService;
         }
 
+        // ------------------------------------------------------
         /// <summary>
         /// Displays the import dashboard containing existing teaching plans.
         /// Code Ownership: Alexandros Blask, Simon Hinterreiter
@@ -45,6 +49,7 @@ namespace TraineeTracker.Controllers {
             return View("ImportDashboard", existingTeachingPlans);
         }
 
+        // ------------------------------------------------------
         /// <summary>
         /// Imports a new teaching plan based on the provided DTO and redirects back to the dashboard.
         /// Code Ownership: Alexandros Blask, Simon Hinterreiter
@@ -77,6 +82,7 @@ namespace TraineeTracker.Controllers {
             }
         }
 
+        // ------------------------------------------------------
         /// <summary>
         /// Updates an existing teaching plan based on the provided DTO and redirects back to the dashboard.
         /// Code Ownership: Alexandros Blask, Simon Hinterreiter
@@ -96,6 +102,7 @@ namespace TraineeTracker.Controllers {
             return RedirectToAction(nameof(ShowImportDashboardView));
         }
 
+        // ------------------------------------------------------
         /// <summary>
         /// Loads the import preview modal for an existing teaching plan.
         /// Code Ownership: Alexandros Blask, Simon Hinterreiter
@@ -117,6 +124,7 @@ namespace TraineeTracker.Controllers {
             return PartialView("_ImportPreviewModal", viewModel);
         }
 
+        // ------------------------------------------------------
         /// <summary>
         /// Updates the import preview modal based on the provided DTO.
         /// Code Ownership: Alexandros Blask, Simon Hinterreiter
@@ -142,6 +150,7 @@ namespace TraineeTracker.Controllers {
             return PartialView("_ImportPreviewModal", viewModel);
         }
 
+        // ------------------------------------------------------
         /// <summary>
         /// Deletes a teaching plan by its ID and redirects back to the dashboard.
         /// Code Ownership: Alexandros Blask, Simon Hinterreiter
