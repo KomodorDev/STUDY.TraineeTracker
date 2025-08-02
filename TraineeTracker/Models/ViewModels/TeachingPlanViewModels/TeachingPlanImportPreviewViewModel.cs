@@ -1,12 +1,26 @@
 using TraineeTracker.Models.Dtos;
 
 namespace TraineeTracker.Models.ViewModels.TeachingPlanViewModels {
+    
+    // ------------------------------------------------------
+    /// <summary>
+    /// ViewModel for the TeachingPlanImportPreviewView
+    /// </summary>
+    /// <remarks>
+    /// Code Ownership: Simon Hinterreiter
+    /// </remarks>
     public class TeachingPlanImportPreviewViewModel {
+        
         public List<LessonDto> NewActiveLessons { get; set; } = new();
+        
         public List<LessonDto> NewInactiveLessons { get; set; } = new();
+        
         public List<LessonDto> ExistingReactivatedLessons { get; set; } = new();
+        
         public List<LessonDto> ExistingDeactivatedLessons { get; set; } = new();
+        
         public string? TeachingPlanName { get; set; }
+        
         public int TeachingPlanId { get; set; }
 
         // For Form Resubmission: 

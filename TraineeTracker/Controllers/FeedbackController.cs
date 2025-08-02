@@ -4,6 +4,7 @@ using TraineeTracker.Services;
 
 namespace TraineeTracker.Controllers {
 
+    // ------------------------------------------------------
     /// <summary>
     /// Controller responsible for displaying the feedback dashboard
     /// and handling actions to mark feedback as read or unread.
@@ -14,24 +15,27 @@ namespace TraineeTracker.Controllers {
     [Route("Feedback")]
     public class FeedbackController : Controller {
 
-         /// <summary>
+        /// <summary>
         /// Service encapsulating business logic for feedback operations.
         /// </summary>
         private readonly FeedbackService _feedbackService;
 
-       
+        // ------------------------------------------------------
         /// <summary>
         /// Initializes a new instance of the <see cref="FeedbackController"/> class.
         /// Code Ownership: Alexandros Blask, Simon Hinterreiter
         /// </summary>
         /// <param name="feedbackService">Service for managing feedback dashboard and read/unread actions.</param>
+        /// <remarks>
+        /// Code Ownership: Alexandros Blask, Simon Hinterreiter
+        /// </remarks>
         public FeedbackController(FeedbackService feedbackService) {
             _feedbackService = feedbackService;
         }
 
+        // ------------------------------------------------------
         /// <summary>
         /// Displays the feedback dashboard with optional filter, pagination, and sorting.
-        /// Code Ownership: Alexandros Blask, Simon Hinterreiter
         /// </summary>
         /// <param name="filter">Filter type ("all", "read", or "unread").</param>
         /// <param name="page">Page number for pagination.</param>
@@ -42,6 +46,9 @@ namespace TraineeTracker.Controllers {
         /// <returns>
         /// A task representing the asynchronous operation. Returns the "FeedbackDashboard" view populated with a view model.
         /// </returns>
+        /// <remarks>
+        /// Code Ownership: Alexandros Blask, Simon Hinterreiter
+        /// </remarks>
         [Authorize(Roles = "Admin,Mentor")]
         [HttpGet("Dashboard")]
         public async Task<IActionResult> ShowFeedbackDashboardView(
@@ -62,9 +69,9 @@ namespace TraineeTracker.Controllers {
             return View("FeedbackDashboard", viewModel);
         }
 
+        // ------------------------------------------------------
         /// <summary>
         /// Marks a specific feedback entry as read for the current user and redirects back to the dashboard.
-        /// Code Ownership: Alexandros Blask, Simon Hinterreiter
         /// </summary>
         /// <param name="feedbackId">The ID of the feedback to mark as read.</param>
         /// <param name="filter">Current filter setting to preserve state.</param>
@@ -76,6 +83,9 @@ namespace TraineeTracker.Controllers {
         /// <returns>
         /// A task representing the asynchronous operation. Redirects to the Dashboard action with preserved route values.
         /// </returns>
+        /// <remarks>
+        /// Code Ownership: Alexandros Blask, Simon Hinterreiter
+        /// </remarks>
         [Authorize(Roles = "Admin,Mentor")]
         [HttpPost("MarkAsRead")]
         public async Task<IActionResult> MarkAsRead(
@@ -106,9 +116,9 @@ namespace TraineeTracker.Controllers {
                 });
         }
 
+        // ------------------------------------------------------
         /// <summary>
         /// Marks a specific feedback entry as unread for the current user and redirects back to the dashboard.
-        /// Code Ownership: Alexandros Blask, Simon Hinterreiter
         /// </summary>
         /// <param name="feedbackId">The ID of the feedback to mark as unread.</param>
         /// <param name="filter">Current filter setting to preserve state.</param>
@@ -121,6 +131,9 @@ namespace TraineeTracker.Controllers {
         /// <returns>
         /// A task representing the asynchronous operation. Redirects to the Dashboard action with preserved route values.
         /// </returns>
+        /// <remarks>
+        /// Code Ownership: Alexandros Blask, Simon Hinterreiter
+        /// </remarks>
         [Authorize(Roles = "Admin,Mentor")]
         [HttpPost("MarkAsUnread")]
         public async Task<IActionResult> MarkAsUnread(

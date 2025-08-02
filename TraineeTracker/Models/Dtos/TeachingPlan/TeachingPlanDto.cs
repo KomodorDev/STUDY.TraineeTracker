@@ -1,18 +1,34 @@
 using System.ComponentModel.DataAnnotations;
 
 namespace TraineeTracker.Models.Dtos {
+
+    // ------------------------------------------------------
+    /// <summary>
+    /// Provides Dto for the TeachingPlan
+    /// </summary>
+    /// <remarks>
+    /// Code Ownership: Alexandros Blask
+    /// </remarks>
     public class TeachingPlanDto {
 
-        // Case: Initial upload (Check preview)
+        /// <summary>
+        /// IFormFile object for the TeachingPlan
+        /// </summary>
         public IFormFile? NewPlanFile { get; set; }
 
-        // Case: Update existing plan
+        /// <summary>
+        /// The Id of the existing TeachingPlan
+        /// </summary>
         public int? ExistingTeachingPlanId { get; set; }
 
-        // Case: Create new plan
+        /// <summary>
+        /// The new Name for the TeachingPlan
+        /// </summary>
         public string? NewPlanName { get; set; }
 
-        // Case: Confirm final import
+        /// <summary>
+        /// The temporary filename
+        /// </summary>
         public string? TempFileName { get; set; }
     }
 }
