@@ -2,6 +2,12 @@ using System.ComponentModel.DataAnnotations;
 
 namespace TraineeTracker.Models.Domain {
 
+    /// <summary>
+    /// Represents the possible selectable previous knowledge levels, that a trainee can select during feedback creation/editing in the corresponding dropdown menu.
+    /// </summary>
+    /// <remarks>
+    /// Code Ownership: Simon Hinterreiter (hintsimo)
+    /// </remarks>
     public enum PreviousKnowledgeLevel {
         [Display(Name = "No Prior Knowledge")]
         None,
