@@ -366,7 +366,7 @@ namespace TraineeTracker.Services.Admin {
                         userId = user.Id,
                         code = token
                     },
-                    protocol: "https");
+                    protocol: "http");
                 try {
                     await _emailNotificationService.NotifyUserAsync(
                         user,
