@@ -45,7 +45,6 @@ namespace TraineeTracker.Services.Seeders {
         /// <summary>
         /// Repository for accessing and storing feedback entries associated with lessons.
         /// </summary>
-
         private readonly IFeedbackRepository _databaseFeedbackRepository;
 
         /// <summary>
