@@ -7,23 +7,29 @@ namespace TraineeTracker.Data.Lessons {
     /// <summary>
     /// Provides CRUD operations for <see cref="Lesson"/> entities using Entity Framework Core.
     /// Implements the <see cref="ILessonRepository"/> interface.
-    /// Code Ownership: Alexandros Blask
     /// </summary>
+    /// <remarks>
+    /// Code Ownership: Alexandros Blask
+    /// </remarks>
     public class DatabaseLessonRepository : ILessonRepository {
         
         // ------------------------------------------------------
         /// <summary>
         /// The Entity Framework Core database context used for accessing and modifying lesson entities.
-        /// Code Ownership: Alexandros Blask
         /// </summary>
+        /// <remarks>
+        /// Code Ownership: Alexandros Blask
+        /// </remarks>
         private readonly ApplicationDbContext _context;
 
         // ------------------------------------------------------
         /// <summary>
         /// Initializes a new instance of the <see cref="DatabaseLessonRepository"/> class.
-        /// Code Ownership: Alexandros Blask
         /// </summary>
         /// <param name="context">The database context used for accessing the Lessons table.</param>
+        /// <remarks>
+        /// Code Ownership: Alexandros Blask
+        /// </remarks>
         public DatabaseLessonRepository(ApplicationDbContext context) {
             _context = context;
         }
@@ -31,10 +37,12 @@ namespace TraineeTracker.Data.Lessons {
         // ------------------------------------------------------
         /// <summary>
         /// Checks whether a <see cref="Lesson"/> entry with the given ID exists in the database.
-        /// Code Ownership: Alexandros Blask
         /// </summary>
         /// <param name="id">The lesson ID to check.</param>
         /// <returns>True if the lesson exists; otherwise, false.</returns>
+        /// <remarks>
+        /// Code Ownership: Alexandros Blask
+        /// </remarks>
         public async Task<bool> ExistsAsync(int id) {
             return await _context.Lessons.AnyAsync(l => l.LessonId == id);
         }
@@ -42,11 +50,13 @@ namespace TraineeTracker.Data.Lessons {
         // ------------------------------------------------------
         /// <summary>
         /// Checks whether a <see cref="Lesson"/> with the specified Makandra ID and TeachingPlan ID exists.
-        /// Code Ownership: Alexandros Blask
         /// </summary>
         /// <param name="makandraId">The Makandra ID.</param>
         /// <param name="teachingPlanId">The associated Teaching Plan ID.</param>
         /// <returns>True if a matching lesson exists; otherwise, false.</returns>
+        /// <remarks>
+        /// Code Ownership: Alexandros Blask
+        /// </remarks>
         public async Task<bool> ExistsAsync(string makandraId, int teachingPlanId) {
             return await _context.Lessons
                 .AnyAsync(l => l.MakandraId == makandraId && l.TeachingPlanId == teachingPlanId);
@@ -55,10 +65,12 @@ namespace TraineeTracker.Data.Lessons {
         // ------------------------------------------------------
         /// <summary>
         /// Adds a new <see cref="Lesson"/> entry to the database.
-        /// Code Ownership: Alexandros Blask
         /// </summary>
         /// <param name="lesson">The lesson entity to be created.</param>
         /// <returns>A Task representing the asynchronous operation.</returns>
+        /// <remarks>
+        /// Code Ownership: Alexandros Blask
+        /// </remarks>
         public async Task CreateAsync(Lesson lesson) {
             await _context.Lessons.AddAsync(lesson);
             await _context.SaveChangesAsync();
@@ -67,10 +79,12 @@ namespace TraineeTracker.Data.Lessons {
         // ------------------------------------------------------
         /// <summary>
         /// Updates an existing <see cref="Lesson"/> in the database.
-        /// Code Ownership: Alexandros Blask
         /// </summary>
         /// <param name="lesson">The updated lesson entity.</param>
         /// <returns>A Task representing the asynchronous update operation.</returns>
+        /// <remarks>
+        /// Code Ownership: Alexandros Blask
+        /// </remarks>
         public async Task UpdateAsync(Lesson lesson) {
             _context.Lessons.Update(lesson);
             await _context.SaveChangesAsync();
@@ -79,10 +93,12 @@ namespace TraineeTracker.Data.Lessons {
         // ------------------------------------------------------
         /// <summary>
         /// Deletes a specific <see cref="Lesson"/> entity from the database.
-        /// Code Ownership: Alexandros Blask
         /// </summary>
         /// <param name="lesson">The lesson entity to delete.</param>
         /// <returns>A Task representing the asynchronous delete operation.</returns>
+        /// <remarks>
+        /// Code Ownership: Alexandros Blask
+        /// </remarks>
         public async Task DeleteAsync(Lesson lesson) {
             _context.Lessons.Remove(lesson);
             await _context.SaveChangesAsync();
@@ -91,10 +107,12 @@ namespace TraineeTracker.Data.Lessons {
         // ------------------------------------------------------
         /// <summary>
         /// Retrieves a <see cref="Lesson"/> by its ID, including related feedbacks.
-        /// Code Ownership: Alexandros Blask
         /// </summary>
         /// <param name="id">The lesson ID to retrieve.</param>
         /// <returns>The matching <see cref="Lesson"/> entity, or null if not found.</returns>
+        /// <remarks>
+        /// Code Ownership: Alexandros Blask
+        /// </remarks>
         public async Task<Lesson?> GetLessonByIdAsync(int id) {
             return await _context.Lessons
             .Include(l => l.Feedbacks)
@@ -104,9 +122,11 @@ namespace TraineeTracker.Data.Lessons {
         // ------------------------------------------------------
         /// <summary>
         /// Retrieves all <see cref="Lesson"/> entities from the database, including their feedbacks.
-        /// Code Ownership: Alexandros Blask
         /// </summary>
         /// <returns>A list of all lessons with related feedbacks.</returns>
+        /// <remarks>
+        /// Code Ownership: Alexandros Blask
+        /// </remarks>
         public async Task<IEnumerable<Lesson>> GetAllLessonsAsync() {
             return await _context.Lessons
             .Include(l => l.Feedbacks)
@@ -116,9 +136,11 @@ namespace TraineeTracker.Data.Lessons {
         // ------------------------------------------------------
         /// <summary>
         /// Retrieves all <see cref="Lesson"/> entities along with their feedbacks.
-        /// Code Ownership: Alexandros Blask
         /// </summary>
         /// <returns>A list of all lessons including associated feedbacks.</returns>
+        /// <remarks>
+        /// Code Ownership: Alexandros Blask
+        /// </remarks>
         public async Task<IEnumerable<Lesson>> GetAllLessonsWithFeedbacksAsync() {
             return await _context.Lessons
                 .Include(l => l.Feedbacks)
