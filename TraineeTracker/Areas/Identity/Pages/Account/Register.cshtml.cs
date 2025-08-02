@@ -117,17 +117,6 @@ namespace TraineeTracker.Areas.Identity.Pages.Account {
             return NotFound();
         }
 
-        private ApplicationUser CreateUser() {
-            try {
-                return Activator.CreateInstance<ApplicationUser>();
-            }
-            catch {
-                throw new InvalidOperationException($"Can't create an instance of '{nameof(ApplicationUser)}'. " +
-                    $"Ensure that '{nameof(ApplicationUser)}' is not an abstract class and has a parameterless constructor, or alternatively " +
-                    $"override the register page in /Areas/Identity/Pages/Account/Register.cshtml");
-            }
-        }
-
         private IUserEmailStore<ApplicationUser> GetEmailStore() {
             if (!_userManager.SupportsUserEmail) {
                 throw new NotSupportedException("The default UI requires a user store with email support.");
