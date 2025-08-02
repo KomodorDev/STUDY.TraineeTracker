@@ -240,18 +240,32 @@ namespace TraineeTracker.Services.Admin {
 
         // ------------------------------------------------------
         /// <summary>
-        /// Creates a new user with the specified data, assigns roles, and sends confirmation email if required.
+        /// Creates a new user asynchronously based on the provided <see cref="ApplicationUserDto"/>.
+        /// Validates input, assigns roles, handles trainee-specific properties, and sends email confirmation if required.
+        /// Uses a transaction to ensure atomicity of user creation and related operations.
         /// </summary>
-        /// <param name="dto">User data transfer object.</param>
-        /// <param name="isSeeder">Indicates if the user is created by a seeder (no email confirmation).</param>
-        /// <param name="urlHelper">URL helper for generating confirmation links.</param>
-        /// <returns>A <see cref="ServiceResult"/> indicating success or failure.</returns>
+        /// <param name="dto">The data transfer object containing user information.</param>
+        /// <param name="isSeeder">Indicates whether the user is being created by a seeder (bypasses email confirmation).</param>
+        /// <param name="urlHelper">
+        /// The URL helper used to generate the email confirmation link. Must be provided if <paramref name="isSeeder"/> is <c>false</c>.
+        /// </param>
+        /// <returns>
+        /// A <see cref="ServiceResult"/> indicating success or failure, with error messages if applicable.
+        /// </returns>
+        /// <exception cref="ArgumentNullException">
+        /// Thrown if <paramref name="dto"/> is <c>null</c>, or if <paramref name="urlHelper"/> is <c>null</c> when <paramref name="isSeeder"/> is <c>false</c>.
+        /// </exception>
         /// <remarks>Code Ownership: Paul Schweizer (schwepau)</remarks>
         public async Task<ServiceResult> CreateUserAsync(ApplicationUserDto dto, bool isSeeder, IUrlHelper? urlHelper = null) {
             ArgumentNullException.ThrowIfNull(dto);
             if (!isSeeder && urlHelper == null) {
                 throw new ArgumentNullException(nameof(urlHelper), "urlHelper must be provided if isSeeder is false");
             }
+
+            if (await _applicationUserRepository.ExistsByEmailAsync(dto.Email)) {
+                return ServiceResult.Failed("User with this Email already exists.");
+            }
+
             var user = new ApplicationUser {
                 UserName = dto.Email,
                 Email = dto.Email,
@@ -271,19 +285,18 @@ namespace TraineeTracker.Services.Admin {
                 }
             }
 
+            await _unitOfWork.BeginTransactionAsync();
+
             var result = await _applicationUserRepository.CreateAsync(user, dto.Password);
             if (!result.Succeeded) {
+                await _unitOfWork.RollbackAsync();
                 return ServiceResult.Failed(result.Errors.Select(e => e.Description).ToArray());
             }
 
             result = await _applicationUserRepository.AddToRoleAsync(user, dto.Role);
             if (!result.Succeeded) {
-                var deleteTask = _applicationUserRepository.DeleteAsync(user);
+                await _unitOfWork.RollbackAsync();
                 var errors = result.Errors;
-                var deleteResult = await deleteTask;
-                if (!deleteResult.Succeeded) {
-                    errors = result.Errors.Concat(deleteResult.Errors);
-                }
                 return ServiceResult.Failed(errors.Select(e => e.Description).ToArray());
             }
 
@@ -298,12 +311,8 @@ namespace TraineeTracker.Services.Admin {
 
                 result = await _applicationUserRepository.UpdateAsync(user);
                 if (!result.Succeeded) {
-                    var deleteTask = _applicationUserRepository.DeleteAsync(user);
+                    await _unitOfWork.RollbackAsync();
                     var errors = result.Errors;
-                    var deleteResult = await deleteTask;
-                    if (!deleteResult.Succeeded) {
-                        errors = result.Errors.Concat(deleteResult.Errors);
-                    }
                     return ServiceResult.Failed(errors.Select(e => e.Description).ToArray());
                 }
             }
@@ -328,10 +337,12 @@ namespace TraineeTracker.Services.Admin {
                         $"Please confirm your account by <a href='{confirmationLink}'>clicking here</a>.\nYou will be redirected to set your password after.");
                 }
                 catch (Exception ex) {
+                    await _unitOfWork.RollbackAsync();
                     return ServiceResult.Failed(ex.Message);
                 }
             }
 
+            await _unitOfWork.CommitAsync();
             return ServiceResult.Success();
         }
 

@@ -247,7 +247,11 @@ namespace TraineeTracker.UnitTests.TraineeLessonTests
             throw new NotImplementedException();
         }
 
-        public Task<bool> ExistsAsync(string userId) {
+        public Task<bool> ExistsByEmailAsync(string email) {
+            throw new NotImplementedException();
+        }
+
+        public Task<bool> ExistsByIdAsync(string userId) {
             throw new NotImplementedException();
         }
 
