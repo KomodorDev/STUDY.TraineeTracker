@@ -11,8 +11,17 @@ namespace TraineeTracker.Data.ApplicationUsers {
     /// </summary>
     /// <remarks>Code Ownership: Paul Schweizer (schwepau)</remarks>
     public class DatabaseApplicationUserRepository : IApplicationUserRepository {
+
+        // ------------------------------------------------------
+        /// <summary>
+        /// The database context used to access and manage application user data.
+        /// </summary>
         private readonly ApplicationDbContext _context;
 
+        // ------------------------------------------------------
+        /// <summary>
+        /// Provides access to user management operations for <see cref="ApplicationUser"/> entities.
+        /// </summary>
         private readonly UserManager<ApplicationUser> _userManager;
 
         // ------------------------------------------------------

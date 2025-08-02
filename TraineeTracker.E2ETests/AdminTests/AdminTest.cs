@@ -3,13 +3,36 @@ using OpenQA.Selenium.Support.UI;
 using Tutorial_project.E2ETests;
 
 namespace TraineeTracker.E2ETests.AdminTests {
+
+    /// <summary>
+    /// Contains end-to-end tests for admin functionalities in the TraineeTracker application.
+    /// </summary>
+    /// <remarks>Code Ownership: Paul Schweizer (schwepau)</remarks>
     public class AdminTest : IClassFixture<BrowserFixture> {
         IWebDriver _driver;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="AdminTest"/> class with the specified browser fixture.
+        /// </summary>
+        /// <param name="fixture">The browser fixture providing the WebDriver instance.</param>
+        /// <remarks>Code Ownership: Paul Schweizer (schwepau)</remarks>
         public AdminTest(BrowserFixture fixture) {
             _driver = fixture.Driver;
         }
 
+        // ------------------------------------------------------
+        /// <summary>
+        /// Verifies that creating a user with valid data results in the user being visible in the admin dashboard.
+        /// The test performs the following steps:
+        /// <list type="number">
+        /// <item>Logs in as an admin user.</item>
+        /// <item>Navigates to the user creation page and fills out the form with valid data.</item>
+        /// <item>Submits the form to create a new user.</item>
+        /// <item>Navigates to the admin dashboard and searches for the newly created user, paging if necessary.</item>
+        /// <item>Asserts that the user is found in the dashboard.</item>
+        /// </list>
+        /// </summary>
+        /// <remarks>Code Ownership: Paul Schweizer (schwepau)</remarks>
         [Fact]
         public void CreateUser_WithValidData_UserIsVisibleInAdminDashboard() {
             var wait = new WebDriverWait(_driver, TimeSpan.FromSeconds(60));

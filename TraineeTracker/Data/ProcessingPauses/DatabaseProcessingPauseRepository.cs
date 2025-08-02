@@ -8,6 +8,11 @@ namespace TraineeTracker.Data.ProcessingPauses {
     /// </summary>
     /// <remarks>Code Ownership: Paul Schweizer (schwepau)</remarks>
     public class DatabaseProcessingPauseRepository : IProcessingPauseRepository {
+
+        // ------------------------------------------------------
+        /// <summary>
+        /// The <see cref="ApplicationDbContext"/> instance used to interact with the database.
+        /// </summary>
         private readonly ApplicationDbContext _context;
 
         // ------------------------------------------------------
