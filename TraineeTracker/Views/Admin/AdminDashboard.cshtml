@@ -92,7 +92,7 @@
 
     <!-- User-Box -->
     <div class="sopro-card">
-        <table class="admin-table">
+        <table id="Admin_Table" class="admin-table">
             <thead>
                 <tr>
                     <th>Role</th>
@@ -196,7 +196,7 @@
         @if (Model.Users.HasNext)
         {
             <li class="page-item">
-                <a class="page-link" asp-controller="Admin" asp-action="Dashboard" asp-route-filterRole="@Model.FilterRole"
+                <a id="Next_Page" class="page-link" asp-controller="Admin" asp-action="Dashboard" asp-route-filterRole="@Model.FilterRole"
                     asp-route-filterStatus="@Model.FilterStatus" asp-route-sortBy="@Model.SortBy"
                     asp-route-page="@(Model.Users.PageNumber + 1)">
                     Next
