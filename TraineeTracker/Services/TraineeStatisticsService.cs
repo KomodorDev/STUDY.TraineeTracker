@@ -17,16 +17,39 @@ namespace TraineeTracker.Services {
     /// Code Ownership: Nikita Stefan (stefanni)
     /// </remarks>
     public class TraineeStatisticsService {
+        /// <summary>
+        /// Repository for accessing trainee statistics data.
+        /// </summary>
         private readonly ITraineeStatisticsRepository _traineeStatisticsRepository;
+        /// <summary>
+        /// Repository for accessing trainee lesson data.
+        /// </summary>
         private readonly ITraineeLessonRepository _traineeLessonRepository;
+        /// <summary>
+        /// HttpClient used for external HTTP communication.
+        /// </summary>
         private readonly HttpClient _httpClient;
+        /// <summary>
+        /// UserManager to access application user data.
+        /// </summary>
         private readonly UserManager<ApplicationUser> _userManager;
+        /// <summary>
+        /// Repository for handling processing pause data.
+        /// </summary>
         private readonly IProcessingPauseRepository _processingPauseRepository;
 
         // --------------------------------------------------
         /// <summary>
-        /// Initializes a new instance of the TraineeStatisticsService class.
+        /// Initializes a new instance of the <see cref="TraineeStatisticsService"/> class.
         /// </summary>
+        /// <param name="traineeStatisticsRepository">Repository for accessing trainee statistics data.</param>
+        /// <param name="traineeLessonRepository">Repository for accessing trainee lesson data.</param>
+        /// <param name="httpClient">HttpClient used for external HTTP communication.</param>
+        /// <param name="userManager">UserManager to access application user data.</param>
+        /// <param name="processingPauseRepository">Repository for handling processing pause data.</param>
+        /// <remarks>
+        /// Code Ownership: Nikita Stefan (stefanni)
+        /// </remarks>
         public TraineeStatisticsService(ITraineeStatisticsRepository traineeStatisticsRepository, ITraineeLessonRepository traineeLessonRepository, HttpClient httpClient, UserManager<ApplicationUser> userManager, IProcessingPauseRepository processingPauseRepository) {
             _traineeStatisticsRepository = traineeStatisticsRepository;
             _traineeLessonRepository = traineeLessonRepository;
