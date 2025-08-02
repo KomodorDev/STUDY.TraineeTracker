@@ -19,7 +19,6 @@
         <!-- Trainee -->
         <section class="sopro-card small-header">
 
-            
             <!-- Name -->
             <div class="header thiccboi">
                 <form method="get"
@@ -27,7 +26,7 @@
                     class="filter-selects"
                     style="display: flex; align-items: center;">
 
-                    <!-- Nur Trainee Dropdown -->
+                    <!-- Only Trainee Dropdown -->
                     @{
                         var isSingleTrainee = Model.Trainees?.Count() == 1;
                         var isDisabledStyle = isSingleTrainee ? "pointer-events: none; opacity: 1;" : "";
@@ -44,14 +43,14 @@
                         }
                     </select>
 
-                    <!-- Filterzustand erhalten -->
+                    <!-- Filterstate -->
                     <input type="hidden" name="filter" value="@Model.ActiveFilter" />
                     <input type="hidden" name="sortBy" value="@Model.SortBy" />
                 </form>
             </div>
 
 
-            <!-- Teachinplan-->
+            <!-- Teachinplan -->
             <div class="sopro-inner-card">
                 <div class="header" style="font-size: 1.406rem;">
                     <p style="text-overflow: ellipsis; overflow: hidden;">@(Model.SelectedTrainee?.TeachingPlan?.Name ?? "No teachingplan")</p>
@@ -59,7 +58,7 @@
             </div>
         </section>
 
-        <!-- Statistics-->
+        <!-- Statistics -->
         <section class="sopro-card small-header">
             <p class="header thiccboi">
                 Statistics
@@ -269,7 +268,6 @@
             });
         }
     </script>
-
 
     <script>
         const expandBtn = document.getElementById("openStatisticsModalBtn");
