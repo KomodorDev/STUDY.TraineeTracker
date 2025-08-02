@@ -11,21 +11,57 @@ using TraineeTracker.Models.Dtos;
 using TraineeTracker.Services.Admin;
 
 namespace TraineeTracker.Services.Seeders {
+
+    /// <summary>
+    /// Service responsible for seeding test data for lessons, users, feedback, and progress states.
+    /// Used during development and E2E testing to populate the database with predefined content.
+    /// </summary>
+    /// <remarks>Code Ownership: Simon Hinterreiter (hintsimo)</remarks>
     public class TestDataSeeder {
 
+        /// <summary>
+        /// Provides functionality for creating and managing users during the seeding process.
+        /// </summary>
         private readonly AdminService _adminService;
+
+        /// <summary>
+        /// Repository for accessing and modifying application users in the database.
+        /// </summary>
         private readonly IApplicationUserRepository _databaseApplicationUserRepository;
+
+        /// <summary>
+        /// Repository for accessing and modifying lesson entities in the database.
+        /// </summary>
         private readonly ILessonRepository _databaseLessonRepository;
 
+        /// <summary>
+        /// Repository for accessing and modifying trainee lesson entities in the database.
+        /// </summary>
         private readonly ITraineeLessonRepository _databaseTraineeLessonRepository;
+
+        /// <summary>
+        /// Repository for accessing and modifying teaching plans in the database.
+        /// </summary>
         private readonly ITeachingPlanRepository _databaseTeachingPlanRepository;
 
+        /// <summary>
+        /// Repository for accessing and storing feedback entries associated with lessons.
+        /// </summary>
+
         private readonly IFeedbackRepository _databaseFeedbackRepository;
+
+        /// <summary>
+        /// Repository for storing and retrieving lesson log entries for state transitions and audits.
+        /// </summary>
         private readonly ITraineeLessonLogEntryRepository _databaseTraineeLessonLogEntryRepository;
 
         private readonly TraineeStatisticsService _traineeStatisticsService;
 
         // ---------------------------------------------------
+        /// <summary>
+        /// Initializes a new instance of the <see cref="TestDataSeeder"/> class 
+        /// with all required repository and service dependencies.
+        /// </summary>
         public TestDataSeeder(IApplicationUserRepository databaseApplicationUserRepository, ILessonRepository lessonRepo, ITraineeLessonRepository traineeLessonRepo, ITeachingPlanRepository teachingPlanRepo, AdminService adminService, IFeedbackRepository feedbackRepo, ITraineeLessonLogEntryRepository logEntryRepo, TraineeStatisticsService statisticsService) {
             _databaseApplicationUserRepository = databaseApplicationUserRepository;
             _databaseLessonRepository = lessonRepo;
@@ -39,6 +75,10 @@ namespace TraineeTracker.Services.Seeders {
 
 
         // ---------------------------------------------------
+        /// <summary>
+        /// Seeds a predefined set of lessons into the database if they do not already exist.
+        /// Includes both generic and Makandra JSON-based lessons.
+        /// </summary>
         public async Task SeedLessonsAsync() {
             var lessons = new List<Lesson>();
 
@@ -1012,6 +1052,10 @@ namespace TraineeTracker.Services.Seeders {
         }
 
         // ---------------------------------------------------
+        /// <summary>
+        /// Seeds predefined teaching plans (WebDevelopment, DevOps, WebDevJSON) 
+        /// and links them with corresponding lessons.
+        /// </summary>
         public async Task SeedTeachingPlansAsync() {
             var allLessons = (await _databaseLessonRepository.GetAllLessonsAsync()).ToList();
 
@@ -1053,6 +1097,10 @@ namespace TraineeTracker.Services.Seeders {
         }
 
         // ---------------------------------------------------
+        /// <summary>
+        /// Seeds predefined users (admins, mentors, trainees) into the system using the AdminService.
+        /// Closes the user 'closed.traineeTEST@uni-a.de' if seeded.
+        /// </summary>
         public async Task SeedUsersAsync() {
 
             var userData = new List<ApplicationUserDto> {
@@ -1220,6 +1268,11 @@ namespace TraineeTracker.Services.Seeders {
         }
 
         // ---------------------------------------------------
+        /// <summary>
+        /// Seeds feedback entries for selected trainees on specific lessons, 
+        /// including ratings, effort, and difficulty, and assigns one reader (mentor/admin).
+        /// Also sets lesson state to "Rated" and adds a corresponding lesson log entry.
+        /// </summary>
         public async Task SeedFeedbackAsync() {
 
             // Get Trainees
@@ -1362,24 +1415,10 @@ namespace TraineeTracker.Services.Seeders {
         }
 
         // ---------------------------------------------------
-        /*         public async Task SeedTraineeStatisticsSnapshotAsync() {
-                    var stefan = await _databaseApplicationUserRepository.FindByEmailAsync("stefan.schnupfen@makandra.de");
-                    var ursula = await _databaseApplicationUserRepository.FindByEmailAsync("ursula.urlaub@makandra.de");
-
-                    // Wenn garantiert nicht null, dann direkt:
-                    var trainees = new[] { stefan, ursula };
-
-                    foreach (var trainee in trainees) {
-
-                        await _traineeStatisticsService.BuildLatestTraineeStatisticsSnapshotAsync(trainee!.Id);
-                        Console.WriteLine($"✅ Snapshot created/updated for {trainee.Email}");
-                    }
-                }
-
-                // ---------------------------------------------------
-         */
-
-        // ---------------------------------------------------
+        /// <summary>
+        /// Seeds lesson progress by marking a percentage of lessons as "Finished"
+        /// for Stefan and Ursula. Uses <see cref="SeedProgressAsync"/>.
+        /// </summary>
         public async Task SeedProgressForStefanAndUrsulaAsync() {
             var stefan = await _databaseApplicationUserRepository
                 .FindByEmailWithProcessingPausesAndTraineeLessonsAsync("stefan.schnupfen@makandra.de");
@@ -1395,6 +1434,11 @@ namespace TraineeTracker.Services.Seeders {
         }
 
         // ---------------------------------------------------
+        /// <summary>
+        /// Marks a specified percentage of active lessons in a trainee's plan as "Finished".
+        /// </summary>
+        /// <param name="trainee">The trainee whose progress should be updated.</param>
+        /// <param name="percentage">The percentage of lessons to mark as finished.</param>
         private async Task SeedProgressAsync(ApplicationUser trainee, int percentage) {
             var existingLessons = trainee.TraineeLessons
                 .Where(tl => !tl.Lesson.IsInactive)
@@ -1411,6 +1455,7 @@ namespace TraineeTracker.Services.Seeders {
 
             await _databaseApplicationUserRepository.UpdateAsync(trainee);
         }
+
         // ---------------------------------------------------
     }
 
