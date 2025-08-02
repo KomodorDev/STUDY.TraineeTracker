@@ -1,5 +1,4 @@
 using Moq;
-using Xunit;
 
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
@@ -21,7 +20,20 @@ using TraineeTracker.Data.TraineeLessons;
 
 
 namespace TraineeTracker.UnitTests.AdminTest {
+
+    /// <summary>
+    /// Contains unit tests for the <see cref="AdminService"/> class, verifying user creation, role assignment,
+    /// email notification, and user closure functionalities.
+    /// </summary>
+    /// <remarks>Code Ownership: Paul Schweizer (schwepau)</remarks>
     public class AdminServiceTest {
+
+        // ------------------------------------------------------
+        /// <summary>
+        /// Tests that <see cref="AdminService.CreateUserAsync"/> returns success when provided with valid user data.
+        /// Verifies that the user creation method is called once and the result is successful.
+        /// </summary>
+        /// <remarks>Code Ownership: Paul Schweizer (schwepau)</remarks>
         [Fact]
         public async Task CreateUserAsync_WithValidData_ReturnsSuccess() {
             // Arrange
@@ -64,6 +76,12 @@ namespace TraineeTracker.UnitTests.AdminTest {
             Assert.True(result.Succeeded);
         }
 
+        // ------------------------------------------------------
+        /// <summary>
+        /// Tests that <see cref="AdminService.CreateUserAsync"/> returns a failed result when adding the user to a role fails.
+        /// Verifies that the error message contains the expected role error description.
+        /// </summary>
+        /// <remarks>Code Ownership: Paul Schweizer (schwepau)</remarks>
         [Fact]
         public async Task CreateUserAsync_AddToRoleFails_ReturnsFailed() {
             // Arrange
@@ -107,6 +125,12 @@ namespace TraineeTracker.UnitTests.AdminTest {
             Assert.Contains("Role error", result.ErrorMessages.FirstOrDefault() ?? "");
         }
 
+        // ------------------------------------------------------
+        /// <summary>
+        /// Tests that <see cref="AdminService.CreateUserAsync"/> returns a failed result when email notification dispatch fails.
+        /// Verifies that the error message contains the expected email dispatch failure description.
+        /// </summary>
+        /// <remarks>Code Ownership: Paul Schweizer (schwepau)</remarks>
         [Fact]
         public async Task CreateUserAsync_NotifyUserFails_ReturnsFailed() {
             // Arrange
@@ -155,6 +179,12 @@ namespace TraineeTracker.UnitTests.AdminTest {
             Assert.Contains("EmailDispatchFailed", result.ErrorMessages.FirstOrDefault() ?? "");
         }
 
+        // ------------------------------------------------------
+        /// <summary>
+        /// Tests that <see cref="AdminService.CloseUserAsync"/> correctly sets the <c>IsClosed</c> property of a user to true.
+        /// Verifies that the user is marked as closed after the operation.
+        /// </summary>
+        /// <remarks>Code Ownership: Paul Schweizer (schwepau)</remarks>
         [Fact]
         public async Task CloseUserAsync_UserGetsClosed_IsClosedIsTrue() {
             // Arrange

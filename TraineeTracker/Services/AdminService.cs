@@ -16,6 +16,7 @@ using TraineeTracker.Models.Domain;
 using TraineeTracker.Models.Dtos;
 using TraineeTracker.Models.ViewModels.Admin;
 using TraineeTracker.Services.Email;
+using TraineeTracker.Exceptions;
 
 namespace TraineeTracker.Services.Admin {
 
@@ -25,18 +26,54 @@ namespace TraineeTracker.Services.Admin {
     /// <remarks>Code Ownership: Paul Schweizer (schwepau)</remarks>
     public class AdminService {
 
+        /// <summary>
+        /// Specifies the default number of items to display per page in paginated queries.
+        /// </summary>
         private const int _pageSize = 20;
+
+        /// <summary>
+        /// Provides access to the unit of work for managing database transactions and repositories.
+        /// </summary>
         private readonly IUnitOfWork _unitOfWork;
 
+        /// <summary>
+        /// Repository for accessing and managing application user data.
+        /// </summary>
         private readonly IApplicationUserRepository _applicationUserRepository;
+
+        /// <summary>
+        /// Repository for managing processing pause entities.
+        /// </summary>
         private readonly IProcessingPauseRepository _processingPauseRepository;
+
+        /// <summary>
+        /// Provides APIs for managing user roles within the application.
+        /// </summary>
         private readonly RoleManager<IdentityRole> _roleManager;
 
+        /// <summary>
+        /// Service responsible for sending email notifications to users.
+        /// </summary>
         private readonly EmailNotificationService _emailNotificationService;
+
+        /// <summary>
+        /// Service for managing teaching plans.
+        /// </summary>
         private readonly TeachingPlanService _teachingPlanService;
 
+        /// <summary>
+        /// Repository for accessing and managing feedback data.
+        /// </summary>
         private readonly IFeedbackRepository _feedbackRepository;
+
+        /// <summary>
+        /// Repository for accessing and managing teaching plans.
+        /// </summary>
         private readonly ITeachingPlanRepository _teachingPlanRepository;
+
+        /// <summary>
+        /// Repository for accessing trainee statistics data.
+        /// </summary>
         private readonly ITraineeStatisticsRepository _traineeStatisticsRepository;
 
         // ------------------------------------------------------
@@ -359,7 +396,7 @@ namespace TraineeTracker.Services.Admin {
             var user = await _applicationUserRepository.FindByIdAsync(userId);
             if (user == null) {
                 await _unitOfWork.RollbackAsync();
-                throw new InvalidOperationException($"{nameof(user)} not found");
+                throw new UserNotFoundException();
             }
 
             user.IsClosed = true;
@@ -442,7 +479,7 @@ namespace TraineeTracker.Services.Admin {
         public async Task<ServiceResult> CreateProcessingPauseAsync(ProcessingPauseDto dto) {
             var user = await _applicationUserRepository.FindByIdAsync(dto.TraineeId);
             if (user == null) {
-                throw new InvalidOperationException($"{nameof(user)} not found.");
+                throw new UserNotFoundException();
             }
             var processingPause = new ProcessingPause {
                 TraineeId = dto.TraineeId,
@@ -474,7 +511,7 @@ namespace TraineeTracker.Services.Admin {
             }
             var trainee = await _applicationUserRepository.FindByIdAsync(dto.TraineeId);
             if (trainee == null) {
-                throw new InvalidOperationException($"{nameof(trainee)} not found.");
+                throw new UserNotFoundException();
             }
             pause.TraineeId = dto.TraineeId;
             pause.Trainee = trainee;
