@@ -5,8 +5,10 @@ namespace TraineeTracker.Models.ViewModels.TeachingPlanViewModels {
     // ------------------------------------------------------
     /// <summary>
     /// ViewModel for the TeachingPlanImportPreviewView
-    /// Code Ownership: Simon Hinterreiter
     /// </summary>
+    /// <remarks>
+    /// Code Ownership: Simon Hinterreiter
+    /// </remarks>
     public class TeachingPlanImportPreviewViewModel {
         
         public List<LessonDto> NewActiveLessons { get; set; } = new();

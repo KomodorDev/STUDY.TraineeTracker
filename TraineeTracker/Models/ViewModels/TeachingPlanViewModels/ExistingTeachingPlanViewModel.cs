@@ -3,8 +3,10 @@ namespace TraineeTracker.Models.ViewModels.TeachingPlanViewModels {
     // ------------------------------------------------------
     /// <summary>
     /// ViewModel for the ExistingTeachingPlanView
-    /// Code Ownership: Simon Hinterreiter
     /// </summary>
+    /// <remarks>
+    /// Code Ownership: Simon Hinterreiter
+    /// </remarks>
     public class ExistingTeachingPlanViewModel {
         
         public required int TeachingPlanId { get; set; }
