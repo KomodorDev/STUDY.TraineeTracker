@@ -1,11 +1,9 @@
-using Microsoft.AspNetCore.Identity;
 using TraineeTracker.Data.ApplicationUsers;
 using TraineeTracker.Data.Feedbacks;
 using TraineeTracker.Data.Lessons;
 using TraineeTracker.Data.TeachingPlans;
 using TraineeTracker.Data.TraineeLessonLog;
 using TraineeTracker.Data.TraineeLessons;
-using TraineeTracker.Data.TraineeStatistics;
 using TraineeTracker.Models.Domain;
 using TraineeTracker.Models.Dtos;
 using TraineeTracker.Services.Admin;
@@ -55,8 +53,6 @@ namespace TraineeTracker.Services.Seeders {
         /// </summary>
         private readonly ITraineeLessonLogEntryRepository _databaseTraineeLessonLogEntryRepository;
 
-        private readonly TraineeStatisticsService _traineeStatisticsService;
-
         // ---------------------------------------------------
         /// <summary>
         /// Initializes a new instance of the <see cref="TestDataSeeder"/> class 
@@ -70,9 +66,7 @@ namespace TraineeTracker.Services.Seeders {
             _databaseTraineeLessonRepository = traineeLessonRepo;
             _databaseFeedbackRepository = feedbackRepo;
             _databaseTraineeLessonLogEntryRepository = logEntryRepo;
-            _traineeStatisticsService = statisticsService;
         }
-
 
         // ---------------------------------------------------
         /// <summary>
@@ -1471,5 +1465,4 @@ namespace TraineeTracker.Services.Seeders {
 
         // ---------------------------------------------------
     }
-
 }
