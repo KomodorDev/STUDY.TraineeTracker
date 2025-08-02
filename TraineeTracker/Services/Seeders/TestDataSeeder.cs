@@ -1227,6 +1227,10 @@ namespace TraineeTracker.Services.Seeders {
         }
 
         // ---------------------------------------------------
+        /// <summary>
+        /// Seeds predefined processing pauses for selected trainees 
+        /// (alex, nikita, stefan, ursula) based on fixed date intervals.
+        /// </summary>
         public async Task SeedProcessingPausesAsync() {
             var alex = await _databaseApplicationUserRepository.FindByEmailAsync("alexandros.blaskTEST@uni-a.de");
             var nikita = await _databaseApplicationUserRepository.FindByEmailAsync("nikita.stefanTEST@uni-a.de");
