@@ -8,6 +8,9 @@ namespace TraineeTracker.E2ETests.ImportTests {
     /// End-to-end test for the Import Dashboard page.
     /// Verifies that the import form components are present and functional.
     /// </summary>
+    /// <remarks>
+    /// Code Ownership: Alexandros Blask
+    /// </remarks>
     public class ImportPageTests : IClassFixture<BrowserFixture> {
 
         private readonly IWebDriver _driver;

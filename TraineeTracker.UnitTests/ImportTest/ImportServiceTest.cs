@@ -15,6 +15,9 @@ using Xunit;
 namespace TraineeTracker.UnitTests.TeachingPlanTest{
 
     // ------------------------------------------------------
+    /// <remarks>
+    /// Code Ownership: Alexandros Blask
+    /// </remarks>
     public class TeachingPlanServiceTests{
 
         // ------------------------------------------------------

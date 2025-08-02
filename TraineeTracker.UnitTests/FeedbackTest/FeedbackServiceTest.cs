@@ -13,8 +13,12 @@ using TraineeTracker.Services;
 using Xunit;
 using Microsoft.AspNetCore.Identity;
 
-namespace TraineeTracker.UnitTests.FeedbackTest 
-{
+namespace TraineeTracker.UnitTests.FeedbackTest{
+
+    // ------------------------------------------------------
+    /// <remarks>
+    /// Code Ownership: Alexandros Blask
+    /// </remarks>
     public class FeedbackServiceTests 
     {
         // ------------------------------------------------------
