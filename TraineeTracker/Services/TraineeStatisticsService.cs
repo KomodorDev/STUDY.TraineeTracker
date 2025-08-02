@@ -25,8 +25,16 @@ namespace TraineeTracker.Services {
 
         // --------------------------------------------------
         /// <summary>
-        /// Initializes a new instance of the TraineeStatisticsService class.
+        /// Initializes a new instance of the <see cref="TraineeStatisticsService"/> class.
         /// </summary>
+        /// <param name="traineeStatisticsRepository">Repository for accessing trainee statistics data.</param>
+        /// <param name="traineeLessonRepository">Repository for accessing trainee lesson data.</param>
+        /// <param name="httpClient">HttpClient used for external HTTP communication.</param>
+        /// <param name="userManager">UserManager to access application user data.</param>
+        /// <param name="processingPauseRepository">Repository for handling processing pause data.</param>
+        /// <remarks>
+        /// Code Ownership: Nikita Stefan (stefanni)
+        /// </remarks>
         public TraineeStatisticsService(ITraineeStatisticsRepository traineeStatisticsRepository, ITraineeLessonRepository traineeLessonRepository, HttpClient httpClient, UserManager<ApplicationUser> userManager, IProcessingPauseRepository processingPauseRepository) {
             _traineeStatisticsRepository = traineeStatisticsRepository;
             _traineeLessonRepository = traineeLessonRepository;
