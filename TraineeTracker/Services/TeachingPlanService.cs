@@ -10,6 +10,7 @@ using TraineeTracker.Services.Email;
 
 namespace TraineeTracker.Services {
 
+    // ---------------------------------------------------
     /// <summary>
     /// Provides business logic for managing teaching plans, including import preview, persistence,
     /// update, deletion, assignment to trainees, and change notifications.
@@ -27,13 +28,15 @@ namespace TraineeTracker.Services {
         // ---------------------------------------------------
         /// <summary>
         /// Initializes a new instance of the <see cref="TeachingPlanService"/> class.
-        /// Code Ownership: Alexandros Blask
         /// </summary>
         /// <param name="teachingPlanRepo">Repository for teaching plan data access.</param>
         /// <param name="databaseLessonRepository">Repository for lesson data access.</param>
         /// <param name="databaseTraineeLessonRepository">Repository for trainee lesson data access.</param>
         /// <param name="applicationUserRepo">Repository for application user data access.</param>
         /// <param name="emailNotificationService">Service for sending email notifications.</param>
+        /// <remarks>
+        /// Code Ownership: Alexandros Blask
+        /// </remarks>
         public TeachingPlanService(
             ITeachingPlanRepository teachingPlanRepo,
             ILessonRepository databaseLessonRepository,
@@ -50,11 +53,13 @@ namespace TraineeTracker.Services {
         // ---------------------------------------------------
         /// <summary>
         /// Builds the import dashboard view model containing all existing teaching plans.
-        /// Code Ownership: Alexandros Blask
         /// </summary>
         /// <returns>
         /// A task that returns an <see cref="ImportDashboardViewModel"/> with existing teaching plans.
         /// </returns>
+        /// <remarks>
+        /// Code Ownership: Alexandros Blask
+        /// </remarks>
         public async Task<ImportDashboardViewModel> BuildImportDashboardViewModelAsync() {
             // a) Get all Teachingplans
             var allPlans = await _databaseTeachingPlanRepository.GetAllTeachingPlansWithLessonsAndTraineesAsync();
@@ -74,12 +79,14 @@ namespace TraineeTracker.Services {
         // ---------------------------------------------------
         /// <summary>
         /// Saves an uploaded JSON file temporarily and returns the generated file name.
-        /// Code Ownership: Alexandros Blask
         /// </summary>
         /// <param name="file">The IFormFile representing the uploaded JSON.</param>
         /// <returns>
         /// A task that returns the temporary file name.
         /// </returns>
+        /// <remarks>
+        /// Code Ownership: Alexandros Blask
+        /// </remarks>
         public async Task<string> SaveTempJsonFileAsync(IFormFile file) {
             var fileName = $"{Guid.NewGuid()}.json";
             var fullPath = Path.Combine(Path.GetTempPath(), fileName);
@@ -94,12 +101,14 @@ namespace TraineeTracker.Services {
         /// <summary>
         /// Builds the import preview view model for a given teaching plan DTO,
         /// showing lists of new, reactivated, and deactivated lessons.
-        /// Code Ownership: Simon Hinterreiter
         /// </summary>
         /// <param name="teachingPlanDto">The DTO containing import parameters and file.</param>
         /// <returns>
         /// A task that returns a <see cref="TeachingPlanImportPreviewViewModel"/>.
         /// </returns>
+        /// <remarks>
+        /// Code Ownership: Simon Hinterreiter
+        /// </remarks>
         public async Task<TeachingPlanImportPreviewViewModel> BuildImportPreviewViewModelAsync(TeachingPlanDto teachingPlanDto) {
 
             // +++++++++++++++
@@ -191,10 +200,12 @@ namespace TraineeTracker.Services {
         // ---------------------------------------------------
         /// <summary>
         /// Imports a new teaching plan and its lessons from the provided DTO.
-        /// Code Ownership: Alexandros Blask
         /// </summary>
         /// <param name="dto">The DTO containing new teaching plan data and file.</param>
         /// <returns>A task representing the asynchronous import operation.</returns>
+        /// <remarks>
+        /// Code Ownership: Alexandros Blask
+        /// </remarks>
         public async Task ImportNewTeachingPlan(TeachingPlanDto dto) {
             // a) Validate Dto attributes
             ValidateFile(dto.NewPlanFile!);
@@ -223,10 +234,12 @@ namespace TraineeTracker.Services {
         // ---------------------------------------------------
         /// <summary>
         /// Updates an existing teaching plan and synchronizes lessons based on the provided DTO.
-        /// Code Ownership: Alexandros Blask, Simon Hinterreiter
         /// </summary>
         /// <param name="teachingPlanDto">The DTO containing update information and temp file.</param>
         /// <returns>A task representing the asynchronous update operation.</returns>
+        /// <remarks>
+        /// Code Ownership: Alexandros Blask, Simon Hinterreiter
+        /// </remarks>
         public async Task UpdateTeachingPlan(TeachingPlanDto teachingPlanDto) {
             /* 
             Console.WriteLine($"[DEBUG] Service: Called UpdateTeachingPlan");
@@ -414,10 +427,12 @@ namespace TraineeTracker.Services {
         // ---------------------------------------------------
         /// <summary>
         /// Deletes a teaching plan and its associated lessons if no trainees are assigned.
-        /// Code Ownership: Alexandros Blask
         /// </summary>
         /// <param name="existingTeachingPlanId">The ID of the teaching plan to delete.</param>
         /// <returns>A task representing the asynchronous delete operation.</returns>
+        /// <remarks>
+        /// Code Ownership: Alexandros Blask
+        /// </remarks>
         public async Task DeleteTeachingPlan(int existingTeachingPlanId) {
 
             // a) Debug-Output
@@ -447,6 +462,9 @@ namespace TraineeTracker.Services {
         /// <param name="trainee">The trainee to assign the plan to.</param>
         /// <param name="teachingPlanId">The ID of the teaching plan to assign.</param>
         /// <returns>A task representing the asynchronous assignment operation.</returns>
+        /// <remarks>
+        /// Code Ownership: Alexandros Blask
+        /// </remarks>
         public async Task AssignTeachingPlanToTraineeAsync(ApplicationUser trainee, int teachingPlanId) {
             // a) Get teachingplan with requested ID
             var plan = await _databaseTeachingPlanRepository.GetTeachingPlanByIdWithLessonsAndTraineesAsync(teachingPlanId)
@@ -466,8 +484,10 @@ namespace TraineeTracker.Services {
         // ---------------------------------------------------
         /// <summary>
         /// Unassigns a teaching plan from a trainee, removing related trainee lessons.
-        /// Code Ownership: Alexandros Blask
         /// </summary>
+        /// <remarks>
+        /// Code Ownership: Alexandros Blask
+        /// </remarks>
         public async Task UnassignTeachingPlanFromTraineeAsync(ApplicationUser trainee) {
             // Trainee - Get all TraineeLessons
             var traineeLessons = await _databaseTraineeLessonRepository.GetAllTraineeLessonsOfTraineeWithLessonAsync(trainee.Id);
