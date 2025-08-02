@@ -1172,6 +1172,15 @@ namespace TraineeTracker.Services.Seeders {
                     TraineeEndDate = new DateOnly(2026, 6, 30)
                 },
 
+                new ApplicationUserDto {
+                    Email = "closed.traineeTEST@uni-a.de",
+                    Role = "Trainee",
+                    TeachingPlanId = 2, // DevOps
+                    Password = "Sopro.2025",
+                    TraineeStartDate = new DateOnly(2025, 3, 15),
+                    TraineeEndDate = new DateOnly(2026, 6, 30)
+                },
+
                 // Endabnahme - 02
                 new ApplicationUserDto {
                     Email = "vanessa.vital@makandra.de",
