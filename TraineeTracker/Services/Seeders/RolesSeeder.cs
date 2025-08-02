@@ -7,6 +7,10 @@ namespace TraineeTracker.Services.Seeders {
     /// </summary>
     /// <remarks>Code Ownership: Paul Schweizer (schwepau)</remarks>
     public class RolesSeeder {
+
+        /// <summary>
+        /// Provides access to role management operations for Identity roles.
+        /// </summary>
         private readonly RoleManager<IdentityRole> _roleManager;
 
         /// <summary>

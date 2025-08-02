@@ -5,6 +5,12 @@ using Microsoft.AspNetCore.Routing;
 using Moq;
 
 namespace TraineeTracker.UnitTests.AdminTest {
+
+    /// <summary>
+    /// A mock implementation of <see cref="IUrlHelper"/> for unit testing purposes.
+    /// Returns dummy URLs and values for all methods.
+    /// </summary>
+    /// <remarks>Code Ownership: Paul Schweizer (schwepau)</remarks>
     public class UrlHelperMock : IUrlHelper {
         public ActionContext ActionContext { get; } = new ActionContext {
             HttpContext = new DefaultHttpContext(),
