@@ -17,10 +17,25 @@ namespace TraineeTracker.Services {
     /// Code Ownership: Nikita Stefan (stefanni)
     /// </remarks>
     public class TraineeStatisticsService {
+        /// <summary>
+        /// Repository for accessing trainee statistics data.
+        /// </summary>
         private readonly ITraineeStatisticsRepository _traineeStatisticsRepository;
+        /// <summary>
+        /// Repository for accessing trainee lesson data.
+        /// </summary>
         private readonly ITraineeLessonRepository _traineeLessonRepository;
+        /// <summary>
+        /// HttpClient used for external HTTP communication.
+        /// </summary>
         private readonly HttpClient _httpClient;
+        /// <summary>
+        /// UserManager to access application user data.
+        /// </summary>
         private readonly UserManager<ApplicationUser> _userManager;
+        /// <summary>
+        /// Repository for handling processing pause data.
+        /// </summary>
         private readonly IProcessingPauseRepository _processingPauseRepository;
 
         // --------------------------------------------------
