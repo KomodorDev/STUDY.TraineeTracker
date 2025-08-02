@@ -40,7 +40,6 @@ namespace TraineeTracker.Models.Dtos {
     /// <summary>
     /// Represents the result of a service operation, indicating success or failure, containing error messages if any, and optionally a value.
     /// </summary>
-    /// <typeparam name="T">The type of the value returned by the operation.</typeparam>
     /// <remarks>Code Ownership: Paul Schweizer (schwepau)</remarks>
     public class ServiceResult<T> {
 
