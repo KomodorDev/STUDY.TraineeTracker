@@ -12,6 +12,7 @@ using TraineeTracker.Data.TeachingPlans;
 
 namespace TraineeTracker.Services {
 
+    // ---------------------------------------------------
     /// <summary>
     /// Provides business logic for managing feedback: building dashboard view models,
     /// filtering and sorting feedback, and marking feedback as read or unread.
@@ -30,12 +31,14 @@ namespace TraineeTracker.Services {
         // ---------------------------------------------------
         /// <summary>
         /// Initializes a new instance of the <see cref="FeedbackService"/> class.
-        /// Code Ownership: Alexandros Blask
         /// </summary>
         /// <param name="feedbackRepo">Repository for feedback persistence operations.</param>
         /// <param name="userRepo">Repository for application user data access.</param>
         /// <param name="lessonRepo">Repository for lesson data retrieval.</param>
         /// <param name="teachingPlanRepo">Repository for teaching plan data retrieval.</param>
+        /// <remarks>
+        /// Code Ownership: Alexandros Blask
+        /// </remarks>
         public FeedbackService(IFeedbackRepository feedbackRepo, IApplicationUserRepository userRepo, ILessonRepository lessonRepo, ITeachingPlanRepository teachingPlanRepo) {
             _databaseFeedbackRepository = feedbackRepo;
             _databaseApplicaionUserRepository = userRepo;
@@ -43,9 +46,9 @@ namespace TraineeTracker.Services {
             _databaseTeachingPlanRepository = teachingPlanRepo;
         }
 
+        // ---------------------------------------------------
         /// <summary>
         /// Builds a <see cref="FeedbackDashboardViewModel"/> based on the current user and filter criteria.
-        /// Code Ownership: Simon Hinterreiter
         /// </summary>
         /// <param name="user">The claims principal representing the current user.</param>
         /// <param name="filter">Filter type: "all", "read", or "unread".</param>
@@ -57,6 +60,9 @@ namespace TraineeTracker.Services {
         /// <returns>
         /// A task that represents the asynchronous operation. The task result contains the populated <see cref="FeedbackDashboardViewModel"/>.
         /// </returns>
+        /// <remarks>
+        /// Code Ownership: Simon Hinterreiter
+        /// </remarks>
         public async Task<FeedbackDashboardViewModel> BuildFeedbackDashboardViewModelAsync(
             ClaimsPrincipal user,
             string filter = "all",
@@ -186,7 +192,6 @@ namespace TraineeTracker.Services {
         // ---------------------------------------------------
         /// <summary>
         /// Applies filtering and sorting to an <see cref="IQueryable{Feedback}"/> sequence.
-        /// Code Ownership: Simon Hinterreiter
         /// </summary>
         /// <param name="query">The base feedback query.</param>
         /// <param name="sortBy">Sort criteria string.</param>
@@ -194,6 +199,9 @@ namespace TraineeTracker.Services {
         /// <param name="selectedLessonId">Optional lesson ID filter.</param>
         /// <param name="selectedTeachingPlanId">Optional teaching plan ID filter.</param>
         /// <returns>The modified query with filtering and sorting applied.</returns>
+        /// <remarks>
+        /// Code Ownership: Simon Hinterreiter
+        /// </remarks>
         private static IQueryable<Feedback> ApplySortingAndFiltering(
             IQueryable<Feedback> query,
             string sortBy,
@@ -231,7 +239,6 @@ namespace TraineeTracker.Services {
         // ---------------------------------------------------
         /// <summary>
         /// Retrieves a paged list of all feedback entries for display.
-        /// Code Ownership: Alexandros Blask
         /// </summary>
         /// <param name="currentUser">The current user performing the query.</param>
         /// <param name="page">Page number for pagination.</param>
@@ -240,6 +247,9 @@ namespace TraineeTracker.Services {
         /// <param name="selectedLessonId">Optional lesson ID filter.</param>
         /// <param name="selectedTeachingPlanId">Optional teaching plan ID filter.</param>
         /// <returns>A task with a <see cref="Page{FeedbackDashboardDto}"/> of all feedbacks.</returns>
+        /// <remarks>
+        /// Code Ownership: Alexandros Blask
+        /// </remarks>
         private async Task<Page<FeedbackDashboardDto>> GetAllFeedbacksAsync(
             ApplicationUser currentUser,
             int page,
@@ -306,7 +316,6 @@ namespace TraineeTracker.Services {
         // ---------------------------------------------------
         /// <summary>
         /// Retrieves a paged list of feedback entries already read by the current user.
-        /// Code Ownership: Alexandros Blask
         /// </summary>
         /// <param name="currentUser">The current user performing the query.</param>
         /// <param name="page">Page number for pagination.</param>
@@ -315,6 +324,9 @@ namespace TraineeTracker.Services {
         /// <param name="selectedLessonId">Optional lesson ID filter.</param>
         /// <param name="selectedTeachingPlanId">Optional teaching plan ID filter.</param>
         /// <returns>A task with a <see cref="Page{FeedbackDashboardDto}"/> of read feedbacks.</returns>
+        /// <remarks>
+        /// Code Ownership: Alexandros Blask
+        /// </remarks>
         public async Task<Page<FeedbackDashboardDto>> GetReadFeedbacksAsync(
             ApplicationUser currentUser,
             int page,
@@ -369,7 +381,6 @@ namespace TraineeTracker.Services {
         // ---------------------------------------------------
         /// <summary>
         /// Retrieves a paged list of feedback entries not yet read by the current user.
-        /// Code Ownership: Alexandros Blask
         /// </summary>
         /// <param name="currentUser">The current user performing the query.</param>
         /// <param name="page">Page number for pagination.</param>
@@ -378,6 +389,9 @@ namespace TraineeTracker.Services {
         /// <param name="selectedLessonId">Optional lesson ID filter.</param>
         /// <param name="selectedTeachingPlanId">Optional teaching plan ID filter.</param>
         /// <returns>A task with a <see cref="Page{FeedbackDashboardDto}"/> of unread feedbacks.</returns>
+        /// <remarks>
+        /// Code Ownership: Alexandros Blask
+        /// </remarks>
         public async Task<Page<FeedbackDashboardDto>> GetUnreadFeedbacksAsync(
             ApplicationUser currentUser,
             int page,
@@ -432,11 +446,13 @@ namespace TraineeTracker.Services {
         // ---------------------------------------------------
         /// <summary>
         /// Marks a specific feedback entry as read for the given user.
-        /// Code Ownership: Alexandros Blask
         /// </summary>
         /// <param name="userPrincipal">The claims principal of the user marking the feedback as read.</param>
         /// <param name="feedbackId">The ID of the feedback to mark as read.</param>
         /// <returns>A task representing the asynchronous operation.</returns>
+        /// <remarks>
+        /// Code Ownership: Alexandros Blask
+        /// </remarks>
         public async Task MarkFeedbackAsReadAsync(ClaimsPrincipal userPrincipal, int feedbackId) {
 
             // +++++++++++++++
@@ -461,11 +477,13 @@ namespace TraineeTracker.Services {
         // ---------------------------------------------------
         /// <summary>
         /// Marks a specific feedback entry as unread for the given user.
-        /// Code Ownership: Alexandros Blask
         /// </summary>
         /// <param name="userPrincipal">The claims principal of the user marking the feedback as unread.</param>
         /// <param name="feedbackId">The ID of the feedback to mark as unread.</param>
         /// <returns>A task representing the asynchronous operation.</returns>
+        /// <remarks>
+        /// Code Ownership: Alexandros Blask
+        /// </remarks>
         public async Task MarkFeedbackAsUnreadAsync(ClaimsPrincipal userPrincipal, int feedbackId) {
 
             // +++++++++++++++
@@ -491,10 +509,12 @@ namespace TraineeTracker.Services {
         // ---------------------------------------------------
         /// <summary>
         /// Clears the "read" status for all users on a specific feedback entry.
-        /// Code Ownership: Alexandros Blask
         /// </summary>
         /// <param name="feedbackId">The ID of the feedback to reset.</param>
         /// <returns>A task representing the asynchronous operation.</returns>
+        /// <remarks>
+        /// Code Ownership: Alexandros Blask
+        /// </remarks>
         public async Task MarkFeedbackAsUnreadForEveryoneAsync(int feedbackId) {
 
             // +++++++++++++++
