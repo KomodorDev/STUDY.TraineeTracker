@@ -14,6 +14,7 @@
 </div>
 <div class="modal-body sopro-inner-card" style="padding-top: 9px;">
     <div class="accordion accordion-flush" id="lessonAccordion">
+
         <!-- Section 1: lesson info -->
         <div class="accordion-item">
             <p class="accordion-header" id="info">
@@ -33,6 +34,7 @@
                 </div>
             </div>
         </div>
+
         <!-- Section 2: state -->
         @{
             var currentState = Model.TraineeLesson.State.ToString();
@@ -201,8 +203,8 @@
                     </div>
 
                     @if (currentState == "Rated") {
-                        // Show existing feedback
 
+                        // Show existing feedback
                         <div>
                             <form class="stateChangeForm"
                                 asp-controller="TraineeLessonDetail"
@@ -241,8 +243,8 @@
                                 <button type="submit" class="sopro-button-content" style="margin-right: 1.172rem;">Update</button>
                                 <button type="reset" class="sopro-button-content" style="background-color: #626262;">Cancel</button>
                             </form>
+
                             <!-- delete button-->
-                            
                             @if (Model.ExistingFeedback != null && (User.IsInRole("Mentor") || User.IsInRole("Admin"))) {
                                 <form class="stateChangeForm"
                                     asp-controller="TraineeLessonDetail"
@@ -257,8 +259,8 @@
                             }
                         </div>
                     } else {
-                        // Open feedback form when pressing Rated
 
+                        // Open feedback form when pressing Rated
                         <div id="feedbackForm" style="display: none;">
                             <form class="stateChangeForm"
                                 asp-controller="TraineeLessonDetail"
@@ -301,6 +303,7 @@
                 </div>
             </div>
         </div>
+
         <!-- Section 3: logs -->
         <div class="accordion-item">
             <p class="accordion-header" id="logs">
@@ -316,6 +319,7 @@
                 </div>
             </div>
         </div>
+        
         <!-- Section 4: feedback -->
         <div class="accordion-item">
             <p class="accordion-header" id="feedback">
