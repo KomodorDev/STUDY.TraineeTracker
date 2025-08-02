@@ -30,6 +30,8 @@
     <div class="sopro-card scroll">
         <form asp-action="CreateUser" method="post">
 
+            <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
+
             @* Hidden confirmSubmission field *@
             <input type="hidden" id="confirmSubmission" name="ConfirmSubmission" value="false" />
 
@@ -93,7 +95,7 @@
                 <div class="sopro-card form-buttons">
 
                     @* ConfirmSubmission: set to true ONLY when Create button is clicked *@
-                    <button type="submit" class="sopro-btn sopro-btn-prim sopro-button-content"
+                    <button id="Create_User" type="submit" class="sopro-btn sopro-btn-prim sopro-button-content"
                         onclick="document.getElementById('confirmSubmission').value = 'true'">
                         Create
                     </button>

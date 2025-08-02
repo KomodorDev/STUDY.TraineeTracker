@@ -67,18 +67,6 @@ namespace TraineeTracker.Data.ApplicationUsers {
 
         // ------------------------------------------------------
         /// <summary>
-        /// Checks if a user with the specified ID exists.
-        /// </summary>
-        /// <param name="userId">The user ID.</param>
-        /// <returns>True if the user exists; otherwise, false.</returns>
-        /// <remarks>Code Ownership: Paul Schweizer (schwepau)</remarks>
-        public async Task<bool> ExistsAsync(string userId) {
-            var user = await _userManager.FindByIdAsync(userId);
-            return user != null;
-        }
-
-        // ------------------------------------------------------
-        /// <summary>
         /// Checks if the specified user exists.
         /// </summary>
         /// <param name="user">The user to check.</param>
@@ -87,6 +75,36 @@ namespace TraineeTracker.Data.ApplicationUsers {
         public async Task<bool> ExistsAsync(ApplicationUser user) {
             var tmp = await _userManager.FindByIdAsync(user.Id);
             return tmp != null;
+        }
+
+        // ------------------------------------------------------
+        /// <summary>
+        /// Asynchronously checks if a user exists in the database by their email address.
+        /// </summary>
+        /// <param name="email">The email address to search for.</param>
+        /// <returns>
+        /// A <see cref="Task{Boolean}"/> representing the asynchronous operation. 
+        /// The task result contains <c>true</c> if a user with the specified email exists; otherwise, <c>false</c>.
+        /// </returns>
+        /// <remarks>Code Ownership: Paul Schweizer (schwepau)</remarks>
+        public async Task<bool> ExistsByEmailAsync(string email) {
+            var user = await _userManager.FindByEmailAsync(email);
+            return user != null;
+        }
+
+        // ------------------------------------------------------
+        /// <summary>
+        /// Asynchronously checks if a user exists in the database by their unique identifier.
+        /// </summary>
+        /// <param name="userId">The unique identifier of the user to check.</param>
+        /// <returns>
+        /// A task that represents the asynchronous operation. The task result contains
+        /// <c>true</c> if the user exists; otherwise, <c>false</c>.
+        /// </returns>
+        /// <remarks>Code Ownership: Paul Schweizer (schwepau)</remarks>
+        public async Task<bool> ExistsByIdAsync(string userId) {
+            var user = await _userManager.FindByIdAsync(userId);
+            return user != null;
         }
 
         // ------------------------------------------------------
