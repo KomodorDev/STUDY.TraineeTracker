@@ -128,7 +128,7 @@ namespace TraineeTracker.Services.Admin {
 
             // +++++++++++++++
             // 1. Load all users once
-            var allUsers = await _applicationUserRepository.GetAllAsync();
+            var allUsers = await _applicationUserRepository.GetAllWithTeachingPlanAsync();
 
             // +++++++++++++++
             // Initialize Counts
@@ -192,19 +192,19 @@ namespace TraineeTracker.Services.Admin {
             // +++++++++++++++
             // Sort the users by sortBy
             var sortedAndFilteredUsers = sortBy!.ToLower() switch {
-                "role_asc" => filteredUsers.OrderBy(u => userRoles[u.Id]),
-                "role_desc" => filteredUsers.OrderByDescending(u => userRoles[u.Id]),
+                "role_asc" => filteredUsers.OrderBy(u => userRoles[u.Id]).ThenBy(u => u.UserName),
+                "role_desc" => filteredUsers.OrderByDescending(u => userRoles[u.Id]).ThenBy(u => u.UserName),
 
                 "username_asc" => filteredUsers.OrderBy(u => u.UserName),
                 "username_desc" => filteredUsers.OrderByDescending(u => u.UserName),
 
-                "startdate_asc" => filteredUsers.OrderBy(u => u.TraineeStartDate),
-                "startdate_desc" => filteredUsers.OrderByDescending(u => u.TraineeStartDate),
+                "startdate_asc" => filteredUsers.OrderBy(u => u.TraineeStartDate).ThenBy(u => u.UserName),
+                "startdate_desc" => filteredUsers.OrderByDescending(u => u.TraineeStartDate).ThenBy(u => u.UserName),
 
-                "enddate_asc" => filteredUsers.OrderBy(u => u.TraineeEndDate),
-                "enddate_desc" => filteredUsers.OrderByDescending(u => u.TraineeEndDate),
+                "enddate_asc" => filteredUsers.OrderBy(u => u.TraineeEndDate).ThenBy(u => u.UserName),
+                "enddate_desc" => filteredUsers.OrderByDescending(u => u.TraineeEndDate).ThenBy(u => u.UserName),
 
-                _ => filteredUsers.OrderBy(u => userRoles[u.Id]) // fallback
+                _ => filteredUsers.OrderBy(u => userRoles[u.Id]).ThenBy(u => u.UserName) // fallback
             };
 
             // +++++++++++++++

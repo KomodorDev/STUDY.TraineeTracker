@@ -97,6 +97,7 @@
                 <tr>
                     <th>Role</th>
                     <th>Email</th>
+                    <th>Teaching Plan</th>
                     <th>Start Date</th>
                     <th>End Date</th>
                     <th>Pauses</th>
@@ -111,6 +112,15 @@
                     <tr>
                         <td>@role</td>
                         <td>@user.Email</td>
+
+                        <td>
+                            @if (role == "Trainee") {
+                                if (@user.TeachingPlan == null) {
+                                    throw new NullReferenceException("Trainee requires TeachingPlan.");
+                                }
+                                @user.TeachingPlan.Name
+                            }
+                        </td>
 
                         <td>
                             @if (role == "Trainee")
