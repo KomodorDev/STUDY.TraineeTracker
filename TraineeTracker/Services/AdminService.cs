@@ -128,7 +128,7 @@ namespace TraineeTracker.Services.Admin {
 
             // +++++++++++++++
             // 1. Load all users once
-            var allUsers = await _applicationUserRepository.GetAllAsync();
+            var allUsers = await _applicationUserRepository.GetAllWithTeachingPlanAsync();
 
             // +++++++++++++++
             // Initialize Counts
