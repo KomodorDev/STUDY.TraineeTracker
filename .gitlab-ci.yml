@@ -5,29 +5,27 @@ stages:
   - deploy
   - portainer
 
-
 # ---------------------------------------------
 # Build Stage
 build:
   stage: build
-  image: mcr.microsoft.com/dotnet/sdk:8.0   # Empfohlenes offizielles .NET 8 Image
+  image: mcr.microsoft.com/dotnet/sdk:8.0
   tags:
     - sopro
   script:
-    - cd TraineeTracker         # Gehe in dein Hauptprojekt
-    - dotnet build              # Baue das Projekt
+    - cd TraineeTracker         # Navigate into the main project
+    - dotnet build              # Build the project
   rules:
     - if: '$CI_COMMIT_BRANCH == "main"'
     - if: '$CI_COMMIT_BRANCH == "dev"'
     - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
     - if: '$CI_COMMIT_BRANCH =~ /^[a-zA-Z]+_[0-9][0-9]$/'
 
-
 # ---------------------------------------------
 # Unit Test Stage:
 unit-tests:
   stage: unit-tests
-  image: mcr.microsoft.com/dotnet/sdk:8.0   # Empfohlenes offizielles .NET 8 Image
+  image: mcr.microsoft.com/dotnet/sdk:8.0
   tags:
     - sopro
   script:
@@ -45,25 +43,25 @@ unit-tests:
 # E2E Test Stage:
 e2e-tests:
   stage: e2e-tests
-  image: mcr.microsoft.com/dotnet/sdk:8.0   # Empfohlenes offizielles .NET 8 Image
+  image: mcr.microsoft.com/dotnet/sdk:8.0
   tags:
     - sopro
   script:
-    # Starte das Hauptprojekt als Server im Hintergrund
+    # Start the main project as a background server
     - cd TraineeTracker
     - dotnet run --environment Development &
-    - sleep 5  # Gib dem Server Zeit, um zu starten
+    - sleep 5  # Give the server time to start
 
-    # Chrome installieren (Selenium braucht echten Browser!)
+    # Install Chrome (Selenium requires a real browser)
     - apt update -q -y
     - apt --yes install libnss3 xvfb libx11-6 libgconf-2-4 unzip gnupg
     - wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
     - apt install ./google-chrome-stable_current_amd64.deb -y
 
-    # Wechsel ins E2E-Testprojekt
+    # Switch to E2E test project
     - cd ../TraineeTracker.E2ETests
 
-    # E2E-Tests ausführen
+    # Run E2E tests
     - dotnet test
   needs:
     - build
@@ -77,27 +75,36 @@ e2e-tests:
 # Deploy:
 deploy:
   stage: deploy
+
+  # Use Kaniko executor image (no Docker daemon needed)
   image:
     name: gcr.io/kaniko-project/executor:debug
     entrypoint: [""]
   tags:
     - sopro
   variables:
-    KANIKO_ARGS: "--single-snapshot"
-    KANIKO_BUILD_CONTEXT: $CI_PROJECT_DIR/TraineeTracker
-    IMAGE_TAG_NAME: kaniko-docker
+    KANIKO_ARGS: "--single-snapshot"                      # Optimize image size (single layer)
+    KANIKO_BUILD_CONTEXT: $CI_PROJECT_DIR/TraineeTracker  # Docker build context
+    IMAGE_TAG_NAME: kaniko-docker                         # Image tag suffix
   script:
+    # Construct full Docker image name with tag
     - export IMAGE_TAG=${CI_REGISTRY_IMAGE}/traineetracker:${IMAGE_TAG_NAME}
     - echo $IMAGE_TAG
+
+    # Create Docker config file for authentication
     - mkdir -p /kaniko/.docker
     - echo "{\"auths\":{\"$CI_REGISTRY\":{\"auth\":\"$(echo -n ${CI_REGISTRY_USER}:${CI_REGISTRY_PASSWORD} | base64 | tr -d '\n')\"}}}" > /kaniko/.docker/config.json
+
+    # Determine Dockerfile path (default if not explicitly set)
     - DOCKERFILE_PATH=${DOCKERFILE_PATH:-"$KANIKO_BUILD_CONTEXT/Dockerfile"}
+
+    # Execute Kaniko to build and push the Docker image
     - /kaniko/executor --context $KANIKO_BUILD_CONTEXT --dockerfile $DOCKERFILE_PATH --destination $IMAGE_TAG $KANIKO_ARGS
   needs:
     - unit-tests
     - e2e-tests
   rules:
-    - if: '$CI_COMMIT_BRANCH == "main"'
+    - if: '$CI_COMMIT_BRANCH == "main"' # Only run deploy on main branch
     
 # ---------------------------------------------
 # Portainer:
@@ -109,10 +116,11 @@ portainer:
   tags:
     - sopro
   script:
-    - sleep 10    # Warte, bis das Dockerimage vollständig erstellt ist
-    - curl -X POST $CONTAINER_WEB_HOOK # Wir sagen Portainer: Hier ist ein neues Image. Update mal
+    - sleep 10                          # Wait until the Docker image is fully built
+    - curl -X POST $CONTAINER_WEB_HOOK  # Notify Portainer: new image is ready
   needs:
     - deploy
   rules:
     - if: '$CI_COMMIT_BRANCH == "main"'
+
 # ---------------------------------------------
