@@ -2,22 +2,44 @@ using OpenQA.Selenium;
 using OpenQA.Selenium.Chrome;
 
 namespace Tutorial_project.E2ETests {
-    // BrowserFixture stellt einen einmalig initialisierten Browser für alle Tests bereit
+
+    /// <summary>
+    /// Provides a shared, pre-configured Selenium Chrome WebDriver for all end-to-end tests.
+    /// Ensures consistent browser setup and handles cleanup after test execution.
+    /// </summary>
+    /// <remarks>Code Ownership: Simon Hinterreiter (hintsimo)</remarks>
     public class BrowserFixture : IDisposable {
-        // Property, um den Selenium-WebDriver (Chrome) allen Tests bereitzustellen
+
+        /// <summary>
+        /// The Selenium WebDriver instance (Chrome) that can be used by all tests.
+        /// </summary>
         public IWebDriver Driver { get; private set; }
 
-        // Konstruktor: wird beim Erstellen der Fixture-Klasse einmalig aufgerufen
+        // ------------------------------------------------------
+        /// <summary>
+        /// Initializes a new headless ChromeDriver instance with CI/CD-safe options,
+        /// including isolated user data directory and window size.
+        /// </summary>
         public BrowserFixture() {
-            // ChromeOptions erlaubt dir, den Browser „Headless“ zu starten (ohne GUI)
-            var options = new ChromeOptions();
-            options.AddArgument("--headless");  // Im Headless-Modus, wichtig für CI/CD
-            options.AddArgument("--window-size=1920,1080");
-            options.AddArgument("--no-sandbox"); // Wichtige Option für CI/CD, damit keine Sandbox-Probleme auftreten
-            options.AddArgument("--disable-gpu"); // Deaktiviert GPU-Beschleunigung für Headless-Modus (stabiler)
-            options.AddArgument("--disable-dev-shm-usage"); // Verhindert Speicherprobleme in Container-Umgebungen
 
-            // TempDir for User
+            var options = new ChromeOptions();
+
+            // Run Chrome in headless mode (no GUI)
+            options.AddArgument("--headless");
+
+            // Standard resolution
+            options.AddArgument("--window-size=1920,1080");
+
+            // Required in some CI/CD containers
+            options.AddArgument("--no-sandbox");
+
+            // Disable GPU usage for stability
+            options.AddArgument("--disable-gpu");
+
+            // Prevent shared memory issues in Docker
+            options.AddArgument("--disable-dev-shm-usage");
+
+            // Use isolated user data directory
             var tempDir = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
             Directory.CreateDirectory(tempDir);
             options.AddArgument($"--user-data-dir={tempDir}");
@@ -25,15 +47,19 @@ namespace Tutorial_project.E2ETests {
             // Erstelle den WebDriver (Chrome), übergib ihm die Optionen
             Driver = new ChromeDriver(options);
 
-            // Starte die Browser-Session und navigiere direkt zur App-Startseite
-            // Hier: HTTP (lokal unter Port 5260)
-            Driver.Navigate().GoToUrl("http://localhost:5079");  // Anpassen auf deine lokale/Produktiv-URL
+            // Navigate immediately to the app's base URL
+            Driver.Navigate().GoToUrl("http://localhost:5079");
         }
 
-        // IDisposable-Implementierung: sorgt dafür, dass der Browser nach Tests wieder geschlossen wird
+        // ------------------------------------------------------
+        /// <summary>
+        /// Cleans up ChromeDriver and all associated browser processes after test execution.
+        /// </summary>
         public void Dispose() {
-            Driver.Quit();    // Schließt alle Browserfenster und beendet ChromeDriver-Prozesse
-            Driver.Dispose(); // Gibt auch alle Ressourcen des Drivers frei
+            Driver.Quit();
+            Driver.Dispose();
         }
+
+        // ------------------------------------------------------
     }
 }

@@ -127,7 +127,10 @@ namespace TraineeTracker.Services {
             // B. If user IS NOT Trainee:
             else if (user.IsInRole("Mentor") || user.IsInRole("Admin")) {
                 // All active Trainees in Dropdown
-                selectableTrainees = await _databaseApplicationUserRepository.GetOpenUsersInRoleAsync("Trainee");
+                selectableTrainees = (await _databaseApplicationUserRepository
+                    .GetOpenUsersInRoleAsync("Trainee"))
+                    .OrderBy(user => user.UserName)
+                    .ToList();
 
                 // +++++++++++++++
                 // a. No trainee selected:

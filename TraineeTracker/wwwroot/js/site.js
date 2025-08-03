@@ -215,7 +215,7 @@ window.renderLessonChart = function(config) {
         tooltip.classList.remove('align-left', 'align-right', 'centered');
 
         const rect = tooltip.getBoundingClientRect();
-        const padding = 8; // optionaler Sicherheitsabstand zum Rand
+        const padding = 8; 
 
         if (rect.right > window.innerWidth - padding) {
             tooltip.classList.add('align-left');

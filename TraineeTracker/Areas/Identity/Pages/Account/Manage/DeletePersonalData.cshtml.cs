@@ -59,41 +59,12 @@ namespace TraineeTracker.Areas.Identity.Pages.Account.Manage {
             get; set;
         }
 
-        public async Task<IActionResult> OnGet() {
-            var user = await _userManager.GetUserAsync(User);
-            if (user == null) {
-                return NotFound($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
-            }
-
-            RequirePassword = await _userManager.HasPasswordAsync(user);
-            return Page();
+        public IActionResult OnGet() {
+            return NotFound();
         }
 
-        public async Task<IActionResult> OnPostAsync() {
-            var user = await _userManager.GetUserAsync(User);
-            if (user == null) {
-                return NotFound($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
-            }
-
-            RequirePassword = await _userManager.HasPasswordAsync(user);
-            if (RequirePassword) {
-                if (!await _userManager.CheckPasswordAsync(user, Input.Password)) {
-                    ModelState.AddModelError(string.Empty, "Incorrect password.");
-                    return Page();
-                }
-            }
-
-            var result = await _userManager.DeleteAsync(user);
-            var userId = await _userManager.GetUserIdAsync(user);
-            if (!result.Succeeded) {
-                throw new InvalidOperationException($"Unexpected error occurred deleting user.");
-            }
-
-            await _signInManager.SignOutAsync();
-
-            _logger.LogInformation("User with ID '{UserId}' deleted themselves.", userId);
-
-            return Redirect("~/");
+        public IActionResult OnPostAsync() {
+            return NotFound();
         }
     }
 }

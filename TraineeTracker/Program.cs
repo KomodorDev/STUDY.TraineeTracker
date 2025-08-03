@@ -89,9 +89,12 @@ builder.Services.AddScoped<TraineeLessonDashboardService>();
 
 // ----------------------------------------
 // Register Email Service
-builder.Services.Configure<EmailSettings>(builder.Configuration.GetSection("EmailSettings"));
-
-builder.Services.AddTransient<IEmailSender, GmailEmailSender>();
+if (environment.IsDevelopment()) {
+    builder.Services.AddTransient<IEmailSender, EmailSenderMock>();
+} else {
+    builder.Services.Configure<EmailSettings>(builder.Configuration.GetSection("EmailSettings"));
+    builder.Services.AddTransient<IEmailSender, GmailEmailSender>();
+}
 
 // -----------------------------------------
 // Seeder Services

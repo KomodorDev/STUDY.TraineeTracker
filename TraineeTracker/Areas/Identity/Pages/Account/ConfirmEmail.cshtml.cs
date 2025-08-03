@@ -27,6 +27,19 @@ namespace TraineeTracker.Areas.Identity.Pages.Account {
         /// </summary>
         [TempData]
         public string StatusMessage { get; set; }
+
+        /// <summary>
+        /// Handles GET requests for the email confirmation page.
+        /// Validates the confirmation token and updates the user's email status.
+        /// On success, redirects the user to the password reset page.
+        /// On failure, displays an error message.
+        /// </summary>
+        /// <param name="userId">The ID of the user whose email is being confirmed.</param>
+        /// <param name="code">The confirmation token sent to the user's email.</param>
+        /// <returns>
+        /// An <see cref="IActionResult"/> that redirects to the password reset page on success,
+        /// or displays an error message on failure.
+        /// </returns>
         public async Task<IActionResult> OnGetAsync(string userId, string code) {
             if (userId == null || code == null) {
                 return RedirectToPage("/Index");
