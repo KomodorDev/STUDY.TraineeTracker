@@ -116,6 +116,9 @@ namespace TraineeTracker.UnitTests.FeedbackTest{
             public Task<ApplicationUser?> FindByIdWithWrittenFeedbacksWithLessonAsync(string id)
                 => Task.FromResult<ApplicationUser?>(_user);
 
+            public Task<IEnumerable<ApplicationUser>> GetAllWithTeachingPlanAsync() => throw new NotImplementedException();
+
+            public Task<IEnumerable<ApplicationUser>> GetAllWithTeachingPlanAsync(bool isClosed) => throw new NotImplementedException();
         }
 
         // ------------------------------------------------------
