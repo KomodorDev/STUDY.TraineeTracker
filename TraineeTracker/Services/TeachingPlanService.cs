@@ -19,10 +19,30 @@ namespace TraineeTracker.Services {
     /// Code Ownership: Alexandros Blask, Simon Hinterreiter
     /// </remarks>
     public class TeachingPlanService {
+
+        /// <summary>
+        /// Provides Access to the TeachingPlanRepo
+        /// </summary>
         private readonly ITeachingPlanRepository _databaseTeachingPlanRepository;
+        
+        /// <summary>
+        /// Provides Access to the LessonRepo
+        /// </summary>
         private readonly ILessonRepository _databaseLessonRepository;
+        
+        /// <summary>
+        /// Provides Access to the TraineeLessonRepo
+        /// </summary>
         private readonly ITraineeLessonRepository _databaseTraineeLessonRepository;
+        
+        /// <summary>
+        /// Provides Access to the ApplicationUserRepo
+        /// </summary>
         private readonly IApplicationUserRepository _databaseApplicationUserRepository;
+        
+        /// <summary>
+        /// Provides Access to the NotificationService
+        /// </summary>
         private readonly EmailNotificationService _emailNotificationService;
 
         // ---------------------------------------------------

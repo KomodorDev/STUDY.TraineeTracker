@@ -21,10 +21,30 @@ namespace TraineeTracker.Services {
     /// Code Ownership: Alexandros Blask, Simon Hinterreiter
     /// </remarks>
     public class FeedbackService {
+
+        /// <summary>
+        /// Sets max page size to 20
+        /// </summary>
         private const int _pageSize = 20;
+
+        /// <summary>
+        /// Provides Access to the FeedbackRepo
+        /// </summary>
         private readonly IFeedbackRepository _databaseFeedbackRepository;
+        
+        /// <summary>
+        /// Provides Access to the ApplicatiotionUserRepo
+        /// </summary>
         private readonly IApplicationUserRepository _databaseApplicaionUserRepository;
+        
+        /// <summary>
+        /// Provides Access to the LessonRepo
+        /// </summary>
         private readonly ILessonRepository _databaseLessonRepository;
+        
+        /// <summary>
+        /// Provides Access to the TeachingPlanRepo
+        /// </summary>
         private readonly ITeachingPlanRepository _databaseTeachingPlanRepository;
 
 
