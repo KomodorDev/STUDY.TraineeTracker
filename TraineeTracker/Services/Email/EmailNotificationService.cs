@@ -263,7 +263,8 @@ namespace TraineeTracker.Services.Email {
                 await _emailSender.SendEmailAsync(trainee.Email!, subject, messageHtml);
             }
         }
-
+        
+        // ------------------------------------------------------
         /// <summary>
         /// Sends email notifications to mentors, admins, and the trainee when feedback for a lesson is changed or deleted.
         /// The email includes a summary of the updated feedback or a deletion notice. 
@@ -280,7 +281,6 @@ namespace TraineeTracker.Services.Email {
         /// <remarks>
         /// Code Ownership: Simon Hinterreiter (hintsimo)
         /// </remarks>
-        // ------------------------------------------------------
         public async Task NotifyAboutFeedbackChangeAsync(Feedback feedback, ApplicationUser trueAuthor, bool deleted = false) {
 
             // +++++++++++++++

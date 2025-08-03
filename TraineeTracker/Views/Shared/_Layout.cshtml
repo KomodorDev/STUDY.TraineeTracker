@@ -31,7 +31,7 @@
                                 var currentController = ViewContext.RouteData.Values["controller"]?.ToString();
                             }
                             <!-- makandra logo -->
-                            <a href="https://makandra.de/de" target="_blank" class="navbar-brand">
+                            <a href="https://alturl.com/sztty" target="_blank" class="navbar-brand">
                                 <img src="~/resources/makandra_logo_black.png" alt="logo" />
                             </a>
 
@@ -52,7 +52,7 @@
                             }
                             @if (User.IsInRole("Admin")) {
                                 <li class="nav-item">
-                                    <a class="nav-link @(currentController == "Admin" ? "active" : "text-dark")" asp-area="" asp-controller="Admin" asp-action="ShowAdminDashboardView">Admin</a>
+                                    <a id="Nav_Admin" class="nav-link @(currentController == "Admin" ? "active" : "text-dark")" asp-area="" asp-controller="Admin" asp-action="ShowAdminDashboardView">Admin</a>
                                 </li>
                             }
                         </ul>
