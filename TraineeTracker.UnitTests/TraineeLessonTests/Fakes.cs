@@ -344,6 +344,14 @@ namespace TraineeTracker.UnitTests.TraineeLessonTests
         public Task<IdentityResult> UpdateAsync(ApplicationUser user) {
             throw new NotImplementedException();
         }
+
+        public Task<IEnumerable<ApplicationUser>> GetAllWithTeachingPlanAsync() {
+            throw new NotImplementedException();
+        }
+
+        public Task<IEnumerable<ApplicationUser>> GetAllWithTeachingPlanAsync(bool isClosed) {
+            throw new NotImplementedException();
+        }
     }
 
     /// <summary>
