@@ -69,13 +69,18 @@
                     </option>
                     <option value="role_desc" selected="@(Model.SortBy == "role_desc" ? "selected" : null)">Role
                         ↓</option>
-                    <option value="username_asc" selected="@(Model.SortBy == "username_asc" ? "selected" : null)">Name ↑</option>
-                    <option value="username_desc" selected="@(Model.SortBy == "username_desc" ? "selected" : null)">Name ↓</option>
-                    <option value="startdate_asc" selected="@(Model.SortBy == "startdate_asc" ? "selected" : null)">Start Date ↑</option>
+                    <option value="username_asc" selected="@(Model.SortBy == "username_asc" ? "selected" : null)">Name ↑
+                    </option>
+                    <option value="username_desc" selected="@(Model.SortBy == "username_desc" ? "selected" : null)">Name
+                        ↓</option>
+                    <option value="startdate_asc" selected="@(Model.SortBy == "startdate_asc" ? "selected" : null)">
+                        Start Date ↑</option>
                     <option value="startdate_desc" selected="@(Model.SortBy == "startdate_desc" ? "selected" : null)">
                         Start Date ↓</option>
-                    <option value="enddate_asc" selected="@(Model.SortBy == "enddate_asc" ? "selected" : null)">End Date ↑</option>
-                    <option value="enddate_desc" selected="@(Model.SortBy == "enddate_desc" ? "selected" : null)">End Date ↓</option>
+                    <option value="enddate_asc" selected="@(Model.SortBy == "enddate_asc" ? "selected" : null)">End Date
+                        ↑</option>
+                    <option value="enddate_desc" selected="@(Model.SortBy == "enddate_desc" ? "selected" : null)">End
+                        Date ↓</option>
                 </select>
             </form>
 
@@ -114,11 +119,9 @@
                         <td>@user.Email</td>
 
                         <td>
-                            @if (role == "Trainee") {
-                                if (@user.TeachingPlan == null) {
-                                    throw new NullReferenceException("Trainee requires TeachingPlan.");
-                                }
-                                @user.TeachingPlan.Name
+                            @if (role == "Trainee" && !user.IsClosed)
+                            {
+                                @user.TeachingPlan?.Name
                             }
                         </td>
 
@@ -206,9 +209,9 @@
         @if (Model.Users.HasNext)
         {
             <li class="page-item">
-                <a id="Next_Page" class="page-link" asp-controller="Admin" asp-action="Dashboard" asp-route-filterRole="@Model.FilterRole"
-                    asp-route-filterStatus="@Model.FilterStatus" asp-route-sortBy="@Model.SortBy"
-                    asp-route-page="@(Model.Users.PageNumber + 1)">
+                <a id="Next_Page" class="page-link" asp-controller="Admin" asp-action="Dashboard"
+                    asp-route-filterRole="@Model.FilterRole" asp-route-filterStatus="@Model.FilterStatus"
+                    asp-route-sortBy="@Model.SortBy" asp-route-page="@(Model.Users.PageNumber + 1)">
                     Next
                 </a>
             </li>
