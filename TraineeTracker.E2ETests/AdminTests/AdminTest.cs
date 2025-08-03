@@ -11,6 +11,7 @@ namespace TraineeTracker.E2ETests.AdminTests {
     public class AdminTest : IClassFixture<BrowserFixture> {
         IWebDriver _driver;
 
+        // ------------------------------------------------------
         /// <summary>
         /// Initializes a new instance of the <see cref="AdminTest"/> class with the specified browser fixture.
         /// </summary>

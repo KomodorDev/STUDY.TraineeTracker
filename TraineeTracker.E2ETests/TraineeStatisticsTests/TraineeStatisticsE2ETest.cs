@@ -1,27 +1,26 @@
 using OpenQA.Selenium;
 using Tutorial_project.E2ETests;
 
-namespace TraineeTracker.E2ETests
-{
+namespace TraineeTracker.E2ETests {
+
     /// <summary>
     /// Contains end-to-end tests verifying the behavior of UI tooltips within the trainee statistics modal.
     /// </summary>
     /// <remarks>
     /// Code Ownership: Nikita Stefan (stefanni)
     /// </remarks>
-    public class StatisticsSnapshotTests : IClassFixture<BrowserFixture>
-    {
+    public class StatisticsSnapshotTests : IClassFixture<BrowserFixture> {
         /// <summary>
         /// Selenium WebDriver instance used for interacting with the browser during tests.
         /// </summary>
         private readonly IWebDriver _driver;
 
+        // ------------------------------------------------------
         /// <summary>
         /// Initializes a new instance of the <see cref="StatisticsSnapshotTests"/> class using the provided <see cref="BrowserFixture"/>.
         /// </summary>
         /// <param name="fixture">Shared browser fixture used across tests.</param>
-        public StatisticsSnapshotTests(BrowserFixture fixture)
-        {
+        public StatisticsSnapshotTests(BrowserFixture fixture) {
             _driver = fixture.Driver;
         }
 
@@ -35,8 +34,7 @@ namespace TraineeTracker.E2ETests
         /// and asserts that a tooltip becomes visible containing a relevant explanation (e.g., with the word "snapshot").
         /// </remarks>
         [Fact]
-        public void Tooltip_ShouldAppear_WhenHoveringOverInfoIcon()
-        {
+        public void Tooltip_ShouldAppear_WhenHoveringOverInfoIcon() {
             // 1. Navigate to login page
             _driver.Navigate().GoToUrl("http://localhost:5079/Identity/Account/Login?ReturnUrl=%2FDashboard");
             Thread.Sleep(1000);
