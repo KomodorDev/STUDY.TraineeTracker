@@ -218,6 +218,28 @@ namespace TraineeTracker.Data.ApplicationUsers {
         /// <returns>A collection of users filtered by closed status.</returns>
         Task<IEnumerable<ApplicationUser>> GetAllAsync(bool isClosed);
 
+        /// <summary>
+        /// Asynchronously retrieves all <see cref="ApplicationUser"/> entities and includes teaching plans.
+        /// </summary>
+        /// <returns>
+        /// A task that represents the asynchronous operation. The task result contains an enumerable collection of <see cref="ApplicationUser"/> objects with teaching plans.
+        /// </returns>
+        Task<IEnumerable<ApplicationUser>> GetAllWithTeachingPlanAsync();
+
+        /// <summary>
+        /// Asynchronously retrieves all <see cref="ApplicationUser"/> entities and includes teaching plans,
+        /// filtered by their closed status.
+        /// </summary>
+        /// <param name="isClosed">
+        /// A boolean value indicating whether to retrieve closed users (<c>true</c>)
+        /// or open users (<c>false</c>).
+        /// </param>
+        /// <returns>
+        /// A task that represents the asynchronous operation. The task result contains an enumerable collection of
+        /// <see cref="ApplicationUser"/> objects matching the specified user status.
+        /// </returns>
+        Task<IEnumerable<ApplicationUser>> GetAllWithTeachingPlanAsync(bool isClosed);
+
         // ------------------------------------------------------
         /// <summary>
         /// Determines whether the specified user is in the given role asynchronously.

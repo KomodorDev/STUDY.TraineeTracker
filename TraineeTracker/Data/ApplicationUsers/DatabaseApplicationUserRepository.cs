@@ -367,6 +367,40 @@ namespace TraineeTracker.Data.ApplicationUsers {
         /// <returns>A collection of users filtered by closed status.</returns>
         /// <remarks>Code Ownership: Paul Schweizer (schwepau)</remarks>
         public async Task<IEnumerable<ApplicationUser>> GetAllAsync(bool isClosed) {
+            return await _context.Users
+                .Where(u => u.IsClosed == isClosed)
+                .Include(u => u.TeachingPlan)
+                .ToListAsync();
+        }
+
+        /// <summary>
+        /// Asynchronously retrieves all <see cref="ApplicationUser"/> entities from the database,
+        /// including their associated <see cref="TeachingPlan"/> data.
+        /// </summary>
+        /// <returns>
+        /// A task representing the asynchronous operation. The task result contains an <see cref="IEnumerable{ApplicationUser}"/>
+        /// with all users and their teaching plans.
+        /// </returns>
+        /// <remarks>Code Ownership: Paul Schweizer (schwepau)</remarks>
+        public async Task<IEnumerable<ApplicationUser>> GetAllWithTeachingPlanAsync() {
+            return await _context.Users
+                .Include(u => u.TeachingPlan)
+                .ToListAsync();
+        }
+
+        /// <summary>
+        /// Asynchronously retrieves all <see cref="ApplicationUser"/> entities from the database
+        /// filtered by the <paramref name="isClosed"/> value and includes their associated <see cref="TeachingPlan"/>.
+        /// </summary>
+        /// <param name="isClosed">
+        /// A boolean value indicating whether to filter closed (<c>true</c>) or open users (<c>false</c>).
+        /// </param>
+        /// <returns>
+        /// A task that represents the asynchronous operation. The task result contains an <see cref="IEnumerable{ApplicationUser}"/>
+        /// of users with the specified closed status.
+        /// </returns>
+        /// <remarks>Code Ownership: Paul Schweizer (schwepau)</remarks>
+        public async Task<IEnumerable<ApplicationUser>> GetAllWithTeachingPlanAsync(bool isClosed) {
             return await _context.Users.Where(u => u.IsClosed == isClosed).ToListAsync();
         }
 
