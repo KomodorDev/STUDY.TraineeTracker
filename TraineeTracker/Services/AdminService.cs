@@ -16,24 +16,80 @@ using TraineeTracker.Models.Domain;
 using TraineeTracker.Models.Dtos;
 using TraineeTracker.Models.ViewModels.Admin;
 using TraineeTracker.Services.Email;
+using TraineeTracker.Exceptions;
 
 namespace TraineeTracker.Services.Admin {
+
+    /// <summary>
+    /// Provides administrative services for managing users, roles, processing pauses, teaching plans, feedbacks, and trainee statistics.
+    /// </summary>
+    /// <remarks>Code Ownership: Paul Schweizer (schwepau)</remarks>
     public class AdminService {
 
+        /// <summary>
+        /// Specifies the default number of items to display per page in paginated queries.
+        /// </summary>
         private const int _pageSize = 20;
+
+        /// <summary>
+        /// Provides access to the unit of work for managing database transactions and repositories.
+        /// </summary>
         private readonly IUnitOfWork _unitOfWork;
 
+        /// <summary>
+        /// Repository for accessing and managing application user data.
+        /// </summary>
         private readonly IApplicationUserRepository _applicationUserRepository;
+
+        /// <summary>
+        /// Repository for managing processing pause entities.
+        /// </summary>
         private readonly IProcessingPauseRepository _processingPauseRepository;
+
+        /// <summary>
+        /// Provides APIs for managing user roles within the application.
+        /// </summary>
         private readonly RoleManager<IdentityRole> _roleManager;
 
+        /// <summary>
+        /// Service responsible for sending email notifications to users.
+        /// </summary>
         private readonly EmailNotificationService _emailNotificationService;
+
+        /// <summary>
+        /// Service for managing teaching plans.
+        /// </summary>
         private readonly TeachingPlanService _teachingPlanService;
 
+        /// <summary>
+        /// Repository for accessing and managing feedback data.
+        /// </summary>
         private readonly IFeedbackRepository _feedbackRepository;
+
+        /// <summary>
+        /// Repository for accessing and managing teaching plans.
+        /// </summary>
         private readonly ITeachingPlanRepository _teachingPlanRepository;
+
+        /// <summary>
+        /// Repository for accessing trainee statistics data.
+        /// </summary>
         private readonly ITraineeStatisticsRepository _traineeStatisticsRepository;
 
+        // ------------------------------------------------------
+        /// <summary>
+        /// Initializes a new instance of the <see cref="AdminService"/> class with required dependencies.
+        /// </summary>
+        /// <param name="unitOfWork">Unit of work for transaction management.</param>
+        /// <param name="applicationUserRepository">Repository for application users.</param>
+        /// <param name="processingPauseRepository">Repository for processing pauses.</param>
+        /// <param name="roleManager">Role manager for identity roles.</param>
+        /// <param name="emailNotificationService">Service for sending email notifications.</param>
+        /// <param name="teachingPlanService">Service for managing teaching plans.</param>
+        /// <param name="feedbackRepository">Repository for feedbacks.</param>
+        /// <param name="teachingPlanRepository">Repository for teaching plans.</param>
+        /// <param name="traineeStatisticsRepository">Repository for trainee statistics.</param>
+        /// <remarks>Code Ownership: Paul Schweizer (schwepau)</remarks>
         public AdminService(IUnitOfWork unitOfWork,
                             IApplicationUserRepository applicationUserRepository,
                             IProcessingPauseRepository processingPauseRepository,
@@ -55,6 +111,15 @@ namespace TraineeTracker.Services.Admin {
         }
 
         // ------------------------------------------------------
+        /// <summary>
+        /// Builds the admin dashboard view model with user filtering, sorting, and pagination.
+        /// </summary>
+        /// <param name="page">Page number for pagination.</param>
+        /// <param name="filterRole">Role filter ("all", "Admin", "Mentor", "Trainee").</param>
+        /// <param name="filterStatus">Status filter ("all", "open", "closed").</param>
+        /// <param name="sortBy">Sort order ("role_asc", "username_asc", etc.).</param>
+        /// <returns>The populated <see cref="AdminDashboardViewModel"/>.</returns>
+        /// <remarks>Code Ownership: Paul Schweizer (schwepau), Simon Hinterreiter (hintsimo)</remarks>
         public async Task<AdminDashboardViewModel> BuildAdminDashboardViewModelAsync(
                 int page = 1,
                 string? filterRole = "all",
@@ -63,7 +128,7 @@ namespace TraineeTracker.Services.Admin {
 
             // +++++++++++++++
             // 1. Load all users once
-            var allUsers = await _applicationUserRepository.GetAllAsync();
+            var allUsers = await _applicationUserRepository.GetAllWithTeachingPlanAsync();
 
             // +++++++++++++++
             // Initialize Counts
@@ -84,14 +149,14 @@ namespace TraineeTracker.Services.Admin {
             // +++++++++++++++
             // Iterate through each user in allUsers:
             foreach (var user in allUsers) {
-                var highestRole = await GetHighestRoleAsync(user);
-                userRoles[user.Id] = highestRole;
+                var roles = await _applicationUserRepository.GetRolesAsync(user);
+                userRoles[user.Id] = roles.First();
 
                 // Count for role-tabs (Admin/Mentor/Trainee) - depending on Status
                 if (filterStatus == "all"
                     || (filterStatus == "open" && !user.IsClosed)
                     || (filterStatus == "closed" && user.IsClosed)) {
-                    switch (highestRole) {
+                    switch (userRoles[user.Id]) {
                         case "Admin":
                             adminCount++;
                             break;
@@ -105,7 +170,7 @@ namespace TraineeTracker.Services.Admin {
                 }
 
                 // Count for status-tabs (Total/Open/Closed) - depending on Role
-                if (filterRole == "all" || highestRole == filterRole) {
+                if (filterRole == "all" || userRoles[user.Id] == filterRole) {
                     totalUserCount++;
                     if (!user.IsClosed)
                         openUserCount++;
@@ -113,7 +178,7 @@ namespace TraineeTracker.Services.Admin {
 
                 // Users for the current dashboard view
                 if (
-                    (filterRole == "all" || highestRole == filterRole) &&
+                    (filterRole == "all" || userRoles[user.Id] == filterRole) &&
                     (filterStatus == "all" ||
                      (filterStatus == "open" && !user.IsClosed) ||
                      (filterStatus == "closed" && user.IsClosed))
@@ -127,19 +192,19 @@ namespace TraineeTracker.Services.Admin {
             // +++++++++++++++
             // Sort the users by sortBy
             var sortedAndFilteredUsers = sortBy!.ToLower() switch {
-                "role_asc" => filteredUsers.OrderBy(u => userRoles[u.Id]),
-                "role_desc" => filteredUsers.OrderByDescending(u => userRoles[u.Id]),
+                "role_asc" => filteredUsers.OrderBy(u => userRoles[u.Id]).ThenBy(u => u.UserName),
+                "role_desc" => filteredUsers.OrderByDescending(u => userRoles[u.Id]).ThenBy(u => u.UserName),
 
                 "username_asc" => filteredUsers.OrderBy(u => u.UserName),
                 "username_desc" => filteredUsers.OrderByDescending(u => u.UserName),
 
-                "startdate_asc" => filteredUsers.OrderBy(u => u.TraineeStartDate),
-                "startdate_desc" => filteredUsers.OrderByDescending(u => u.TraineeStartDate),
+                "startdate_asc" => filteredUsers.OrderBy(u => u.TraineeStartDate).ThenBy(u => u.UserName),
+                "startdate_desc" => filteredUsers.OrderByDescending(u => u.TraineeStartDate).ThenBy(u => u.UserName),
 
-                "enddate_asc" => filteredUsers.OrderBy(u => u.TraineeEndDate),
-                "enddate_desc" => filteredUsers.OrderByDescending(u => u.TraineeEndDate),
+                "enddate_asc" => filteredUsers.OrderBy(u => u.TraineeEndDate).ThenBy(u => u.UserName),
+                "enddate_desc" => filteredUsers.OrderByDescending(u => u.TraineeEndDate).ThenBy(u => u.UserName),
 
-                _ => filteredUsers.OrderBy(u => userRoles[u.Id]) // fallback
+                _ => filteredUsers.OrderBy(u => userRoles[u.Id]).ThenBy(u => u.UserName) // fallback
             };
 
             // +++++++++++++++
@@ -176,12 +241,23 @@ namespace TraineeTracker.Services.Admin {
         }
 
         // ------------------------------------------------------
+        /// <summary>
+        /// Builds the view model for creating a new user, including dropdowns for roles and teaching plans.
+        /// </summary>
+        /// <returns>The populated <see cref="CreateUserViewModel"/>.</returns>
+        /// <remarks>Code Ownership: Paul Schweizer (schwepau)</remarks>
         public async Task<CreateUserViewModel> BuildCreateUserViewModelAsync() {
             var viewModel = new CreateUserViewModel();
             return await FillCreateUserDropdownsAsync(viewModel);
         }
 
         // ------------------------------------------------------
+        /// <summary>
+        /// Fills the dropdown lists in the create user view model with available roles and teaching plans.
+        /// </summary>
+        /// <param name="viewModel">The view model to populate.</param>
+        /// <returns>The updated <see cref="CreateUserViewModel"/>.</returns>
+        /// <remarks>Code Ownership: Paul Schweizer (schwepau)</remarks>
         public async Task<CreateUserViewModel> FillCreateUserDropdownsAsync(CreateUserViewModel viewModel) {
             ArgumentNullException.ThrowIfNull(viewModel);
             var rolesTask = _roleManager.Roles.ToListAsync();
@@ -200,11 +276,33 @@ namespace TraineeTracker.Services.Admin {
         }
 
         // ------------------------------------------------------
+        /// <summary>
+        /// Creates a new user asynchronously based on the provided <see cref="ApplicationUserDto"/>.
+        /// Validates input, assigns roles, handles trainee-specific properties, and sends email confirmation if required.
+        /// Uses a transaction to ensure atomicity of user creation and related operations.
+        /// </summary>
+        /// <param name="dto">The data transfer object containing user information.</param>
+        /// <param name="isSeeder">Indicates whether the user is being created by a seeder (bypasses email confirmation).</param>
+        /// <param name="urlHelper">
+        /// The URL helper used to generate the email confirmation link. Must be provided if <paramref name="isSeeder"/> is <c>false</c>.
+        /// </param>
+        /// <returns>
+        /// A <see cref="ServiceResult"/> indicating success or failure, with error messages if applicable.
+        /// </returns>
+        /// <exception cref="ArgumentNullException">
+        /// Thrown if <paramref name="dto"/> is <c>null</c>, or if <paramref name="urlHelper"/> is <c>null</c> when <paramref name="isSeeder"/> is <c>false</c>.
+        /// </exception>
+        /// <remarks>Code Ownership: Paul Schweizer (schwepau)</remarks>
         public async Task<ServiceResult> CreateUserAsync(ApplicationUserDto dto, bool isSeeder, IUrlHelper? urlHelper = null) {
             ArgumentNullException.ThrowIfNull(dto);
             if (!isSeeder && urlHelper == null) {
                 throw new ArgumentNullException(nameof(urlHelper), "urlHelper must be provided if isSeeder is false");
             }
+
+            if (await _applicationUserRepository.ExistsByEmailAsync(dto.Email)) {
+                return ServiceResult.Failed("User with this Email already exists.");
+            }
+
             var user = new ApplicationUser {
                 UserName = dto.Email,
                 Email = dto.Email,
@@ -216,24 +314,26 @@ namespace TraineeTracker.Services.Admin {
                 if (dto.TraineeStartDate == null || dto.TraineeEndDate == null) {
                     return ServiceResult.Failed("Trainee requires start- and end-date.");
                 }
+                if (dto.TraineeEndDate < dto.TraineeStartDate) {
+                    return ServiceResult.Failed("Startdate after Enddate");
+                }
                 if (dto.TeachingPlanId == null) {
                     return ServiceResult.Failed("Trainee requires Teachingplan.");
                 }
             }
 
+            await _unitOfWork.BeginTransactionAsync();
+
             var result = await _applicationUserRepository.CreateAsync(user, dto.Password);
             if (!result.Succeeded) {
+                await _unitOfWork.RollbackAsync();
                 return ServiceResult.Failed(result.Errors.Select(e => e.Description).ToArray());
             }
 
             result = await _applicationUserRepository.AddToRoleAsync(user, dto.Role);
             if (!result.Succeeded) {
-                var deleteTask = _applicationUserRepository.DeleteAsync(user);
+                await _unitOfWork.RollbackAsync();
                 var errors = result.Errors;
-                var deleteResult = await deleteTask;
-                if (!deleteResult.Succeeded) {
-                    errors = result.Errors.Concat(deleteResult.Errors);
-                }
                 return ServiceResult.Failed(errors.Select(e => e.Description).ToArray());
             }
 
@@ -248,12 +348,8 @@ namespace TraineeTracker.Services.Admin {
 
                 result = await _applicationUserRepository.UpdateAsync(user);
                 if (!result.Succeeded) {
-                    var deleteTask = _applicationUserRepository.DeleteAsync(user);
+                    await _unitOfWork.RollbackAsync();
                     var errors = result.Errors;
-                    var deleteResult = await deleteTask;
-                    if (!deleteResult.Succeeded) {
-                        errors = result.Errors.Concat(deleteResult.Errors);
-                    }
                     return ServiceResult.Failed(errors.Select(e => e.Description).ToArray());
                 }
             }
@@ -270,7 +366,7 @@ namespace TraineeTracker.Services.Admin {
                         userId = user.Id,
                         code = token
                     },
-                    protocol: "https");
+                    protocol: "http");
                 try {
                     await _emailNotificationService.NotifyUserAsync(
                         user,
@@ -278,21 +374,29 @@ namespace TraineeTracker.Services.Admin {
                         $"Please confirm your account by <a href='{confirmationLink}'>clicking here</a>.\nYou will be redirected to set your password after.");
                 }
                 catch (Exception ex) {
+                    await _unitOfWork.RollbackAsync();
                     return ServiceResult.Failed(ex.Message);
                 }
             }
 
+            await _unitOfWork.CommitAsync();
             return ServiceResult.Success();
         }
 
         // ------------------------------------------------------
+        /// <summary>
+        /// Closes a user account, removes related references, and updates the user status.
+        /// </summary>
+        /// <param name="userId">The ID of the user to close.</param>
+        /// <returns>A <see cref="ServiceResult"/> indicating success or failure.</returns>
+        /// <remarks>Code Ownership: Paul Schweizer (schwepau)</remarks>
         public async Task<ServiceResult> CloseUserAsync(string userId) {
             await _unitOfWork.BeginTransactionAsync();
 
             var user = await _applicationUserRepository.FindByIdAsync(userId);
             if (user == null) {
                 await _unitOfWork.RollbackAsync();
-                throw new InvalidOperationException($"{nameof(user)} not found");
+                throw new UserNotFoundException();
             }
 
             user.IsClosed = true;
@@ -344,6 +448,12 @@ namespace TraineeTracker.Services.Admin {
         }
 
         // ------------------------------------------------------
+        /// <summary>
+        /// Builds the view model for managing processing pauses for a specific trainee.
+        /// </summary>
+        /// <param name="traineeId">The ID of the trainee.</param>
+        /// <returns>The populated <see cref="ManageProcessingPausesViewModel"/>, or null if not found.</returns>
+        /// <remarks>Code Ownership: Paul Schweizer (schwepau)</remarks>
         public async Task<ManageProcessingPausesViewModel?> BuildManageProcessingPausesViewModelAsync(string traineeId) {
             var trainee = await FindByIdWithProcessingPausesAsync(traineeId);
             if (trainee == null)
@@ -360,10 +470,16 @@ namespace TraineeTracker.Services.Admin {
         }
 
         // ------------------------------------------------------
+        /// <summary>
+        /// Creates a new processing pause for a trainee.
+        /// </summary>
+        /// <param name="dto">Processing pause data transfer object.</param>
+        /// <returns>A <see cref="ServiceResult"/> indicating success or failure.</returns>
+        /// <remarks>Code Ownership: Paul Schweizer (schwepau)</remarks>
         public async Task<ServiceResult> CreateProcessingPauseAsync(ProcessingPauseDto dto) {
             var user = await _applicationUserRepository.FindByIdAsync(dto.TraineeId);
             if (user == null) {
-                throw new InvalidOperationException($"{nameof(user)} not found.");
+                throw new UserNotFoundException();
             }
             var processingPause = new ProcessingPause {
                 TraineeId = dto.TraineeId,
@@ -381,6 +497,12 @@ namespace TraineeTracker.Services.Admin {
         }
 
         // ------------------------------------------------------
+        /// <summary>
+        /// Updates an existing processing pause.
+        /// </summary>
+        /// <param name="dto">Processing pause data transfer object.</param>
+        /// <returns>A <see cref="ServiceResult"/> indicating success or failure.</returns>
+        /// <remarks>Code Ownership: Paul Schweizer (schwepau)</remarks>
         public async Task<ServiceResult> UpdateProcessingPauseAsync(ProcessingPauseDto dto) {
             ArgumentNullException.ThrowIfNull(dto.ProcessingPauseId);
             var pause = await _processingPauseRepository.FindByIdAsync(dto.ProcessingPauseId.Value);
@@ -389,7 +511,7 @@ namespace TraineeTracker.Services.Admin {
             }
             var trainee = await _applicationUserRepository.FindByIdAsync(dto.TraineeId);
             if (trainee == null) {
-                throw new InvalidOperationException($"{nameof(trainee)} not found.");
+                throw new UserNotFoundException();
             }
             pause.TraineeId = dto.TraineeId;
             pause.Trainee = trainee;
@@ -404,6 +526,13 @@ namespace TraineeTracker.Services.Admin {
         }
 
         // ------------------------------------------------------
+        /// <summary>
+        /// Validates a processing pause for date correctness and overlap with existing pauses.
+        /// </summary>
+        /// <param name="processingPause">The processing pause to validate.</param>
+        /// <param name="newProcessingPause">Indicates if this is a new pause.</param>
+        /// <returns>A <see cref="ServiceResult"/> indicating validation result.</returns>
+        /// <remarks>Code Ownership: Paul Schweizer (schwepau)</remarks>
         private async Task<ServiceResult> ValidateProcessingPause(ProcessingPause processingPause, bool newProcessingPause) {
             if (processingPause.StartDate > processingPause.EndDate) {
                 return ServiceResult.Failed("Startdate after Enddate");
@@ -415,6 +544,12 @@ namespace TraineeTracker.Services.Admin {
         }
 
         // ------------------------------------------------------
+        /// <summary>
+        /// Deletes a processing pause by its ID.
+        /// </summary>
+        /// <param name="processingPauseId">The ID of the processing pause to delete.</param>
+        /// <returns>A <see cref="ServiceResult{ProcessingPause}"/> indicating success or failure.</returns>
+        /// <remarks>Code Ownership: Paul Schweizer (schwepau)</remarks>
         public async Task<ServiceResult<ProcessingPause>> DeleteProcessingPauseAsync(int processingPauseId) {
             var pause = await _processingPauseRepository.FindByIdAsync(processingPauseId);
             if (pause == null) {
@@ -425,22 +560,14 @@ namespace TraineeTracker.Services.Admin {
         }
 
         // ------------------------------------------------------
+        /// <summary>
+        /// Finds a user by ID and includes their processing pauses.
+        /// </summary>
+        /// <param name="userId">The ID of the user.</param>
+        /// <returns>The <see cref="ApplicationUser"/> with processing pauses, or null if not found.</returns>
+        /// <remarks>Code Ownership: Paul Schweizer (schwepau)</remarks>
         public async Task<ApplicationUser?> FindByIdWithProcessingPausesAsync(string userId) {
             return await _applicationUserRepository.FindByIdWithProcessingPausesAsync(userId);
-        }
-
-        // ------------------------------------------------------
-        public async Task<string> GetHighestRoleAsync(ApplicationUser user) {
-            var roles = await _applicationUserRepository.GetRolesAsync(user);
-
-            if (roles.Contains("Admin"))
-                return "Admin";
-            if (roles.Contains("Mentor"))
-                return "Mentor";
-            if (roles.Contains("Trainee"))
-                return "Trainee";
-
-            return roles.FirstOrDefault() ?? "Unknown";
         }
 
         // ------------------------------------------------------

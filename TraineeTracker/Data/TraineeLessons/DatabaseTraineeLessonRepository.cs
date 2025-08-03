@@ -59,7 +59,7 @@ namespace TraineeTracker.Data.TraineeLessons {
             await _context.SaveChangesAsync();
         }
 
-         // ------------------------------------------------------
+        // ------------------------------------------------------
         /// <summary>
         /// Checks whether a trainee lesson exists based on its ID.
         /// </summary>
@@ -150,7 +150,7 @@ namespace TraineeTracker.Data.TraineeLessons {
                 .FirstOrDefaultAsync(tl => tl.TraineeLessonId == traineeLessonId);
         }
 
-         // ------------------------------------------------------
+        // ------------------------------------------------------
         /// <summary>
         /// Deletes a <see cref="TraineeLesson"/> from the database based on its ID.
         /// Throws a <see cref="TraineeLessonNotFoundException"/> if no entry is found.
@@ -169,5 +169,7 @@ namespace TraineeTracker.Data.TraineeLessons {
             _context.TraineeLessons.Remove(traineeLesson);
             await _context.SaveChangesAsync();
         }
+
+        // ------------------------------------------------------
     }
 }

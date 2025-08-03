@@ -1,10 +1,4 @@
-using System;
-using System.Net.Http;
-using System.Net.Http.Headers;
 using System.Security.Claims;
-using System.Text;
-using System.Text.Json;
-using System.Threading.Tasks;
 using TraineeTracker.Data.TraineeStatistics;
 using TraineeTracker.Models.ViewModels;
 using TraineeTracker.Models.Domain;
@@ -14,14 +8,48 @@ using TraineeTracker.Exceptions;
 using TraineeTracker.Data.ProcessingPauses;
 
 namespace TraineeTracker.Services {
+    
+    /// <summary>
+    /// Provides logic for building trainee statistics snapshots and view models.
+    /// Calculates various performance and progress metrics for a given trainee.
+    /// </summary>
+    /// <remarks>
+    /// Code Ownership: Nikita Stefan (stefanni)
+    /// </remarks>
     public class TraineeStatisticsService {
+        /// <summary>
+        /// Repository for accessing trainee statistics data.
+        /// </summary>
         private readonly ITraineeStatisticsRepository _traineeStatisticsRepository;
+        /// <summary>
+        /// Repository for accessing trainee lesson data.
+        /// </summary>
         private readonly ITraineeLessonRepository _traineeLessonRepository;
+        /// <summary>
+        /// HttpClient used for external HTTP communication.
+        /// </summary>
         private readonly HttpClient _httpClient;
+        /// <summary>
+        /// UserManager to access application user data.
+        /// </summary>
         private readonly UserManager<ApplicationUser> _userManager;
+        /// <summary>
+        /// Repository for handling processing pause data.
+        /// </summary>
         private readonly IProcessingPauseRepository _processingPauseRepository;
 
         // --------------------------------------------------
+        /// <summary>
+        /// Initializes a new instance of the <see cref="TraineeStatisticsService"/> class.
+        /// </summary>
+        /// <param name="traineeStatisticsRepository">Repository for accessing trainee statistics data.</param>
+        /// <param name="traineeLessonRepository">Repository for accessing trainee lesson data.</param>
+        /// <param name="httpClient">HttpClient used for external HTTP communication.</param>
+        /// <param name="userManager">UserManager to access application user data.</param>
+        /// <param name="processingPauseRepository">Repository for handling processing pause data.</param>
+        /// <remarks>
+        /// Code Ownership: Nikita Stefan (stefanni)
+        /// </remarks>
         public TraineeStatisticsService(ITraineeStatisticsRepository traineeStatisticsRepository, ITraineeLessonRepository traineeLessonRepository, HttpClient httpClient, UserManager<ApplicationUser> userManager, IProcessingPauseRepository processingPauseRepository) {
             _traineeStatisticsRepository = traineeStatisticsRepository;
             _traineeLessonRepository = traineeLessonRepository;
@@ -31,6 +59,9 @@ namespace TraineeTracker.Services {
         }
 
         // --------------------------------------------------
+        /// <summary>
+        /// Builds a TraineeStatisticsViewModel for the specified trainee, including snapshot metrics and lesson data.
+        /// </summary>
         public async Task<TraineeStatisticsViewModel> BuildTraineeStatisticsViewModel(string traineeId, ClaimsPrincipal user) {
             CheckHasAccess(user, traineeId);
 
@@ -153,6 +184,15 @@ namespace TraineeTracker.Services {
         }
 
         // --------------------------------------------------
+        /// <summary>
+        /// Checks whether the currently logged-in user has access to the statistics of the given trainee.
+        /// Throws exceptions if unauthorized or if the user is not found.
+        /// </summary>
+        /// <param name="user">The currently authenticated user.</param>
+        /// <param name="traineeId">The ID of the trainee to check access for.</param>
+        /// <exception cref="UserNotFoundException">Thrown when the user is not found.</exception>
+        /// <exception cref="UnauthorizedAccessException">Thrown when access is not permitted.</exception>
+        /// <remarks>Code Ownership: Nikita Stefan (stefanni)</remarks>
         public void CheckHasAccess(ClaimsPrincipal user, string traineeId) {
             Console.WriteLine("TraineeStatisticsService - CheckHasAccess called");
             if (user == null)
@@ -170,6 +210,13 @@ namespace TraineeTracker.Services {
         }
 
         // --------------------------------------------------
+        /// <summary>
+        /// Retrieves or builds the latest statistics snapshot for a trainee including calculated effort, speed, buffer predictions, etc.
+        /// Falls back to the last stored snapshot in case of API issues.
+        /// </summary>
+        /// <param name="traineeId">The ID of the trainee to generate the snapshot for.</param>
+        /// <returns>The generated or retrieved TraineeStatisticsSnapshot.</returns>
+        /// <remarks>Code Ownership: Nikita Stefan (stefanni)</remarks>
         public async Task<TraineeStatisticsSnapshot> BuildLatestTraineeStatisticsSnapshotAsync(string traineeId) {
 
             // ++++++++++++++++
@@ -278,6 +325,15 @@ namespace TraineeTracker.Services {
         }
 
         // --------------------------------------------------
+        /// <summary>
+        /// Calls external API to determine number of present days for a trainee.
+        /// Uses a fallback calculation if email is not a makandra address.
+        /// </summary>
+        /// <param name="startDate">Start date of the time range.</param>
+        /// <param name="endDate">End date of the time range.</param>
+        /// <param name="email">Trainee's email address.</param>
+        /// <returns>The number of present days, or -1 if an error occurred.</returns>
+        /// <remarks>Code Ownership: Nikita Stefan (stefanni)</remarks>
         public async Task<double> GetPresentDaysAsync(DateOnly startDate, DateOnly endDate, string email) {
 
             if (!email.EndsWith("@makandra.de", StringComparison.OrdinalIgnoreCase))
@@ -322,6 +378,14 @@ namespace TraineeTracker.Services {
         }
 
         // --------------------------------------------------
+        /// <summary>
+        /// Calculates effective present days by subtracting pause days from total present days.
+        /// </summary>
+        /// <param name="trainee">The trainee.</param>
+        /// <param name="startDate">Start date for calculation.</param>
+        /// <param name="endDate">End date for calculation.</param>
+        /// <returns>The effective present days (excluding pauses).</returns>
+        /// <remarks>Code Ownership: Nikita Stefan (stefanni)</remarks>
         private async Task<double> GetEffectivePresentDaysAsync(ApplicationUser trainee, DateOnly startDate, DateOnly endDate) {
 
             // ++++++++++++++++
@@ -365,6 +429,12 @@ namespace TraineeTracker.Services {
         }
 
         // --------------------------------------------------
+        /// <summary>
+        /// Calculates the total number of completed lesson days for a trainee.
+        /// </summary>
+        /// <param name="traineeId">The ID of the trainee.</param>
+        /// <returns>The sum of weighted effort for completed lessons.</returns>
+        /// <remarks>Code Ownership: Nikita Stefan (stefanni)</remarks>
         public async Task<double> CalculateLessonDaysCompletedAsync(string traineeId) {
             var lessons = await _traineeLessonRepository.GetAllTraineeLessonsOfTraineeWithLessonAsync(traineeId);
 
@@ -385,6 +455,12 @@ namespace TraineeTracker.Services {
         }
 
         // --------------------------------------------------
+        /// <summary>
+        /// Calculates the total number of lesson days still open for a trainee.
+        /// </summary>
+        /// <param name="traineeId">The ID of the trainee.</param>
+        /// <returns>The remaining estimated effort.</returns>
+        /// <remarks>Code Ownership: Nikita Stefan (stefanni)</remarks>
         public async Task<double> CalculateLessonDaysOpenAsync(string traineeId) {
             double totalEffort = await CalculateTotalEffort(traineeId);
 
@@ -394,16 +470,39 @@ namespace TraineeTracker.Services {
         }
 
         // --------------------------------------------------
+        /// <summary>
+        /// Calculates the lesson day buffer, indicating whether a trainee is ahead or behind.
+        /// </summary>
+        /// <param name="daysPresentTillToday">Number of present days till today.</param>
+        /// <param name="lessonDaysCompleted">Number of completed lesson days.</param>
+        /// <returns>The calculated lesson day buffer.</returns>
+        /// <remarks>Code Ownership: Nikita Stefan (stefanni)</remarks>
         public double CalculateLessonDaysBuffer(double daysPresentTillToday, double lessonDaysCompleted) {
             return lessonDaysCompleted - daysPresentTillToday;
         }
 
         // --------------------------------------------------
+        /// <summary>
+        /// Calculates a trainee's current learning speed.
+        /// </summary>
+        /// <param name="daysPresentTillToday">Number of present days till today.</param>
+        /// <param name="lessonDaysCompleted">Number of completed lesson days.</param>
+        /// <returns>The speed as a ratio of completed lessons per present day.</returns>
+        /// <remarks>Code Ownership: Nikita Stefan (stefanni)</remarks>
         public double CalculateSpeed(double daysPresentTillToday, double lessonDaysCompleted) {
             return daysPresentTillToday > 0 ? lessonDaysCompleted / daysPresentTillToday : 0;
         }
 
         // --------------------------------------------------
+        /// <summary>
+        /// Predicts how much estimated effort will be missing at the end of the training period based on current speed.
+        /// </summary>
+        /// <param name="daysPresentTillToday">Present days until today.</param>
+        /// <param name="daysPresentTotal">Total present days in the full training period.</param>
+        /// <param name="estimatedEffortOpen">Remaining estimated effort.</param>
+        /// <param name="speed">Current progress speed.</param>
+        /// <returns>Predicted missing effort at the end or null if speed is zero.</returns>
+        /// <remarks>Code Ownership: Nikita Stefan (stefanni)</remarks>
         public double? CalculatePredictedMissingEstimatedEffortAtEnd(double daysPresentTillToday, double daysPresentTotal, double estimatedEffortOpen, double speed) {
             if (speed <= 0)
                 return null;
@@ -415,13 +514,21 @@ namespace TraineeTracker.Services {
             double predictedEstimatedEffortDoneInFuture = daysPresentDaysInFuture * speed;
 
             // predicted Buffer in EstimatedEffort: estimatedEffort remaining at EndDate
-            // SAH: Die Rechnung hier muss andersrum sein. Es heißt ja "predictedMissingEstimatedEffortAtEnd" und nicht "predictedAdditionalEstimatedEffortPossibleAtEnd". Das muss dann entsprechend auch in der View angepasst werden. Betrifft dann logischerweise auch die Methode eins drunter.
             double predictedMissingEstimatedEffortAtEnd = predictedEstimatedEffortDoneInFuture - estimatedEffortOpen;
 
             return predictedMissingEstimatedEffortAtEnd;
         }
 
         // --------------------------------------------------
+        /// <summary>
+        /// Predicts how many actual days will be missing or remaining at the end of the training period.
+        /// </summary>
+        /// <param name="daysPresentTillToday">Present days until today.</param>
+        /// <param name="daysPresentTotal">Total present days.</param>
+        /// <param name="estimatedEffortOpen">Remaining estimated effort.</param>
+        /// <param name="speed">Current progress speed.</param>
+        /// <returns>Predicted missing actual days at the end or null if speed is zero.</returns>
+        /// <remarks>Code Ownership: Nikita Stefan (stefanni)</remarks>
         public double? CalculatePredictedMissingActualDaysAtEnd(double daysPresentTillToday, double daysPresentTotal, double estimatedEffortOpen, double speed) {
             if (speed <= 0)
                 return null;
@@ -433,12 +540,18 @@ namespace TraineeTracker.Services {
         }
 
         // --------------------------------------------------
+        /// <summary>
+        /// Calculates the total estimated effort required for all lessons of a trainee.
+        /// </summary>
+        /// <param name="traineeId">The ID of the trainee.</param>
+        /// <returns>Total estimated effort for all relevant lessons.</returns>
+        /// <remarks>Code Ownership: Nikita Stefan (stefanni)</remarks>
         private async Task<double> CalculateTotalEffort(string traineeId) {
             var lessons = await _traineeLessonRepository.GetAllTraineeLessonsOfTraineeWithLessonAsync(traineeId);
 
             return lessons
                 .Where(tl => tl.State != TraineeLessonState.Skipped &&
-                            !(tl.Lesson.IsInactive && tl.State == TraineeLessonState.Open)) // SAH: kp ob wir das wirklich brauchen. TeachingPlanService sollte eig alle TraineeLessons löschen, deren State = Open ist und deren Lesson.IsInactive ist
+                            !(tl.Lesson.IsInactive && tl.State == TraineeLessonState.Open))
                 .Sum(tl => tl.Lesson.EstimatedEffort);
         }
 

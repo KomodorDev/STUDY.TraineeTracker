@@ -1,11 +1,11 @@
 # Top-most EditorConfig file
 root = true
 
-# Alle C#-Dateien
+# All C# files
 [*.cs]
 
 ##############################################
-# Einrückung und Formatierung
+# Indentation and Formatting
 indent_style = space
 indent_size = 4
 tab_width = 4
@@ -13,7 +13,7 @@ insert_final_newline = true
 end_of_line = lf
 charset = utf-8
 
-# Keine neue Zeile vor geschweifter Klammer, aber Leerzeichen davor
+# No new line before opening brace, but space before it
 csharp_new_line_before_open_brace = none
 csharp_space_between_method_declaration_name_and_open_parenthesis = false
 csharp_space_between_method_call_name_and_open_parenthesis = false
@@ -27,13 +27,13 @@ csharp_space_after_unary_operators = false
 csharp_space_before_colon_in_inheritance_clause = true
 csharp_space_after_colon_in_inheritance_clause = true
 
-# if (...) { ... } else { ... } → kein Zeilenumbruch vor else
+# if (...) { ... } else { ... } → no line break before else
 csharp_new_line_before_else = false
 
 ##############################################
-# Namenskonventionen
+# Naming Conventions
 
-# Private Felder (z. B. _lessonList)
+# Private fields (e.g. _lessonList)
 dotnet_naming_rule.private_fields_should_be_camel_with_underscore.severity = warning
 dotnet_naming_rule.private_fields_should_be_camel_with_underscore.symbols = private_fields
 dotnet_naming_rule.private_fields_should_be_camel_with_underscore.style = camel_with_underscore
@@ -46,7 +46,7 @@ dotnet_naming_style.camel_with_underscore.capitalization = camel_case
 dotnet_naming_style.camel_with_underscore.required_prefix = _
 dotnet_naming_style.camel_with_underscore.required_suffix =
 
-# Öffentliche Typen, Properties, Methoden → PascalCase
+# Public types, properties, methods → PascalCase
 dotnet_naming_rule.public_members_should_be_pascal.severity = warning
 dotnet_naming_rule.public_members_should_be_pascal.symbols = public_members
 dotnet_naming_rule.public_members_should_be_pascal.style = pascal_case_style
@@ -57,7 +57,7 @@ dotnet_naming_symbols.public_members.required_modifiers =
 
 dotnet_naming_style.pascal_case_style.capitalization = pascal_case
 
-# Lokale Variablen und Parameter → camelCase
+# Local variables and parameters → camelCase
 dotnet_naming_rule.locals_and_parameters_should_be_camel.severity = suggestion
 dotnet_naming_rule.locals_and_parameters_should_be_camel.symbols = locals_and_parameters
 dotnet_naming_rule.locals_and_parameters_should_be_camel.style = camel_case_style
@@ -68,7 +68,7 @@ dotnet_naming_symbols.locals_and_parameters.required_modifiers =
 
 dotnet_naming_style.camel_case_style.capitalization = camel_case
 
-# Interfaces beginnen mit "I"
+# Interfaces start with "I"
 dotnet_naming_rule.interfaces_should_start_with_I.severity = warning
 dotnet_naming_rule.interfaces_should_start_with_I.symbols = interface_symbols
 dotnet_naming_rule.interfaces_should_start_with_I.style = interface_prefix_style
@@ -81,10 +81,10 @@ dotnet_naming_style.interface_prefix_style.capitalization = pascal_case
 dotnet_naming_style.interface_prefix_style.required_prefix = I
 
 ##############################################
-# Zeilenlänge und Argument-Wrapping
+# Line Length and Statement Wrapping
 
-# Max. Zeilenlänge: 120
+# Max. line length: 120
 max_line_length = 120
 
-# Statements umbrechen mit 4 Leerzeichen Einrückung
+# Break statements with 4-space indentation
 csharp_preserve_single_line_statements = false
