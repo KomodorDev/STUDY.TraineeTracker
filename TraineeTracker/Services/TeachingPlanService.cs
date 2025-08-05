@@ -24,22 +24,22 @@ namespace TraineeTracker.Services {
         /// Provides Access to the TeachingPlanRepo
         /// </summary>
         private readonly ITeachingPlanRepository _databaseTeachingPlanRepository;
-        
+
         /// <summary>
         /// Provides Access to the LessonRepo
         /// </summary>
         private readonly ILessonRepository _databaseLessonRepository;
-        
+
         /// <summary>
         /// Provides Access to the TraineeLessonRepo
         /// </summary>
         private readonly ITraineeLessonRepository _databaseTraineeLessonRepository;
-        
+
         /// <summary>
         /// Provides Access to the ApplicationUserRepo
         /// </summary>
         private readonly IApplicationUserRepository _databaseApplicationUserRepository;
-        
+
         /// <summary>
         /// Provides Access to the NotificationService
         /// </summary>
@@ -170,6 +170,7 @@ namespace TraineeTracker.Services {
             var newInactive = new List<LessonDto>();
             var existingReactivated = new List<LessonDto>();
             var existingDeactivated = new List<LessonDto>();
+            var allImported = importedDtos.ToList();
 
             // 4) Loop through imported lessons:
             foreach (var dto in importedDtos) {
@@ -194,11 +195,24 @@ namespace TraineeTracker.Services {
             }
 
             // 5) Determine deactivated Lessons:
-            var importedMakandraIds = importedDtos.Select(dto => dto.Id).ToHashSet();
-            foreach (var lesson in existingLessons) {
-                if (!importedMakandraIds.Contains(lesson.MakandraId)) {
+            var importedDeprecatedIds = importedDtos
+                .Where(dto => dto.Deprecated)
+                .Select(dto => dto.Id)
+                .ToHashSet();
 
-                    // 4. existing and deactivated:
+            var importedMakandraIds = importedDtos
+                .Select(dto => dto.Id)
+                .ToHashSet();
+
+            foreach (var lesson in existingLessons) {
+                // Only look at newly deprecated:
+                if (lesson.IsInactive)
+                    continue;
+
+                bool isNowDeprecated = importedDeprecatedIds.Contains(lesson.MakandraId);
+                bool wasRemoved = !importedMakandraIds.Contains(lesson.MakandraId);
+
+                if (wasRemoved || isNowDeprecated) {
                     existingDeactivated.Add(MapLessonToLessonDto(lesson));
                 }
             }
@@ -211,7 +225,8 @@ namespace TraineeTracker.Services {
                 NewActiveLessons = newActive,
                 NewInactiveLessons = newInactive,
                 ExistingReactivatedLessons = existingReactivated,
-                ExistingDeactivatedLessons = existingDeactivated
+                ExistingDeactivatedLessons = existingDeactivated,
+                AllImportedLessons = allImported
             };
 
             return vm;
