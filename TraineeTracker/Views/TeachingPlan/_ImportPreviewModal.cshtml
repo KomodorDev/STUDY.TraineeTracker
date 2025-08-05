@@ -88,10 +88,11 @@
             {
                 <p><strong>All Imported Lessons (in Imported Order):</strong></p>
                 <ul>
-                    @foreach (var lesson in Model.AllImportedLessons)
+                    @for (int i = 0; i < Model.AllImportedLessons.Count; i++)
                     {
+                        var lesson = Model.AllImportedLessons[i];
                         <li>
-                            @lesson.Title
+                            [@(i + 1)] @lesson.Title
                             @if (lesson.Deprecated)
                             {
                                 <span style="color: gray;">(deprecated)</span>
