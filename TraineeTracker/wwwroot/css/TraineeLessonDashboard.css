@@ -66,7 +66,16 @@
     transform: translateX(-5px);
 }
 
-/* Filters (hintsimo, revised by schleale) */
+/* dropdown arrow */
+select.select-wide.hidden{
+    appearance: none;           /* Removes default styling */
+    -webkit-appearance: none;   /* Safari */
+    -moz-appearance: none;      /* Firefox */
+    padding-right: 2rem;        /* Add space for the icon */
+}
+
+/* -----------------------------------------------------------------------------------
+    Filters (hintsimo, revised by schleale) */
 .filter-bar {
     display: flex;
     align-items: center;
