@@ -391,9 +391,6 @@ namespace TraineeTracker.Services {
         /// Code Ownership: Alexander Schlemmer (schleale)
         /// </remarks>
         public async Task DeleteFeedback(ClaimsPrincipal user, int feedbackId) {
-            if (user.IsInRole("Trainee"))
-                throw new UnauthorizedAccessException("Trainees cannot delete feedbacks.");
-
             if (!await _databaseFeedbackrepository.ExistsAsync(feedbackId))
                 throw new FeedbackNotFoundException(feedbackId);
 

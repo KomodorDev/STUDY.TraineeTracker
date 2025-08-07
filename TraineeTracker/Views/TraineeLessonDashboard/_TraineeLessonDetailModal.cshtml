@@ -245,7 +245,7 @@
                             </form>
 
                             <!-- delete button-->
-                            @if (Model.ExistingFeedback != null && (User.IsInRole("Mentor") || User.IsInRole("Admin"))) {
+                            @if (Model.ExistingFeedback != null) {
                                 <form class="stateChangeForm"
                                     asp-controller="TraineeLessonDetail"
                                     asp-action="DeleteFeedback"
