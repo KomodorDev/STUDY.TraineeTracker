@@ -28,11 +28,12 @@
 
                     <!-- Only Trainee Dropdown -->
                     @{
-                        var isSingleTrainee = Model.Trainees?.Count() == 1;
+                        bool isSingleTrainee = Model.Trainees?.Count() == 1;
                         var isDisabledStyle = isSingleTrainee ? "pointer-events: none; opacity: 1;" : "";
+                        var isDisabledClass = isSingleTrainee ? "hidden" : "";
                     }
 
-                    <select name="traineeId" class="select-wide" onchange="this.form.submit()" 
+                    <select name="traineeId" class="select-wide @isDisabledClass" onchange="this.form.submit()" 
                             style="text-overflow: ellipsis; @isDisabledStyle">
                         @foreach (var trainee in Model.Trainees ?? new List<ApplicationUser>())
                         {
