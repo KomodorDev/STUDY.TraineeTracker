@@ -6,7 +6,7 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 @section Styles {
-    <link rel="stylesheet" href="~/css/FeedbackDashboard_temp.css"  asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/FeedbackDashboard_temp.css" asp-append-version="true" />
 }
 
 <div class="sopro-grid-management" style="height: 100%">
@@ -90,12 +90,25 @@
                 </option>
             </select>
 
+
             <input type="hidden" name="filter" value="@Model.ActiveFilter" />
             <input type="hidden" name="SortBy" value="@Model.SortBy" />
             <input type="hidden" name="page" value="1" />
 
         </form>
 
+        <form asp-action="MarkAllAsRead" method="post" style="display: inline;">
+            <input type="hidden" name="filter" value="@Model.ActiveFilter" />
+            <input type="hidden" name="page" value="@Model.Feedbacks.PageNumber" />
+            <input type="hidden" name="SortBy" value="@Model.SortBy" />
+            <input type="hidden" name="selectedTraineeId" value="@Model.SelectedTraineeId" />
+            <input type="hidden" name="selectedLessonId" value="@Model.SelectedLessonId" />
+            <input type="hidden" name="selectedTeachingPlanId" value="@Model.SelectedTeachingPlanId" />
+
+            <button class="sopro-button-content mark-read-btn" type="submit">
+                Mark all as read
+            </button>
+        </form>
 
     </div>
 
@@ -133,7 +146,8 @@
                                     <input type="hidden" name="selectedTraineeId" value="@Model.SelectedTraineeId" />
                                     <input type="hidden" name="selectedLessonId" value="@Model.SelectedLessonId" />
                                     <input type="hidden" name="selectedTeachingPlanId" value="@Model.SelectedTeachingPlanId" />
-                                    <button class="sopro-button-content mark-read-btn" type="submit">Mark as read</button>
+                                    <button class="sopro-button-content mark-read-btn" type="submit">Mark as read
+                                    </button>
 
                                 </form>
                             }
@@ -141,7 +155,7 @@
                             {
                                 <form asp-action="MarkAsUnread" method="post">
                                     <input type="hidden" name="feedbackId" value="@feedback.FeedbackId" />
-                                    
+
                                     <!-- Hidden inputs -->
                                     <input type="hidden" name="filter" value="@Model.ActiveFilter" />
                                     <input type="hidden" name="page" value="@Model.Feedbacks.PageNumber" />
@@ -149,9 +163,7 @@
                                     <input type="hidden" name="selectedTraineeId" value="@Model.SelectedTraineeId" />
                                     <input type="hidden" name="selectedLessonId" value="@Model.SelectedLessonId" />
                                     <input type="hidden" name="selectedTeachingPlanId" value="@Model.SelectedTeachingPlanId" />
-                                    <button class="sopro-button-content mark-unread-btn" 
-                                    
-                                    type="submit">Mark as unread</button>
+                                    <button class="sopro-button-content mark-unread-btn" type="submit">Mark as unread</button>
                                 </form>
                             }
                         </td>
@@ -280,11 +292,9 @@
         @if (Model.Feedbacks.HasPrevious)
         {
             <li class="page-item">
-                <a class="page-link" asp-controller="Feedback" asp-action="Dashboard"
-                    asp-route-filter="@Model.ActiveFilter"
+                <a class="page-link" asp-controller="Feedback" asp-action="Dashboard" asp-route-filter="@Model.ActiveFilter"
                     asp-route-selectedTraineeId="@Model.SelectedTraineeId"
-                    asp-route-selectedLessonId="@Model.SelectedLessonId"
-                    asp-route-sortBy="@Model.SortBy"
+                    asp-route-selectedLessonId="@Model.SelectedLessonId" asp-route-sortBy="@Model.SortBy"
                     asp-route-page="@(Model.Feedbacks.PageNumber - 1)">
                     Previous
                 </a>
@@ -294,11 +304,9 @@
         @for (int i = 1; i <= Model.Feedbacks.TotalPages; i++)
         {
             <li class="page-item @(i == Model.Feedbacks.PageNumber ? "active" : "")">
-                <a class="page-link" asp-controller="Feedback" asp-action="Dashboard"
-                asp-route-filter="@Model.ActiveFilter"
+                <a class="page-link" asp-controller="Feedback" asp-action="Dashboard" asp-route-filter="@Model.ActiveFilter"
                     asp-route-selectedTraineeId="@Model.SelectedTraineeId"
-                    asp-route-selectedLessonId="@Model.SelectedLessonId"
-                    asp-route-sortBy="@Model.SortBy"
+                    asp-route-selectedLessonId="@Model.SelectedLessonId" asp-route-sortBy="@Model.SortBy"
                     asp-route-page="@i">
                     @i
                 </a>
@@ -308,11 +316,9 @@
         @if (Model.Feedbacks.HasNext)
         {
             <li class="page-item">
-                <a class="page-link" asp-controller="Feedback" asp-action="Dashboard"
-                    asp-route-filter="@Model.ActiveFilter"
+                <a class="page-link" asp-controller="Feedback" asp-action="Dashboard" asp-route-filter="@Model.ActiveFilter"
                     asp-route-selectedTraineeId="@Model.SelectedTraineeId"
-                    asp-route-selectedLessonId="@Model.SelectedLessonId"
-                    asp-route-sortBy="@Model.SortBy"
+                    asp-route-selectedLessonId="@Model.SelectedLessonId" asp-route-sortBy="@Model.SortBy"
                     asp-route-page="@(Model.Feedbacks.PageNumber + 1)">
                     Next
                 </a>
