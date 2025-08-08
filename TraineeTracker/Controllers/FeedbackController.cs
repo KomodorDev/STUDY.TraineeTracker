@@ -54,7 +54,7 @@ namespace TraineeTracker.Controllers {
         public async Task<IActionResult> ShowFeedbackDashboardView(
                     string filter = "all",
                     int page = 1,
-                    string sortBy = "date_asc",
+                    string sortBy = "date_dsc",
                     string? selectedTraineeId = null,
                     int? selectedLessonId = null,
                     int? selectedTeachingPlanId = null) {
@@ -92,7 +92,7 @@ namespace TraineeTracker.Controllers {
             int feedbackId,
             string filter = "all",
             int page = 1,
-            string sortBy = "date_asc",
+            string sortBy = "date_dsc",
             string? selectedTraineeId = null,
             int? selectedLessonId = null,
             int? selectedTeachingPlanId = null) {
@@ -118,13 +118,46 @@ namespace TraineeTracker.Controllers {
 
         // ------------------------------------------------------
         /// <summary>
+        /// Marks all feedback entries in the system as read for the current user, regardless of filters.
+        /// </summary>
+        /// <returns>
+        /// A task representing the asynchronous operation. Redirects to the Dashboard action with preserved route values.
+        /// </returns>
+        /// <remarks>
+        /// Code Ownership: Simon Hinterreiter
+        /// </remarks>
+        [Authorize(Roles = "Admin,Mentor")]
+        [HttpPost("MarkAllAsRead")]
+        public async Task<IActionResult> MarkAllAsRead(
+            string filter = "all",
+            int page = 1,
+            string sortBy = "date_dsc",
+            string? selectedTraineeId = null,
+            int? selectedLessonId = null,
+            int? selectedTeachingPlanId = null) {
+            await _feedbackService.MarkAllFeedbacksAsReadForUserAsync(User);
+
+            return RedirectToAction(
+                actionName: "Dashboard",
+                controllerName: "Feedback",
+                routeValues: new {
+                    filter,
+                    page,
+                    sortBy,
+                    selectedTraineeId,
+                    selectedLessonId,
+                    selectedTeachingPlanId
+                });
+        }
+
+        // ------------------------------------------------------
+        /// <summary>
         /// Marks a specific feedback entry as unread for the current user and redirects back to the dashboard.
         /// </summary>
         /// <param name="feedbackId">The ID of the feedback to mark as unread.</param>
         /// <param name="filter">Current filter setting to preserve state.</param>
         /// <param name="page">Current page number to preserve state.</param>
         /// <param name="sortBy">Current sort criteria to preserve state.</param>
-        /// <param name="ascending">Flag indicating ascending sort order (unused but preserved).</param>
         /// <param name="selectedTraineeId">Current trainee filter to preserve state.</param>
         /// <param name="selectedLessonId">Current lesson filter to preserve state.</param>
         /// <param name="selectedTeachingPlanId">Current teaching plan filter to preserve state.</param>
@@ -140,8 +173,7 @@ namespace TraineeTracker.Controllers {
             int feedbackId,
             string filter = "all",
             int page = 1,
-            string sortBy = "date_asc",
-            bool ascending = false,
+            string sortBy = "date_dsc",
             string? selectedTraineeId = null,
             int? selectedLessonId = null,
             int? selectedTeachingPlanId = null) {
