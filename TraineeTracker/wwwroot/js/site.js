@@ -11,6 +11,14 @@ function hookUpStateChangeForms() {
       // Browser Print
       e.preventDefault();
 
+      // Only show confirmation if data-require-confirm is set
+      if (form.dataset.requireConfirm === "true") {
+        const confirmed = confirm("Are you sure you want to delete this feedback?");
+        
+        if (!confirmed)
+          return; // Cancelled, do nothing
+      }
+
       document.body.classList.add('sopro-waiting-cur');
 
       try {

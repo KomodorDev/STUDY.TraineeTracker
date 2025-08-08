@@ -350,7 +350,8 @@ namespace TraineeTracker.Services {
             } else {
                 // -> feedback doesn't exist
                 
-                if (correspondingTraineeLesson.State != TraineeLessonState.Accepted)
+                if (correspondingTraineeLesson.State != TraineeLessonState.Accepted &&
+                    correspondingTraineeLesson.State != TraineeLessonState.Rated)
                     throw new UnauthorizedAccessException("You can write a feedback once your TraineeLesson has been accepted.");
 
                 var feedback = new Feedback {

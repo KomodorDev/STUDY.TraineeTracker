@@ -20,20 +20,13 @@ namespace TraineeTracker.Services.TraineeLessonStates.States {
         /// An empty list of <see cref="TraineeLessonState"/> values, indicating no valid transitions.
         /// </returns>
         /// <remarks>
-        /// Code Ownership: Simon Hinterreiter (hintsimo)
+        /// Code Ownership: Alexander Schlemmer (schleale)
         /// </remarks>
         public List<TraineeLessonState> GetAllowedLessonStateTransitions(ClaimsPrincipal user) {
-
-            var transitions = new List<TraineeLessonState>();
-            if (user.IsInRole("Mentor") || user.IsInRole("Admin")) {
-                // Nothing
-            }
-
-            if (user.IsInRole("Trainee")) {
-                // Nothing
-            }
-
-            return transitions;
+            // Allow Rated to Rated for case: feedback -> delete feedback -> write new feedback
+            return new List<TraineeLessonState> {
+                TraineeLessonState.Rated
+            };
         }
 
         // ----------------------------------------------
