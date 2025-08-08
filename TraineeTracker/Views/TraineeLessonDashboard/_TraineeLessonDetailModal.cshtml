@@ -251,7 +251,7 @@
                                     asp-controller="TraineeLessonDetail"
                                     asp-action="DeleteFeedback"
                                     method="post"
-                                    onsubmit="return confirm('Are you sure you want to delete this feedback?');">
+                                    data-require-confirm="true">
                                     <input type="hidden" name="feedbackId" value="@Model.ExistingFeedback.FeedbackId" />
                                     <input type="hidden" name="traineeLessonIdForReturn" value="@Model.TraineeLesson.TraineeLessonId" />
 
