@@ -9,7 +9,6 @@ using TraineeTracker.Models.ViewModels;
 using TraineeTracker.Data.Lessons;
 using TraineeTracker.Data.TeachingPlans;
 
-
 namespace TraineeTracker.Services {
 
     // ---------------------------------------------------
@@ -31,22 +30,21 @@ namespace TraineeTracker.Services {
         /// Provides Access to the FeedbackRepo
         /// </summary>
         private readonly IFeedbackRepository _databaseFeedbackRepository;
-        
+
         /// <summary>
         /// Provides Access to the ApplicatiotionUserRepo
         /// </summary>
         private readonly IApplicationUserRepository _databaseApplicaionUserRepository;
-        
+
         /// <summary>
         /// Provides Access to the LessonRepo
         /// </summary>
         private readonly ILessonRepository _databaseLessonRepository;
-        
+
         /// <summary>
         /// Provides Access to the TeachingPlanRepo
         /// </summary>
         private readonly ITeachingPlanRepository _databaseTeachingPlanRepository;
-
 
         // ---------------------------------------------------
         /// <summary>
@@ -107,11 +105,6 @@ namespace TraineeTracker.Services {
             List<TeachingPlan> teachingPlans;
 
             if (!string.IsNullOrEmpty(selectedTraineeId)) {
-
-                /* 
-                Console.WriteLine($"[DEBUG] selectedTraineeId: {selectedTraineeId}");
-                Console.WriteLine($"[DEBUG] sortBy: {sortBy}");
-                */
 
                 // +++++++++++++++
                 // Get Trainee
@@ -287,13 +280,6 @@ namespace TraineeTracker.Services {
             // Buld query to get all Feedbacks
             var query = _databaseFeedbackRepository.GetAllFeedbacksWithLessonAndAuthorAndReadByUsers();
 
-            /* 
-            Console.WriteLine($"[DEBUG] GetAllFeedbacksAsync is called");
-            Console.WriteLine($"[DEBUG] selectedTraineeId: {selectedTraineeId}");
-            Console.WriteLine($"[DEBUG] selectedLessonId: {selectedLessonId}");
-
-            */
-
             // +++++++++++++++
             // Apply Sorting and Filtering
             query = ApplySortingAndFiltering(query, sortBy, selectedTraineeId, selectedLessonId, selectedTeachingPlanId);
@@ -461,8 +447,8 @@ namespace TraineeTracker.Services {
                 PageSize = _pageSize,
                 TotalItems = totalItems
             };
-        }                      
-        
+        }
+
         // ---------------------------------------------------
         /// <summary>
         /// Marks a specific feedback entry as read for the given user.
@@ -491,6 +477,43 @@ namespace TraineeTracker.Services {
                 // If not, add the currentUser and save
                 feedback.ReadByUsers.Add(currentUser!);
                 await _databaseFeedbackRepository.UpdateAsync(feedback);
+            }
+        }
+
+        // ---------------------------------------------------
+        /// <summary>
+        /// Marks all feedback entries in the system as read for the current user. 
+        /// This includes all feedbacks that the user has not previously marked as read, 
+        /// regardless of filters, visibility, or pagination.
+        /// </summary>
+        /// <param name="userPrincipal">
+        /// The ClaimsPrincipal representing the currently authenticated user.
+        /// </param>
+        /// <returns>
+        /// A task representing the asynchronous operation.
+        /// </returns>
+        /// <remarks>
+        /// Code Ownership: Alexandros Blask, Simon Hinterreiter
+        /// </remarks>
+        public async Task MarkAllFeedbacksAsReadForUserAsync(ClaimsPrincipal userPrincipal) {
+
+            // +++++++++++++++
+            // 1. Get currentUser
+            var currentUser = await _databaseApplicaionUserRepository.GetUserAsync(userPrincipal);
+
+            // +++++++++++++++
+            // 2. Get all unreadFeedbacks
+            var unreadFeedbacks = await _databaseFeedbackRepository
+                .GetAllFeedbacksUnreadByUserWithLessonAndAuthorAndReadByUsers(currentUser!)
+                .ToListAsync();
+
+            // +++++++++++++++
+            // 3. Mark each unreadFeedback as Read
+            foreach (var feedback in unreadFeedbacks) {
+                if (!feedback.ReadByUsers.Any(u => u.Id == currentUser!.Id)) {
+                    feedback.ReadByUsers.Add(currentUser!);
+                    await _databaseFeedbackRepository.UpdateAsync(feedback);
+                }
             }
         }
 
@@ -552,6 +575,5 @@ namespace TraineeTracker.Services {
         }
 
         // ------------------------------------------------------
-
     }
 }
