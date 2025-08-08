@@ -87,7 +87,7 @@ namespace TraineeTracker.Services {
             ClaimsPrincipal user,
             string filter = "all",
             int page = 1,
-            string sortBy = "date_asc",
+            string sortBy = "date_dsc",
             string? selectedTraineeId = null,
             int? selectedLessonId = null,
             int? selectedTeachingPlanId = null) {
