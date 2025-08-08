@@ -122,7 +122,7 @@ namespace TraineeTracker.E2ETests.TraineeLessonDetailTests {
         /// <param name="isMentor">Defines whether the user is a mentor or trainee.</param>
         /// <param name="state">The state, that the trainee lesson is supposed to have.</param>
         /// <remarks>
-        /// Code Ownership: Simon Hinterreiter (hintsimo) & by Alexander Schlemmer (schleale)
+        /// Code Ownership: Simon Hinterreiter (hintsimo) & Alexander Schlemmer (schleale)
         /// </remarks>
         private void OpenTraineeLesson(bool isMentor = true, string state = "Open") {
             // 1. Navigate to login page

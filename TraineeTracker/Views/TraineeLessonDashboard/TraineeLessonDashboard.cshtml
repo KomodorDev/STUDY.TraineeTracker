@@ -1,4 +1,4 @@
-@* the main page displaying all trainee lessons of a specified trainee, by schleale *@
+@* the main page displaying all trainee lessons of a specified trainee, by Alexander Schlemmer (schleale) and help from Simon Hinterreiter (hintsimo) *@
 
 @model TraineeTracker.Models.ViewModels.TraineeLessonDashboardViewModel
 @using TraineeTracker.Models.Domain
@@ -28,12 +28,11 @@
 
                     <!-- Only Trainee Dropdown -->
                     @{
-                        var isSingleTrainee = Model.Trainees?.Count() == 1;
-                        var isDisabledStyle = isSingleTrainee ? "pointer-events: none; opacity: 1;" : "";
+                        bool isSingleTrainee = Model.Trainees?.Count() == 1;
+                        var isDisabledClass = isSingleTrainee ? "hidden" : "";
                     }
 
-                    <select name="traineeId" class="select-wide" onchange="this.form.submit()" 
-                            style="text-overflow: ellipsis; @isDisabledStyle">
+                    <select name="traineeId" class="select-wide @isDisabledClass" onchange="this.form.submit()">
                         @foreach (var trainee in Model.Trainees ?? new List<ApplicationUser>())
                         {
                             <option value="@trainee.Id"
