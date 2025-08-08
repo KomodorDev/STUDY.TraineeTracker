@@ -430,6 +430,15 @@ namespace TraineeTracker.Services {
                 // b) Add
                 var addedTraineeLessons = new List<TraineeLesson>();
                 foreach (var lesson in addedLessons.Where(l => !l.IsInactive)) {
+
+                    // Check if Trainee already has a TraineeLesson with fitting Lesson.MakandraId:
+                    bool alreadyExists = traineeLessonsOfTrainee
+                        .Any(tl => tl.Lesson.MakandraId == lesson.MakandraId);
+
+                    if (alreadyExists)
+                        continue;
+
+                    // Trainee does no have a TraineeLesson with fitting Lesson.MakandraId:
                     var tl = new TraineeLesson {
                         TraineeId = trainee.Id,
                         Trainee = trainee,
