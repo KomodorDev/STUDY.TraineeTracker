@@ -24,22 +24,22 @@ namespace TraineeTracker.Services {
         /// Provides Access to the TeachingPlanRepo
         /// </summary>
         private readonly ITeachingPlanRepository _databaseTeachingPlanRepository;
-        
+
         /// <summary>
         /// Provides Access to the LessonRepo
         /// </summary>
         private readonly ILessonRepository _databaseLessonRepository;
-        
+
         /// <summary>
         /// Provides Access to the TraineeLessonRepo
         /// </summary>
         private readonly ITraineeLessonRepository _databaseTraineeLessonRepository;
-        
+
         /// <summary>
         /// Provides Access to the ApplicationUserRepo
         /// </summary>
         private readonly IApplicationUserRepository _databaseApplicationUserRepository;
-        
+
         /// <summary>
         /// Provides Access to the NotificationService
         /// </summary>
@@ -170,6 +170,7 @@ namespace TraineeTracker.Services {
             var newInactive = new List<LessonDto>();
             var existingReactivated = new List<LessonDto>();
             var existingDeactivated = new List<LessonDto>();
+            var allImported = importedDtos.ToList();
 
             // 4) Loop through imported lessons:
             foreach (var dto in importedDtos) {
@@ -194,11 +195,24 @@ namespace TraineeTracker.Services {
             }
 
             // 5) Determine deactivated Lessons:
-            var importedMakandraIds = importedDtos.Select(dto => dto.Id).ToHashSet();
-            foreach (var lesson in existingLessons) {
-                if (!importedMakandraIds.Contains(lesson.MakandraId)) {
+            var importedDeprecatedIds = importedDtos
+                .Where(dto => dto.Deprecated)
+                .Select(dto => dto.Id)
+                .ToHashSet();
 
-                    // 4. existing and deactivated:
+            var importedMakandraIds = importedDtos
+                .Select(dto => dto.Id)
+                .ToHashSet();
+
+            foreach (var lesson in existingLessons) {
+                // Only look at newly deprecated:
+                if (lesson.IsInactive)
+                    continue;
+
+                bool isNowDeprecated = importedDeprecatedIds.Contains(lesson.MakandraId);
+                bool wasRemoved = !importedMakandraIds.Contains(lesson.MakandraId);
+
+                if (wasRemoved || isNowDeprecated) {
                     existingDeactivated.Add(MapLessonToLessonDto(lesson));
                 }
             }
@@ -211,7 +225,8 @@ namespace TraineeTracker.Services {
                 NewActiveLessons = newActive,
                 NewInactiveLessons = newInactive,
                 ExistingReactivatedLessons = existingReactivated,
-                ExistingDeactivatedLessons = existingDeactivated
+                ExistingDeactivatedLessons = existingDeactivated,
+                AllImportedLessons = allImported
             };
 
             return vm;
@@ -415,6 +430,15 @@ namespace TraineeTracker.Services {
                 // b) Add
                 var addedTraineeLessons = new List<TraineeLesson>();
                 foreach (var lesson in addedLessons.Where(l => !l.IsInactive)) {
+
+                    // Check if Trainee already has a TraineeLesson with fitting Lesson.MakandraId:
+                    bool alreadyExists = traineeLessonsOfTrainee
+                        .Any(tl => tl.Lesson.MakandraId == lesson.MakandraId);
+
+                    if (alreadyExists)
+                        continue;
+
+                    // Trainee does no have a TraineeLesson with fitting Lesson.MakandraId:
                     var tl = new TraineeLesson {
                         TraineeId = trainee.Id,
                         Trainee = trainee,
@@ -503,8 +527,14 @@ namespace TraineeTracker.Services {
 
         // ---------------------------------------------------
         /// <summary>
-        /// Unassigns a teaching plan from a trainee, removing related trainee lessons.
+        /// Unassigns a teaching plan from a trainee by removing all associated trainee lessons,
+        /// detaching the trainee from the teaching plan, and clearing the foreign key reference.
         /// </summary>
+        /// <param name="trainee">The trainee whose teaching plan should be unassigned.</param>
+        /// <returns>A task representing the asynchronous operation.</returns>
+        /// <exception cref="InvalidOperationException">
+        /// Thrown if the trainee has no assigned teaching plan (<c>TeachingPlanId</c> is null).
+        /// </exception>
         /// <remarks>
         /// Code Ownership: Alexandros Blask
         /// </remarks>
@@ -531,6 +561,16 @@ namespace TraineeTracker.Services {
         }
 
         // ---------------------------------------------------
+        /// <summary>
+        /// Validates that the given file is not null or empty.
+        /// </summary>
+        /// <param name="file">The uploaded file to validate.</param>
+        /// <exception cref="ArgumentException">
+        /// Thrown if the file is null or has a length of 0.
+        /// </exception>
+        /// <remarks>
+        /// Code Ownership: Alexandros Blask
+        /// </remarks>
         private void ValidateFile(IFormFile file) {
             // Validate File
             if (file == null || file.Length == 0)
@@ -538,6 +578,16 @@ namespace TraineeTracker.Services {
         }
 
         // ---------------------------------------------------
+        /// <summary>
+        /// Validates that the given name is not null, empty, or whitespace-only.
+        /// </summary>
+        /// <param name="name">The name string to validate.</param>
+        /// <exception cref="ArgumentException">
+        /// Thrown if the name is null, empty, or consists only of whitespace.
+        /// </exception>
+        /// <remarks>
+        /// Code Ownership: Alexandros Blask
+        /// </remarks>
         private void ValidateName(string name) {
             // Validate Name
             if (string.IsNullOrWhiteSpace(name))
@@ -545,6 +595,14 @@ namespace TraineeTracker.Services {
         }
 
         // ---------------------------------------------------
+        /// <summary>
+        /// Reads the content of the given file and returns it as a JSON string.
+        /// </summary>
+        /// <param name="file">The uploaded file to read from.</param>
+        /// <returns>A task representing the asynchronous operation, containing the file content as a string.</returns>
+        /// <remarks>
+        /// Code Ownership: Alexandros Blask
+        /// </remarks>
         private async Task<string> ReadJsonAsync(IFormFile file) {
             // Read Json which is used for Import and Update
             using var reader = new StreamReader(file.OpenReadStream());
@@ -552,6 +610,17 @@ namespace TraineeTracker.Services {
         }
 
         // ---------------------------------------------------
+        /// <summary>
+        /// Deserializes the given JSON string into a list of <see cref="LessonDto"/> objects.
+        /// </summary>
+        /// <param name="json">The JSON string representing a list of lessons.</param>
+        /// <returns>A list of deserialized <see cref="LessonDto"/> instances.</returns>
+        /// <exception cref="Exception">
+        /// Thrown if the JSON string could not be deserialized into a valid lesson list.
+        /// </exception>
+        /// <remarks>
+        /// Code Ownership: Alexandros Blask
+        /// </remarks>
         private List<LessonDto> DeserializeLessonDtos(string json) {
             // Use json string from ReadJson to convert to deserialized object
             return JsonConvert.DeserializeObject<List<LessonDto>>(json)
@@ -559,6 +628,16 @@ namespace TraineeTracker.Services {
         }
 
         // ---------------------------------------------------
+        /// <summary>
+        /// Validates that the given list of lesson DTOs is not null or empty.
+        /// </summary>
+        /// <param name="dtos">The list of <see cref="LessonDto"/> objects to validate.</param>
+        /// <exception cref="InvalidOperationException">
+        /// Thrown if the list is null or contains no elements.
+        /// </exception>
+        /// <remarks>
+        /// Code Ownership: Alexandros Blask
+        /// </remarks>
         private void ValidateLessonDtos(List<LessonDto> dtos) {
             // Validate Dtos
             if (dtos == null || !dtos.Any())
@@ -566,6 +645,16 @@ namespace TraineeTracker.Services {
         }
 
         // ---------------------------------------------------
+        /// <summary>
+        /// Maps a collection of <see cref="LessonDto"/> objects to a list of <see cref="Lesson"/> entities
+        /// and assigns them to the specified teaching plan with sequential sorting indices.
+        /// </summary>
+        /// <param name="dtos">The lesson DTOs to convert.</param>
+        /// <param name="teachingPlanId">The ID of the teaching plan to associate with the created lessons.</param>
+        /// <returns>A list of <see cref="Lesson"/> entities ready for persistence.</returns>
+        /// <remarks>
+        /// Code Ownership: Alexandros Blask
+        /// </remarks>
         private List<Lesson> CreateLessons(IEnumerable<LessonDto> dtos, int teachingPlanId) {
 
             // Map dto Lessons to "real" Lessons
@@ -582,6 +671,14 @@ namespace TraineeTracker.Services {
         }
 
         // ---------------------------------------------------
+        /// <summary>
+        /// Maps a <see cref="Lesson"/> entity to a corresponding <see cref="LessonDto"/>.
+        /// </summary>
+        /// <param name="lesson">The <see cref="Lesson"/> instance to map.</param>
+        /// <returns>The mapped <see cref="LessonDto"/>.</returns>
+        /// <remarks>
+        /// Code Ownership: Alexandros Blask
+        /// </remarks>
         public LessonDto MapLessonToLessonDto(Lesson lesson) {
             return new LessonDto {
                 Id = lesson.MakandraId,
@@ -593,6 +690,16 @@ namespace TraineeTracker.Services {
         }
 
         // ---------------------------------------------------
+        /// <summary>
+        /// Updates an existing <see cref="Lesson"/> entity with data from a <see cref="LessonDto"/> 
+        /// and assigns the given sorting index.
+        /// </summary>
+        /// <param name="dto">The DTO containing the updated lesson data.</param>
+        /// <param name="lesson">The existing <see cref="Lesson"/> entity to update.</param>
+        /// <param name="sortingIndex">The new sorting index to assign to the lesson.</param>
+        /// <remarks>
+        /// Code Ownership: Alexandros Blask
+        /// </remarks>
         private void UpdateLesson(LessonDto dto, Lesson lesson, int sortingIndex) {
 
             // Update Lesson object with lesson Dto
@@ -604,6 +711,17 @@ namespace TraineeTracker.Services {
         }
 
         // ---------------------------------------------------
+        /// <summary>
+        /// Creates a new <see cref="Lesson"/> entity from a <see cref="LessonDto"/> and assigns it
+        /// to the specified teaching plan with the given sorting index.
+        /// </summary>
+        /// <param name="dto">The DTO containing the lesson data.</param>
+        /// <param name="teachingPlanId">The ID of the teaching plan to associate the lesson with.</param>
+        /// <param name="sortingIndex">The sorting index to assign to the lesson.</param>
+        /// <returns>The newly created <see cref="Lesson"/> entity.</returns>
+        /// <remarks>
+        /// Code Ownership: Alexandros Blask
+        /// </remarks>
         private Lesson CreateLesson(LessonDto dto, int teachingPlanId, int sortingIndex) {
 
             // Create Lesson object with lesson Dto
@@ -619,6 +737,16 @@ namespace TraineeTracker.Services {
         }
 
         // ---------------------------------------------------
+        /// <summary>
+        /// Creates <see cref="TraineeLesson"/> entries for all active lessons and associates them with the given trainee.
+        /// Inactive lessons are skipped.
+        /// </summary>
+        /// <param name="trainee">The trainee to assign the lessons to.</param>
+        /// <param name="lessons">The collection of <see cref="Lesson"/> entities to process.</param>
+        /// <returns>A task representing the asynchronous operation.</returns>
+        /// <remarks>
+        /// Code Ownership: Alexandros Blask
+        /// </remarks>
         private async Task CreateTraineeLessonsAsync(ApplicationUser trainee, IEnumerable<Lesson> lessons) {
 
             // Create Lessons which are inactive
@@ -633,5 +761,7 @@ namespace TraineeTracker.Services {
                 await _databaseTraineeLessonRepository.CreateAsync(tl);
             }
         }
+
+        // ---------------------------------------------------
     }
 }
