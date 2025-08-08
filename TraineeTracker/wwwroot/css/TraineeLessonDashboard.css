@@ -53,6 +53,8 @@
 
     padding-left: 1.172rem; /* "25" px */
     padding-right: 1.172rem; /* "25" px */
+
+    transition: transform 0.2s ease;
 }
 .sopro-table-format > * {
     white-space: nowrap;
@@ -61,12 +63,28 @@
 }
 
 .sopro-card.sopro-table-format:hover {
-    /*box-shadow: inset 3px 3px 7px 0 rgba(0, 0, 0, 0.07);*/
-    filter: brightness(0.97);
-    transform: translateX(-5px);
+    transform: scale(1.01); 
 }
 
-/* Filters (hintsimo, revised by schleale) */
+/* dropdown arrow */
+select.select-wide {
+    border-radius: 11px;
+    text-overflow: ellipsis;
+}
+select.select-wide:hover {
+    text-decoration: underline;
+    cursor: pointer;
+}
+select.select-wide.hidden{
+    appearance: none;           /* Removes default styling */
+    -webkit-appearance: none;   /* ..for Safari */
+    -moz-appearance: none;      /* ..for Firefox */
+    pointer-events: none;
+    opacity: 1;
+}
+
+/* -----------------------------------------------------------------------------------
+    Filters (hintsimo, revised by schleale) */
 .filter-bar {
     display: flex;
     align-items: center;
@@ -93,12 +111,14 @@
     white-space: nowrap;
 
     width: 100%;
+
+    transition: background-color 0.2s ease;
 }
 .filter-tab:last-child {
     border-right: none;
 }
 .filter-tab:hover {
-    background: #f8f9fa;
+    background: #f2f2f2;
     color: black;
     text-decoration: underline;
 }

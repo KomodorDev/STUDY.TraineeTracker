@@ -350,7 +350,8 @@ namespace TraineeTracker.Services {
             } else {
                 // -> feedback doesn't exist
                 
-                if (correspondingTraineeLesson.State != TraineeLessonState.Accepted)
+                if (correspondingTraineeLesson.State != TraineeLessonState.Accepted &&
+                    correspondingTraineeLesson.State != TraineeLessonState.Rated)
                     throw new UnauthorizedAccessException("You can write a feedback once your TraineeLesson has been accepted.");
 
                 var feedback = new Feedback {
@@ -391,9 +392,6 @@ namespace TraineeTracker.Services {
         /// Code Ownership: Alexander Schlemmer (schleale)
         /// </remarks>
         public async Task DeleteFeedback(ClaimsPrincipal user, int feedbackId) {
-            if (user.IsInRole("Trainee"))
-                throw new UnauthorizedAccessException("Trainees cannot delete feedbacks.");
-
             if (!await _databaseFeedbackrepository.ExistsAsync(feedbackId))
                 throw new FeedbackNotFoundException(feedbackId);
 
