@@ -6,7 +6,7 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 @section Styles {
-    <link rel="stylesheet" href="~/css/FeedbackDashboard_temp.css"  asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/FeedbackDashboard_temp.css" asp-append-version="true" />
 }
 
 <div class="sopro-grid-management" style="height: 100%">
@@ -77,7 +77,7 @@
             </select>
 
             <!-- Combined Sort Dropdown -->
-            <select name="SortBy" class="feedback-select-small" onchange="this.form.submit()">
+            <select class="feedback-select-small" onchange="this.form.submit()">
                 <option value="date_desc" selected="@(Model.SortBy == "date_desc" ? "selected" : null)">Date ↓</option>
                 <option value="date_asc" selected="@(Model.SortBy == "date_asc" ? "selected" : null)">Date ↑</option>
                 <option value="author_desc" selected="@(Model.SortBy == "author_desc" ? "selected" : null)">Author ↓
@@ -91,13 +91,24 @@
             </select>
 
 
-
             <input type="hidden" name="filter" value="@Model.ActiveFilter" />
-            <input type="hidden" name="sortBy" value="@Model.SortBy" />
+            <input type="hidden" name="SortBy" value="@Model.SortBy" />
             <input type="hidden" name="page" value="1" />
 
         </form>
 
+        <form asp-action="MarkAllAsRead" method="post" style="display: inline;">
+            <input type="hidden" name="filter" value="@Model.ActiveFilter" />
+            <input type="hidden" name="page" value="@Model.Feedbacks.PageNumber" />
+            <input type="hidden" name="SortBy" value="@Model.SortBy" />
+            <input type="hidden" name="selectedTraineeId" value="@Model.SelectedTraineeId" />
+            <input type="hidden" name="selectedLessonId" value="@Model.SelectedLessonId" />
+            <input type="hidden" name="selectedTeachingPlanId" value="@Model.SelectedTeachingPlanId" />
+
+            <button class="sopro-button-content mark-read-btn" type="submit">
+                Mark all as read
+            </button>
+        </form>
 
     </div>
 
@@ -135,7 +146,8 @@
                                     <input type="hidden" name="selectedTraineeId" value="@Model.SelectedTraineeId" />
                                     <input type="hidden" name="selectedLessonId" value="@Model.SelectedLessonId" />
                                     <input type="hidden" name="selectedTeachingPlanId" value="@Model.SelectedTeachingPlanId" />
-                                    <button class="sopro-button-content mark-read-btn" type="submit">Mark as read</button>
+                                    <button class="sopro-button-content mark-read-btn" type="submit">Mark as read
+                                    </button>
 
                                 </form>
                             }
@@ -143,7 +155,7 @@
                             {
                                 <form asp-action="MarkAsUnread" method="post">
                                     <input type="hidden" name="feedbackId" value="@feedback.FeedbackId" />
-                                    
+
                                     <!-- Hidden inputs -->
                                     <input type="hidden" name="filter" value="@Model.ActiveFilter" />
                                     <input type="hidden" name="page" value="@Model.Feedbacks.PageNumber" />
@@ -151,9 +163,7 @@
                                     <input type="hidden" name="selectedTraineeId" value="@Model.SelectedTraineeId" />
                                     <input type="hidden" name="selectedLessonId" value="@Model.SelectedLessonId" />
                                     <input type="hidden" name="selectedTeachingPlanId" value="@Model.SelectedTeachingPlanId" />
-                                    <button class="sopro-button-content mark-unread-btn" 
-                                    
-                                    type="submit">Mark as unread</button>
+                                    <button class="sopro-button-content mark-unread-btn" type="submit">Mark as unread</button>
                                 </form>
                             }
                         </td>
@@ -162,7 +172,7 @@
                         <td colspan="4">
                             <p><strong>Difficulty:</strong> @feedback.Difficulty.GetDisplayName()</p>
                             <p><strong>Previous Knowledge:</strong> @feedback.PreviousKnowledge.GetDisplayName()</p>
-                            <p><strong>Hours of Effort:</strong> @feedback.HoursOfEffort hours</p>
+                            <p><strong>Hours of Effort:</strong> @feedback.HoursOfEffort h</p>
                             <p><strong>Comments:</strong> @feedback.Comment</p>
                         </td>
                     </tr>
