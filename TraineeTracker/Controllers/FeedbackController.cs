@@ -54,7 +54,7 @@ namespace TraineeTracker.Controllers {
         public async Task<IActionResult> ShowFeedbackDashboardView(
                     string filter = "all",
                     int page = 1,
-                    string sortBy = "date_asc",
+                    string sortBy = "date_dsc",
                     string? selectedTraineeId = null,
                     int? selectedLessonId = null,
                     int? selectedTeachingPlanId = null) {
@@ -92,7 +92,7 @@ namespace TraineeTracker.Controllers {
             int feedbackId,
             string filter = "all",
             int page = 1,
-            string sortBy = "date_asc",
+            string sortBy = "date_dsc",
             string? selectedTraineeId = null,
             int? selectedLessonId = null,
             int? selectedTeachingPlanId = null) {
@@ -140,8 +140,7 @@ namespace TraineeTracker.Controllers {
             int feedbackId,
             string filter = "all",
             int page = 1,
-            string sortBy = "date_asc",
-            bool ascending = false,
+            string sortBy = "date_dsc",
             string? selectedTraineeId = null,
             int? selectedLessonId = null,
             int? selectedTeachingPlanId = null) {
