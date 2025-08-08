@@ -30,6 +30,11 @@ namespace TraineeTracker.Models.ViewModels.TeachingPlanViewModels {
         /// A List of Existong Deactivated Lessons
         /// </summary>
         public List<LessonDto> ExistingDeactivatedLessons { get; set; } = new();
+
+        /// <summary>
+        /// A List of All Imported Lessons
+        /// </summary>
+        public List<LessonDto> AllImportedLessons { get; set; } = new();
         
         /// <summary>
         /// The name of the TeachingPlan being displayed in the preview
@@ -53,6 +58,7 @@ namespace TraineeTracker.Models.ViewModels.TeachingPlanViewModels {
             !NewActiveLessons.Any() &&
             !NewInactiveLessons.Any() &&
             !ExistingReactivatedLessons.Any() &&
-            !ExistingDeactivatedLessons.Any();
+            !ExistingDeactivatedLessons.Any() &&
+            !AllImportedLessons.Any();
     }
 }
