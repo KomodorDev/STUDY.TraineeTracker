@@ -8,7 +8,7 @@ using TraineeTracker.Exceptions;
 using TraineeTracker.Data.ProcessingPauses;
 
 namespace TraineeTracker.Services {
-    
+
     /// <summary>
     /// Provides logic for building trainee statistics snapshots and view models.
     /// Calculates various performance and progress metrics for a given trainee.
@@ -60,8 +60,20 @@ namespace TraineeTracker.Services {
 
         // --------------------------------------------------
         /// <summary>
-        /// Builds a TraineeStatisticsViewModel for the specified trainee, including snapshot metrics and lesson data.
+        /// Builds a <see cref="TraineeStatisticsViewModel"/> for the specified trainee, 
+        /// including progress metrics, categorized lessons, processing pauses, and aggregated statistics.
         /// </summary>
+        /// <param name="traineeId">The ID of the trainee to build statistics for.</param>
+        /// <param name="user">The current authenticated user, used for access validation.</param>
+        /// <returns>
+        /// A task representing the asynchronous operation, with the fully populated <see cref="TraineeStatisticsViewModel"/> as result.
+        /// </returns>
+        /// <exception cref="UnauthorizedAccessException">
+        /// Thrown if the user does not have permission to access the specified trainee's data.
+        /// </exception>
+        /// <remarks>
+        /// Code Ownership: Nikita Stefan (stefanni)
+        /// </remarks>
         public async Task<TraineeStatisticsViewModel> BuildTraineeStatisticsViewModel(string traineeId, ClaimsPrincipal user) {
             CheckHasAccess(user, traineeId);
 
@@ -336,13 +348,12 @@ namespace TraineeTracker.Services {
         /// <remarks>Code Ownership: Nikita Stefan (stefanni)</remarks>
         public async Task<double> GetPresentDaysAsync(DateOnly startDate, DateOnly endDate, string email) {
 
-            if (!email.EndsWith("@makandra.de", StringComparison.OrdinalIgnoreCase))
-            {
+            if (!email.EndsWith("@makandra.de", StringComparison.OrdinalIgnoreCase)) {
                 double totalDays = endDate.DayNumber - startDate.DayNumber;
                 Console.WriteLine("TotalDays: " + totalDays + " for " + email);
                 return totalDays * 0.7;
             }
-            
+
             // ++++++++++++++++
             // Build Request
             var baseUrl = "https://api.sopro.makandra.de/api/v1/present_days";
