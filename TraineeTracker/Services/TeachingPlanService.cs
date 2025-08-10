@@ -90,11 +90,13 @@ namespace TraineeTracker.Services {
                 // Get ActiveLessons
                 var activeLessons = tp.Lessons?
                     .Where(l => !l.IsInactive)
+                    .OrderBy(l => l.SortingIndex)
                     .ToList() ?? new List<Lesson>();
 
                 // Get ActiveTrainees (not-closed Trainees)
                 var activeTrainees = tp.Trainees?
                     .Where(t => !t.IsClosed) // Redundant, since Closing also Unassigns a Trainee from a TeachingPlan
+                    .OrderBy(t => t.UserName)
                     .ToList() ?? new List<ApplicationUser>();
 
                 return new ExistingTeachingPlanViewModel {
@@ -695,7 +697,7 @@ namespace TraineeTracker.Services {
             int sortingIndex = 1;
 
             foreach (var dto in dtos) {
-                
+
                 // Skip duplicates — only first occurrence counts
                 if (!processedMakandraIds.Add(dto.Id))
                     continue;
