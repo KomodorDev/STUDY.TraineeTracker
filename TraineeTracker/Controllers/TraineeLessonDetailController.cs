@@ -86,15 +86,14 @@ namespace TraineeTracker.Controllers {
 
         // ----------------------------------------------------------------------------------------------------------
         /// <summary>
-        /// Deletes feedback from a trainee lesson. Only Mentors and Admins are authorized to do so.
+        /// Deletes feedback from a trainee lesson.
         /// </summary>
         /// <param name="feedbackId">ID of the feedback to delete</param>
         /// <param name="traineeLessonIdForReturn">Trainee lesson ID to return to after deletion</param>
-        /// <returns>Updated trainee lesson detail view</returns>
+        /// <returns>The updated trainee lesson detail view</returns>
         /// <remarks>
         /// Code Ownership: Alexander Schlemmer (schleale)
         /// </remarks>
-        [Authorize(Roles = "Admin,Mentor")]
         [HttpPost("delete-feedback")]
         public async Task<IActionResult> DeleteFeedback([FromForm] int feedbackId, [FromForm] int traineeLessonIdForReturn) {
             await _traineeLessonDetailService.DeleteFeedback(User, feedbackId);
