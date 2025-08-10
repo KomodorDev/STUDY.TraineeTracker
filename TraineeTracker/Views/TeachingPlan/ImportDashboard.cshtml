@@ -9,8 +9,8 @@
   <link rel="stylesheet" href="~/css/ImportDashboard_temp.css" asp-append-version="true" />
 }
 
-<div class="sopro-grid-management" style="height: 100%">
-  <div class="sopro-card">
+<div class="sopro-grid-management" style="height: 100%; overflow: visible !important;">
+  <div class="sopro-card" style="overflow: visible !important;">
     <form asp-action="ImportNewTeachingPlan" asp-controller="TeachingPlan" method="post" enctype="multipart/form-data"
       class="import-form">
       @Html.AntiForgeryToken()
@@ -20,8 +20,8 @@
     </form>
   </div>
 
-  <div class="sopro-card">
-    <table class="teachingplan-table">
+  <div class="sopro-card" style="overflow: visible !important;">
+    <table class="teachingplan-table" style="overflow: visible !important;">
       <thead>
         <tr>
           <th>Name</th>
@@ -44,8 +44,57 @@
           {
             <tr>
               <td>@plan.Name</td>
-              <td>@plan.TraineeCount</td>
-              <td>@plan.LessonCount</td>
+
+              <!-- Trainee Count with Tooltip -->
+              <td>
+                @plan.TraineeCount
+                @if (plan.ActiveTrainees?.Any() == true)
+                {
+                  <span class="info-icon-wrapper">
+                    <span class="info-icon">?</span>
+                    <div class="tooltip-box">
+                      <strong>Active Trainees:</strong>
+                      <ul style="margin:0; padding-left:1rem; max-height:200px; overflow-y:auto;">
+                        @{
+                          int index = 1;
+                          @foreach (var trainee in plan.ActiveTrainees)
+                          {
+                            <li>[@index.ToString("D3")] @trainee.UserName</li>
+                            ;
+                            index++;
+                          }
+                        }
+                      </ul>
+                    </div>
+                  </span>
+                }
+              </td>
+
+              <!-- Lesson Count with Tooltip -->
+              <td>
+                @plan.LessonCount
+                @if (plan.ActiveLessons?.Any() == true)
+                {
+                  <span class="info-icon-wrapper">
+                    <span class="info-icon">?</span>
+                    <div class="tooltip-box">
+                      <strong>Active Lessons:</strong>
+                      <ul style="margin:0; padding-left:1rem; max-height:200px; overflow-y:auto;">
+                        @{
+                          int index = 1;
+                          foreach (var lesson in plan.ActiveLessons)
+                          {
+                            <li>[@index.ToString("D3")] @lesson.Title (MakandraId: @lesson.MakandraId)</li>
+                            ;
+                            index++;
+                          }
+                        }
+                      </ul>
+                    </div>
+                  </span>
+                }
+              </td>
+
               <td>@plan.LastUpdated.ToString("dd. MMMM yyyy, HH:mm:ss")</td>
               <td>
                 <!-- Update / open modal -->

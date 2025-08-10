@@ -78,23 +78,43 @@ namespace TraineeTracker.Services {
         /// A task that returns an <see cref="ImportDashboardViewModel"/> with existing teaching plans.
         /// </returns>
         /// <remarks>
-        /// Code Ownership: Alexandros Blask
+        /// Code Ownership: Alexandros Blask, Simon Hinterreiter
         /// </remarks>
         public async Task<ImportDashboardViewModel> BuildImportDashboardViewModelAsync() {
             // a) Get all Teachingplans
             var allPlans = await _databaseTeachingPlanRepository.GetAllTeachingPlansWithLessonsAndTraineesAsync();
 
-            // b) Build Import Dashboard with all Teachingplans
-            return new ImportDashboardViewModel {
-                ExistingTeachingPlans = allPlans.Select(tp => new ExistingTeachingPlanViewModel {
+            // b) Map to dashboard
+            var plans = allPlans.Select(tp => {
+
+                // Get ActiveLessons
+                var activeLessons = tp.Lessons?
+                    .Where(l => !l.IsInactive)
+                    .OrderBy(l => l.SortingIndex)
+                    .ToList() ?? new List<Lesson>();
+
+                // Get ActiveTrainees (not-closed Trainees)
+                var activeTrainees = tp.Trainees?
+                    .Where(t => !t.IsClosed) // Redundant, since Closing also Unassigns a Trainee from a TeachingPlan
+                    .OrderBy(t => t.UserName)
+                    .ToList() ?? new List<ApplicationUser>();
+
+                return new ExistingTeachingPlanViewModel {
                     TeachingPlanId = tp.TeachingPlanId,
                     Name = tp.Name,
                     LastUpdated = tp.LastUpdated,
-                    LessonCount = tp.Lessons?.Count(l => !l.IsInactive) ?? 0,
-                    TraineeCount = tp.Trainees?.Count ?? 0
-                }).ToList()
+                    LessonCount = activeLessons.Count,
+                    TraineeCount = activeTrainees.Count,
+                    ActiveLessons = activeLessons,
+                    ActiveTrainees = activeTrainees
+                };
+            }).ToList();
+
+            return new ImportDashboardViewModel {
+                ExistingTeachingPlans = plans
             };
         }
+
 
         // ---------------------------------------------------
         /// <summary>
@@ -170,10 +190,18 @@ namespace TraineeTracker.Services {
             var newInactive = new List<LessonDto>();
             var existingReactivated = new List<LessonDto>();
             var existingDeactivated = new List<LessonDto>();
-            var allImported = importedDtos.ToList();
+            var allImported = new List<LessonDto>();
 
             // 4) Loop through imported lessons:
+            var processedMakandraIds = new HashSet<string>(); // Used to ignore duplicate MakandraIDs: Only the first lesson with a specific MakandraID in the JSON is processed
             foreach (var dto in importedDtos) {
+
+                // Skip if we've already processed this MakandraId in this loop
+                if (!processedMakandraIds.Add(dto.Id))
+                    continue;
+
+                // Keep de-duped import order list for the UI
+                allImported.Add(dto);
 
                 // Check if that MakandraId already exists in existingLessons of that teachingPlan:
                 var exists = existingLessonsByMakandraId.TryGetValue(dto.Id, out var existingLesson);
@@ -317,7 +345,15 @@ namespace TraineeTracker.Services {
             // 3) Upsert DTOs and in addition:
             //    - Deprecated = true → only Open-TraineeLessons should be deleted ("removed")
             //    - totally new Lessons → insert into teachingPlan and mark as "added"
+
+            var processedMakandraIds = new HashSet<string>();
+
             foreach (var lessonDto in lessonDtos) {
+
+                // Skip if we've already processed this MakandraId
+                if (!processedMakandraIds.Add(lessonDto.Id))
+                    continue;
+
                 // Find Lesson by lessonDto.MakandraId in existingLessons (MakandraId is at least unique within TeachingPlan)
                 var lesson = existingLessons.FirstOrDefault(l => l.MakandraId == lessonDto.Id);
 
@@ -656,18 +692,28 @@ namespace TraineeTracker.Services {
         /// Code Ownership: Alexandros Blask
         /// </remarks>
         private List<Lesson> CreateLessons(IEnumerable<LessonDto> dtos, int teachingPlanId) {
-
-            // Map dto Lessons to "real" Lessons
+            var processedMakandraIds = new HashSet<string>();
+            var lessons = new List<Lesson>();
             int sortingIndex = 1;
-            return dtos.Select(dto => new Lesson {
-                MakandraId = dto.Id,
-                Title = dto.Title,
-                LinkUrl = dto.Url,
-                EstimatedEffort = dto.Estimate ?? 0,
-                IsInactive = dto.Deprecated,
-                SortingIndex = sortingIndex++,
-                TeachingPlanId = teachingPlanId
-            }).ToList();
+
+            foreach (var dto in dtos) {
+
+                // Skip duplicates — only first occurrence counts
+                if (!processedMakandraIds.Add(dto.Id))
+                    continue;
+
+                lessons.Add(new Lesson {
+                    MakandraId = dto.Id,
+                    Title = dto.Title,
+                    LinkUrl = dto.Url,
+                    EstimatedEffort = dto.Estimate ?? 0,
+                    IsInactive = dto.Deprecated,
+                    SortingIndex = sortingIndex++,
+                    TeachingPlanId = teachingPlanId
+                });
+            }
+
+            return lessons;
         }
 
         // ---------------------------------------------------
