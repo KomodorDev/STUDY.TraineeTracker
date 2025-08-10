@@ -10,7 +10,7 @@ namespace TraineeTracker.Models.Dtos {
     public class LessonDto {
 
         /// <summary>
-        /// Unique Id of the Lesson
+        /// MakandraId of the Lesson
         /// </summary>
         public required string Id { get; set; }
 
