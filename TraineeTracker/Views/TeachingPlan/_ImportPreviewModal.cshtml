@@ -44,9 +44,16 @@
             {
                 <p><strong>New Active Lessons:</strong></p>
                 <ul>
-                    @foreach (var lesson in Model.NewActiveLessons)
-                    {
-                        <li>@lesson.Title</li>
+                    @{
+                        int index = 1;
+                        foreach (var lesson in Model.NewActiveLessons)
+                        {
+                            var displayIndex = index.ToString("D3");
+                            <li>
+                                [@displayIndex] @lesson.Title
+                            </li>
+                            index++;
+                        }
                     }
                 </ul>
             }
@@ -55,31 +62,52 @@
             {
                 <p><strong>New Inactive Lessons:</strong></p>
                 <ul>
-                    @foreach (var lesson in Model.NewInactiveLessons)
-                    {
-                        <li>@lesson.Title</li>
+                    @{
+                        int index = 1;
+                        foreach (var lesson in Model.NewInactiveLessons)
+                        {
+                            var displayIndex = index.ToString("D3");
+                            <li>
+                                [@displayIndex] @lesson.Title
+                            </li>
+                            index++;
+                        }
                     }
                 </ul>
             }
 
             @if (Model.ExistingReactivatedLessons.Any())
             {
-                <p><strong>Reactivated Lessons:</strong></p>
+                <p><strong>Existing Reactivated Lessons:</strong></p>
                 <ul>
-                    @foreach (var lesson in Model.ExistingReactivatedLessons)
-                    {
-                        <li>@lesson.Title</li>
+                    @{
+                        int index = 1;
+                        foreach (var lesson in Model.ExistingReactivatedLessons)
+                        {
+                            var displayIndex = index.ToString("D3");
+                            <li>
+                                [@displayIndex] @lesson.Title
+                            </li>
+                            index++;
+                        }
                     }
                 </ul>
             }
 
             @if (Model.ExistingDeactivatedLessons.Any())
             {
-                <p><strong>Deactivated Lessons:</strong></p>
+                <p><strong>Existing Deactivated Lessons:</strong></p>
                 <ul>
-                    @foreach (var lesson in Model.ExistingDeactivatedLessons)
-                    {
-                        <li>@lesson.Title</li>
+                    @{
+                        int index = 1;
+                        foreach (var lesson in Model.ExistingDeactivatedLessons)
+                        {
+                            var displayIndex = index.ToString("D3");
+                            <li>
+                                [@displayIndex] @lesson.Title
+                            </li>
+                            index++;
+                        }
                     }
                 </ul>
             }
@@ -88,16 +116,28 @@
             {
                 <p><strong>All Imported Lessons (in Imported Order):</strong></p>
                 <ul>
-                    @for (int i = 0; i < Model.AllImportedLessons.Count; i++)
-                    {
-                        var lesson = Model.AllImportedLessons[i];
-                        <li>
-                            [@(i + 1)] @lesson.Title
-                            @if (lesson.Deprecated)
+                    @{
+                        int index = 1;
+                        @foreach (var lesson in Model.AllImportedLessons)
+                        {
+                            string displayIndex;
+                            if (lesson.Deprecated)
                             {
-                                <span style="color: gray;">(deprecated)</span>
+                                displayIndex = "000";
                             }
-                        </li>
+                            else
+                            {
+                                displayIndex = index.ToString("D3");
+                                index++;
+                            }
+                            <li>
+                                [@displayIndex] @lesson.Title
+                                @if (lesson.Deprecated)
+                                {
+                                    <span style="color: gray;">(deprecated)</span>
+                                }
+                            </li>
+                        }
                     }
                 </ul>
             }
