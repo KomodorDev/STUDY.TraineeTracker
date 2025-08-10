@@ -94,7 +94,6 @@ namespace TraineeTracker.Controllers {
         /// <remarks>
         /// Code Ownership: Alexander Schlemmer (schleale)
         /// </remarks>
-        [Authorize(Roles = "Admin,Mentor")]
         [HttpPost("delete-feedback")]
         public async Task<IActionResult> DeleteFeedback([FromForm] int feedbackId, [FromForm] int traineeLessonIdForReturn) {
             await _traineeLessonDetailService.DeleteFeedback(User, feedbackId);

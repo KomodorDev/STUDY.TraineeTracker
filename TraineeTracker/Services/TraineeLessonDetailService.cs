@@ -386,28 +386,33 @@ namespace TraineeTracker.Services {
         /// </summary>
         /// <param name="user">The current user attempting the deletion, used for authorization checks.</param>
         /// <param name="feedbackId">The ID of the feedback to delete.</param>
-        /// <exception cref="UnauthorizedAccessException">Thrown if the user has the "Trainee" role, which is not permitted to delete feedback.</exception>
+        /// <exception cref="UnauthorizedAccessException">Thrown if a trainee tries to delete the feedback of a different user.</exception>
         /// <exception cref="FeedbackNotFoundException">Thrown if no feedback with the specified ID exists.</exception>
+        /// <exception cref="UserNotFoundException">Thrown if the user trying to delete the feedback couldn't be found.</exception>
         /// <remarks>
         /// Code Ownership: Alexander Schlemmer (schleale)
         /// </remarks>
         public async Task DeleteFeedback(ClaimsPrincipal user, int feedbackId) {
-            if (!await _databaseFeedbackrepository.ExistsAsync(feedbackId))
-                throw new FeedbackNotFoundException(feedbackId);
+            // Checks
+            var feedbackToDelete = await _databaseFeedbackrepository.GetFeedbackByIDWithLessonAndAuthorAndReadByUsersAsync(feedbackId)
+                ?? throw new FeedbackNotFoundException(feedbackId);
+            var accessingUser = await _databaseApplicationUserRepository.GetUserAsync(user)
+                ?? throw new UserNotFoundException();
 
-            var deletedFeedback = await _databaseFeedbackrepository.GetFeedbackByIDWithLessonAndAuthorAndReadByUsersAsync(feedbackId) ?? throw new FeedbackNotFoundException();
+            if (!(user.IsInRole("Mentor") || user.IsInRole("Admin")))
+                if (accessingUser != feedbackToDelete.Author)
+                    throw new UnauthorizedAccessException("You can only delete your own feedbacks");
 
+            // Delete feedback
             await _databaseFeedbackrepository.DeleteAsync(feedbackId);
 
-            var emailUser = await _databaseApplicationUserRepository.GetUserAsync(user) ?? throw new UserNotFoundException();
-
-            // sends email (different thread)
+            // Send email (different thread)
             _ = Task.Run(async () => {
                 using var scope = _scopeFactory.CreateScope();
                 var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
                 var emailService = scope.ServiceProvider.GetRequiredService<EmailNotificationService>();
 
-                await emailService.NotifyAboutFeedbackChangeAsync(deletedFeedback, emailUser, true);
+                await emailService.NotifyAboutFeedbackChangeAsync(feedbackToDelete, accessingUser, true);
             });
         }
     }
