@@ -41,13 +41,31 @@ namespace TraineeTracker.Models.Domain {
         /// </summary>
         public string? Comment { get; set; }
 
-        // --- Beziehungen ---
+        // --- Relations ---
+
+        /// <summary>
+        /// The ID of the associated lesson.
+        /// </summary>
         public int LessonId { get; set; }
+
+        /// <summary>
+        /// The lesson for which this feedback was provided.
+        /// </summary>
         public required Lesson Lesson { get; set; }
 
+        /// <summary>
+        /// The ID of the user who authored the feedback.
+        /// </summary>
         public required string AuthorId { get; set; }
+
+        /// <summary>
+        /// The user who authored the feedback.
+        /// </summary>
         public required ApplicationUser Author { get; set; }
 
+        /// <summary>
+        /// The collection of users who have read this feedback.
+        /// </summary>
         public required ICollection<ApplicationUser> ReadByUsers { get; set; }
     }
 }
