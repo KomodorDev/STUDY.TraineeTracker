@@ -183,6 +183,58 @@ h3 {
   }
 }
 
+/* Info Icon */
+.info-icon-wrapper {
+  display: inline-block;
+  position: relative;
+  vertical-align: middle;
+}
+
+.info-icon {
+  background-color: #e61d47;
+  color: white;
+  border-radius: 50%;
+  width: 1.2rem;
+  height: 1.2rem;
+  font-size: 0.9rem;
+  line-height: 1.2rem;
+  text-align: center;
+  cursor: pointer;
+  font-weight: bold;
+  display: inline-block;
+}
+
+.tooltip-box {
+  display: none;
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: #333;
+  color: #fff;
+  padding: 0.8rem 1rem;
+  border-radius: 0.5rem;
+  font-size: 0.95rem;
+  z-index: 9999;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+  white-space: nowrap;
+  max-width: 90vw;            /* won't exceed viewport */
+  height: auto;              /* Let height grow */
+  overflow: visible;         /* No scrollbars unless you want them */
+  text-align: left;
+}
+
+
+.info-icon-wrapper:hover .tooltip-box {
+  display: block;
+}
+
+/* Prevent clipping in tables */
+table, td, tr {
+  overflow: visible;
+}
+
+
 /* Modal Size */
 .sopro-import-modal-size {
   width: 56rem;
@@ -205,6 +257,8 @@ h3 {
   border-bottom: 1px solid #dee2e6;
   text-align: left;
 }
+
+
 
 
 
