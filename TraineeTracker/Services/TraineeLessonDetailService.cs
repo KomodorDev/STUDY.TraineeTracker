@@ -382,7 +382,6 @@ namespace TraineeTracker.Services {
         // --------------------------------------------------
         /// <summary>
         /// Deletes a feedback entry identified by <paramref name="feedbackId"/>.
-        /// Only users who are in the "Mentor" or "Admin" role are authorized to delete feedback.
         /// </summary>
         /// <param name="user">The current user attempting the deletion, used for authorization checks.</param>
         /// <param name="feedbackId">The ID of the feedback to delete.</param>
