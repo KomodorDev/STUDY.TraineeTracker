@@ -32,7 +32,7 @@
         </form>
     </div>
 
-    @* Optional: Liste der Änderungen anzeigen, wenn vorhanden *@
+    @* Optional: List of changes *@
     @if (Model.NewActiveLessons.Any() || Model.NewInactiveLessons.Any() ||
         Model.ExistingReactivatedLessons.Any() || Model.ExistingDeactivatedLessons.Any() ||
         Model.AllImportedLessons.Any())
@@ -50,7 +50,7 @@
                         {
                             var displayIndex = index.ToString("D3");
                             <li>
-                                [@displayIndex] @lesson.Title
+                                [@displayIndex] @lesson.Title (MakandraId: @lesson.Id)
                             </li>
                             index++;
                         }
@@ -68,7 +68,7 @@
                         {
                             var displayIndex = index.ToString("D3");
                             <li>
-                                [@displayIndex] @lesson.Title
+                                [@displayIndex] @lesson.Title (MakandraId: @lesson.Id)
                             </li>
                             index++;
                         }
@@ -86,7 +86,7 @@
                         {
                             var displayIndex = index.ToString("D3");
                             <li>
-                                [@displayIndex] @lesson.Title
+                                [@displayIndex] @lesson.Title (MakandraId: @lesson.Id)
                             </li>
                             index++;
                         }
@@ -104,7 +104,7 @@
                         {
                             var displayIndex = index.ToString("D3");
                             <li>
-                                [@displayIndex] @lesson.Title
+                                [@displayIndex] @lesson.Title (MakandraId: @lesson.Id)
                             </li>
                             index++;
                         }
@@ -114,7 +114,12 @@
 
             @if (Model.AllImportedLessons.Any())
             {
-                <p><strong>All Imported Lessons (in Imported Order):</strong></p>
+                <p>
+                    <strong>All Imported Lessons (in Imported Order):</strong><br />
+                    <small style="color: gray;">
+                        In case of duplicate MakandraIds, only the first occurrence in the import file is considered.
+                    </small>
+                </p>
                 <ul>
                     @{
                         int index = 1;
@@ -131,7 +136,7 @@
                                 index++;
                             }
                             <li>
-                                [@displayIndex] @lesson.Title
+                                [@displayIndex] @lesson.Title (MakandraId: @lesson.Id)
                                 @if (lesson.Deprecated)
                                 {
                                     <span style="color: gray;">(deprecated)</span>
@@ -141,7 +146,16 @@
                     }
                 </ul>
             }
+
         </div>
+
+        if (!Model.NewActiveLessons.Any() && !Model.NewInactiveLessons.Any() &&
+        !Model.ExistingReactivatedLessons.Any() && !Model.ExistingDeactivatedLessons.Any())
+        {
+            <p style="text-align:center; margin-bottom:1rem;">
+                No changes to the Teaching Plan detected. Only lesson data will be updated.
+            </p>
+        }
 
         <!-- Update Button -->
         <form asp-action="UpdateTeachingPlan" asp-controller="TeachingPlan" method="post" enctype="multipart/form-data"
