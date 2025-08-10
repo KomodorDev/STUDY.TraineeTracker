@@ -399,7 +399,7 @@ namespace TraineeTracker.Services {
                 ?? throw new UserNotFoundException();
 
             if (!(user.IsInRole("Mentor") || user.IsInRole("Admin")))
-                if (accessingUser != feedbackToDelete.Author)
+                if (accessingUser.Id != feedbackToDelete.Author.Id)
                     throw new UnauthorizedAccessException("You can only delete your own feedbacks");
 
             // Delete feedback
