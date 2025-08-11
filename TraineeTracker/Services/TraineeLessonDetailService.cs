@@ -312,7 +312,7 @@ namespace TraineeTracker.Services {
         /// Code Ownership: Alexander Schlemmer (schleale)
         /// </remarks>
         public async Task SaveFeedback(FeedbackDto feedbackDto, ClaimsPrincipal user) {
-            // it is basically a state change, hence checking this beforehand
+            // It is basically a state change, hence checking this beforehand
             await CheckHasAccess(user, feedbackDto.TraineeLessonId); 
 
             if (feedbackDto == null)
@@ -322,10 +322,12 @@ namespace TraineeTracker.Services {
             var traineeId = correspondingTraineeLesson.TraineeId;
             var trainee = await _databaseApplicationUserRepository.FindByIdAsync(traineeId) ?? throw new UserNotFoundException();
             var existingFeedback = await _databaseFeedbackrepository.GetFeedbackOfTraineeLessonWithLessonAndAuthorAndReadByUsersAsync(correspondingTraineeLesson);
+            var applicationUser = await _databaseApplicationUserRepository.GetUserAsync(user) ?? throw new UserNotFoundException();
             
             if (existingFeedback != null) {
-                // -> feedback exists
+                // ----------------------> feedback exists
 
+                // Update feedback
                 existingFeedback.Difficulty = feedbackDto.Difficulty;
                 existingFeedback.PreviousKnowledge = feedbackDto.PreviousKnowledge;
                 existingFeedback.HoursOfEffort = feedbackDto.HoursOfEffort;
@@ -333,27 +335,25 @@ namespace TraineeTracker.Services {
 
                 await _databaseFeedbackrepository.UpdateAsync(existingFeedback);
 
-                // mark changed feedback as unread
+                // Mark changed feedback as unread
                 await _feedbackService.MarkFeedbackAsUnreadForEveryoneAsync(existingFeedback.FeedbackId);
-                
-                var applicationUser = await _databaseApplicationUserRepository.GetUserAsync(user) ?? throw new UserNotFoundException();
 
-                // sends email (different thread)
+                // Sends Email about feedback change in a different thread
                 _ = Task.Run(async () => {
                     using var scope = _scopeFactory.CreateScope();
                     var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
                     var emailService = scope.ServiceProvider.GetRequiredService<EmailNotificationService>();
 
-
                     await emailService.NotifyAboutFeedbackChangeAsync(existingFeedback, applicationUser);
                 });
             } else {
-                // -> feedback doesn't exist
-                
+                // ----------------------> feedback doesn't exist
+
                 if (correspondingTraineeLesson.State != TraineeLessonState.Accepted &&
                     correspondingTraineeLesson.State != TraineeLessonState.Rated)
                     throw new UnauthorizedAccessException("You can write a feedback once your TraineeLesson has been accepted.");
 
+                // Create feedback
                 var feedback = new Feedback {
                     Difficulty = feedbackDto.Difficulty,
                     PreviousKnowledge = feedbackDto.PreviousKnowledge,
@@ -368,14 +368,25 @@ namespace TraineeTracker.Services {
                     ReadByUsers = new List<ApplicationUser>()
                 };
 
-                // create feedback
                 await _databaseFeedbackrepository.CreateAsync(feedback);
 
-                // update state to rated, also sends email and creates log
-                await SaveTraineeLessonStateChange(new TraineeLessonDto {
-                    TraineeLessonId = feedbackDto.TraineeLessonId,
-                    TargetStateName = TraineeLessonState.Rated.ToString()
-                }, user, feedback);
+                // Notifs & state change
+                if (correspondingTraineeLesson.State != TraineeLessonState.Rated) {
+                    // update state to rated, also sends email and creates log
+                    await SaveTraineeLessonStateChange(new TraineeLessonDto {
+                        TraineeLessonId = feedbackDto.TraineeLessonId,
+                        TargetStateName = TraineeLessonState.Rated.ToString()
+                    }, user, feedback);
+                } else {
+                    // Only send email
+                    _ = Task.Run(async () => {
+                        using var scope = _scopeFactory.CreateScope();
+                        var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+                        var emailService = scope.ServiceProvider.GetRequiredService<EmailNotificationService>();
+
+                        await emailService.NotifyAboutFeedbackChangeAsync(feedback, applicationUser, deleted: false);
+                    });
+                }
             }
         }
 
