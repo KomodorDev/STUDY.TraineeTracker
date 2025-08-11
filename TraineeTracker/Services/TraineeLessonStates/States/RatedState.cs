@@ -23,10 +23,7 @@ namespace TraineeTracker.Services.TraineeLessonStates.States {
         /// Code Ownership: Alexander Schlemmer (schleale)
         /// </remarks>
         public List<TraineeLessonState> GetAllowedLessonStateTransitions(ClaimsPrincipal user) {
-            // Allow Rated to Rated for case: feedback -> delete feedback -> write new feedback
-            return new List<TraineeLessonState> {
-                TraineeLessonState.Rated
-            };
+            return new List<TraineeLessonState>();
         }
 
         // ----------------------------------------------
