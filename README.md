@@ -43,7 +43,7 @@ Der TraineeTracker ist ein speziell für Makandra entwickeltes **Fortschritts- u
 ### Lizenz
 
 Dieses Projekt ist unter der folgenden Lizenz veröffentlicht:
-< Lizenzdetails hier einfügen >
+MIT Licence
 
 ### Projektstatus
 
@@ -92,7 +92,7 @@ The TraineeTracker is a **progress and management tool** specifically developed 
 ### License
 
 This project is released under the following license:
-< insert license details here >
+MIT Licence
 
 ### Project status
 
