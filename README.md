@@ -9,6 +9,8 @@
 Dieser **TraineeTracker** war ein Projekt des Teams07 an der **Universität Augsburg** in Zusammenarbeit mit **Makandra**.
 Es wird nicht mehr aktiv weiterentwickelt, da das Universitätsprojekt abgeschlossen wurde.
 
+Dieses Repo wurde von der Isse Gitlab Instanz der UNA transferiert.
+
 ### Name
 
 **STUDY**
@@ -29,6 +31,8 @@ Der TraineeTracker ist ein speziell für Makandra entwickeltes **Fortschritts- u
 ### Nutzung
 
 * Login mit den zugewiesenen Zugangsdaten.
+    - Passwort für alle Accounts: Sopro.2025
+    - Die Logindaten finden sich im Testseeder
 * Fortschritt neuer Mitarbeiter einsehen und verwalten.
 * Trainingspläne erstellen und anpassen.
 
@@ -58,6 +62,8 @@ MIT Licence
 This **TraineeTracker** was a project of **Team07** at **Augsburg University** in collaboration with **Makandra**.
 It is no longer actively developed because the university project has been completed.
 
+This project was transferred from the Isse Gitlab instance of the UNA.
+
 ### Name
 
 **STUDY**
@@ -78,6 +84,8 @@ The TraineeTracker is a **progress and management tool** specifically developed 
 ### Usage
 
 * Log in with assigned credentials.
+  - Password for all accounts: Sopro.2025
+  - The logindata can be found in the testseeder.
 * View and manage the progress of new employees.
 * Create and customize training plans.
 
