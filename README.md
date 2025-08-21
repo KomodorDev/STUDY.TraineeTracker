@@ -64,7 +64,7 @@ MIT Licence
 This **TraineeTracker** was a project of **Team07** at **Augsburg University** in collaboration with **Makandra**.
 It is no longer actively developed because the university project has been completed.
 
-This project was transferred from the private GitLab instance of Augsburg University
+This project was transferred from the private GitLab instance of Augsburg University.
 
 ### Name
 
