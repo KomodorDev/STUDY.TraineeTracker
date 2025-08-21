@@ -21,12 +21,15 @@ Der TraineeTracker ist ein speziell für Makandra entwickeltes **Fortschritts- u
 
 ### Installation
 
-1. Repository klonen:
-2. Abhängigkeiten installieren:
-  Es wird dotnet 8.0 gebraucht um das Projekt zu runnen.
-3. Anwendung starten:
-  -Öffne die Projectfolder
-  -Führe "dotnet run" aus
+1. Repository klonen
+1. Abhängigkeiten installieren  
+   - Es wird **.NET 8.0** benötigt, um das Projekt zu starten.
+1. Anwendung starten  
+   - Ordner öffnen "TraineeTracker" öffnen
+   - Mit folgendem Befehl starten:  
+     ```bash
+     dotnet run
+     ```
 
 ### Nutzung
 * In Chrome öffnen: http://localhost:5079
@@ -77,11 +80,14 @@ The TraineeTracker is a **progress and management tool** specifically developed 
 ### Installation
 
 1. Clone the repository
-2. Install dependencies:
-   Dotnet 8.0 is needed to run the project.
-3. Start the application:
-  -Go into the Project folder
-  -Use the command "dotnet run" to start
+1. Install dependencies  
+   - **.NET 8.0** is required to run the project.
+1. Start the application  
+   - Open the project folder "TraineeTracker"
+   - Run the following command:  
+     ```bash
+     dotnet run
+     ```
 
 ### Usage
 
