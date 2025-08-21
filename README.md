@@ -1,4 +1,4 @@
-# Team 07 – STUDY
+# Team 07 – STUDY.TraineeTracker
 
 ---
 
