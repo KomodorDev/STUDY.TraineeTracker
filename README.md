@@ -25,7 +25,7 @@ Der TraineeTracker ist ein speziell für Makandra entwickeltes **Fortschritts- u
 1. Abhängigkeiten installieren  
    - Es wird **.NET 8.0** benötigt, um das Projekt zu starten.
 1. Anwendung starten  
-   - Ordner öffnen "TraineeTracker" öffnen
+   - Ordner "TraineeTracker" öffnen
    - Mit folgendem Befehl starten:  
      ```bash
      dotnet run
