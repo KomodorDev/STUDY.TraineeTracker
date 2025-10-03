@@ -1,4 +1,4 @@
-# Team 07 – STUDY
+# Team 07 – STUDY.TraineeTracker
 
 ---
 
@@ -7,13 +7,13 @@
 ### Überblick
 
 Dieser **TraineeTracker** war ein Projekt des Teams07 an der **Universität Augsburg** in Zusammenarbeit mit **Makandra**.
-Es wird nicht mehr aktiv weiterentwickelt, da das Universitätsprojekt abgeschlossen wurde.
+Es wird nicht mehr aktiv weiterentwickelt, da das Universitätsprojekt abgeschlossen ist.
 
-Dieses Repo wurde von der Isse Gitlab Instanz der UNA transferiert.
+Dieses Repo wurde von der privaten Gitlab Instanz der Universität Augsburg transferiert.
 
 ### Name
 
-**STUDY**
+**STUDY.TraineeTracker**
 
 ### Beschreibung
 
@@ -21,18 +21,23 @@ Der TraineeTracker ist ein speziell für Makandra entwickeltes **Fortschritts- u
 
 ### Installation
 
-1. Repository klonen:
-2. Abhängigkeiten installieren:
-  Es wird dotnet 8.0 gebraucht um das Projekt zu runnen.
-3. Anwendung starten:
-  -Öffne die Projectfolder
-  -Führe dotnet run aus
+1. Repository klonen
+1. Abhängigkeiten installieren  
+   - Es wird **.NET 8.0** benötigt, um das Projekt zu starten.
+1. Anwendung starten  
+   - Ordner "TraineeTracker" öffnen
+   - Mit folgendem Befehl starten:  
+     ```bash
+     dotnet run
+     ```
 
 ### Nutzung
-
-* Login mit den zugewiesenen Zugangsdaten.
-    - Passwort für alle Accounts: Sopro.2025
-    - Die Logindaten finden sich im Testseeder
+* In Chrome öffnen: http://localhost:5079
+* Login mit Zugangsdaten:
+  - Admin: simon.hinterreiter@uni-a.de
+  - Mentor: paul.schweizerTEST@uni-a.de
+  - Trainee: alexandros.blaskTEST@uni-a.de
+  - Passwort für alle Accounts: Sopro.2025
 * Fortschritt neuer Mitarbeiter einsehen und verwalten.
 * Trainingspläne erstellen und anpassen.
 
@@ -62,11 +67,11 @@ MIT Licence
 This **TraineeTracker** was a project of **Team07** at **Augsburg University** in collaboration with **Makandra**.
 It is no longer actively developed because the university project has been completed.
 
-This project was transferred from the Isse Gitlab instance of the UNA.
+This project was transferred from the private GitLab instance of Augsburg University.
 
 ### Name
 
-**STUDY**
+**STUDY.TraineeTracker**
 
 ### Description
 
@@ -74,18 +79,24 @@ The TraineeTracker is a **progress and management tool** specifically developed 
 
 ### Installation
 
-1. Clone the repository:
-2. Install dependencies:
-   Dotnet 8.0 is needed to run the project.
-3. Start the application:
-  -Go into the Project folder
-  -Use the command dotnet run to start
+1. Clone the repository
+1. Install dependencies  
+   - **.NET 8.0** is required to run the project.
+1. Start the application  
+   - Open the project folder "TraineeTracker"
+   - Run the following command:  
+     ```bash
+     dotnet run
+     ```
 
 ### Usage
 
-* Log in with assigned credentials.
+* Open in Chrome: http://localhost:5079
+* Log in with credentials:
+  - Admin: simon.hinterreiter@uni-a.de
+  - Mentor: paul.schweizerTEST@uni-a.de
+  - Trainee: alexandros.blaskTEST@uni-a.de
   - Password for all accounts: Sopro.2025
-  - The logindata can be found in the testseeder.
 * View and manage the progress of new employees.
 * Create and customize training plans.
 
